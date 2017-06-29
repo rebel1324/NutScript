@@ -174,56 +174,78 @@ PANEL = {}
 				slot:SetPos((x - 1) * 64 + 4, (y - 1) * 64 + 27)
 				slot:SetSize(64, 64)
 				slot.Paint = PaintSlot
-				
-				self.slots[x][y] = slot	
+
+				self.slots[x][y] = slot
 			end
 		end
 	end
-	
+
 	function PANEL:PaintOver(w, h)
 		local item = nut.item.held
-		
+
 		if (IsValid(item)) then
 			local mouseX, mouseY = self:LocalCursorPos()
 			local dropX, dropY = math.ceil((mouseX - 4 - (item.gridW - 1) * 32) / 64), math.ceil((mouseY - 27 - (item.gridH - 1) * 32) / 64)
+			local combineItem
 
 			for x = 0, item.gridW - 1 do
 				for y = 0, item.gridH - 1 do
 					local x2, y2 = dropX + x, dropY + y
 
-					if (self:isValidSlot(x2, y2, item)) then
-						surface.SetDrawColor(0, 255, 0, 10)
-						
+					local canCombine = self:canCombine(x2, y2)
+					if (x == 0 and y == 0 and canCombine or canCombine == combineItem) then
+						surface.SetDrawColor(0, 127, 255, 25)
+
+						combineItem = canCombine
+						item.dropPos = item.dropPos or {}
+						item.dropPos[self] = {i=canCombine}
+					elseif self:isValidSlot(x2, y2, item) then
+						surface.SetDrawColor(combineItem and 255 or 0, 255, 0, 10)
+
 						if (x == 0 and y == 0) then
 							item.dropPos = item.dropPos or {}
 							item.dropPos[self] = {x = (x2 - 1)*64 + 4, y = (y2 - 1)*64 + 27, x2 = x2, y2 = y2}
 						end
 					else
-						surface.SetDrawColor(255, 0, 0, 10)
-						
+						surface.SetDrawColor(255,canCombine and 255 or 0, 0, 10)
+
 						if (item.dropPos) then
 							item.dropPos[self] = nil
 						end
 					end
-					
+
 					surface.DrawRect((x2 - 1)*64 + 4, (y2 - 1)*64 + 27, 64, 64)
 				end
 			end
 		end
 	end
-	
+
 	function PANEL:isValidSlot(x, y, this)
 		return self.slots[x] and IsValid(self.slots[x][y]) and (!IsValid(self.slots[x][y].item) or self.slots[x][y].item == this)
 	end
-	
+
+	function PANEL:iconAt(x, y)
+		return self.slots[x] and IsValid(self.slots[x][y]) and IsValid(self.slots[x][y].item) and self.slots[x][y].item
+	end
+
+	function PANEL:itemAt(x, y)
+		local pnl = self:iconAt(x,y)
+		return pnl and pnl.itemID and nut.item.instances[pnl.itemID]
+	end
+
+	function PANEL:canCombine(x, y)
+		local item, heldItem = self:itemAt(x, y), nut.item.held and nut.item.instances[nut.item.held.itemID]
+		return item and item != heldItem and item.canCombine and item:canCombine(heldItem) and self:iconAt(x, y) or false
+	end
+
 	function PANEL:onTransfer(oldX, oldY, x, y, oldInventory, noSend)
 		local inventory = nut.item.inventories[oldInventory.invID]
 		local inventory2 = nut.item.inventories[self.invID]
 		local item
-		
+
 		if (inventory) then
 			item = inventory:getItemAt(oldX, oldY)
-			
+
 			if (!item) then
 				return false
 			end
@@ -386,6 +408,7 @@ PANEL = {}
 			panel.OnMouseReleased = function(this, code)
 				if (code == MOUSE_LEFT and nut.item.held == this) then
 					local data = this.dropPos
+					local heldItem = nut.item.held.itemID
 
 					this:DragMouseRelease(code)
 					this:MouseCapture(false)
@@ -398,10 +421,13 @@ PANEL = {}
 
 						if (IsValid(inventory)) then
 							data = data[inventory]
-							local oldX, oldY = this.gridX, this.gridY
-
-							if (oldX != data.x2 or oldY != data.y2 or inventory != self) then									
-								this:move(data, inventory)
+							if data.i then
+								netstream.Start("invCombine", heldItem, data.i.itemID)
+							else
+								local oldX, oldY = this.gridX, this.gridY
+								if (oldX != data.x2 or oldY != data.y2 or inventory != self) then
+									this:move(data, inventory)
+								end
 							end
 						end
 					end

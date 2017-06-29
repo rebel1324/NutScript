@@ -1,0 +1,6 @@
+ITEM.name = "Stackable Barrel"
+ITEM.desc = "A barrel item you can stack."
+ITEM.width = 2
+ITEM.height = 2
+ITEM.model = "models/props_c17/oildrum001.mdl"
+ITEM.max = 64
