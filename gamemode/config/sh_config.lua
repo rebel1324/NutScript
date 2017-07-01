@@ -11,6 +11,8 @@ nut.config.itemFormat = "<font=nutGenericFont>%s</font>\n<font=nutSmallFont>%s</
 	Use the menu to change the variables, not this file.
 --]]
 
+nut.config.add("Notifications", 2, "Change the notification's style.", nil, {data = {0, 1}, category = "misc"})
+
 nut.config.add("maxChars", 5, "The maximum number of characters a player can have.", nil, {
 	data = {min = 1, max = 50},
 	category = "characters"
