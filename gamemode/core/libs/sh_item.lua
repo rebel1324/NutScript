@@ -727,6 +727,13 @@ do
 		end)
 	end
 
+	netstream.Hook("invCombine", function(client, toCombine, combineWith)
+		 local toCombine,combineWith = nut.item.instances[toCombine],nut.item.instances[combineWith]
+		 if toCombine and combineWith and combineWith.canCombine and combineWith:canCombine(toCombine) and combineWith.onCombine then
+			 combineWith:onCombine(toCombine)
+		 end
+	 end)
+
 	-- Instances and spawns a given item type.
 	function nut.item.spawn(uniqueID, position, callback, angles, data)
 		nut.item.instance(0, uniqueID, data or {}, 1, 1, function(item)

@@ -204,13 +204,21 @@ function ITEM:remove()
 		end
 	end
 
+	function ITEM:onCombine(droppedItem)
+		return false
+	end
+
+	function ITEM:canCombine(droppedItem)
+		return false
+	end
+
 	if (SERVER and !noReplication) then
 		local entity = self:getEntity()
 
 		if (IsValid(entity)) then
 			entity:Remove()
 		end
-		
+
 		local receiver = inv.getReceiver and inv:getReceiver()
 
 		if (self.invID != 0) then
