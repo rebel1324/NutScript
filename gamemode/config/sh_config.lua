@@ -114,6 +114,9 @@ nut.config.add("defMoney", 0, "The amount of money that players start with.", ni
 nut.config.add("allowVoice", false, "Whether or not voice chat is allowed.", nil, {
 	category = "server"
 })
+nut.config.add("3dVoice", false, "Wether or not the voice can only be heard for players nearby", nil, {
+	category = "server"
+})
 nut.config.add("voiceDistance", 600.0, "How far can the voice be heard.", nil, {
 	form = "Float",
 	category = "server",

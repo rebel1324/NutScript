@@ -587,15 +587,20 @@ end
 
 function GM:PlayerCanHearPlayersVoice(listener, speaker)
 	local allowVoice = nut.config.get("allowVoice")
-	if allowVoice then
-		local listener_pos = listener:GetPos()
-		local speaker_pos = speaker:GetPos()
-		local voice_dis = math.Distance(speaker_pos.x, speaker_pos.y, listener_pos.x, listener_pos.y)
-		if voice_dis > nut.config.get("voiceDistance") then
-			allowVoice = false
-		end
+	local distanceVoice = nut.config.get("3dVoice")
+	if (allowVoice) then
+		allowVoice = true
+		if (distanceVoice) then
+			local listener_pos = listener:GetPos()
+			local speaker_pos = speaker:GetPos()
+			local voice_dis = math.Distance(speaker_pos.x, speaker_pos.y, listener_pos.x, listener_pos.y)
+			if voice_dis > nut.config.get("voiceDistance") then
+				allowVoice = false
+			end
+	else
+		allowVoice = false
 	end
-	return allowVoice
+	return allowVoice, allowVoice
 end
 
 function GM:OnPhysgunFreeze(weapon, physObj, entity, client)
