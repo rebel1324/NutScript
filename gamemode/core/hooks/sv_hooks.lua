@@ -588,7 +588,7 @@ end
 function GM:PlayerCanHearPlayersVoice(listener, speaker)
 	local allowVoice = nut.config.get("allowVoice")
 	
-	if listener:GetPos():DistToSqr(speaker:GetPos()) <= nut.config.squaredVoiceDistance then
+	if listener:GetPos():DistToSqr(speaker:GetPos()) > nut.config.squaredVoiceDistance then
 		return false, false
 	end
 	
