@@ -63,7 +63,7 @@ else
 			ply:notifyLocalized("illegalAccess")
 		return end
 
-		local data = pac.NetDeserializeTable()
+		local data = pace.net.DeserializeTable()
 		pace.HandleReceivedData(ply, data)
 	end)
 end
