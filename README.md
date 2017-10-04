@@ -10,4 +10,5 @@ Get on Official Discord https://discord.gg/QUbmYuD and meet the developers of Nu
 
 In other option you can go Gitters! https://gitter.im/Chessnut/NutScript
 
-Maybe you can join the forum! http://nutscript.rocks
+Maybe you can join the forum! https://nutscript.net (recommended)
+
