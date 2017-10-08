@@ -101,7 +101,10 @@ nut.config.add("music", "music/hl2_song2.mp3", "The default music played in the 
 nut.config.add("logo", "http://nutscript.rocks/nutscript.png", "The icon shown on the character menu. Max size is 86x86", nil, {
 	category = "appearance"
 })
-nut.config.add("logoURL", "http://nutscript.rocks/", "The URL opened when the icon is clicked.", nil, {
+nut.config.add("logoURL", "http://nutscript.net/", "The URL opened when the icon is clicked.", nil, {
+	category = "appearance"
+})
+nut.config.add("vignette", true, "Whether or not the vignette is shown.", nil, {
 	category = "appearance"
 })
 nut.config.add("sbRecog", false, "Whether or not recognition is used in the scoreboard.", nil, {
