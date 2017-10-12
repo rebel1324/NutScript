@@ -58,7 +58,7 @@ function nut.item.instance(index, uniqueID, itemData, x, y, callback)
 			local item = nut.item.new(uniqueID, itemID)
 
 			if (item) then
-				item.data = itemData or {}				
+				item.data = itemData or {}
 				item.invID = index
 
 				if (callback) then
@@ -77,11 +77,11 @@ end
 
 function nut.item.registerInv(invType, w, h, isBag)
 	nut.item.inventoryTypes[invType] = {w = w, h = h}
-	
+
 	if (isBag) then
 		nut.item.inventoryTypes[invType].isBag = invType
 	end
-	
+
 	return nut.item.inventoryTypes[invType]
 end
 
@@ -93,7 +93,7 @@ function nut.item.newInv(owner, invType, callback)
 		_charID = owner
 	}, function(data, invID)
 		local inventory = nut.item.createInv(invData.w, invData.h, invID)
-		
+
 		if (invType) then
 			inventory.vars.isBag = invType
 		end
@@ -182,6 +182,21 @@ function nut.item.register(uniqueID, baseID, isBaseItem, path, luaGenerated)
 					return IsValid(item.entity)
 				end
 			}
+			-- Lets SuperAdmins customize items on the fly. Heavily experimental.
+			ITEM.functions.customize = ITEM.functions.customize or {
+				tip = "customizeTip",
+				icon = "icon16/database_gear.png",
+				onRun = function(item)
+					return item.player:requestString("WIP - Change This", "New Item Name - Localize This (WIP)", function(text)
+						--nut.command.run(item.player, "flaggive", {target:Name(), text})
+						item.name = string.PatternSafe(text);
+						item.player:ChatPrint("You changed the item's name to: " + item.name);
+					end, "Custom Item")
+				end,
+				onCanRun = function(item)
+					return IsValid(item.player) and item.player:IsSuperAdmin()
+				end
+			}
 
 			local oldBase = ITEM.base
 
@@ -266,7 +281,7 @@ function nut.item.loadFromDir(directory)
 		if (v == "base") then
 			continue
 		end
-		
+
 		for k2, v2 in ipairs(file.Find(directory.."/"..v.."/*.lua", "LUA")) do
 			nut.item.load(directory.."/"..v .. "/".. v2, "base_"..v)
 		end
@@ -303,7 +318,7 @@ do
 	function nut.item.createInv(w, h, id)
 		local inventory = setmetatable({w = w, h = h, id = id, slots = {}, vars = {}}, nut.meta.inventory)
 			nut.item.inventories[id] = inventory
-			
+
 		return inventory
 	end
 
@@ -311,12 +326,12 @@ do
 		if (type(invID) != "number" or invID < 0) then
 			error("Attempt to restore inventory with an invalid ID!")
 		end
-		
+
 		local inventory = nut.item.createInv(w, h, invID)
 
 		nut.db.query("SELECT _itemID, _uniqueID, _data, _x, _y FROM nut_items WHERE _invID = "..invID, function(data)
 			local badItemsUniqueID = {}
-			
+
 			if (data) then
 				local slots = {}
 				local badItems = {}
@@ -339,7 +354,7 @@ do
 								item2.gridX = x
 								item2.gridY = y
 								item2.invID = invID
-								
+
 								for x2 = 0, item2.width - 1 do
 									for y2 = 0, item2.height - 1 do
 										slots[x + x2] = slots[x + x2] or {}
@@ -360,7 +375,7 @@ do
 						end
 					end
 				end
-				
+
 				inventory.slots = slots
 
 				if (table.Count(badItems) > 0) then
@@ -403,7 +418,7 @@ do
 				inventory.vars = vars
 
 				local x, y
-				
+
 				for k, v in ipairs(slots) do
 					x, y = v[1], v[2]
 
@@ -490,14 +505,14 @@ do
 								item.getName and item:getName() or L(item.name), item:getDesc() or "")
 							)
 							icon.itemID = item.id
-							
+
 							panel.panels[item.id] = icon
 						end
 					end
 				end
 			end
 		end)
-		
+
 		netstream.Hook("invMv", function(invID, itemID, x, y)
 			local inventory = nut.item.inventories[invID]
 			local panel = nut.gui["inv"..invID]
@@ -540,7 +555,7 @@ do
 						end
 					end
 				end
-			end			
+			end
 		end)
 	else
 		function nut.item.loadItemByID(itemIndex, recipientFilter)
@@ -569,7 +584,7 @@ do
 						end
 					end
 				end
-			end) 
+			end)
 		end
 
 		netstream.Hook("invMv", function(client, oldX, oldY, x, y, invID, newInvID)
@@ -699,14 +714,14 @@ do
 
 					return
 				end
-				
+
 				local entity = item.entity
 				local result
-				
+
 				if (item.hooks[action]) then
 					result = item.hooks[action](item, data)
 				end
-				
+
 				if (result == nil) then
 					result = callback.onRun(item, data)
 				end
