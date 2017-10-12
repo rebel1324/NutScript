@@ -190,7 +190,7 @@ function nut.item.register(uniqueID, baseID, isBaseItem, path, luaGenerated)
 					return item.player:requestString("WIP - Change This", "New Item Name - Localize This (WIP)", function(text)
 						--nut.command.run(item.player, "flaggive", {target:Name(), text})
 						item.name = string.PatternSafe(text);
-						item.player:ChatPrint("You changed the item's name to: " + item.name);
+						item.player:notify("You changed the item's name to: " + item.name);
 					end, "Custom Item")
 				end,
 				onCanRun = function(item)
