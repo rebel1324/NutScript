@@ -142,7 +142,7 @@ end, {
 	category = "visual",
 	data = {min = 0.3, max = 1}
 })
-nut.config.add("sbTitle", GetConVarString("hostname"), "The title of the scoreboard", function(oldValue, newValue)
+nut.config.add("sbTitle", GetHostName(), "The title of the scoreboard", function(oldValue, newValue)
 	if (CLIENT and IsValid(nut.gui.score)) then
 		nut.gui.score:Remove()
 	end
