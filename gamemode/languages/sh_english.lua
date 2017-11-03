@@ -206,6 +206,7 @@ LANGUAGE = {
 	injLittle = "Seems injured",
 	toggleObserverTP = "Toggle Observer teleport",
 	toggleESP = "Toggle Admin ESP",
+	toggleESPLines = "Toggle Admin ESP Lines",
 	chgName = "Change Name",
 	chgNameDesc = "Enter the character's new name below.",
 	thirdpersonToggle = "Toggle Thirdperson",
