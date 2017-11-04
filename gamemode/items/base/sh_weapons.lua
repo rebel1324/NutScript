@@ -202,7 +202,5 @@ function ITEM:onRemoved()
         if (IsValid(weapon)) then
             weapon:Remove()
         end
-	else
-		print('no fuck')
 	end
 end
