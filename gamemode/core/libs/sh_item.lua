@@ -182,21 +182,6 @@ function nut.item.register(uniqueID, baseID, isBaseItem, path, luaGenerated)
 					return IsValid(item.entity)
 				end
 			}
-			-- Lets SuperAdmins customize items on the fly. Heavily experimental.
-			ITEM.functions.customize = ITEM.functions.customize or {
-				tip = "customizeTip",
-				icon = "icon16/database_gear.png",
-				onRun = function(item)
-					return item.player:requestString("WIP - Change This", "New Item Name - Localize This (WIP)", function(text)
-						--nut.command.run(item.player, "flaggive", {target:Name(), text})
-						item.name = string.PatternSafe(text);
-						item.player:notify("You changed the item's name to: " + item.name);
-					end, "Custom Item")
-				end,
-				onCanRun = function(item)
-					return IsValid(item.player) and item.player:IsSuperAdmin()
-				end
-			}
 
 			local oldBase = ITEM.base
 
