@@ -6,7 +6,7 @@ if (CLIENT) then
 	-- Create a setting to see if the player will teleport back after noclipping.
 	NUT_CVAR_OBSTPBACK = CreateClientConVar("nut_obstpback", 0, true, true)
 	NUT_CVAR_ADMINESP = CreateClientConVar("nut_obsesp", 1, true, true)
-	NUT_CVAR_ADMINESPLINES = CreateClientConVar("nut_obsesplines", 1, true, true)
+	NUT_CVAR_ADMINESPAVANCED = CreateClientConVar("nut_obsespadvanced", 1, true, true)
 
 	local client, sx, sy, scrPos, marginx, marginy, x, y, teamColor, distance, factor, size, alpha
 	local dimDistance = 1024
@@ -29,10 +29,10 @@ if (CLIENT) then
 				alpha = math.Clamp(255*factor, 80, 255)
 
 				surface.SetDrawColor(teamColor.r, teamColor.g, teamColor.b, alpha)
-				if (NUT_CVAR_ADMINESPLINES:GetBool()) then
+				if (NUT_CVAR_ADMINESPAVANCED:GetBool()) then
 					surface.DrawLine(sx * 0.5, sy * 0.5, x, y)
+					surface.DrawRect(x - size/2, y - size/2, size, size)
 				end
-				surface.DrawRect(x - size/2, y - size/2, size, size)
 
 				nut.util.drawText(v:Name(), x, y - size, ColorAlpha(teamColor, alpha), TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER, nil, alpha)
 			end
@@ -49,13 +49,13 @@ if (CLIENT) then
 				end
 			end, NUT_CVAR_ADMINESP:GetBool())
 
-			local buttonESPLines = menu:addCheck(L"toggleESPLines", function(panel, state)
+			local buttonESPAdvanced = menu:addCheck(L"toggleESPAdvanced", function(panel, state)
 				if (state) then
-					RunConsoleCommand("nut_obsesplines", "1")
+					RunConsoleCommand("nut_obsespadvanced", "1")
 				else
-					RunConsoleCommand("nut_obsesplines", "0")
+					RunConsoleCommand("nut_obsespadvanced", "0")
 				end
-			end, NUT_CVAR_ADMINESPLINES:GetBool())
+			end, NUT_CVAR_ADMINESPAVANCED:GetBool())
 
 			local buttonTP = menu:addCheck(L"toggleObserverTP", function(panel, state)
 				if (state) then
