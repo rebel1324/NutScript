@@ -21,8 +21,9 @@ if (CLIENT) then
 		bind = bind:lower()
 
 		if (bind:find("messagemode") and pressed) then
-			self.panel:setActive(true)
-
+			if (!self.panel.active) then
+				self.panel:setActive(true)
+			end
 			return true
 		end
 	end
