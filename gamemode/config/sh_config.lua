@@ -98,10 +98,10 @@ nut.config.add("punchStamina", 10, "How much stamina punches use up.", nil, {
 nut.config.add("music", "music/hl2_song2.mp3", "The default music played in the character menu.", nil, {
 	category = "appearance"
 })
-nut.config.add("logo", "http://nutscript.rocks/nutscript.png", "The icon shown on the character menu. Max size is 86x86", nil, {
+nut.config.add("logo", "https://static.miraheze.org/nutscriptwiki/2/26/Nutscript.png", "The icon shown on the character menu. Max size is 86x86", nil, {
 	category = "appearance"
 })
-nut.config.add("logoURL", "http://nutscript.rocks/", "The URL opened when the icon is clicked.", nil, {
+nut.config.add("logoURL", "http://nutscript.net", "The URL opened when the icon is clicked.", nil, {
 	category = "appearance"
 })
 nut.config.add("sbRecog", false, "Whether or not recognition is used in the scoreboard.", nil, {
@@ -109,7 +109,7 @@ nut.config.add("sbRecog", false, "Whether or not recognition is used in the scor
 })
 nut.config.add("defMoney", 0, "The amount of money that players start with.", nil, {
 	category = "characters",
-	data = {min = 0, max = 1000}
+	data = {min = 0, max = 10000}
 })
 nut.config.add("allowVoice", false, "Whether or not voice chat is allowed.", nil, {
 	category = "server"
