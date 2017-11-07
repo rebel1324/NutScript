@@ -72,16 +72,16 @@ local PANEL = {}
 		self.icon:SetHTML([[
 			<html>
 				<body style="margin: 0; padding: 0; overflow: hidden;">
-					<img src="]]..nut.config.get("logo", "http://nutscript.rocks/nutscript.png")..[[" width="86" height="86" />
+					<img src="]]..nut.config.get("logo", "https://static.miraheze.org/nutscriptwiki/2/26/Nutscript.png")..[[" width="86" height="86" />
 				</body>
 			</html>
 		]])
-		self.icon:SetToolTip(nut.config.get("logoURL", "http://nutscript.rocks"))
+		self.icon:SetToolTip(nut.config.get("logoURL", "http://nutscript.net"))
 	
 		self.icon.click = self.icon:Add("DButton")
 		self.icon.click:Dock(FILL)
 		self.icon.click.DoClick = function(this)
-			gui.OpenURL(nut.config.get("logoURL", "http://nutscript.rocks"))
+			gui.OpenURL(nut.config.get("logoURL", "http://nutscript.net"))
 		end
 		self.icon.click:SetAlpha(0)
 		self.icon:SetAlpha(150)
