@@ -683,3 +683,20 @@ nut.command.add("plytransfer", {
 		end
 	end
 })
+
+// Credit goes to SmithyStanley
+nut.command.add("clearinv", {
+	adminOnly = true,
+	syntax = "<string name>",
+	onRun = function (client, arguments)
+		local target = nut.command.findPlayer(client, arguments[1])
+		
+		if (IsValid(target) and target:getChar()) then
+			for k, v in pairs(target:getChar():getInv():getItems()) do
+				v:remove()
+			end
+
+			client:notifyLocalized("resetInv", target:getChar():getName())
+		end
+	end
+})
