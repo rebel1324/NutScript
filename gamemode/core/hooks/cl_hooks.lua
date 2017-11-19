@@ -421,7 +421,7 @@ function GM:HUDPaintBackground()
 	if (hasVignetteMaterial and nut.config.get("vignette")) then
 		vignetteAlphaDelta = mathApproach(vignetteAlphaDelta, vignetteAlphaGoal, frameTime * 30)
 
-		surface.SetDrawColor(0, 0, 0, 255)
+		surface.SetDrawColor(0, 0, 0, 175 + vignetteAlphaDelta)
 		surface.SetMaterial(vignette)
 		surface.DrawTexturedRect(0, 0, scrW, scrH)
 	end
