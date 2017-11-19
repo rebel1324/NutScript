@@ -26,7 +26,7 @@ function nut.util.include(fileName, state)
 end
 
 -- Include files based off the prefix within a directory.
-function nut.util.includeDir(directory, fromLua)
+function nut.util.includeDir(directory, fromLua, recursive)
 	-- By default, we include relatively to NutScript.
 	local baseDir = "nutscript"
 
@@ -35,12 +35,28 @@ function nut.util.includeDir(directory, fromLua)
 		baseDir = SCHEMA.folder.."/schema/"
 	else
 		baseDir = baseDir.."/gamemode/"
-	end
+	end 
+	
+	if recursive then
+		local function AddRecursive(folder)
+			local files, folders = file.Find(folder.."/*", "LUA")
+			if (!files) then MsgN("Warning! This folder is empty!") return end
 
-	-- Find all of the files within the directory.
-	for k, v in ipairs(file.Find((fromLua and "" or baseDir)..directory.."/*.lua", "LUA")) do
-		-- Include the file from the prefix.
-		nut.util.include(directory.."/"..v)
+			for k, v in pairs(files) do
+				nut.util.include(folder .. "/" .. v)
+			end
+
+			for k, v in pairs(folders) do
+				AddRecursive(folder .. "/" .. v)
+			end
+		end
+		AddRecursive((fromLua and "" or baseDir)..directory)
+	else
+		-- Find all of the files within the directory.
+		for k, v in ipairs(file.Find((fromLua and "" or baseDir)..directory.."/*.lua", "LUA")) do
+			-- Include the file from the prefix.
+			nut.util.include(directory.."/"..v)
+		end
 	end
 end
 
