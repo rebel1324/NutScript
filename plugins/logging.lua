@@ -69,7 +69,6 @@ if (SERVER) then
 	function PLUGIN:OnPlayerInteractItem(client, action, item)
 		if (type(item) == "Entity") then
 			if (IsValid(item)) then
-				local entity = item
 				local itemID = item.nutItemID
 				item = nut.item.instances[itemID]
 			else
