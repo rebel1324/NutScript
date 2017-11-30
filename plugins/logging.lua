@@ -4,7 +4,7 @@ PLUGIN.author = "Black Tea"
 PLUGIN.desc = "You can modfiy the logging text/lists on this plugin."
  
 if (SERVER) then
-	local L, type = Format, type
+	local L, type, IsValid = Format, type, IsValid
 	
 	nut.log.addType("chat", function(client, ...)
 		local arg = {...}
