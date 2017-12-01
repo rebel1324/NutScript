@@ -1,6 +1,10 @@
+local PLUGIN = PLUGIN
 PLUGIN.name = "Weapon Select"
 PLUGIN.author = "Chessnut"
 PLUGIN.desc = "A replacement for the default weapon selection."
+
+local IsValid, tonumber, FrameTime, Lerp, ScrW, ScrH, CurTime, ipairs = IsValid, tonumber, FrameTime, Lerp, ScrW, ScrH, CurTime, ipairs
+local RunConsoleCommand, LocalPlayer, math, color_white, surface = RunConsoleCommand, LocalPlayer, math, color_white, surface
 
 if (SERVER) then
 	concommand.Add("nut_selectweapon", function(client, command, arguments)
@@ -27,7 +31,8 @@ else
 		local fraction = self.alphaDelta
 
 		if (fraction > 0) then
-			local weapons = LocalPlayer():GetWeapons()
+			local client = LocalPlayer()
+			local weapons = client:GetWeapons()
 			local total = #weapons
 			local x, y = ScrW() * 0.5, ScrH() * 0.5
 			local spacing = math.pi * 0.85
@@ -92,8 +97,9 @@ else
 	function PLUGIN:onIndexChanged()
 		self.alpha = 1
 		self.fadeTime = CurTime() + 5
-
-		local weapon = LocalPlayer():GetWeapons()[self.index]
+		
+		local client = LocalPlayer()
+		local weapon = client:GetWeapons()[self.index]
 
 		self.markup = nil
 
@@ -103,7 +109,6 @@ else
 			for k, v in ipairs(weaponInfo) do
 				if (weapon[v] and weapon[v]:find("%S")) then
 					local color = nut.config.get("color")
-
 					text = text.."<font=nutItemBoldFont><color="..color.r..","..color.g..","..color.b..">"..L(v).."</font></color>\n"..weapon[v].."\n"
 				end
 			end
@@ -114,13 +119,13 @@ else
 			end
 
 			local source, pitch = hook.Run("WeaponCycleSound") or "common/talk.wav"
-
-			LocalPlayer():EmitSound(source or "common/talk.wav", 50, pitch or 180)
+			client:EmitSound(source or "common/talk.wav", 50, pitch or 180)
 		end
 	end
 
 	function PLUGIN:PlayerBindPress(client, bind, pressed)
 		local weapon = client:GetActiveWeapon()
+		local lPly = LocalPlayer()
 
 		if (!client:InVehicle() and (!IsValid(weapon) or weapon:GetClass() != "weapon_physgun" or !client:KeyDown(IN_ATTACK))) then
 			bind = bind:lower()
@@ -133,7 +138,6 @@ else
 				end
 
 				self:onIndexChanged()
-
 				return true
 			elseif (bind:find("invnext") and pressed) then
 				self.index = self.index + 1
@@ -143,19 +147,16 @@ else
 				end
 
 				self:onIndexChanged()
-
 				return true
 			elseif (bind:find("slot")) then
-				self.index = math.Clamp(tonumber(bind:match("slot(%d)")) or 1, 1, #LocalPlayer():GetWeapons())
+				self.index = math.Clamp(tonumber(bind:match("slot(%d)")) or 1, 1, #lPly:GetWeapons())
 				self:onIndexChanged()
-
 				return true
 			elseif (bind:find("attack") and pressed and self.alpha > 0) then
-				LocalPlayer():EmitSound(hook.Run("WeaponSelectSound", LocalPlayer():GetWeapons()[self.index]) or "buttons/button16.wav")
+				lPly:EmitSound(hook.Run("WeaponSelectSound", lPly:GetWeapons()[self.index]) or "buttons/button16.wav")
 
 				RunConsoleCommand("nut_selectweapon", self.index)
 				self.alpha = 0
-
 				return true
 			end
 		end
