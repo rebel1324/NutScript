@@ -6,16 +6,8 @@ PLUGIN.desc = "A replacement for the default weapon selection."
 local IsValid, tonumber, FrameTime, Lerp, ScrW, ScrH, CurTime, ipairs = IsValid, tonumber, FrameTime, Lerp, ScrW, ScrH, CurTime, ipairs
 local RunConsoleCommand, LocalPlayer, math, color_white, surface = RunConsoleCommand, LocalPlayer, math, color_white, surface
 
-if (SERVER) then
-	concommand.Add("nut_selectweapon", function(client, command, arguments)
-		local index = tonumber(arguments[1]) or 1
-		local weapon = client:GetWeapons()[index]
+if (CLIENT) then
 
-		if (IsValid(weapon)) then
-			client:SelectWeapon(weapon:GetClass())
-		end
-	end)
-else
 	PLUGIN.index = PLUGIN.index or 1
 	PLUGIN.deltaIndex = PLUGIN.deltaIndex or PLUGIN.index
 	PLUGIN.infoAlpha = PLUGIN.infoAlpha or 0
@@ -155,8 +147,7 @@ else
 			elseif (bind:find("attack") and pressed and self.alpha > 0) then
 				lPly:EmitSound(hook.Run("WeaponSelectSound", lPly:GetWeapons()[self.index]) or "buttons/button16.wav")
 
-				RunConsoleCommand("nut_selectweapon", self.index
-				client:SelectWeapon("")
+				lPly:SelectWeapon(lPly:GetWeapons()[self.index]:GetClass())
 				self.alpha = 0
 				return true
 			end
