@@ -155,10 +155,27 @@ else
 			elseif (bind:find("attack") and pressed and self.alpha > 0) then
 				lPly:EmitSound(hook.Run("WeaponSelectSound", lPly:GetWeapons()[self.index]) or "buttons/button16.wav")
 
-				RunConsoleCommand("nut_selectweapon", self.index)
+				RunConsoleCommand("nut_selectweapon", self.index
+				client:SelectWeapon("")
 				self.alpha = 0
 				return true
 			end
 		end
 	end
 end
+
+local meta = FindMetaTable("Player")
+function meta:SelectWeapon(class)
+	if (!self:HasWeapon(class)) then return end
+	self.DoWeaponSwitch = self:GetWeapon(class)
+end
+
+hook.Add( "CreateMove", "WeaponSwitch", function( cmd )
+	if (!IsValid(LocalPlayer().DoWeaponSwitch)) then return end
+
+	cmd:SelectWeapon(LocalPlayer().DoWeaponSwitch)
+
+	if ( LocalPlayer():GetActiveWeapon() == LocalPlayer().DoWeaponSwitch ) then
+		LocalPlayer().DoWeaponSwitch = nil
+	end
+end )
