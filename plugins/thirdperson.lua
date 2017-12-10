@@ -75,15 +75,6 @@ if (CLIENT) then
 				end
 			end, NUT_CVAR_THIRDPERSON:GetBool())
 
-			function button:DoRightClick()
-				if (nut.gui.tpconfig and nut.gui.tpconfig:IsVisible()) then
-					nut.gui.tpconfig:Close()
-					nut.gui.tpconfig = nil
-				end
-
-				nut.gui.tpconfig = vgui.Create("nutTPConfig")
-			end
-
 			local button = menu:addCheck(L"thirdpersonClassic", function(panel, state)
 				if (state) then
 					RunConsoleCommand("nut_tp_classic", "1")
@@ -91,6 +82,15 @@ if (CLIENT) then
 					RunConsoleCommand("nut_tp_classic", "0")
 				end
 			end, NUT_CVAR_TP_CLASSIC:GetBool())
+
+			local button = menu:addButton(L"thirdpersonConfig", function()
+				if (nut.gui.tpconfig and nut.gui.tpconfig:IsVisible()) then
+					nut.gui.tpconfig:Close()
+					nut.gui.tpconfig = nil
+				end
+
+				nut.gui.tpconfig = vgui.Create("nutTPConfig")
+			end)
 
 			menu:addSpacer()
 		end

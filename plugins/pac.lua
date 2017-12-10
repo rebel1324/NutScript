@@ -7,6 +7,10 @@ PLUGIN.desc = "More Upgraded, More well organized PAC3 Integration made by Black
 
 if (!pace) then return end
 
+nut.config.add("pacAdminOnly", true, "Whether or not PAC is admin only.", nil, {
+	category = "server"
+})
+
 nut.pac = nut.pac or {}
 nut.pac.list = nut.pac.list or {}
 
@@ -49,7 +53,7 @@ if (CLIENT) then
 	function PLUGIN:PrePACEditorOpen()
 		local client = LocalPlayer()
 
-		if (!client:IsSuperAdmin()) then
+		if (nut.config.get("pacAdminOnly") and !client:IsSuperAdmin()) then
 			return false
 		end
 
@@ -59,11 +63,12 @@ else
 	-- Reject unauthorized PAC3 submits
 	net.Receive("pac_submit", function(_, ply)
 		if (!ply) then return end -- ???
-		if (!ply:IsSuperAdmin()) then
+		if (nut.config.get("pacAdminOnly") and !ply:IsSuperAdmin()) then
 			ply:notifyLocalized("illegalAccess")
-		return end
+			return 
+		end
 
-		local data = pac.NetDeserializeTable()
+		local data = pace.net.DeserializeTable()
 		pace.HandleReceivedData(ply, data)
 	end)
 end

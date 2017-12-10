@@ -147,6 +147,13 @@ function GM:LoadFonts(font, genericFont)
 		italic = true
 	})
 
+	surface.CreateFont("nutChatFontBold", {
+		font = font,
+		size = math.max(ScreenScale(7), 17),
+		extended = true,
+		weight = 800,
+	})
+
 	surface.CreateFont("nutSmallFont", {
 		font = font,
 		size = math.max(ScreenScale(6), 17),
@@ -411,7 +418,7 @@ function GM:HUDPaintBackground()
 	local frameTime = FrameTime()
 	local scrW, scrH = surface.ScreenWidth(), surface.ScreenHeight()
 
-	if (hasVignetteMaterial) then
+	if (hasVignetteMaterial and nut.config.get("vignette")) then
 		vignetteAlphaDelta = mathApproach(vignetteAlphaDelta, vignetteAlphaGoal, frameTime * 30)
 
 		surface.SetDrawColor(0, 0, 0, 175 + vignetteAlphaDelta)

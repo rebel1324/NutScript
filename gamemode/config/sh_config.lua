@@ -43,6 +43,9 @@ nut.config.add("oocDelay", 10, "The delay before a player can use OOC chat again
 	data = {min = 0, max = 10000},
 	category = "chat"
 })
+nut.config.add("allowGlobalOOC", true, "Whether or not Global OOC is enabled.", nil, {
+	category = "chat"
+})
 nut.config.add("loocDelay", 0, "The delay before a player can use LOOC chat again in seconds.", nil, {
 	data = {min = 0, max = 10000},
 	category = "chat"
@@ -95,10 +98,13 @@ nut.config.add("punchStamina", 10, "How much stamina punches use up.", nil, {
 nut.config.add("music", "music/hl2_song2.mp3", "The default music played in the character menu.", nil, {
 	category = "appearance"
 })
-nut.config.add("logo", "http://nutscript.rocks/nutscript.png", "The icon shown on the character menu. Max size is 86x86", nil, {
+nut.config.add("logo", "https://static.miraheze.org/nutscriptwiki/2/26/Nutscript.png", "The icon shown on the character menu. Max size is 86x86", nil, {
 	category = "appearance"
 })
-nut.config.add("logoURL", "http://nutscript.rocks/", "The URL opened when the icon is clicked.", nil, {
+nut.config.add("logoURL", "http://nutscript.net/", "The URL opened when the icon is clicked.", nil, {
+	category = "appearance"
+})
+nut.config.add("vignette", true, "Whether or not the vignette is shown.", nil, {
 	category = "appearance"
 })
 nut.config.add("sbRecog", false, "Whether or not recognition is used in the scoreboard.", nil, {
@@ -106,12 +112,14 @@ nut.config.add("sbRecog", false, "Whether or not recognition is used in the scor
 })
 nut.config.add("defMoney", 0, "The amount of money that players start with.", nil, {
 	category = "characters",
-	data = {min = 0, max = 1000}
+	data = {min = 0, max = 10000}
 })
 nut.config.add("allowVoice", false, "Whether or not voice chat is allowed.", nil, {
 	category = "server"
 })
-nut.config.add("voiceDistance", 600.0, "How far can the voice be heard.", nil, {
+nut.config.add("voiceDistance", 600.0, "How far can the voice be heard.", function(oldValue, newValue)
+	nut.config.squaredVoiceDistance = newValue * newValue
+end, {
 	form = "Float",
 	category = "server",
 	data = {min = 0, max = 5000}
@@ -134,7 +142,7 @@ end, {
 	category = "visual",
 	data = {min = 0.3, max = 1}
 })
-nut.config.add("sbTitle", GetConVarString("hostname"), "The title of the scoreboard", function(oldValue, newValue)
+nut.config.add("sbTitle", GetHostName(), "The title of the scoreboard", function(oldValue, newValue)
 	if (CLIENT and IsValid(nut.gui.score)) then
 		nut.gui.score:Remove()
 	end
@@ -144,3 +152,6 @@ end, {
 nut.config.add("wepAlwaysRaised", false, "Whether or not weapons are always raised.", nil, {
 	category = "server"
 })
+
+local dist = nut.config.get("voiceDistance")
+nut.config.squaredVoiceDistance = dist * dist

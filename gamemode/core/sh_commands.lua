@@ -321,7 +321,7 @@ nut.command.add("charkick", {
 			local char = target:getChar()
 			if (char) then
 				for k, v in ipairs(player.GetAll()) do
-					v:notifyLocalized("charKick", v:Name(), target:Name())
+					v:notifyLocalized("charKick", client:Name(), target:Name())
 				end
 
 				char:kick()
@@ -680,6 +680,23 @@ nut.command.add("plytransfer", {
 			else
 				return "@invalidFaction"
 			end
+		end
+	end
+})
+
+// Credit goes to SmithyStanley
+nut.command.add("clearinv", {
+	adminOnly = true,
+	syntax = "<string name>",
+	onRun = function (client, arguments)
+		local target = nut.command.findPlayer(client, arguments[1])
+		
+		if (IsValid(target) and target:getChar()) then
+			for k, v in pairs(target:getChar():getInv():getItems()) do
+				v:remove()
+			end
+
+			client:notifyLocalized("resetInv", target:getChar():getName())
 		end
 	end
 })

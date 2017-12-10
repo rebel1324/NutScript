@@ -191,3 +191,16 @@ hook.Add("PlayerDeath", "nutStripClip", function(client)
 		end
 	end
 end)
+
+function ITEM:onRemoved()
+	local inv = nut.item.inventories[self.invID]
+	local receiver = inv.getReceiver and inv:getReceiver()
+
+	if (IsValid(receiver) and receiver:IsPlayer()) then
+        local weapon = receiver:GetWeapon(self.class)
+
+        if (IsValid(weapon)) then
+            weapon:Remove()
+        end
+	end
+end
