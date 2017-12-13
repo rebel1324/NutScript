@@ -156,17 +156,19 @@ if (CLIENT) then
 end
 
 local meta = FindMetaTable("Player")
+
 function meta:SelectWeapon(class)
 	if (!self:HasWeapon(class)) then return end
-	self.DoWeaponSwitch = self:GetWeapon(class)
+	
+	self.doWeaponSwitch = self:GetWeapon(class);
 end
 
-hook.Add( "CreateMove", "WeaponSwitch", function( cmd )
-	if (!IsValid(LocalPlayer().DoWeaponSwitch)) then return end
+hook.Add( "CreateMove", "nut_WeaponSwitch", function( cmd )
+	if (!IsValid(LocalPlayer().doWeaponSwitch)) then return end
 
-	cmd:SelectWeapon(LocalPlayer().DoWeaponSwitch)
+	cmd:SelectWeapon(LocalPlayer().doWeaponSwitch)
 
-	if ( LocalPlayer():GetActiveWeapon() == LocalPlayer().DoWeaponSwitch ) then
-		LocalPlayer().DoWeaponSwitch = nil
+	if ( LocalPlayer():GetActiveWeapon() == LocalPlayer().doWeaponSwitch ) then
+		LocalPlayer().doWeaponSwitch = nil
 	end
 end )
