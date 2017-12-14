@@ -103,7 +103,7 @@ if (SERVER) then
 	end)
 
 	netstream.Hook("vendorEdit", function(client, key, data)
-		if (client:IsAdmin()) then
+		if (client:IsSuperAdmin()) then
 			local entity = client.nutVendor
 
 			if (!IsValid(entity)) then
@@ -231,7 +231,7 @@ if (SERVER) then
 				local receivers = {}
 
 				for k, v in ipairs(entity.receivers) do
-					if (v:IsAdmin()) then
+					if (v:IsSuperAdmin()) then
 						receivers[#receivers + 1] = v
 					end
 				end
