@@ -199,6 +199,7 @@ if (SERVER) then
 		end
 
 		activator.nutVendor = self
+		activator:getChar():getInv():sync(activator, true)
 		netstream.Start(activator, "vendorOpen", self:EntIndex(), unpack(data))
 	end
 
