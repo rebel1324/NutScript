@@ -268,7 +268,7 @@ if (SERVER) then
 
 				local invOkay = true
 				for k, v in pairs(client:getChar():getInv():getItems()) do
-					if (v.uniqueID == uniqueID and v:getID() != 0) then
+					if (v.uniqueID == uniqueID and v:getID() != 0 and istable(nut.item.instances[v:getID()]) and !v:getData("equip", true)) then
 						invOkay = v:remove()
 						found = true
 						name = L(v.name, client)
