@@ -262,8 +262,7 @@ local PANEL = {}
 		
 		for k, v in ipairs({...}) do
 			if (type(v) == "IMaterial") then
-				local ttx = tostring(v):match("%[[a-z0-9/]+%]")
-				ttx = ttx:sub(2, ttx:len() - 1)
+				local ttx = v:GetName()
 				text = text.."<img="..ttx..","..v:Width().."x"..v:Height()..">"
 			elseif (type(v) == "table" and v.r and v.g and v.b) then
 				text = text.."<color="..v.r..","..v.g..","..v.b..">"
