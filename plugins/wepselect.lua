@@ -163,12 +163,12 @@ function meta:SelectWeapon(class)
 	self.doWeaponSwitch = self:GetWeapon(class);
 end
 
-hook.Add( "CreateMove", "nut_WeaponSwitch", function( cmd )
-	if (!IsValid(LocalPlayer().doWeaponSwitch)) then return end
+function PLUGIN:StartCommand(client, cmd)
+	if (!IsValid(client.doWeaponSwitch)) then return end
 
-	cmd:SelectWeapon(LocalPlayer().doWeaponSwitch)
+	cmd:SelectWeapon(client.doWeaponSwitch)
 
-	if ( LocalPlayer():GetActiveWeapon() == LocalPlayer().doWeaponSwitch ) then
-		LocalPlayer().doWeaponSwitch = nil
+	if ( client:GetActiveWeapon() == client.doWeaponSwitch ) then
+		client.doWeaponSwitch = nil
 	end
-end )
+end
