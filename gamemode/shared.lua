@@ -70,18 +70,10 @@ end
 ITSTIMETOSTOP = false
 -- Called when a file has been modified.
 function GM:OnReloaded()
-	if (!ITSTIMETOSTOP) then
-		-- Load all of the NutScript plugins.
-		nut.plugin.initialize()
-		-- Restore the configurations from earlier if applicable.
-		nut.config.load()
-
-		ITSTIMETOSTOP = true
-	end
 
 	-- Reload the default fonts.
 	if (CLIENT) then
-		hook.Run("LoadFonts", nut.config.get("font"))
+		hook.Run("LoadFonts", nut.config.get("font"), nut.config.get("genericFont"))
 
 		-- Reload the scoreboard.
 		if (IsValid(nut.gui.score)) then
@@ -104,6 +96,16 @@ function GM:OnReloaded()
 			end
 		end
 	end
+
+	if (!ITSTIMETOSTOP) then
+		-- Load all of the NutScript plugins.
+		nut.plugin.initialize()
+		-- Restore the configurations from earlier if applicable.
+		nut.config.load()
+
+		ITSTIMETOSTOP = true
+	end
+
 end
 
 -- Include default NutScript chat commands.

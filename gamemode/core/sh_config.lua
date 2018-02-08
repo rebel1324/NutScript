@@ -224,6 +224,7 @@ if (CLIENT) then
 								value = util.tobool(nut.config.get(k))
 							else
 								form = "Generic"
+								value = nut.config.get(k) or value
 							end
 						end
 
