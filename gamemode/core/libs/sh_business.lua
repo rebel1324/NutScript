@@ -1,5 +1,10 @@
 if (SERVER) then
 	netstream.Hook("bizBuy", function(client, items)
+		if (client.nextBiz and client.nextBiz > CurTime()) then
+			client:notifyLocalized("tooFast")
+			return
+		end
+
 		local char = client:getChar()
 
 		if (!char) then
@@ -47,6 +52,7 @@ if (SERVER) then
 
 			netstream.Start(client, "bizResp")
 			hook.Run("OnCreateShipment", client, entity)
+			client.nextBiz = CurTime() + 0.5
 		end
 	end)
 
