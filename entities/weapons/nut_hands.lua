@@ -122,6 +122,22 @@ function SWEP:DoPunchAnimation()
 		viewModel:SetPlaybackRate(0.5)
 		viewModel:SetSequence(sequence)
 	end
+	if( self:GetNW2Bool( "startPunch", false ) ) then
+		if( CurTime() > self:GetNW2Float( "startTime", CurTime() ) + 0.055 ) then
+			self:doPunch();
+			self:SetNW2Bool( "startPunch", false );
+			self:SetNW2Float( "startTime", 0 );
+		end
+	end
+	
+	if( self:GetNW2Bool( "startPickup", false ) ) then
+		if( CurTime() > self:GetNW2Float( "pickupStartTime", CurTime() ) + 0.2 ) then
+			self:doPickupAction( self:GetNW2Entity( "pickupEntity", self.heldEntity ) );
+			self:SetNW2Float( "pickupStartTime", 0 );
+			self:SetNW2Entity( "pickupEntity", nil );
+			self:SetNW2Bool( "startPickup", false );
+		end
+	end
 end
 
 function SWEP:PrimaryAttack()
@@ -284,25 +300,6 @@ function SWEP:SecondaryAttack()
 			self:doPickup(entity)
 		elseif (IsValid(self.heldEntity) and !self.heldEntity:IsPlayerHolding()) then
 			self.heldEntity = nil
-		end
-	end
-end
-
-function SWEP:Think()
-	if( self:GetNW2Bool( "startPunch", false ) ) then
-		if( CurTime() > self:GetNW2Float( "startTime", CurTime() ) + 0.055 ) then
-			self:doPunch();
-			self:SetNW2Bool( "startPunch", false );
-			self:SetNW2Float( "startTime", 0 );
-		end
-	end
-	
-	if( self:GetNW2Bool( "startPickup", false ) ) then
-		if( CurTime() > self:GetNW2Float( "pickupStartTime", CurTime() ) + 0.2 ) then
-			self:doPickupAction( self:GetNW2Entity( "pickupEntity", self.heldEntity ) );
-			self:SetNW2Float( "pickupStartTime", 0 );
-			self:SetNW2Entity( "pickupEntity", nil );
-			self:SetNW2Bool( "startPickup", false );
 		end
 	end
 end
