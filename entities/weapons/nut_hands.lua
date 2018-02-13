@@ -158,46 +158,49 @@ function SWEP:PrimaryAttack()
 	self.Owner:SetAnimation(PLAYER_ATTACK1)
 	self.Owner:ViewPunch(Angle(self.LastHand + 2, self.LastHand + 5, 0.125))
 
-	timer.Simple(0.055, function()
-		if (IsValid(self) and IsValid(self.Owner)) then
-			local damage = self.Primary.Damage
-			local context = {damage = damage}
-			local result = hook.Run("PlayerGetFistDamage", self.Owner, damage, context)
+	self:SetNW2Float( "startTime", CurTime() );
+	self:SetNW2Bool( "startPunch", true );
+end
 
-			if (result != nil) then
-				damage = result
-			else
-				damage = context.damage
+function SWEP:doPunch()
+	if (IsValid(self) and IsValid(self.Owner)) then
+		local damage = self.Primary.Damage
+		local context = {damage = damage}
+		local result = hook.Run("PlayerGetFistDamage", self.Owner, damage, context)
+
+		if (result != nil) then
+			damage = result
+		else
+			damage = context.damage
+		end
+
+		self.Owner:LagCompensation(true)
+			local data = {}
+				data.start = self.Owner:GetShootPos()
+				data.endpos = data.start + self.Owner:GetAimVector()*96
+				data.filter = self.Owner
+			local trace = util.TraceLine(data)
+
+			if (SERVER and trace.Hit) then
+				local entity = trace.Entity
+
+				if (IsValid(entity)) then
+					local damageInfo = DamageInfo()
+						damageInfo:SetAttacker(self.Owner)
+						damageInfo:SetInflictor(self)
+						damageInfo:SetDamage(damage)
+						damageInfo:SetDamageType(DMG_SLASH)
+						damageInfo:SetDamagePosition(trace.HitPos)
+						damageInfo:SetDamageForce(self.Owner:GetAimVector()*10000)
+					entity:DispatchTraceAttack(damageInfo, data.start, data.endpos)
+
+					self.Owner:EmitSound("physics/body/body_medium_impact_hard"..math.random(1, 6)..".wav", 80)
+				end
 			end
 
-			self.Owner:LagCompensation(true)
-				local data = {}
-					data.start = self.Owner:GetShootPos()
-					data.endpos = data.start + self.Owner:GetAimVector()*96
-					data.filter = self.Owner
-				local trace = util.TraceLine(data)
-
-				if (SERVER and trace.Hit) then
-					local entity = trace.Entity
-
-					if (IsValid(entity)) then
-						local damageInfo = DamageInfo()
-							damageInfo:SetAttacker(self.Owner)
-							damageInfo:SetInflictor(self)
-							damageInfo:SetDamage(damage)
-							damageInfo:SetDamageType(DMG_SLASH)
-							damageInfo:SetDamagePosition(trace.HitPos)
-							damageInfo:SetDamageForce(self.Owner:GetAimVector()*10000)
-						entity:DispatchTraceAttack(damageInfo, data.start, data.endpos)
-
-						self.Owner:EmitSound("physics/body/body_medium_impact_hard"..math.random(1, 6)..".wav", 80)
-					end
-				end
-
-				hook.Run("PlayerThrowPunch", self.Owner, trace)
-			self.Owner:LagCompensation(false)
-		end
-	end)
+			hook.Run("PlayerThrowPunch", self.Owner, trace)
+		self.Owner:LagCompensation(false)
+	end
 end
 
 function SWEP:onCanCarry(entity)
@@ -218,6 +221,23 @@ function SWEP:onCanCarry(entity)
 	return true
 end
 
+function SWEP:doPickupAction( entity )
+	if (!IsValid(entity) or self.heldEntity != entity) then
+		self.heldEntity = nil
+		return
+	end
+	
+	if( SERVER ) then
+		if( entity:IsPlayerHolding() ) then
+			self.heldEntity = nil;
+			return
+		end
+	end
+
+	self.Owner:PickupObject(entity)
+	self.Owner:EmitSound("physics/body/body_medium_impact_soft"..math.random(1, 3)..".wav", 75)
+end
+
 function SWEP:doPickup(entity)
 	if (entity:IsPlayerHolding()) then
 		return
@@ -225,16 +245,9 @@ function SWEP:doPickup(entity)
 
 	self.heldEntity = entity
 
-	timer.Simple(0.2, function()
-		if (!IsValid(entity) or entity:IsPlayerHolding() or self.heldEntity != entity) then
-			self.heldEntity = nil
-
-			return
-		end
-
-		self.Owner:PickupObject(entity)
-		self.Owner:EmitSound("physics/body/body_medium_impact_soft"..math.random(1, 3)..".wav", 75)
-	end)
+	self:SetNW2Float( "pickupStartTime", CurTime() );
+	self:SetNW2Entity( "pickupEntity", entity );
+	self:SetNW2Bool( "startPickup", true );
 
 	self:SetNextSecondaryFire(CurTime() + 1)
 end
@@ -271,6 +284,25 @@ function SWEP:SecondaryAttack()
 			self:doPickup(entity)
 		elseif (IsValid(self.heldEntity) and !self.heldEntity:IsPlayerHolding()) then
 			self.heldEntity = nil
+		end
+	end
+end
+
+function SWEP:Think()
+	if( self:GetNW2Bool( "startPunch", false ) ) then
+		if( CurTime() > self:GetNW2Float( "startTime", CurTime() ) + 0.055 ) then
+			self:doPunch();
+			self:SetNW2Bool( "startPunch", false );
+			self:SetNW2Float( "startTime", 0 );
+		end
+	end
+	
+	if( self:GetNW2Bool( "startPickup", false ) ) then
+		if( CurTime() > self:GetNW2Float( "pickupStartTime", CurTime() ) + 0.2 ) then
+			self:doPickupAction( self:GetNW2Entity( "pickupEntity", self.heldEntity ) );
+			self:SetNW2Float( "pickupStartTime", 0 );
+			self:SetNW2Entity( "pickupEntity", nil );
+			self:SetNW2Bool( "startPickup", false );
 		end
 	end
 end
