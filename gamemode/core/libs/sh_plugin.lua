@@ -30,7 +30,7 @@ function nut.plugin.load(uniqueID, path, isSingleFile, variable)
 	nut.util.include(isSingleFile and path or path.."/sh_"..variable:lower()..".lua", "shared")
 	
 	if (!isSingleFile) then
-		nut.util.includeDir(path.."/libs", true)
+		nut.util.includeDir(path.."/libs", true, true)
 		nut.attribs.loadFromDir(path.."/attributes")
 		nut.faction.loadFromDir(path.."/factions")
 		nut.class.loadFromDir(path.."/classes")
