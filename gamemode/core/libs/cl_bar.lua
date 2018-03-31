@@ -48,8 +48,10 @@ function nut.bar.remove(identifier)
 			break
 		end
 	end
-
-	table.remove(nut.bar.list, bar.priority)
+	
+	if (bar) then
+		table.remove(nut.bar.list, bar.priority)
+	end
 end
 
 local color_dark = Color(0, 0, 0, 225)
