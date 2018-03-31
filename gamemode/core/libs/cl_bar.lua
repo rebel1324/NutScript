@@ -39,6 +39,21 @@ function nut.bar.add(getValue, color, priority, identifier)
 	return priority
 end
 
+function nut.bar.remove(identifier)
+	local bar
+	for k, v in ipairs(nut.bar.list) do
+		if v.identifier == identifier then
+			bar = v
+
+			break
+		end
+	end
+	
+	if (bar) then
+		table.remove(nut.bar.list, bar.priority)
+	end
+end
+
 local color_dark = Color(0, 0, 0, 225)
 local gradient = nut.util.getMaterial("vgui/gradient-u")
 local gradient2 = nut.util.getMaterial("vgui/gradient-d")
