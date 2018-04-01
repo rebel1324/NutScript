@@ -395,6 +395,8 @@ if (SERVER) then
 	end
 
 	function META:add(uniqueID, quantity, data, x, y, noReplication, forceSplit)
+		quantity = quantity or 1
+
 		local inputType = type(uniqueID)
 		local targetInv = self
 		local bagInv
@@ -454,6 +456,7 @@ if (SERVER) then
 				local numInstances, leftOver = 0
 				local canFill = (itemTable.isStackable and itemTable.canSplit == true and forceSplit != true)
 				local fillTargets = {}
+				local targetCoords = {}
 
 				if (canFill) then
 					for _, item in pairs(itemList) do
@@ -490,7 +493,6 @@ if (SERVER) then
 				if (quantity > 0) then
 					local numInstance = math.floor(quantity/maxQuantity)
 					local leftQuantity = (quantity%maxQuantity)
-					local targetCoords = {}
 					local w, h = itemTable.width, itemTable.height
 					
 					if (itemTable.isStackable != true) then
@@ -588,10 +590,12 @@ if (SERVER) then
 					end
 				end
 
-				return targetCoords
+				return true, targetCoords
 			else
 				return false, "invalidItem"
 			end
+		else
+			return false, "invalid"
 		end
 	end
 

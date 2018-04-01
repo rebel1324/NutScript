@@ -434,9 +434,7 @@ PANEL = {}
 								local func = itemTable.functions
 
 								if (func) then
-									local use
-									local comm = "split"
-									use = func[comm]
+									local use = func["split"]
 
 									if (use and use.onCanRun) then
 										if (use.onCanRun(itemTable) == false) then

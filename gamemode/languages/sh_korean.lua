@@ -228,5 +228,14 @@ LANGUAGE = {
 	vendorNoStock = "이 상인은 해당 물품의 재고가 없습니다.",
 	contentTitle = "NutScript 콘텐츠 없음.",
 	contentWarning = "당신은 NutScript 콘텐츠가 적용되어있지 않습니다. 특정 기능이 누락될 수 있습니다.\nNutscipt 콘텐츠를 적용해야 합니다.",
-	flags = "플래그"
+	flags = "플래그",
+
+	-- 2018 patch
+
+	ammoLoadAll = "모두 사용",
+	ammoLoadAmount = "%s개 사용",
+	ammoLoadCustom = "수량 입력",
+	split = "Split",
+	
+
 }

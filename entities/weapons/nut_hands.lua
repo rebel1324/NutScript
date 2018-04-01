@@ -249,7 +249,7 @@ function SWEP:doPickupAction( entity )
 			return
 		end
 	end
-
+	
 	self.Owner:PickupObject(entity)
 	self.Owner:EmitSound("physics/body/body_medium_impact_soft"..math.random(1, 3)..".wav", 75)
 end
@@ -260,7 +260,7 @@ function SWEP:doPickup(entity)
 	end
 
 	self.heldEntity = entity
-
+	print(entity)
 	self:SetNW2Float( "pickupStartTime", CurTime() );
 	self:SetNW2Entity( "pickupEntity", entity );
 	self:SetNW2Bool( "startPickup", true );

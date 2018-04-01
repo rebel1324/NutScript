@@ -245,6 +245,7 @@ LANGUAGE = {
 
 	ammoLoadAll = "Load All",
 	ammoLoadAmount = "Load %s",
-	ammoLoadCustom = "Load..."
+	ammoLoadCustom = "Load...",
+	split = "Split",
 	
 }

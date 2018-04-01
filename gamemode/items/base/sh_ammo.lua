@@ -29,7 +29,7 @@ local loadAmount = {
 	150,
 	300
 }
-// On player uneqipped the item, Removes a weapon from the player and keep the ammo in the item.
+
 ITEM.functions.use = { -- sorry, for name order.
 	name = "Load",
 	tip = "useTip",
@@ -81,8 +81,5 @@ ITEM.functions.use = { -- sorry, for name order.
 				item.player:EmitSound("items/ammo_pickup.wav", 110)
 			end
 		end
-		--
-		
-		--return true
 	end,
 }

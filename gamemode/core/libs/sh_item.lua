@@ -298,6 +298,10 @@ function nut.item.register(uniqueID, baseID, isBaseItem, path, luaGenerated)
 				tip = "splitTip",
 				icon = "icon16/wrench.png",
 				onClick = function(item)
+					if (IsValid(item.entity)) then
+						return false
+					end
+					
 					if (item.isStackable == true and item.canSplit == true) then
 						Derma_StringRequest("split amt", "split amt", "", function(text)
 							text = tonumber(text)
@@ -320,6 +324,10 @@ function nut.item.register(uniqueID, baseID, isBaseItem, path, luaGenerated)
 					return false
 				end,
 				onCanRun = function(item)
+					if (IsValid(item.entity)) then
+						return false
+					end
+
 					if (item.isStackable == true and item.canSplit == true) then
 						return true
 					end
