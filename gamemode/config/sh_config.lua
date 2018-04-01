@@ -164,5 +164,9 @@ nut.config.add("wepAlwaysRaised", false, "Whether or not weapons are always rais
 	category = "server"
 })
 
+nut.config.add("playerInteractSpeed", 1, "Time taken to open the player interaction menu.", nil, {
+	category = "client"
+})
+
 local dist = nut.config.get("voiceDistance")
 nut.config.squaredVoiceDistance = dist * dist
