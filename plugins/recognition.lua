@@ -124,12 +124,36 @@ if (CLIENT) then
 	function PLUGIN:OnCharRecognized(client, recogCharID)
 		surface.PlaySound("buttons/button17.wav")
 	end
+
+	-- Add interaction function
+	nut.playerInteract.addFunc("recognize", {
+		nameLocalized = "recognize",
+		callback = function(target)
+			netstream.Start("rgnDirect", target)
+		end,
+		canSee = function(target)
+			return true
+		end
+	})
 else
 	function PLUGIN:ShowSpare1(client)
-		if (client:getChar()) then
+		if client:getChar() then
 			netstream.Start(client, "rgnMenu")
 		end
 	end
+
+	netstream.Hook("rgnDirect", function(client, target)
+		if target:GetPos():DistToSqr(client:GetPos()) > 100000 then return end
+
+		local id = client:getChar():getID()
+		if target:getChar():recognize(id) then
+			netstream.Start(client, "rgnDone")
+			hook.Run("OnCharRecognized", client, id)
+			client:notifyLocalized("recognized")
+		else
+			client:notifyLocalized("already_recognized")
+		end
+	end)
 
 	netstream.Hook("rgn", function(client, level)
 		local targets = {}

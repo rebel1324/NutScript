@@ -247,5 +247,7 @@ LANGUAGE = {
 	ammoLoadAmount = "Load %s",
 	ammoLoadCustom = "Load...",
 	split = "Split",
-	
+	recognize = "Allow this character to recognize you.",
+	recognized = "You gave this character your identity.",
+	already_recognized = "This character already knows you."
 }

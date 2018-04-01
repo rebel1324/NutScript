@@ -131,6 +131,12 @@ function GM:LoadFonts(font, genericFont)
 		extended = true,
 		weight = 1000
 	})
+	surface.CreateFont("nutGenericLightFont", {
+		font = font,
+		size = 20,
+		extended = true,
+		weight = 500
+	})
 
 	surface.CreateFont("nutChatFont", {
 		font = font,
