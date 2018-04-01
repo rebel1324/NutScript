@@ -240,4 +240,11 @@ LANGUAGE = {
 	moneyLeft = "Your Money: ",
 	currentMoney = "Money Left: ",
 	checkout = "Checkout",
+
+	-- 2018 patch
+
+	ammoLoadAll = "Load All",
+	ammoLoadAmount = "Load %s",
+	ammoLoadCustom = "Load..."
+	
 }

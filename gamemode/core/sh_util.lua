@@ -529,15 +529,31 @@ do
 	ALWAYS_RAISED["nut_poshelper"] = true
 
 	-- Returns how many seconds the player has played on the server in total.
+	-- smug
+	local function dateToNumber(str)
+		str = str or os.date("%Y-%m-%d %H:%M:%S", os.time())
+
+		return {
+			year = tonumber(str:sub(1, 4)),
+			month = tonumber(str:sub(6, 7)),
+			day = tonumber(str:sub(9, 10)),
+			hour = tonumber(str:sub(12, 13)),
+			min = tonumber(str:sub(15, 16)),
+			sec = tonumber(str:sub(18, 19)),
+		}
+	end
+
 	if (SERVER) then
 		function playerMeta:getPlayTime()
-			return self.nutPlayTime + (RealTime() - (self.nutJoinTime or RealTime()))
+			local diff = os.time(dateToNumber(self.lastJoin)) - os.time(dateToNumber(self.firstJoin))
+
+			return diff + (RealTime() - (self.nutJoinTime or RealTime()))
 		end
 	else
-		nut.playTime = nut.playTime or 0
-
 		function playerMeta:getPlayTime()
-			return nut.playTime + (RealTime() - nut.joinTime or 0)
+			local diff = os.time(dateToNumber(nut.lastJoin)) - os.time(dateToNumber(nut.firstJoin))
+
+			return diff + (RealTime() - nut.joinTime or 0)
 		end
 	end
 

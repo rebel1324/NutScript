@@ -408,9 +408,9 @@ function GM:Move(client, moveData)
 end
 
 function GM:CanItemBeTransfered(itemObject, curInv, inventory)
-	if (itemObject and itemObject.isBag) then
+	if (itemObject and itemObject.invType) then
 		if (inventory.id != 0 and curInv.id != inventory.id) then
-			if (inventory.vars and inventory.vars.isBag) then
+			if (inventory.vars and inventory.vars.invType) then
 				return false 
 			end
 		end

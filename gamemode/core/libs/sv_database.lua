@@ -198,97 +198,156 @@ function nut.db.connect(callback)
 	end
 end
 
+-- CREATE TABLE IF NOT EXISTS
+-- GENERATED with http://dbdesigner.net
+
 local MYSQL_CREATE_TABLES = [[
+CREATE TABLE IF NOT EXISTS `nut_players` (
+	`_steamID` varchar(20) NOT NULL,
+	`_steamName` varchar(32) NOT NULL,
+	`_firstJoin` DATETIME NOT NULL,
+	`_lastJoin` DATETIME NOT NULL,
+	`_data` varchar NOT NULL,
+	`_intro` BINARY NOT NULL,
+	PRIMARY KEY (`_steamID`)
+);
+
 CREATE TABLE IF NOT EXISTS `nut_characters` (
-	`_id` int(11) unsigned NOT NULL AUTO_INCREMENT,
+	`_id` INT(12) NOT NULL AUTO_INCREMENT,
+	`_steamID` varchar(20) NOT NULL,
 	`_name` varchar(70) NOT NULL,
-	`_desc` text NOT NULL,
+	`_desc` varchar NOT NULL,
 	`_model` varchar(160) NOT NULL,
-	`_attribs` varchar(500) DEFAULT NULL,
+	`_attribs` varchar(500) NOT NULL,
 	`_schema` varchar(24) NOT NULL,
-	`_createTime` int(11) unsigned NOT NULL,
-	`_lastJoinTime` int(4) DEFAULT NULL,
-	`_steamID` bigint(20) unsigned NOT NULL,
-	`_data` longtext,
-	`_money` int(11) unsigned DEFAULT NULL,
-	`_faction` varchar(50) NOT NULL,
+	`_createTime` DATETIME NOT NULL,
+	`_lastJoinTime` DATETIME NOT NULL,
+	`_data` varchar,
+	`_money` varchar(12) NOT NULL DEFAULT '0',
+	`_faction` varchar(12) NOT NULL,
 	PRIMARY KEY (`_id`)
 );
 
 CREATE TABLE IF NOT EXISTS `nut_inventories` (
-	`_invID` int(11) unsigned NOT NULL AUTO_INCREMENT,
-	`_charID` int(11) unsigned NOT NULL,
-	`_invType` varchar(24) DEFAULT NULL,
+	`_invID` INT(12) NOT NULL AUTO_INCREMENT,
+	`_charID` INT(12) NOT NULL,
+	`_itemID` INT(12),
+	`_invType` varchar(24) NOT NULL,
 	PRIMARY KEY (`_invID`)
 );
 
 CREATE TABLE IF NOT EXISTS `nut_items` (
-	`_itemID` int(11) unsigned NOT NULL AUTO_INCREMENT,
-	`_invID` int(11) unsigned NOT NULL,
+	`_itemID` INT(12) NOT NULL AUTO_INCREMENT,
+	`_invID` INT(12),
 	`_uniqueID` varchar(60) NOT NULL,
-	`_data` varchar(500) DEFAULT NULL,
-	`_x` smallint(4) NOT NULL,
-	`_y` smallint(4) NOT NULL,
+	`_data` varchar(512),
+	`_x` INT(4) NOT NULL,
+	`_y` INT(4) NOT NULL,
+	`_quantity` INT(16) NOT NULL DEFAULT '1',
 	PRIMARY KEY (`_itemID`)
 );
 
-CREATE TABLE IF NOT EXISTS `nut_players` (
-	`_steamID` bigint(20) NOT NULL,
-	`_steamName` varchar(32) NOT NULL,
-	`_playTime` int(11) unsigned DEFAULT NULL,
-	`_address` varchar(15) DEFAULT NULL,
-	`_lastJoin` int(11) unsigned DEFAULT NULL,
-	`_data` text,
-	PRIMARY KEY (`_steamID`)
+CREATE TABLE IF NOT EXISTS `nut_schemadata` (
+	`_schema` varchar(255) NOT NULL,
+	`_id` varchar(255) NOT NULL,
+	`_data` varchar NOT NULL,
+	PRIMARY KEY (`_schema`,`_id`)
 );
+
+CREATE TABLE IF NOT EXISTS `nut_listinventories` (
+	`_invID` INT(12) NOT NULL AUTO_INCREMENT,
+	`_charID` INT(12) NOT NULL,
+	`_itemID` INT(12),
+	`_invType` varchar(24) NOT NULL,
+	PRIMARY KEY (`_invID`)
+);
+
+ALTER TABLE `nut_characters` ADD CONSTRAINT `nut_characters_fk0` FOREIGN KEY (`_steamID`) REFERENCES `nut_players`(`_steamID`);
+ALTER TABLE `nut_inventories` ADD CONSTRAINT `nut_inventories_fk0` FOREIGN KEY (`_charID`) REFERENCES `nut_characters`(`_id`);
+ALTER TABLE `nut_inventories` ADD CONSTRAINT `nut_inventories_fk1` FOREIGN KEY (`_itemID`) REFERENCES `nut_items`(`_itemID`);
+ALTER TABLE `nut_items` ADD CONSTRAINT `nut_items_fk0` FOREIGN KEY (`_invID`) REFERENCES `nut_inventories`(`_invID`);
+ALTER TABLE `nut_listinventories` ADD CONSTRAINT `nut_listinventories_fk0` FOREIGN KEY (`_charID`) REFERENCES `nut_characters`(`_id`);
+ALTER TABLE `nut_listinventories` ADD CONSTRAINT `nut_listinventories_fk1` FOREIGN KEY (`_itemID`) REFERENCES `nut_items`(`_itemID`);
 ]]
 
 local SQLITE_CREATE_TABLES = [[
-CREATE TABLE IF NOT EXISTS `nut_characters` (
-	`_id` INTEGER PRIMARY KEY,
-	`_name` TEXT,
-	`_desc` TEXT,
-	`_model` TEXT,
-	`_attribs` TEXT,
-	`_schema` TEXT,
-	`_createTime` INTEGER,
-	`_lastJoinTime` INTEGER,
-	`_steamID` INTEGER,
-	`_data` TEXT,
-	`_money` INTEGER,
-	`_faction` TEXT
+CREATE TABLE IF NOT EXISTS nut_players (
+	_steamID varchar,
+	_steamName varchar,
+	_firstJoin datetime,
+	_lastJoin datetime,
+	_data varchar,
+	_intro binary
 );
 
-CREATE TABLE IF NOT EXISTS `nut_inventories` (
-	`_invID` INTEGER PRIMARY KEY,
-	`_charID` INTEGER,
-	`_invType` TEXT
+CREATE TABLE IF NOT EXISTS nut_characters (
+	_id integer PRIMARY KEY AUTOINCREMENT,
+	_steamID varchar,
+	_name varchar,
+	_desc varchar,
+	_model varchar,
+	_attribs varchar,
+	_schema varchar,
+	_createTime datetime,
+	_lastJoinTime datetime,
+	_data varchar,
+	_money varchar,
+	_faction varchar
 );
 
-CREATE TABLE IF NOT EXISTS `nut_items` (
-	`_itemID` INTEGER PRIMARY KEY,
-	`_invID` INTEGER,
-	`_x` INTEGER,
-	`_y` INTEGER,
-	`_uniqueID` TEXT,
-	`_data` TEXT
+CREATE TABLE IF NOT EXISTS nut_inventories (
+	_invID integer PRIMARY KEY AUTOINCREMENT,
+	_charID integer,
+	_itemID integer,
+	_invType varchar
 );
 
-CREATE TABLE IF NOT EXISTS `nut_players` (
-	`_steamID` INTEGER,
-	`_steamName` TEXT,
-	`_playTime` INTEGER,
-	`_address` TEXT,
-	`_lastJoin` INTEGER,
-	`_data` TEXT
+CREATE TABLE IF NOT EXISTS nut_items (
+	_itemID integer PRIMARY KEY AUTOINCREMENT,
+	_invID integer,
+	_uniqueID varchar,
+	_data varchar,
+	_x integer,
+	_y integer,
+	_quantity integer
+);
+
+CREATE TABLE IF NOT EXISTS nut_schemadata (
+	_schema varchar,
+	_id varchar,
+	_data varchar
+);
+
+CREATE TABLE IF NOT EXISTS nut_listinventories (
+	_invID integer PRIMARY KEY AUTOINCREMENT,
+	_charID integer,
+	_itemID integer,
+	_invType varchar
 );
 ]]
 
 local DROP_QUERY = [[
-DROP TABLE IF EXISTS `nut_characters`;
-DROP TABLE IF EXISTS `nut_items`;
+ALTER TABLE `nut_characters` DROP FOREIGN KEY `nut_characters_fk0`;
+ALTER TABLE `nut_inventories` DROP FOREIGN KEY `nut_inventories_fk0`;
+ALTER TABLE `nut_inventories` DROP FOREIGN KEY `nut_inventories_fk1`;
+ALTER TABLE `nut_items` DROP FOREIGN KEY `nut_items_fk0`;
+ALTER TABLE `nut_listinventories` DROP FOREIGN KEY `nut_listinventories_fk0`;
+ALTER TABLE `nut_listinventories` DROP FOREIGN KEY `nut_listinventories_fk1`;
 DROP TABLE IF EXISTS `nut_players`;
+DROP TABLE IF EXISTS `nut_characters`;
 DROP TABLE IF EXISTS `nut_inventories`;
+DROP TABLE IF EXISTS `nut_items`;
+DROP TABLE IF EXISTS `nut_schemadata`;
+DROP TABLE IF EXISTS `nut_listinventories`;
+]]
+
+local DROP_QUERY_LITE = [[
+DROP TABLE IF EXISTS nut_players;
+DROP TABLE IF EXISTS nut_characters;
+DROP TABLE IF EXISTS nut_inventories;
+DROP TABLE IF EXISTS nut_items;
+DROP TABLE IF EXISTS nut_schemadata;
+DROP TABLE IF EXISTS nut_listinventories;
 ]]
 
 function nut.db.wipeTables()
@@ -303,7 +362,7 @@ function nut.db.wipeTables()
 			nut.db.query(queries[i], callback)
 		end
 	else
-		nut.db.query(DROP_QUERY, callback)
+		nut.db.query(DROP_QUERY_LITE, callback)
 	end
 
 	nut.db.loadTables()

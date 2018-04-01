@@ -5,17 +5,17 @@ do
 	function playerMeta:loadNutData(callback)
 		local name = self:steamName()
 		local steamID64 = self:SteamID64()
-		local timeStamp = math.floor(os.time())
-		local ip = self:IPAddress():match("%d+%.%d+%.%d+%.%d+")
+		local timeStamp = os.date("%Y-%m-%d %H:%M:%S", os.time())
 
-		nut.db.query("SELECT _data, _playTime FROM nut_players WHERE _steamID = "..steamID64, function(data)
+		nut.db.query("SELECT _data, _firstJoin, _lastJoin FROM nut_players WHERE _steamID = "..steamID64, function(data)
 			if (IsValid(self) and data and data[1] and data[1]._data) then
 				nut.db.updateTable({
 					_lastJoin = timeStamp,
-					_address = ip
 				}, nil, "players", "_steamID = "..steamID64)
 
-				self.nutPlayTime = tonumber(data[1]._playTime) or 0
+				self.firstJoin = data[1]._firstJoin
+				self.lastJoin = data[1]._lastJoin
+				 
 				self.nutData = util.JSONToTable(data[1]._data)
 
 				if (callback) then
@@ -25,8 +25,7 @@ do
 				nut.db.insertTable({
 					_steamID = steamID64,
 					_steamName = name,
-					_playTime = 0,
-					_address = ip,
+					_firstJoin = timeStamp,
 					_lastJoin = timeStamp,
 					_data = {}
 				}, nil, "players")
@@ -41,10 +40,11 @@ do
 	function playerMeta:saveNutData()
 		local name = self:Name()
 		local steamID64 = self:SteamID64()
+		local timeStamp = os.date("%Y-%m-%d %H:%M:%S", os.time())
 
 		nut.db.updateTable({
 			_steamName = name,
-			_playTime = math.floor((self.nutPlayTime or 0) + (RealTime() - (self.nutJoinTime or RealTime() - 1))),
+			_lastJoin = timeStamp,
 			_data = self.nutData
 		}, nil, "players", "_steamID = "..steamID64)
 	end

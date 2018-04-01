@@ -34,10 +34,10 @@ function GM:PlayerInitialSpawn(client)
 		if (!IsValid(client)) then return end
 
 		local address = nut.util.getAddress()			
-		local noCache = client:getNutData("lastIP", address) != address
+		local noCache = true -- return false when player data is actually exists.
 		client:setNutData("lastIP", address)
 
-		netstream.Start(client, "nutDataSync", data, client.nutPlayTime)
+		netstream.Start(client, "nutDataSync", data, client.firstJoin, client.lastJoin)
 
 		nut.char.restore(client, function(charList)
 			if (!IsValid(client)) then return end
@@ -183,6 +183,9 @@ function GM:PrePlayerLoadedChar(client, character, lastChar)
 end
 
 function GM:PlayerLoadedChar(client, character, lastChar)
+	local timeStamp = os.date("%Y-%m-%d %H:%M:%S", os.time())
+	nut.db.updateTable({_lastJoinTime = timeStamp}, nil, "characters", "_id = "..character:getID())
+
 	if (lastChar) then
 		local charEnts = lastChar:getVar("charEnts") or {}
 

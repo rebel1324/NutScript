@@ -314,20 +314,27 @@ PANEL = {}
 			
 			if (itemTable.exRender) then
 				panel.Icon:SetVisible(false)
+
 				panel.ExtraPaint = function(self, x, y)
-					local exIcon = ikon:getIcon(itemTable.uniqueID)
-					if (exIcon) then
-						surface.SetMaterial(exIcon)
-						surface.SetDrawColor(color_white)
-						surface.DrawTexturedRect(0, 0, x, y)
+					local paintFunc = itemTable.paintIcon
+
+					if (paintFunc and type(paintFunc) == "function") then
+						itemTable:paintIcon(itemTable, x, y, self)
 					else
-						ikon:renderIcon(
-							itemTable.uniqueID,
-							itemTable.width,
-							itemTable.height,
-							itemTable.model,
-							itemTable.iconCam
-						)
+						local exIcon = ikon:getIcon(itemTable.uniqueID)
+						if (exIcon) then
+							surface.SetMaterial(exIcon)
+							surface.SetDrawColor(color_white)
+							surface.DrawTexturedRect(0, 0, x, y)
+						else
+							ikon:renderIcon(
+								itemTable.uniqueID,
+								itemTable.width,
+								itemTable.height,
+								itemTable.model,
+								itemTable.iconCam
+							)
+						end
 					end
 				end
 			else
@@ -422,6 +429,48 @@ PANEL = {}
 							itemTable.player = nil
 						end
 					else
+						if (itemTable.isStackable == true and itemTable.canSplit == true) then
+							if (input.IsKeyDown(KEY_LSHIFT) or input.IsKeyDown(KEY_RSHIFT)) then
+								local func = itemTable.functions
+
+								if (func) then
+									local use
+									local comm = "split"
+									use = func[comm]
+
+									if (use and use.onCanRun) then
+										if (use.onCanRun(itemTable) == false) then
+											return
+										end
+									end
+
+									if (!use) then return end
+
+									itemTable.player = LocalPlayer()
+										if (use.onCanRun) then
+											if (use.onCanRun(itemTable) == false) then
+												itemTable.player = nil
+
+												return
+											end
+										end
+
+										local send = true
+
+										if (use.onClick) then
+											send = use.onClick(itemTable)
+										end
+
+										if (use.sound) then
+											surface.PlaySound(use.sound)
+										end
+									itemTable.player = nil
+
+									return
+								end
+							end
+						end
+						
 						this:DragMousePress(code)
 						this:MouseCapture(true)
 
@@ -490,7 +539,7 @@ PANEL = {}
 													-- okay, the bag doesn't have any combine function.
 													-- then, what's next? yes. moving the item in the bag.
 
-													if (targetItem.isBag) then
+													if (targetItem.invType) then
 														-- get the inventory.
 														local bagInv = targetItem.getInv and targetItem:getInv()
 														-- Is the bag's inventory exists?
@@ -569,7 +618,7 @@ PANEL = {}
 													local send = true
 
 													if (v.onClick) then
-														send = v.onClick(itemTable)
+														send = v.onClick(itemTable, sub.data)
 													end
 
 													if (v.sound) then

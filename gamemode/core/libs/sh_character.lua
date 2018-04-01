@@ -7,7 +7,7 @@ nut.util.include("nutscript/gamemode/core/meta/sh_character.lua")
 
 if (SERVER) then
 	function nut.char.create(data, callback)
-		local timeStamp = math.floor(os.time())
+		local timeStamp = os.date("%Y-%m-%d %H:%M:%S", os.time())
 
 		data.money = data.money or nut.config.get("defMoney", 0)
 
@@ -130,7 +130,7 @@ if (SERVER) then
 
 									nut.item.restoreInv(tonumber(v._invID), w, h, function(inventory)
 										if (v._invType) then
-											inventory.vars.isBag = v._invType
+											inventory.vars.invType = v._invType
 											table.insert(character.vars.inv, inventory)
 										else
 											character.vars.inv[1] = inventory
@@ -228,7 +228,7 @@ if (SERVER) then
 
 									nut.item.restoreInv(tonumber(v._invID), w, h, function(inventory)
 										if (v._invType) then
-											inventory.vars.isBag = v._invType
+											inventory.vars.invType = v._invType
 											table.insert(character.vars.inv, inventory)
 										else
 											character.vars.inv[1] = inventory

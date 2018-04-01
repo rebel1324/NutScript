@@ -3,6 +3,17 @@ nut.config.language = "english"
 nut.config.itemFormat = "<font=nutGenericFont>%s</font>\n<font=nutSmallFont>%s</font>"
 
 --[[
+	ATTENTION!
+
+	If you're going to enable list inventory feature, you need to understand this is currently in
+	experimental feature and extremely unstable. 
+	Also, you need to wipe ALL of nutscript related database to use this inventory system. I can't 
+	guarantee the compatability between existing plugins.
+	Do not change this variable if you didn't read this text.
+]]--
+nut.config.useListInventory = false -- does not do anything yet. also do not change this value in this file.
+
+--[[
 	DO NOT CHANGE ANYTHING BELOW THIS.
 
 	This is the NutScript main configuration file.

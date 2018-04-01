@@ -2,6 +2,7 @@
 ICON_INFO = ICON_INFO or {}
 ICON_INFO.camPos = ICON_INFO.camPos or Vector()
 ICON_INFO.camAng = ICON_INFO.camAng or Angle()
+ICON_INFO.entAng = ICON_INFO.entAng or Angle()
 ICON_INFO.FOV = ICON_INFO.FOV or 50
 ICON_INFO.w = ICON_INFO.w or 1
 ICON_INFO.h = ICON_INFO.h or 1
@@ -18,6 +19,7 @@ local bTxt = {
 	"above",
 	"right",
 	"origin",
+	"reset angles"
 }
 local PANEL = {}
 local iconSize = 64
@@ -160,7 +162,10 @@ local function renderAction(self)
 				ang = ICON_INFO.camAng,
 				fov = ICON_INFO.FOV,
 				outline = ICON_INFO.outline,
-				outlineColor = ICON_INFO.outlineColor
+				outlineColor = ICON_INFO.outlineColor,
+				drawHook = ICON_INFO.drawHook,
+				entAng = ICON_INFO.entAng,
+				drawPostHook = ICON_INFO.drawPostHook,
 			},
 			true
 		)
@@ -169,9 +174,11 @@ local function renderAction(self)
 		"ITEM.model = \""..ICON_INFO.modelName:gsub("\\", "/"):lower().."\"" .. "\n"..
 		"ITEM.width = "..ICON_INFO.w .."\n"..
 		"ITEM.height = "..ICON_INFO.h .."\n"..
+		"ITEM.exRender = true\n"..
 		"ITEM.iconCam = {" .."\n"..
-		"\tpos = Vector("..tab.cam_pos.x..", "..tab.cam_pos.y..", "..tab.cam_pos.z..",)" .."\n"..
-		"\tang = Angle("..tab.cam_ang.p..", "..tab.cam_ang.y..", "..tab.cam_ang.r..",)" .."\n"..
+		"\tpos = Vector("..tab.cam_pos.x..", "..tab.cam_pos.y..", "..tab.cam_pos.z..")," .."\n"..
+		"\tang = Angle("..tab.cam_ang.p..", "..tab.cam_ang.y..", "..tab.cam_ang.r..")," .."\n"..
+		"\tentAng = Angle("..ICON_INFO.entAng.p..", "..ICON_INFO.entAng.y..", "..ICON_INFO.entAng.r..")," .."\n"..
 		"\tfov = "..tab.cam_fov .. "," .."\n"
 		if (ICON_INFO.outline) then
 			text = text .. "\toutline = true," .. "\n" ..
@@ -226,7 +233,7 @@ function PANEL:Init()
 	end
 
 	self:AddText("Presets")
-	for i = 1, 5 do
+	for i = 1, 6 do
 		local btn = self.list:Add("DButton")
 		btn:Dock(TOP)
 		btn:SetFont("ChatFont")
@@ -278,7 +285,6 @@ function PANEL:Init()
 	cfg:SetValue(ICON_INFO.h)		 
 	cfg:DockMargin(10, 0, 0, 5)
 	cfg.OnValueChanged = function(cfg, value)
-		print(self)
 		ICON_INFO.h = value
 		self.prev:AdjustSize(ICON_INFO.w, ICON_INFO.h)
 		self.prev2:AdjustSize(ICON_INFO.w, ICON_INFO.h)
@@ -343,6 +349,26 @@ function PANEL:Init()
 		end
 	end
 
+	self:AddText("Entity Angle")
+
+	self.entAng = {}
+	for i = 1, 3 do
+		self.entAng[i] = self.list:Add("DNumSlider")
+		self.entAng[i]:Dock(TOP)
+		self.entAng[i]:SetText("ENTANG_" .. aTxt[i]) 
+		self.entAng[i]:SetMin(-180)				 
+		self.entAng[i]:SetMax(180)				
+		self.entAng[i]:SetDecimals(3)	
+		self.entAng[i]:SetValue(ICON_INFO.entAng[i])		 
+		self.entAng[i]:DockMargin(10, 0, 0, 5)
+		self.entAng[i].OnValueChanged = function(cfg, value)	
+			if (!fagLord) then
+				ICON_INFO.entAng[i] = value
+				self:SetupEditor(true)
+			end
+		end
+	end
+
 	local aaoa = self.list:Add("DPanel")
 	aaoa:Dock(TOP)	 
 	aaoa:DockMargin(10, 0, 0, 5)
@@ -374,10 +400,13 @@ end
 
 function PANEL:UpdateShits()
 	fagLord = true
-		self.camFOV:SetValue(ICON_INFO.FOV)		
+		self.camFOV:SetValue(ICON_INFO.FOV)	
+		local p = self.prev	
+
 		for i = 1, 3 do
 			self.camPos[i]:SetValue(ICON_INFO.camPos[i])	
 			self.camAng[i]:SetValue(ICON_INFO.camAng[i])	
+			self.entAng[i]:SetValue(ICON_INFO.entAng[i])	
 		end
 	fagLord = false
 end
@@ -404,6 +433,8 @@ function PANEL:SetupEditor(update, mode)
 				self:RightLayout()
 			elseif (mode == 5) then
 				self:OriginLayout()
+			elseif (mode == 6) then
+				ICON_INFO.entAng = Angle() 
 			end
 		else
 			self:BestGuessLayout()
@@ -412,6 +443,10 @@ function PANEL:SetupEditor(update, mode)
 		p.model:SetCamPos(ICON_INFO.camPos)
 		p.model:SetFOV(ICON_INFO.FOV)
 		p.model:SetLookAng(ICON_INFO.camAng)
+		
+		if (IsValid(p.model.Entity)) then
+			p.model.Entity:SetAngles(ICON_INFO.entAng)
+		end
 	end
 end
 
@@ -425,6 +460,7 @@ function PANEL:BestGuessLayout()
 		ICON_INFO.camPos = tab.origin
 		ICON_INFO.FOV = tab.fov
 		ICON_INFO.camAng = tab.angles
+		--ICON_INFO.entAng = Angle() 
 	end
 end
 

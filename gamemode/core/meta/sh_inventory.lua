@@ -1,3 +1,5 @@
+if (nut.config.useListInventory == true) then return end
+
 local META = nut.meta.inventory or {}
 META.__index = META
 META.slots = META.slots or {}
@@ -23,12 +25,16 @@ function META:getSize()
 end
 
 -- this is pretty good to debug/develop function to use.
-function META:print(printPos)
+function META:print(printPos, noQuantity)
 	for k, v in pairs(self:getItems()) do
 		local str = k .. ": " .. v.name
 
 		if (printPos) then
 			str = str .. " (" .. v.gridX .. ", " .. v.gridY .. ")"
+		end
+
+		if (!noQuantity) then
+			str = str .. " x" .. v:getQuantity()
 		end
 
 		print(str)
@@ -108,7 +114,6 @@ function META:canItemFit(x, y, w, h, item2)
 	for x2 = 0, w - 1 do
 		for y2 = 0, h - 1 do
 			local item = (self.slots[x + x2] or {})[y + y2]
-
 			if ((x + x2) > self.w or item) then
 				if (item2) then
 					if (item and item.id == item2.id) then
@@ -214,6 +219,13 @@ function META:remove(id, noReplication, noDelete)
 	return x2, y2
 end
 
+-- For the debug/item creation purpose
+function META:removeAll()
+	for k, v in pairs(self:getItems()) do
+		v:remove()
+	end
+end
+
 function META:getReceiver()
 	for k, v in ipairs(player.GetAll()) do
 		if (v:getChar() and v:getChar().id == self.owner) then
@@ -227,7 +239,7 @@ function META:getItemCount(uniqueID, onlyMain)
 
 	for k, v in pairs(self:getItems(onlyMain)) do
 		if (v.uniqueID == uniqueID) then
-			i = i + 1
+			i = i + v:getQuantity()
 		end
 	end
 
@@ -272,7 +284,7 @@ function META:getItems(onlyMain)
 
 	for k, v in pairs(self.slots) do
 		for k2, v2 in pairs(v) do
-			if (v2 and !items[v2.id]) then
+			if (v2 and type(v2) == "table" and !items[v2.id]) then
 				items[v2.id] = v2
 
 				v2.data = v2.data or {}
@@ -293,12 +305,23 @@ function META:getItems(onlyMain)
 	return items
 end
 
+function META:getItemsCount(onlyMain)
+	local items = {}
+
+	for k, v in ipairs(self:getItems(onlyMain)) do
+		items[v.uniqueID] = items[v.uniqueID] or 0
+		items[v.uniqueID] = items[v.uniqueID] + v:getQuantity()
+	end
+
+	return items
+end
+
 function META:getBags()
 	local invs = {}
 
 	for k, v in pairs(self.slots) do
 		for k2, v2 in pairs(v) do
-			if (v2.data) then
+			if (v2 and type(v2) == "table" and v2.data) then
 				local isBag = v2.data.id
 
 				if (!table.HasValue(invs, isBag)) then
@@ -355,9 +378,9 @@ if (SERVER) then
 		local sendData = item and item.data and table.Count(item.data) > 0 and item.data or nil
 
 		if (type(receiver) == "Player" and IsValid(receiver)) then
-			netstream.Start(receiver, "invSet", self:getID(), x, y, item and item.uniqueID or nil, item and item.id or nil, nil, sendData, sendData and 1 or nil)
+			netstream.Start(receiver, "invSet", self:getID(), x, y, item and item.uniqueID or nil, item and item.id or nil, nil, sendData, item and item:getQuantity() or nil)
 		else
-			netstream.Start(receiver, "invSet", self:getID(), x, y, item and item.uniqueID or nil, item and item.id or nil, self.owner, sendData, sendData and 1 or nil)
+			netstream.Start(receiver, "invSet", self:getID(), x, y, item and item.uniqueID or nil, item and item.id or nil, self.owner, sendData, item and item:getQuantity() or nil)
 		end
 
 		if (item) then
@@ -371,83 +394,24 @@ if (SERVER) then
 		end
 	end
 
-	function META:add(uniqueID, quantity, data, x, y, noReplication)
-	quantity = quantity or 1
+	function META:add(uniqueID, quantity, data, x, y, noReplication, forceSplit)
+		local inputType = type(uniqueID)
+		local targetInv = self
+		local bagInv
 
-		if (quantity > 0) then
-			if (type(uniqueID) != "number" and quantity > 1) then
-				for i = 1, quantity do
-					self:add(uniqueID, 1, data)
-				end
+		if (inputType == "number") then
+			local item = nut.item.instances[uniqueID]
 
-				return
-			end
-
-			local targetInv = self
-			local bagInv
-
-			if (type(uniqueID) == "number") then
-				local item = nut.item.instances[uniqueID]
-
-				if (item) then
-					if (!x and !y) then
-						x, y, bagInv = self:findEmptySlot(item.width, item.height)
-					end
-
-					if (bagInv) then
-						targetInv = bagInv
-					end
-
-					if (hook.Run("CanItemBeTransfered", item, nut.item.inventories[0], targetInv) == false) then
-						return false, "notAllowed"
-					end
-
-					if (x and y) then
-						targetInv.slots[x] = targetInv.slots[x] or {}
-						targetInv.slots[x][y] = true
-
-						item.gridX = x
-						item.gridY = y
-						item.invID = targetInv:getID()
-
-						for x2 = 0, item.width - 1 do
-							for y2 = 0, item.height - 1 do
-								targetInv.slots[x + x2] = targetInv.slots[x + x2] or {}
-								targetInv.slots[x + x2][y + y2] = item
-							end
-						end
-
-						if (!noReplication) then
-							targetInv:sendSlot(x, y, item)
-						end
-
-						if (!self.noSave) then
-							nut.db.query("UPDATE nut_items SET _invID = "..targetInv:getID()..", _x = "..x..", _y = "..y.." WHERE _itemID = "..item.id)
-						end
-
-						return x, y, targetInv:getID()
-					else
-						return false, "noSpace"
-					end
-				else
-					return false, "invalidIndex"
-				end
-			else
-				local itemTable = nut.item.list[uniqueID]
-
-				if (!itemTable) then
-					return false, "invalidItem"
-				end
-
+			if (item) then
 				if (!x and !y) then
-					x, y, bagInv = self:findEmptySlot(itemTable.width, itemTable.height)
+					x, y, bagInv = self:findEmptySlot(item.width, item.height)
 				end
 
 				if (bagInv) then
 					targetInv = bagInv
 				end
 
-				if (hook.Run("CanItemBeTransfered", itemTable, nut.item.inventories[0], targetInv) == false) then
+				if (hook.Run("CanItemBeTransfered", item, nut.item.inventories[0], targetInv) == false) then
 					return false, "notAllowed"
 				end
 
@@ -455,29 +419,179 @@ if (SERVER) then
 					targetInv.slots[x] = targetInv.slots[x] or {}
 					targetInv.slots[x][y] = true
 
-					nut.item.instance(targetInv:getID(), uniqueID, data, x, y, function(item)
-						item.gridX = x
-						item.gridY = y
+					item.gridX = x
+					item.gridY = y
+					item.invID = targetInv:getID()
 
-						for x2 = 0, item.width - 1 do
-							for y2 = 0, item.height - 1 do
-								targetInv.slots[x + x2] = targetInv.slots[x + x2] or {}
-								targetInv.slots[x + x2][y + y2] = item
-							end
+					for x2 = 0, item.width - 1 do
+						for y2 = 0, item.height - 1 do
+							targetInv.slots[x + x2] = targetInv.slots[x + x2] or {}
+							targetInv.slots[x + x2][y + y2] = item
 						end
+					end
 
-						if (!noReplication) then
-							targetInv:sendSlot(x, y, item)
-						end
-					end)
+					if (!noReplication) then
+						targetInv:sendSlot(x, y, item)
+					end
+
+					if (!self.noSave) then
+						nut.db.query("UPDATE nut_items SET _invID = "..targetInv:getID()..", _x = "..x..", _y = "..y.." WHERE _itemID = "..item.id)
+					end
 
 					return x, y, targetInv:getID()
 				else
 					return false, "noSpace"
 				end
+			else
+				return false, "invalidIndex"
 			end
-		else
-			return false, "noOwner"
+		elseif (inputType == "string") then
+			local itemTable = nut.item.list[uniqueID]
+
+			if (itemTable) then
+				local itemList = self:getItemsByUniqueID(uniqueID)
+				local maxQuantity = itemTable:getMaxQuantity()
+				local numInstances, leftOver = 0
+				local canFill = (itemTable.isStackable and itemTable.canSplit == true and forceSplit != true)
+				local fillTargets = {}
+
+				if (canFill) then
+					for _, item in pairs(itemList) do
+						if (quantity <= 0) then
+							break
+						end
+
+						local itemMaxQuantity = item:getMaxQuantity()
+						local itemQuantity = item.quantity
+						local dataAmount = table.Count(item.data) -- i don't want it
+
+						if (data or dataAmount > 0) then
+							continue
+						end
+
+						if (itemQuantity >= itemMaxQuantity) then 
+							continue
+						end
+
+						local stockQuantity = itemMaxQuantity - itemQuantity
+						local leftOver = quantity - stockQuantity
+
+						if (leftOver <= 0) then
+							fillTargets[item] = itemQuantity + quantity
+							quantity = 0
+							break
+						else
+							quantity = quantity - stockQuantity
+							fillTargets[item] = itemMaxQuantity
+						end
+					end
+				end
+
+				if (quantity > 0) then
+					local numInstance = math.floor(quantity/maxQuantity)
+					local leftQuantity = (quantity%maxQuantity)
+					local targetCoords = {}
+					local w, h = itemTable.width, itemTable.height
+					
+					if (itemTable.isStackable != true) then
+						numInstance = quantity
+						leftQuantity = 0
+					end
+					
+					local function pushCoord(requestQuantity) 		
+						x, y, bagInv = self:findEmptySlot(w, h)
+
+						if (bagInv) then
+							targetInv = bagInv
+						end
+
+						if (x and y) then
+							-- niggerify
+							for x2 = x, (x + (w - 1)) do
+								for y2= y, (y + (h - 1)) do
+									targetInv.slots[x2] = targetInv.slots[x2] or {}
+									targetInv.slots[x2][y2] = true
+								end
+							end
+
+							table.insert(targetCoords, {x, y, requestQuantity})
+							return false
+						else
+							return true
+						end
+					end
+
+					local function removeCoords()
+						for _, coord in ipairs(targetCoords) do
+							for x2 = coord[1], (coord[1] + (w - 1)) do
+								for y2= coord[2], (coord[2] + (h - 1)) do
+									targetInv.slots[x2] = targetInv.slots[x2] or {}
+									targetInv.slots[x2][y2] = nil
+								end
+							end
+						end
+					end
+
+					if (hook.Run("CanItemBeTransfered", itemTable, nut.item.inventories[0], targetInv) == false) then
+						return false, "notAllowed"
+					end
+
+					for i = 1, numInstance do
+						local halt = pushCoord(maxQuantity) 
+
+						if (halt) then
+							removeCoords()
+							
+							return false, "noSpace"
+						end
+						-- create request maxQuantity
+					end
+
+					if (leftQuantity > 0) then
+						-- create request leftQuantity
+						local halt = pushCoord(leftQuantity) 
+
+						if (halt) then
+							removeCoords()
+
+							return false, "noSpace"
+						end
+					end
+
+					removeCoords()
+
+					for _, coord in ipairs(targetCoords) do
+						local x, y, quantity = coord[1], coord[2], coord[3]
+
+						nut.item.instance(targetInv:getID(), uniqueID, data, x, y, function(item)
+							item.gridX = x
+							item.gridY = y
+							item:setQuantity(quantity)
+
+							for x2 = 0, item.width - 1 do
+								for y2 = 0, item.height - 1 do
+									targetInv.slots[x + x2] = targetInv.slots[x + x2] or {}
+									targetInv.slots[x + x2][y + y2] = item
+								end
+							end
+
+							if (!noReplication) then
+								targetInv:sendSlot(x, y, item)
+							end
+						end)
+					end
+				end
+
+				if (canFill) then
+					for item, quantity in pairs(fillTargets) do
+						item:setQuantity(quantity)
+					end
+				end
+
+				return targetCoords
+			else
+				return false, "invalidItem"
+			end
 		end
 	end
 
@@ -487,7 +601,7 @@ if (SERVER) then
 		for x, items in pairs(self.slots) do
 			for y, item in pairs(items) do
 				if (item.gridX == x and item.gridY == y) then
-					slots[#slots + 1] = {x, y, item.uniqueID, item.id, item.data}
+					slots[#slots + 1] = {x, y, item.uniqueID, item.id, item.data, item.quantity}
 				end
 			end
 		end

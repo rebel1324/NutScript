@@ -6,7 +6,7 @@ ITEM.width = 2
 ITEM.height = 2
 ITEM.invWidth = 4
 ITEM.invHeight = 2
-ITEM.isBag = true
+ITEM.invType = true
 ITEM.functions.View = {
 	icon = "icon16/briefcase.png",
 	onClick = function(item)
@@ -45,7 +45,7 @@ function ITEM:onInstanced(invID, x, y)
 	local inventory = nut.item.inventories[invID]
 
 	nut.item.newInv(inventory and inventory.owner or 0, self.uniqueID, function(inventory)
-		inventory.vars.isBag = self.uniqueID
+		inventory.vars.invType = self.uniqueID
 		self:setData("id", inventory:getID())
 	end)
 end
@@ -66,13 +66,13 @@ function ITEM:onSendData()
 		local inventory = nut.item.inventories[index]
 
 		if (inventory) then
-			inventory.vars.isBag = self.uniqueID
+			inventory.vars.invType = self.uniqueID
 			inventory:sync(self.player)
 		else
 			local owner = self.player:getChar():getID()
 
 			nut.item.restoreInv(self:getData("id"), self.invWidth, self.invHeight, function(inventory)
-				inventory.vars.isBag = self.uniqueID
+				inventory.vars.invType = self.uniqueID
 				inventory:setOwner(owner, true)
 			end)
 		end
@@ -118,7 +118,7 @@ function ITEM:onCanBeTransfered(oldInventory, newInventory)
 	local index = self:getData("id")
 
 	if (newInventory) then
-		if (newInventory.vars and newInventory.vars.isBag) then
+		if (newInventory.vars and newInventory.vars.invType) then
 			return false
 		end
 
@@ -135,7 +135,7 @@ function ITEM:onCanBeTransfered(oldInventory, newInventory)
 		end
 	end
 	
-	return !newInventory or newInventory:getID() != oldInventory:getID() or newInventory.vars.isBag
+	return !newInventory or newInventory:getID() != oldInventory:getID() or newInventory.vars.invType
 end
 
 -- Called after the item is registered into the item tables.

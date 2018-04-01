@@ -1,9 +1,17 @@
+if (nut.config.useListInventory == true) then return end
+
 local ITEM = nut.meta.item or {}
 ITEM.__index = ITEM
-ITEM.name = "Undefined"
-ITEM.desc = ITEM.desc or "An item that is undefined."
+ITEM.name = "INVALID ITEM"
+ITEM.desc = ITEM.desc or "[[INVALID ITEM]]"
 ITEM.id = ITEM.id or 0
+ITEM.quantity = 1
+ITEM.maxQuantity = 1
+ITEM.defaultQuantity = 1
+ITEM.isStackable = false
 ITEM.uniqueID = "undefined"
+ITEM.canSplit = true
+
 
 function ITEM:__eq(other)
 	return self:getID() == other:getID()
@@ -14,17 +22,71 @@ function ITEM:__tostring()
 end
 
 function ITEM:getID()
-	return self.id
+	return tonumber(self.id)
 end
 
 function ITEM:getName()
 	return (CLIENT and L(self.name) or self.name)
 end
 
+function ITEM:getQuantity()
+	return tonumber(self.quantity or 1)
+end
+
+function ITEM:getMaxQuantity()
+	return tonumber(self.maxQuantity)
+end
+
+function ITEM:setQuantity(quantity, forced, receivers, noSave, noCheckEntity)
+	self.quantity = (forced and quantity or math.Clamp(quantity, 1, self:getMaxQuantity()))
+	
+	if (SERVER) then
+		if (!noCheckEntity) then
+			local ent = self:getEntity()
+
+			if (IsValid(ent)) then
+				ent:setNetVar("quantity", quantity)
+			end
+		end
+
+		if (receivers != false) then
+			if (receivers or self:getOwner()) then
+				netstream.Start(receivers or self:getOwner(), "invQuantity", self:getID(), quantity)
+			end
+		end
+
+		if (!noSave) then
+			if (nut.db) then
+				nut.db.updateTable({_quantity = quantity}, nil, "items", "_itemID = "..self:getID())
+			end
+		end
+	end
+end
+
+function ITEM:addQuantity(amount, forced)
+	local quantity = self:getQuantity()
+
+	if (forced) then
+		quantity = math.max(0, quantity + amount)
+	else
+		quantity = math.Clamp(quantity + amount, 0, self:getMaxQuantity())
+	end
+
+	self:setQuantity(quantity, quantity == 0 and true or forced)
+	return (quantity <= 0)
+end
+
 function ITEM:getDesc()
 	if (!self.desc) then return "ERROR" end
 	
 	return L(self.desc or "noDesc")
+end
+
+function ITEM:split(quantity)
+	local leftover = self:getQuantity() - quantity
+
+	self:setQuantity(leftover)
+	-- create item
 end
 
 -- Dev Buddy. You don't have to print the item data with PrintData();

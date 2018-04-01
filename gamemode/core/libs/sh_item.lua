@@ -47,8 +47,11 @@ function zeroInv:add(uniqueID, quantity, data)
 end
 
 function nut.item.instance(index, uniqueID, itemData, x, y, callback)
-	if (!uniqueID or nut.item.list[uniqueID]) then
+	local itemTable = nut.item.list[uniqueID]
+
+	if (!uniqueID or itemTable) then
 		nut.db.insertTable({
+			_quantity = 1,
 			_invID = index,
 			_uniqueID = uniqueID,
 			_data = itemData,
@@ -79,7 +82,7 @@ function nut.item.registerInv(invType, w, h, isBag)
 	nut.item.inventoryTypes[invType] = {w = w, h = h}
 
 	if (isBag) then
-		nut.item.inventoryTypes[invType].isBag = invType
+		nut.item.inventoryTypes[invType].invType = invType
 	end
 
 	return nut.item.inventoryTypes[invType]
@@ -95,7 +98,7 @@ function nut.item.newInv(owner, invType, callback)
 		local inventory = nut.item.createInv(invData.w, invData.h, invID)
 
 		if (invType) then
-			inventory.vars.isBag = invType
+			inventory.vars.invType = invType
 		end
 
 		if (owner and owner > 0) then
@@ -160,26 +163,168 @@ function nut.item.register(uniqueID, baseID, isBaseItem, path, luaGenerated)
 					return (!IsValid(item.entity) and !item.noDrop)
 				end
 			}
-			ITEM.functions.take = ITEM.functions.take or {
+			ITEM.functions.take = {
+			--ITEM.functions.take = ITEM.functions.take or {
 				tip = "takeTip",
 				icon = "icon16/box.png",
 				onRun = function(item)
-					local status, result = item.player:getChar():getInv():add(item.id)
+					local inventory = item.player:getChar():getInv()
+					-- is inventory exists and not a logical inventory 
+					
+					if (inventory) then
+						if (item.isStackable == true and item.canSplit == true) then
+							-- prevent data crashing
+							if (table.Count(item.data) == 0) then
+								local quantity = item:getQuantity()
+								local itemList = inventory:getItemsByUniqueID(item.uniqueID)
+								local fillTargets = {}
+								
+								for _, invItem in pairs(itemList) do
+									local itemMaxQuantity = invItem:getMaxQuantity()
+									local itemQuantity = invItem:getQuantity()
+									local dataAmount = table.Count(invItem.data) -- i don't want it
 
-					if (!status) then
-						item.player:notify(result)
+									if (data or dataAmount > 0) then
+										continue
+									end
 
-						return false
-					else
-						if (item.data) then -- I don't like it but, meh...
-							for k, v in pairs(item.data) do
-								item:setData(k, v)
+									if (itemQuantity >= itemMaxQuantity) then 
+										continue
+									end
+
+									local stockQuantity = itemMaxQuantity - itemQuantity
+									local leftOver = quantity - stockQuantity
+									
+									if (leftOver <= 0) then
+										fillTargets[invItem] = itemQuantity + quantity
+										quantity = 0
+
+										break
+									else
+										fillTargets[invItem] = itemMaxQuantity
+										quantity = quantity - stockQuantity
+									end
+								end
+
+								for fillItem, amount in pairs(fillTargets) do
+									fillItem:setQuantity(amount, nil, item.player)
+								end
+
+								if (quantity <= 0) then
+									return true
+								else
+									item:setQuantity(quantity, nil, item.player)
+
+									local status, result = item.player:getChar():getInv():add(item.id)
+
+									if (!status) then
+										item.player:notify(result)
+
+										return false
+									else
+										if (item.data) then -- I don't like it but, meh...
+											for k, v in pairs(item.data) do
+												item:setData(k, v)
+											end
+										end
+									end
+								end
+							end
+						else
+							local status, result = item.player:getChar():getInv():add(item.id)
+
+							if (!status) then
+								item.player:notify(result)
+
+								return false
+							else
+								if (item.data) then -- I don't like it but, meh...
+									for k, v in pairs(item.data) do
+										item:setData(k, v)
+									end
+								end
 							end
 						end
 					end
 				end,
 				onCanRun = function(item)
 					return IsValid(item.entity)
+				end
+			}
+			ITEM.functions.combine = ITEM.functions.combine or {
+				-- combine is not accessible via Derma Menu.
+				onCanRun = function(item, data)
+					if (IsValid(item.entity)) then return false end
+					
+					if (item.isStackable == true and item.canSplit == true) then
+						local targetItem = nut.item.instances[data]
+
+						if (data and targetItem) then
+							if (targetItem.uniqueID == item.uniqueID) then
+								return true
+							end
+						end
+					end
+
+					return false
+				end,
+				onRun = function(item, data)
+					if (item.isStackable == true and item.canSplit == true) then
+						local targetItem = nut.item.instances[data]
+
+						if (data and targetItem) then
+							if (targetItem.uniqueID == item.uniqueID) then
+								local maxQuantity = item:getMaxQuantity()
+								local combinedQuantity = item:getQuantity() + targetItem:getQuantity()
+
+								if ((combinedQuantity / maxQuantity) > 1) then
+									targetItem:setQuantity(maxQuantity)
+									item:setQuantity(combinedQuantity - maxQuantity)
+
+									return false
+								else
+									targetItem:setQuantity(combinedQuantity)
+
+									return true
+								end
+							end
+						end
+					end
+
+					return false
+				end,
+			}
+			ITEM.functions.split = ITEM.functions.split or {
+				tip = "splitTip",
+				icon = "icon16/wrench.png",
+				onClick = function(item)
+					if (item.isStackable == true and item.canSplit == true) then
+						Derma_StringRequest("split amt", "split amt", "", function(text)
+							text = tonumber(text)
+
+							if (text and text > 0) then
+								if (item:getQuantity() == text or item:getQuantity() < text or item:getMaxQuantity() < text) then
+									nut.util.notifyLocalized("invalid", "amount")
+
+									return
+								end
+
+								netstream.Start("invSplit", item:getID(), text, item.invID)
+							else
+								nut.util.notifyLocalized("invalid", "amount")
+							end
+						end, function()
+						end)
+					end
+
+					return false
+				end,
+				onCanRun = function(item)
+					if (item.isStackable == true and item.canSplit == true) then
+						return true
+					end
+
+					return false
 				end
 			}
 
@@ -314,7 +459,7 @@ do
 
 		local inventory = nut.item.createInv(w, h, invID)
 
-		nut.db.query("SELECT _itemID, _uniqueID, _data, _x, _y FROM nut_items WHERE _invID = "..invID, function(data)
+		nut.db.query("SELECT _itemID, _uniqueID, _data, _x, _y, _quantity FROM nut_items WHERE _invID = "..invID, function(data)
 			local badItemsUniqueID = {}
 
 			if (data) then
@@ -339,6 +484,7 @@ do
 								item2.gridX = x
 								item2.gridY = y
 								item2.invID = invID
+								item2.quantity = item._quantity
 
 								for x2 = 0, item2.width - 1 do
 									for y2 = 0, item2.height - 1 do
@@ -415,6 +561,7 @@ do
 					if (v[5]) then
 						item.data = v[5]
 					end
+					item.quantity = v[6]
 
 					item.invID = item.invID or id
 					inventory.slots[x][y] = item
@@ -431,6 +578,27 @@ do
 				end
 
 				table.insert(character.vars.inv, inventory)
+			end
+		end)
+
+		netstream.Hook("invQuantity", function(id, quantity)
+			local item = nut.item.instances[id]
+
+			if (item) then
+				item:setQuantity(quantity)
+
+				local panel = item.invID and nut.gui["inv"..item.invID] or nut.gui.inv1
+
+				if (panel and panel.panels) then
+					local icon = panel.panels[id]
+
+					if (icon) then
+						icon:SetToolTip(
+							Format(nut.config.itemFormat,
+							item.getName and item:getName() or L(item.name), item:getDesc() or "")
+						)
+					end
+				end
 			end
 		end)
 
@@ -456,7 +624,7 @@ do
 			end
 		end)
 
-		netstream.Hook("invSet", function(invID, x, y, uniqueID, id, owner, data, a)
+		netstream.Hook("invSet", function(invID, x, y, uniqueID, id, owner, data, quantity)
 			local character = LocalPlayer():getChar()
 
 			if (owner) then
@@ -469,6 +637,7 @@ do
 				if (inventory) then
 					local item = uniqueID and id and nut.item.new(uniqueID, id) or nil
 					item.invID = invID
+					item:setQuantity(quantity)
 
 					item.data = {}
 					-- Let's just be sure about it kk?
@@ -553,7 +722,7 @@ do
 				return
 			end
 
-			nut.db.query("SELECT _itemID, _uniqueID, _data FROM nut_items WHERE _itemID IN "..range, function(data)
+			nut.db.query("SELECT _itemID, _uniqueID, _data, _quantity FROM nut_items WHERE _itemID IN "..range, function(data)
 				if (data) then
 					for k, v in ipairs(data) do
 						local itemID = tonumber(v._itemID)
@@ -566,6 +735,7 @@ do
 
 							item.data = data or {}
 							item.invID = 0
+							item.quantity = v._quantity
 						end
 					end
 				end
@@ -635,6 +805,64 @@ do
 							end
 						end
 					end
+				end
+			end
+		end)
+
+		netstream.Hook("invSplit", function(client, item, amount, invID)
+			local character = client:getChar()
+
+			if (!character) then
+				-- print << invalid request
+				return
+			end
+
+			local inventory = nut.item.inventories[invID]
+
+			if (!inventory or !inventory.owner or inventory.owner != character:getID()) then
+				-- print << no inventory
+				return
+			end
+
+			if (hook.Run("CanPlayerInteractItem", client, action, item, data) == false) then
+				-- print << cantuse
+				return
+			end
+
+			if (type(item) == "number") then
+				item = nut.item.instances[item]
+
+				if (!item) then
+					-- print << invalid request 
+
+					return
+				end
+
+				item.player = client
+			end
+			
+			if (!inventory:getItemByID(item.id)) then
+				-- print << invalid request
+				return
+			end 
+
+			local itemQuantity = item:getQuantity()
+
+			if (amount <= 0 or itemQuantity == amount or itemQuantity < amount or item:getMaxQuantity() < amount) then
+				-- print << cantsplit
+				return
+			end
+			
+			local leftOver = itemQuantity - amount
+
+			-- You VS The Guy Told You Not to Worry About
+			if (leftOver > 0) then
+				local result, msg = inventory:add(item.uniqueID, amount, item.data, nil, nil, nil, true)
+
+				if (result != false) then
+					item:setQuantity(leftOver)
+				else
+					-- print < msg
 				end
 			end
 		end)
