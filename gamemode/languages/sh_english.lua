@@ -245,6 +245,11 @@ LANGUAGE = {
 
 	ammoLoadAll = "Load All",
 	ammoLoadAmount = "Load %s",
-	ammoLoadCustom = "Load..."
-	
+	ammoLoadCustom = "Load...",
+
+
+	-- Player interaction system
+	recognize = "Allow this character to recognize you.",
+	recognized = "You gave this character your identity.",
+	already_recognized = "This character already knows you."
 }
