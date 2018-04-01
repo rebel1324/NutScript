@@ -274,7 +274,7 @@ nut.command.add("charsetname", {
 
 nut.command.add("chargiveitem", {
 	adminOnly = true,
-	syntax = "<string name> <string item>",
+	syntax = "<string name> <string item> <integer amount>",
 	onRun = function(client, arguments)
 		if (!arguments[2]) then
 			return L("invalidArg", client, 2)
@@ -284,6 +284,7 @@ nut.command.add("chargiveitem", {
 
 		if (IsValid(target) and target:getChar()) then
 			local uniqueID = arguments[2]:lower()
+			local amount = tonumber(arguments[3])
 
 			if (!nut.item.list[uniqueID]) then
 				for k, v in SortedPairs(nut.item.list) do
@@ -295,8 +296,14 @@ nut.command.add("chargiveitem", {
 				end
 			end
 
+			if (arguments[3] and arguments[3] != "") then
+				if (!amount) then
+					return L("invalidArg", client, 3)
+				end
+			end
+
 			local inv = target:getChar():getInv()
-			local succ, err = target:getChar():getInv():add(uniqueID)
+			local succ, err = target:getChar():getInv():add(uniqueID, amount or 1)
 
 			if (succ) then
 				target:notifyLocalized("itemCreated")
