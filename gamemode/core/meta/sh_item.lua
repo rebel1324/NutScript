@@ -82,10 +82,16 @@ function ITEM:getDesc()
 end
 
 function ITEM:getPrice()
+	local price = self.price
+
+	if (self.calcPrice) then
+		price = self:calcPrice(self.price)
+	end
+
 	if (self.isStackable) then
-		return self.price and (self.price * math.Clamp(self:getQuantity() / self:getMaxQuantity(), 0, 1)) or 0 -- yeah..
+		return price and (price * math.Clamp(self:getQuantity() / self:getMaxQuantity(), 0, 1)) or 0 -- yeah..
 	else
-		return self.price or 0
+		return price or 0
 	end
 end
 
