@@ -77,7 +77,7 @@ ITEM.functions.use = { -- sorry, for name order.
 			return subResult
 		else
 			if (data == 0) then
-				item.player:GiveAmmo(num, item.ammo)
+				item.player:GiveAmmo(item:getQuantity(), item.ammo)
 				item.player:EmitSound("items/ammo_pickup.wav", 110)
 			end
 		end

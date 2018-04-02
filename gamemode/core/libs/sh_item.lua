@@ -301,7 +301,7 @@ function nut.item.register(uniqueID, baseID, isBaseItem, path, luaGenerated)
 					if (IsValid(item.entity)) then
 						return false
 					end
-					
+
 					if (item.isStackable == true and item.canSplit == true) then
 						Derma_StringRequest("split amt", "split amt", "", function(text)
 							text = tonumber(text)
@@ -822,19 +822,19 @@ do
 
 			if (!character) then
 				-- print << invalid request
-				return
+				return false
 			end
 
 			local inventory = nut.item.inventories[invID]
 
 			if (!inventory or !inventory.owner or inventory.owner != character:getID()) then
 				-- print << no inventory
-				return
+				return false
 			end
 
 			if (hook.Run("CanPlayerInteractItem", client, action, item, data) == false) then
 				-- print << cantuse
-				return
+				return false
 			end
 
 			if (type(item) == "number") then
@@ -843,7 +843,7 @@ do
 				if (!item) then
 					-- print << invalid request 
 
-					return
+					return false
 				end
 
 				item.player = client
@@ -851,14 +851,14 @@ do
 			
 			if (!inventory:getItemByID(item.id)) then
 				-- print << invalid request
-				return
+				return false
 			end 
 
 			local itemQuantity = item:getQuantity()
 
 			if (amount <= 0 or itemQuantity == amount or itemQuantity < amount or item:getMaxQuantity() < amount) then
 				-- print << cantsplit
-				return
+				return false
 			end
 			
 			local leftOver = itemQuantity - amount
@@ -869,8 +869,10 @@ do
 
 				if (result != false) then
 					item:setQuantity(leftOver)
+
+					return true, item, msg
 				else
-					-- print < msg
+					return result, msg
 				end
 			end
 		end)

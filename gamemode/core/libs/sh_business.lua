@@ -22,11 +22,11 @@ if (SERVER) then
 
 			if (itemTable and hook.Run("CanPlayerUseBusiness", client, k) != false) then
 				local amount = math.Clamp(tonumber(v) or 0, 0, 10)
-				
+			
 				if (amount == 0) then
 					items[k] = nil
 				else
-					cost = cost + (amount * (itemTable.price or 0))
+					cost = cost + (amount * (itemTable:getPrice()))
 				end
 			else
 				items[k] = nil
@@ -77,7 +77,8 @@ if (SERVER) then
 				if (drop) then
 					nut.item.spawn(uniqueID, entity:GetPos() + Vector(0, 0, 16))
 				else
-					local status, fault = client:getChar():getInv():add(uniqueID)
+					local amount = (itemTable.isStackable == true and itemTable:getMaxQuantity() or 1)
+					local status, fault = client:getChar():getInv():add(uniqueID, amount)
 
 					if (!status) then
 						return client:notifyLocalized("noFit")

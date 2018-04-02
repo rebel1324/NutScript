@@ -5,7 +5,6 @@ ITEM.__index = ITEM
 ITEM.name = "INVALID ITEM"
 ITEM.desc = ITEM.desc or "[[INVALID ITEM]]"
 ITEM.id = ITEM.id or 0
-ITEM.quantity = 1
 ITEM.maxQuantity = 1
 ITEM.defaultQuantity = 1
 ITEM.isStackable = false
@@ -30,7 +29,7 @@ function ITEM:getName()
 end
 
 function ITEM:getQuantity()
-	return tonumber(self.quantity or 1)
+	return tonumber(self.quantity or (self.id == 0 and self:getMaxQuantity() or 1))
 end
 
 function ITEM:getMaxQuantity()
@@ -82,12 +81,15 @@ function ITEM:getDesc()
 	return L(self.desc or "noDesc")
 end
 
-function ITEM:split(quantity)
-	local leftover = self:getQuantity() - quantity
-
-	self:setQuantity(leftover)
-	-- create item
+function ITEM:getPrice()
+	if (self.isStackable) then
+		return self.price and (self.price * math.Clamp(self:getQuantity() / self:getMaxQuantity(), 0, 1)) or 0 -- yeah..
+	else
+		return self.price or 0
+	end
 end
+
+-- function ITEM:split(quantity) end -- need to separate split function for future developers.
 
 -- Dev Buddy. You don't have to print the item data with PrintData();
 function ITEM:print(detail)

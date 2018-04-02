@@ -11,7 +11,7 @@ function PANEL:setItem(itemTable)
 
 	self.price = self:Add("DLabel")
 	self.price:Dock(BOTTOM)
-	self.price:SetText(itemTable.price and nut.currency.get(itemTable.price) or L"free":upper())
+	self.price:SetText(itemTable:getPrice() and nut.currency.get(itemTable:getPrice()) or L"free":upper())
 	self.price:SetContentAlignment(5)
 	self.price:SetTextColor(color_white)
 	self.price:SetFont("nutSmallFont")
@@ -374,7 +374,7 @@ PANEL = {}
 
 			if (itemTable and v > 0) then
 				valid = valid + 1
-				price = price + (v * (itemTable.price or 0))
+				price = price + (v * itemTable:getPrice())
 			end
 		end
 
@@ -408,7 +408,7 @@ PANEL = {}
 				slot.name:SetPos(40, 2)
 				slot.name:SetSize(180, 32)
 				slot.name:SetFont("nutChatFont")
-				slot.name:SetText(L(itemTable.getName and itemTable:getName() or L(itemTable.name)).." ("..(itemTable.price and nut.currency.get(itemTable.price) or L"free":upper())..")")
+				slot.name:SetText(L(itemTable.getName and itemTable:getName() or L(itemTable.name)).." ("..(itemTable:getPrice() and nut.currency.get(itemTable:getPrice()) or L"free":upper())..")")
 				slot.name:SetTextColor(color_white)
 
 				slot.quantity = slot:Add("DTextEntry")

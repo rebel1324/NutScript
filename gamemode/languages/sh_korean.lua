@@ -235,7 +235,7 @@ LANGUAGE = {
 	ammoLoadAll = "모두 사용",
 	ammoLoadAmount = "%s개 사용",
 	ammoLoadCustom = "수량 입력",
-	split = "Split",
+	split = "나누기",
 	
 
 }
