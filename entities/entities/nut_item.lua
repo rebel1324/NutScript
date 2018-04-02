@@ -162,11 +162,9 @@ else
 
 		if (itemTable and itemTable.drawEntity) then
 			itemTable:drawEntity(self)
+		else
+			self:DrawModel()
 		end
-	end
-
-	function ENT:Draw()
-		self:DrawModel()
 	end
 end
 

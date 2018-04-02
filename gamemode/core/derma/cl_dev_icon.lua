@@ -364,7 +364,7 @@ function PANEL:Init()
 		self.entAng[i].OnValueChanged = function(cfg, value)	
 			if (!fagLord) then
 				ICON_INFO.entAng[i] = value
-				self:SetupEditor(true)
+				self.prev.model.Entity:SetAngles(ICON_INFO.entAng)
 			end
 		end
 	end
