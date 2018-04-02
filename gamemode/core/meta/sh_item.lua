@@ -29,7 +29,13 @@ function ITEM:getName()
 end
 
 function ITEM:getQuantity()
-	return tonumber(self.quantity or (self.id == 0 and self:getMaxQuantity() or 1))
+	local quantity = self.quantity
+
+	if (IsValid(self.entity)) then
+		quantity = self.entity:getNetVar("quantity")
+	end
+
+	return tonumber(quantity or (self.id == 0 and self:getMaxQuantity() or 1))
 end
 
 function ITEM:getMaxQuantity()
