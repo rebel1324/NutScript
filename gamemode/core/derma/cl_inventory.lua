@@ -98,6 +98,7 @@ PANEL = {}
 		end
 	end
 
+	NS_ICON_SIZE = 64
 	function PANEL:setInventory(inventory)
 		if (inventory.slots) then
 			if (IsValid(nut.gui.inv1) and nut.gui.inv1.childPanels and inventory != LocalPlayer():getChar():getInv()) then
@@ -105,7 +106,7 @@ PANEL = {}
 			end
 
 			self.invID = inventory:getID()
-			self:SetSize(64, 64)
+			self:SetSize(NS_ICON_SIZE, NS_ICON_SIZE)
 			self:setGridSize(inventory:getSize())
 
 			for x, items in pairs(inventory.slots) do
@@ -144,7 +145,7 @@ PANEL = {}
 		self.gridW = w
 		self.gridH = h
 		
-		self:SetSize(w * 64 + 8, h * 64 + 31)
+		self:SetSize(w * NS_ICON_SIZE + 8, h * NS_ICON_SIZE + 31)
 		self:buildSlots()
 	end
 	
@@ -175,8 +176,8 @@ PANEL = {}
 				slot:SetZPos(-999)
 				slot.gridX = x
 				slot.gridY = y
-				slot:SetPos((x - 1) * 64 + 4, (y - 1) * 64 + 27)
-				slot:SetSize(64, 64)
+				slot:SetPos((x - 1) * NS_ICON_SIZE + 4, (y - 1) * NS_ICON_SIZE + 27)
+				slot:SetSize(NS_ICON_SIZE, NS_ICON_SIZE)
 				slot.Paint = PaintSlot
 				
 				self.slots[x][y] = slot	
@@ -190,7 +191,7 @@ PANEL = {}
 		
 		if (IsValid(item)) then
 			local mouseX, mouseY = self:LocalCursorPos()
-			local dropX, dropY = math.ceil((mouseX - 4 - (item.gridW - 1) * 32) / 64), math.ceil((mouseY - 27 - (item.gridH - 1) * 32) / 64)
+			local dropX, dropY = math.ceil((mouseX - 4 - (item.gridW - 1) * NS_ICON_SIZE/2) / NS_ICON_SIZE), math.ceil((mouseY - 27 - (item.gridH - 1) * NS_ICON_SIZE/2) / NS_ICON_SIZE)
 
 			if ((mouseX < -w*0.05 or mouseX > w*1.05) or (mouseY < h*0.05 or mouseY > h*1.05)) then
 				activePanels[self] = nil
@@ -214,7 +215,7 @@ PANEL = {}
 						surface.SetDrawColor(0, 0, 255, 10)
 
 						if (x == 0 and y == 0) then
-							item.dropPos[self] = {x = (x2 - 1)*64 + 4, y = (y2 - 1)*64 + 27, x2 = x2, y2 = y2}
+							item.dropPos[self] = {x = (x2 - 1)*NS_ICON_SIZE + 4, y = (y2 - 1)*NS_ICON_SIZE + 27, x2 = x2, y2 = y2}
 						end
 							
 						if (bool) then
@@ -227,7 +228,7 @@ PANEL = {}
 							end
 						end
 					
-						surface.DrawRect((x2 - 1)*64 + 4, (y2 - 1)*64 + 27, 64, 64)
+						surface.DrawRect((x2 - 1)*NS_ICON_SIZE + 4, (y2 - 1)*NS_ICON_SIZE + 27, NS_ICON_SIZE, NS_ICON_SIZE)
 					else
 						if (item.dropPos) then
 							item.dropPos[self] = nil
@@ -287,7 +288,7 @@ PANEL = {}
 		
 		if (self.slots[x] and self.slots[x][y]) then
 			local panel = self:Add("nutItemIcon")
-			panel:SetSize(w * 64, h * 64)
+			panel:SetSize(w * NS_ICON_SIZE, h * NS_ICON_SIZE)
 			panel:SetZPos(999)
 			panel:InvalidateLayout(true)
 			panel:SetModel(model, skin)
@@ -350,8 +351,8 @@ PANEL = {}
 					return
 				end
 
-				data.x = data.x or (data.x2 - 1)*64 + 4
-				data.y = data.y or (data.y2 - 1)*64 + 27
+				data.x = data.x or (data.x2 - 1)*NS_ICON_SIZE + 4
+				data.y = data.y or (data.y2 - 1)*NS_ICON_SIZE + 27
 
 				this.gridX = data.x2
 				this.gridY = data.y2
