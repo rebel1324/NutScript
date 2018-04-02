@@ -861,6 +861,7 @@ do
 				return false
 			end
 			
+			amount = math.Round(amount)
 			local leftOver = itemQuantity - amount
 
 			-- You VS The Guy Told You Not to Worry About
