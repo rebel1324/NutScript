@@ -394,6 +394,8 @@ if (SERVER) then
 		end
 	end
 
+	-- this is for the debugging purpose. if you don't have idea what you're dealing with, don't even try to look at this
+	local suppressCreation = false
 	function META:add(uniqueID, quantity, data, x, y, noReplication, forceSplit)
 		quantity = quantity or 1
 
@@ -562,29 +564,33 @@ if (SERVER) then
 
 					removeCoords()
 
-					for _, coord in ipairs(targetCoords) do
-						local x, y, quantity = coord[1], coord[2], coord[3]
+					-- this is for the debugging purpose. if you don't have idea what you're dealing with, don't even try to look at this
+					if (!suppressCreation) then
+						for _, coord in ipairs(targetCoords) do
+							local x, y, quantity = coord[1], coord[2], coord[3]
 
-						nut.item.instance(targetInv:getID(), uniqueID, data, x, y, function(item)
-							item.gridX = x
-							item.gridY = y
-							item:setQuantity(quantity)
+							nut.item.instance(targetInv:getID(), uniqueID, data, x, y, function(item)
+								item.gridX = x
+								item.gridY = y
+								item:setQuantity(quantity)
 
-							for x2 = 0, item.width - 1 do
-								for y2 = 0, item.height - 1 do
-									targetInv.slots[x + x2] = targetInv.slots[x + x2] or {}
-									targetInv.slots[x + x2][y + y2] = item
+								for x2 = 0, item.width - 1 do
+									for y2 = 0, item.height - 1 do
+										targetInv.slots[x + x2] = targetInv.slots[x + x2] or {}
+										targetInv.slots[x + x2][y + y2] = item
+									end
 								end
-							end
 
-							if (!noReplication) then
-								targetInv:sendSlot(x, y, item)
-							end
-						end)
+								if (!noReplication) then
+									targetInv:sendSlot(x, y, item)
+								end
+							end)
+						end
 					end
 				end
 
-				if (canFill) then
+				-- this is for the debugging purpose. if you don't have idea what you're dealing with, don't even try to look at this
+				if (!suppressCreation and canFill) then
 					for item, quantity in pairs(fillTargets) do
 						item:setQuantity(quantity)
 					end
