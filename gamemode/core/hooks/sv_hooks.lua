@@ -697,8 +697,16 @@ netstream.Hook("strReq", function(client, time, text)
 	end
 end)
 
+-- this table is based on mdl's prop keyvalue data. FIX IT WILLOX!
+local defaultAngleData = {
+	["models/items/car_battery01.mdl"] = Angle(-15, 180, 0),
+	["models/props_junk/harpoon002a.mdl"] = Angle(0, 0, 0),
+	["models/props_junk/propane_tank001a.mdl"] = Angle(-90, 0, 0),
+}
+
 function GM:GetPreferredCarryAngles(entity)
-	if (entity:GetClass() == "nut_item") then
+	local class = entity:GetClass()
+	if (class == "nut_item") then
 		local itemTable = entity:getItemTable()
 
 		if (itemTable) then
@@ -708,5 +716,9 @@ function GM:GetPreferredCarryAngles(entity)
 				return preferedAngle
 			end
 		end
+	elseif (class == "prop_physics") then
+		local model = entity:GetModel():lower()
+
+		return defaultAngleData[model]
 	end
 end
