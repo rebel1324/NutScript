@@ -303,7 +303,9 @@ if (SERVER) then
 			stand_time = curTime + 0.1
 		end
 
-		self.carryHack:SetPos(self:GetOwner():EyePos() + self:GetOwner():GetAimVector() * 70)
+		local obb = math.abs(self.holdingEntity:GetModelBounds():Length2D())
+
+		self.carryHack:SetPos(self:GetOwner():EyePos() + self:GetOwner():GetAimVector() * (35+obb) )
 
 		local targetAng = self:GetOwner():GetAngles()
 
