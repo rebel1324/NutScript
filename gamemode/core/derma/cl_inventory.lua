@@ -28,12 +28,6 @@ end
 function PANEL:PaintOver(w, h)
 	local itemTable = nut.item.instances[self.itemID]
 
-	if (self.waiting and self.waiting > CurTime()) then
-		local wait = (self.waiting - CurTime()) / self.waitingTime
-		surface.SetDrawColor(255, 255, 255, 100*wait)
-		surface.DrawRect(2, 2, w - 4, h - 4)
-	end
-
 	if (itemTable and itemTable.paintOver) then
 		local w, h = self:GetSize()
 
@@ -51,18 +45,6 @@ function PANEL:Paint(w, h)
 	surface.DrawRect(2, 2, w - 4, h - 4)
 
 	self:ExtraPaint(w, h)
-end
-
-function PANEL:wait(time)
-	time = math.abs(time) or .2
-	self.waiting = CurTime() + time
-	self.waitingTime = time
-end
-
-function PANEL:isWaiting()
-	if (self.waiting and self.waitingTime) then
-		return (self.waiting and self.waiting > CurTime())
-	end
 end
 
 vgui.Register("nutItemIcon", PANEL, "SpawnIcon")
@@ -530,30 +512,6 @@ PANEL = {}
 												end
 
 												itemTable.player = nil
-											else
-												/*
-													-- Drag and drop bag transfer requires half-recode of Inventory GUI.
-													-- It will be there. But it will take some time.
-
-													-- okay, the bag doesn't have any combine function.
-													-- then, what's next? yes. moving the item in the bag.
-
-													if (targetItem.invType) then
-														-- get the inventory.
-														local bagInv = targetItem.getInv and targetItem:getInv()
-														-- Is the bag's inventory exists?
-														if (bagInv) then
-															print(bagInv, "baggeD")
-															local mx, my = bagInv:findEmptySlot(itemTable.width, itemTable.height, true)
-															
-															-- we found slot for the inventory.
-															if (mx and my) then		
-																print(bagInv, "move")						
-																this:move({x2 = mx, y2 = my}, bagInv)
-															end
-														end
-													end
-												*/
 											end
 										end
 									end
