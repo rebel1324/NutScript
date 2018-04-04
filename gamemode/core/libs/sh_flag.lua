@@ -106,7 +106,7 @@ do
 			end
 		end
 
-		return false
+		return hook.Run("CharacterFlagCheck", self, flags) or false
 	end
 end
 
