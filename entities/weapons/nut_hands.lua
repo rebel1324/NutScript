@@ -61,7 +61,7 @@ CARRY_FORCE_LEVEL = {
 }
 -- not customizable via convars as some objects rely on not being carryable for
 -- gameplay purposes
-CARRY_WEIGHT_LIMIT = 80
+CARRY_WEIGHT_LIMIT = 100
 
 -- I know some people will fuck around with new prop-throwing system. I'm preventing that shit without making it too non-sense
 THROW_VELOCITY_CAP = 150
@@ -443,7 +443,7 @@ function SWEP:allowPickup(target)
 	return (
 			IsValid(phys) and IsValid(client) and client:getChar() and
 			(not phys:HasGameFlag(FVPHYSICS_NO_PLAYER_PICKUP)) and
-			phys:GetMass() < CARRY_WEIGHT_LIMIT and
+			phys:GetMass() <= CARRY_WEIGHT_LIMIT and
 			(not isPlayerStandsOn(target)) and
 			(target.CanPickup != false) and
 			hook.Run("GravGunPickupAllowed", self:GetOwner(), target) != false and 
