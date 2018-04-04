@@ -205,6 +205,8 @@ function SWEP:reset(throw)
 		else
 			throwVelocity(self.holdingEntity, self.Owner, 300)
 		end
+
+		hook.Run("GravGunOnDropped", self:GetOwner(), self.holdingEntity, throw)
 	end
 
 	self.dt.carried_rag = nil
@@ -216,7 +218,7 @@ end
 
 function SWEP:drop(throw)
 	if (!self:checkValidity()) then return end
-	if (!self:AllowEntityDrop()) then return end
+	if (!self:allowEntityDrop()) then return end
 
 	if (SERVER) then
 	 	self.constr:Remove()
@@ -336,7 +338,7 @@ function SWEP:PrimaryAttack()
 	end
 
 	self:SetNextPrimaryFire(CurTime() + self.Primary.Delay)
-
+	
 	if (hook.Run("CanPlayerThrowPunch", self.Owner) == false) then
 		return
 	end
@@ -438,11 +440,15 @@ function SWEP:allowPickup(target)
 	local phys = target:GetPhysicsObject()
 	local client = self:GetOwner()
 	
-	return (IsValid(phys) and IsValid(client) and client:getChar() and
-		(not phys:HasGameFlag(FVPHYSICS_NO_PLAYER_PICKUP)) and
-		phys:GetMass() < CARRY_WEIGHT_LIMIT and
-		(not isPlayerStandsOn(target)) and
-		(target.CanPickup != false))
+	return (
+			IsValid(phys) and IsValid(client) and client:getChar() and
+			(not phys:HasGameFlag(FVPHYSICS_NO_PLAYER_PICKUP)) and
+			phys:GetMass() < CARRY_WEIGHT_LIMIT and
+			(not isPlayerStandsOn(target)) and
+			(target.CanPickup != false) and
+			hook.Run("GravGunPickupAllowed", self:GetOwner(), target) != false and 
+			(target.GravGunPickupAllowed and (target:GravGunPickupAllowed(self:GetOwner()) != false) or true)
+		)
 end
 
 function SWEP:doPickup(throw)
@@ -542,7 +548,6 @@ function SWEP:pickup()
 			self.carryHack:SetSolid(SOLID_NONE)
 			
 			-- TODO: set the desired angles before adding the constraint
-			--
 			local preferredAngles = hook.Run("GetPreferredCarryAngles", self.holdingEntity)
 					
 			if (self:GetOwner():KeyDown(IN_RELOAD) and !preferredAngles) then
@@ -596,12 +601,14 @@ function SWEP:pickup()
 		 
 			self.constr = constraint.Weld(self.carryHack, self.holdingEntity, 0, bone, max_force, true)
 			self.Owner:EmitSound("physics/body/body_medium_impact_soft"..math.random(1, 3)..".wav", 75)
+
+			hook.Run("GravGunOnPickedUp", self:GetOwner(), self.holdingEntity)
 	   	end
 	end
 end
 
 local down = Vector(0, 0, -1)
-function SWEP:AllowEntityDrop()
+function SWEP:allowEntityDrop()
 	local client = self:GetOwner()
 	local ent = self.carryHack
 	if (!IsValid(client)) or (!IsValid(ent)) then return false end
