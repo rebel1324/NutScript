@@ -26,8 +26,10 @@ else
 	-- List of notice panels.
 	nut.notices = nut.notices or {}
 	
+	local scrW = ScrW()
 	-- Move all notices to their proper positions.
 	local function OrganizeNotices()
+
 		for k, v in ipairs(nut.notices) do
 			v:MoveTo(scrW - (v:GetWide() + 4), (k - 1) * (v:GetTall() + 4) + 4, 0.15, (k / #nut.notices) * 0.25, nil)
 		end
@@ -37,8 +39,7 @@ else
 	function nut.util.notify(message)
 		local notice = vgui.Create("nutNotice")
 		local i = table.insert(nut.notices, notice)
-		local scrW = ScrW()
-
+		
 		-- Set up information for the notice.
 		notice:SetText(message)
 		notice:SetPos(ScrW(), (i - 1) * (notice:GetTall() + 4) + 4)
