@@ -64,11 +64,16 @@ function nut.plugin.load(uniqueID, path, isSingleFile, variable)
 	if (uniqueID != "schema") then
 		PLUGIN.name = PLUGIN.name or "Unknown"
 		PLUGIN.desc = PLUGIN.desc or "No description available."
+		
+		if (!PLUGIN.IsValid) then
+			function PLUGIN:IsValid()
+				return true -- hey
+			end
+		end
 
 		for k, v in pairs(PLUGIN) do
 			if (type(v) == "function") then
-				HOOKS_CACHE[k] = HOOKS_CACHE[k] or {}
-				HOOKS_CACHE[k][PLUGIN] = v
+				hook.Add(k, PLUGIN, v)
 			end
 		end
 
@@ -79,20 +84,6 @@ function nut.plugin.load(uniqueID, path, isSingleFile, variable)
 	if (PLUGIN.OnLoaded) then
 		PLUGIN:OnLoaded()
 	end
-end
-
-function nut.plugin.getHook(pluginName, hookName)
-	local h = HOOKS_CACHE[hookName]
-
-	if (h) then
-		local p = nut.plugin.list[pluginName]
-		
-		if (p) then
-			return h[p]
-		end
-	end
-
-	return
 end
 
 function nut.plugin.loadEntities(path)
@@ -405,23 +396,11 @@ do
 	hook.NutCall = hook.NutCall or hook.Call
 
 	function hook.Call(name, gm, ...)
-		local cache = HOOKS_CACHE[name]
-
-		if (cache) then
-			for k, v in pairs(cache) do
-				local result = {v(k, ...)}
-
-				if (#result > 0) then
-					return unpack(result)
-				end
-			end
-		end
-
 		if (SCHEMA and SCHEMA[name]) then
-			local result = {SCHEMA[name](SCHEMA, ...)}
-
-			if (#result > 0) then
-				return unpack(result)
+			local a, b, c, d, e, f = SCHEMA[name](SCHEMA, ...);
+			
+			if (a != nil) then
+				return a, b, c, d, e, f
 			end
 		end
 
