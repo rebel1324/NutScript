@@ -92,7 +92,7 @@ function nut.command.hasAccess(client, command)
 		end
 	end
 
-	return false
+	return hook.Run("CanPlayerUseCommand", client, command) or false
 end
 
 -- Gets a table of arguments from a string.
