@@ -975,6 +975,10 @@ do
 	-- Instances and spawns a given item type.
 	function nut.item.spawn(uniqueID, position, callback, angles, data)
 		nut.item.instance(0, uniqueID, data or {}, 1, 1, function(item)
+			if (item.isStackable) then
+				item:setQuantity(item:getMaxQuantity())
+			end
+
 			local entity = item:spawn(position, angles)
 
 			if (callback) then
