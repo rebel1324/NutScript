@@ -245,43 +245,49 @@ function GM:CalcViewModelView(weapon, viewModel, oldEyePos, oldEyeAngles, eyePos
 		return
 	end
 
-	local client = LocalPlayer()
-	local value = 0
+	local vm_origin, vm_angles = eyePos, eyeAngles
 
-	if (!client:isWepRaised()) then
-		value = 100
+	--Intervention of Nutscript Holster/Raise Angle/Positions. 
+	do 
+		local client = LocalPlayer()
+		local value = 0
+
+		if (!client:isWepRaised()) then
+			value = 100
+		end
+
+		local fraction = (client.nutRaisedFrac or 0) / 100
+		local rotation = weapon.LowerAngles or LOWERED_ANGLES
+		
+		if (NUT_CVAR_LOWER2:GetBool() and weapon.LowerAngles2) then
+			rotation = weapon.LowerAngles2
+		end
+		
+		vm_angles:RotateAroundAxis(vm_angles:Up(), rotation.p * fraction)
+		vm_angles:RotateAroundAxis(vm_angles:Forward(), rotation.y * fraction)
+		vm_angles:RotateAroundAxis(vm_angles:Right(), rotation.r * fraction)
+
+		client.nutRaisedFrac = Lerp(FrameTime() * 2, client.nutRaisedFrac or 0, value)
 	end
 
-	local fraction = (client.nutRaisedFrac or 0) / 100
-	local rotation = weapon.LowerAngles or LOWERED_ANGLES
-	
-	if (NUT_CVAR_LOWER2:GetBool() and weapon.LowerAngles2) then
-		rotation = weapon.LowerAngles2
-	end
-	
-	eyeAngles:RotateAroundAxis(eyeAngles:Up(), rotation.p * fraction)
-	eyeAngles:RotateAroundAxis(eyeAngles:Forward(), rotation.y * fraction)
-	eyeAngles:RotateAroundAxis(eyeAngles:Right(), rotation.r * fraction)
+	--The original code of the hook.
+	do
+		local func = weapon.GetViewModelPosition
+		if (func) then
+			local pos, ang = func( weapon, eyePos*1, eyeAngles*1 )
+			vm_origin = pos or vm_origin
+			vm_angles = ang or vm_angles
+		end
 
-	client.nutRaisedFrac = Lerp(FrameTime() * 2, client.nutRaisedFrac or 0, value)
-
-	viewModel:SetAngles(eyeAngles)
-
-	if (weapon.GetViewModelPosition) then
-		local position, angles = weapon:GetViewModelPosition(eyePos, eyeAngles)
-
-		oldEyePos = position or oldEyePos
-		eyeAngles = angles or eyeAngles
-	end
-	
-	if (weapon.CalcViewModelView) then
-		local position, angles = weapon:CalcViewModelView(viewModel, oldEyePos, oldEyeAngles, eyePos, eyeAngles)
-
-		oldEyePos = position or oldEyePos
-		eyeAngles = angles or eyeAngles
+		func = weapon.CalcViewModelView
+		if (func) then
+			local pos, ang = func( weapon, viewModel, oldEyePos*1, oldEyeAngles*1, eyePos*1, eyeAngles*1 )
+			vm_origin = pos or vm_origin
+			vm_angles = ang or vm_angles
+		end
 	end
 
-	return oldEyePos, eyeAngles
+	return vm_origin, vm_angles
 end
 
 function GM:LoadIntro()
