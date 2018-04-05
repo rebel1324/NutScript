@@ -280,14 +280,16 @@ function GM:CalcViewModelView(weapon, viewModel, oldEyePos, oldEyeAngles, eyePos
 	do
 		local func = weapon.GetViewModelPosition
 		if (func) then
-			local pos, ang = func( weapon, eyePos*1, eyeAngles*1 )
+			--Make copy of the vectors 😂
+			local pos, ang = func(weapon, eyePos*1, eyeAngles*1)
 			vm_origin = pos or vm_origin
 			vm_angles = ang or vm_angles
 		end
 
 		func = weapon.CalcViewModelView
 		if (func) then
-			local pos, ang = func( weapon, viewModel, oldEyePos*1, oldEyeAngles*1, eyePos*1, eyeAngles*1 )
+			--Make copy of the vectors 😂
+			local pos, ang = func(weapon, viewModel, oldEyePos*1, oldEyeAngles*1, eyePos*1, eyeAngles*1)
 			vm_origin = pos or vm_origin
 			vm_angles = ang or vm_angles
 		end

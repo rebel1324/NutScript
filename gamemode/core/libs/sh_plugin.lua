@@ -5,7 +5,7 @@ nut.plugin.unloaded = nut.plugin.unloaded or {}
 HOOKS_CACHE = {}
 
 function nut.plugin.load(uniqueID, path, isSingleFile, variable)
-	if (hook.Call("PluginShouldLoad", GAMEMODE, uniqueID) == false) then return end
+	if (hook.Run("PluginShouldLoad", uniqueID) == false) then return end
 
 	variable = variable or "PLUGIN"
 
@@ -80,6 +80,17 @@ function nut.plugin.load(uniqueID, path, isSingleFile, variable)
 
 		nut.plugin.list[uniqueID] = PLUGIN
 		_G[variable] = nil
+	else
+		-- no matter what you should be loaded.
+		function PLUGIN:IsValid()
+			return true
+		end
+
+		for k, v in pairs(PLUGIN) do
+			if (type(v) == "function") then
+				hook.Add(k, PLUGIN, v)
+			end
+		end
 	end
 
 	if (PLUGIN.OnLoaded) then
@@ -391,20 +402,4 @@ if (SERVER) then
 			end
 		end
 	end)
-end
-
-do
-	hook.NutCall = hook.NutCall or hook.Call
-
-	function hook.Call(name, gm, ...)
-		if (SCHEMA and SCHEMA[name]) then
-			local a, b, c, d, e, f = SCHEMA[name](SCHEMA, ...);
-			
-			if (a != nil) then
-				return a, b, c, d, e, f
-			end
-		end
-
-		return hook.NutCall(name, gm, ...)
-	end
 end
