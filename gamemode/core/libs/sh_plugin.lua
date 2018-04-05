@@ -5,7 +5,7 @@ nut.plugin.unloaded = nut.plugin.unloaded or {}
 HOOKS_CACHE = {}
 
 function nut.plugin.load(uniqueID, path, isSingleFile, variable)
-	if (hook.Run("PluginShouldLoad", uniqueID) == false) then return end
+	if (hook.Call("PluginShouldLoad", GAMEMODE, uniqueID) == false) then return end
 
 	variable = variable or "PLUGIN"
 
@@ -67,7 +67,8 @@ function nut.plugin.load(uniqueID, path, isSingleFile, variable)
 		
 		if (!PLUGIN.IsValid) then
 			function PLUGIN:IsValid()
-				return true -- hey
+				-- if you gonna return false of this, you should remove/make nil your PLUGIN table! 
+				return true
 			end
 		end
 
