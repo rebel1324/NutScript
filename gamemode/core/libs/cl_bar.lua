@@ -118,6 +118,8 @@ local Approach = math.Approach
 BAR_HEIGHT = 10
 
 function nut.bar.drawAll()
+	nut.bar.drawAction()
+
 	if (hook.Run("ShouldHideBars")) then
 		return
 	end
@@ -148,8 +150,6 @@ function nut.bar.drawAll()
 			end
 		end
 	end
-
-	nut.bar.drawAction()
 end
 
 do
