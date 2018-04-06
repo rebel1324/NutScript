@@ -337,6 +337,12 @@ function SWEP:PrimaryAttack()
 		return
 	end
 
+	if (IsValid(self.holdingEntity)) then
+		self:doPickup(self:GetOwner():isWepRaised())
+		
+		return
+	end
+
 	self:SetNextPrimaryFire(CurTime() + self.Primary.Delay)
 	
 	if (hook.Run("CanPlayerThrowPunch", self.Owner) == false) then
@@ -368,10 +374,6 @@ function SWEP:PrimaryAttack()
 
 	self:SetNW2Float( "startTime", CurTime() );
 	self:SetNW2Bool( "startPunch", true );
-	
-	if (IsValid(self.holdingEntity)) then
-   		self:doPickup(true)
-	end
 end
 
 
@@ -380,11 +382,15 @@ function SWEP:SecondaryAttack()
 		return
 	end
 
+	local client = self.Owner
 	local data = {}
-		data.start = self.Owner:GetShootPos()
-		data.endpos = data.start + self.Owner:GetAimVector() * PLAYER_PICKUP_RANGE
-		data.filter = {self, self.Owner}
-	local trace = util.TraceLine(data)
+		data.start = client:GetShootPos()
+		data.endpos = data.start + client:GetAimVector() * PLAYER_PICKUP_RANGE
+		data.filter = {self, client}
+		data.mins = Vector(-8, -8, -8)
+		data.maxs = Vector(8, 8, 8)
+	local trace = util.TraceHull(data)
+	
 	local entity = trace.Entity
 	
 	if (SERVER and IsValid(entity)) then
@@ -401,13 +407,13 @@ function SWEP:SecondaryAttack()
 			self:SetNextSecondaryFire(CurTime() + 0.4)
 			self:SetNextPrimaryFire(CurTime() + 1)
 		elseif (!entity:IsPlayer() and !entity:IsNPC()) then
-   			self:doPickup()
+   			self:doPickup(false, entity)
 		elseif (IsValid(self.heldEntity) and !self.heldEntity:IsPlayerHolding()) then
 			self.heldEntity = nil
 		end
 	else
 		if (IsValid(self.holdingEntity)) then
-			self:doPickup()
+			self:doPickup(false)
 		end
 	end
 end
@@ -451,7 +457,7 @@ function SWEP:allowPickup(target)
 		)
 end
 
-function SWEP:doPickup(throw)
+function SWEP:doPickup(throw, entity)
 	self.Weapon:SetNextPrimaryFire( CurTime() + .1 )
 	self.Weapon:SetNextSecondaryFire( CurTime() + .1 )
 
@@ -463,11 +469,8 @@ function SWEP:doPickup(throw)
 	end
 
 	local client = self:GetOwner()
-
-	local trace = client:GetEyeTrace(MASK_SHOT)
-	if (IsValid(trace.Entity)) then
-		local entity = trace.Entity
-		local phys = trace.Entity:GetPhysicsObject()
+	if (IsValid(entity)) then
+		local phys = entity:GetPhysicsObject()
 		
 		if (!IsValid(phys) or !phys:IsMoveable() or phys:HasGameFlag(FVPHYSICS_PLAYER_HELD)) then
 		   return
@@ -475,9 +478,9 @@ function SWEP:doPickup(throw)
 			
 		-- if we let the client mess with physics, desync ensues
 		if (SERVER) then
-			if (client:EyePos() - trace.HitPos):Length() < self:getRange(entity) then
+			if (client:EyePos() - (entity:GetPos() + entity:OBBCenter())):Length() < self:getRange(entity) then
 				if (self:allowPickup(entity)) then
-					self:pickup()
+					self:pickup(entity)
 					self.Weapon:SendWeaponAnim( ACT_VM_HITCENTER )
 						
 					-- make the refire slower to avoid immediately dropping
@@ -486,12 +489,12 @@ function SWEP:doPickup(throw)
 					self.Weapon:SetNextSecondaryFire(CurTime() + delay)
 					return
 				else
-					local is_ragdoll = trace.Entity:GetClass() == "prop_ragdoll"
+					local is_ragdoll = entity:GetClass() == "prop_ragdoll"
 
 					--[[
 						--Drag ragdoll/props
 
-						local ent = trace.Entity
+						local ent = entity
 						local phys = ent:GetPhysicsObject()
 						local pdir = trace.Normal * -1
 
@@ -515,17 +518,14 @@ function SWEP:doPickup(throw)
 end
 
 -- Perform a pickup
-function SWEP:pickup()
+function SWEP:pickup(entity)
 	if (CLIENT or IsValid(self.holdingEntity)) then return end
 
 	local client = self:GetOwner()
-	local trace = client:GetEyeTrace(MASK_SHOT)
-	local ent = trace.Entity
-	self.holdingEntity = ent
-	local entphys = ent:GetPhysicsObject()
+	self.holdingEntity = entity
+	local entphys = entity:GetPhysicsObject()
 
-
-	if (IsValid(ent) and IsValid(entphys)) then
+	if (IsValid(entity) and IsValid(entphys)) then
 		self.carryHack = ents.Create("prop_physics")
 		
 		if (IsValid(self.carryHack)) then
@@ -587,10 +587,10 @@ function SWEP:pickup()
 			end
 		 
 			entphys:AddGameFlag(FVPHYSICS_PLAYER_HELD)
-			local bone = math.Clamp(trace.PhysicsBone, 0, 1)
+			local bone = math.Clamp(0, 0, 1)
 			local max_force = CARRY_FORCE_LIMIT
 		 
-			if (ent:GetClass() == "prop_ragdoll") then
+			if (entity:GetClass() == "prop_ragdoll") then
 			   self.dt.carried_rag = ent
 				
 			   bone = trace.PhysicsBone
