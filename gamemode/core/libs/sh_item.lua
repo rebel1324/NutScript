@@ -264,25 +264,14 @@ function nut.item.register(uniqueID, baseID, isBaseItem, path, luaGenerated)
 					if (IsValid(item.entity)) then
 						return false
 					end
-
-					if (item.isStackable == true and item.canSplit == true) then
-						Derma_StringRequest("split amt", "split amt", "", function(text)
-							text = tonumber(text)
-
-							if (text and text > 0) then
-								if (item:getQuantity() == text or item:getQuantity() < text or item:getMaxQuantity() < text) then
-									nut.util.notifyLocalized("invalid", "amount")
-
-									return
-								end
-
-								netstream.Start("invSplit", item:getID(), text, item.invID)
-							else
-								nut.util.notifyLocalized("invalid", "amount")
-							end
-						end, function()
-						end)
+					
+					if (nut.gui.split) then
+						nut.gui.split:Remove()
 					end
+
+					nut.gui.split = vgui.Create("nutItemSplit")
+					nut.gui.split:setItem(item)
+					nut.gui.split:noticeMe()
 
 					return false
 				end,
@@ -291,7 +280,7 @@ function nut.item.register(uniqueID, baseID, isBaseItem, path, luaGenerated)
 						return false
 					end
 
-					if (item.isStackable == true and item.canSplit == true) then
+					if (item.isStackable == true and item.canSplit == true and item:getQuantity() > 1) then
 						return true
 					end
 
