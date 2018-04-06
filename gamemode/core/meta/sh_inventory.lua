@@ -7,6 +7,62 @@ META.w = META.w or 4
 META.h = META.h or 4
 META.vars = META.vars or {}
 
+-- Declare some supports for logic inventory
+local zeroInv = nut.item.inventories[0]
+function zeroInv:getID()
+	return 0
+end
+
+-- WARNING: You have to manually sync the data to client if you're trying to use item in the logical inventory in the vgui.
+function zeroInv:add(uniqueID, quantity, data, callback)
+	quantity = quantity or 1
+
+	if (quantity > 0) then
+		if (!isnumber(uniqueID)) then
+			local itemTable = nut.item.list[uniqueID]
+			local maxQuantity = itemTable:getMaxQuantity()
+			local numInstance = math.floor(quantity/maxQuantity)
+			local leftQuantity = (quantity%maxQuantity)
+
+			if (!itemTable) then
+				return false, "invalidItem"
+			end
+
+			for i = 0, numInstance do
+				nut.item.instance(0, uniqueID, data, x, y, function(item)
+					if (item.isStackable) then
+						item:setQuantity(item:getMaxQuantity())
+					end
+
+					self[item:getID()] = item
+
+					if (callback) then
+						callback(item, item:getID())
+					end
+				end)
+			end
+
+			if (leftQuantity > 0) then
+				nut.item.instance(0, uniqueID, data, x, y, function(item)
+					if (item.isStackable) then
+						item:setQuantity(leftQuantity)
+					end
+	
+					self[item:getID()] = item
+					
+					if (callback) then
+						callback(item, item:getID())
+					end
+				end)
+			end
+			
+			return nil, nil, 0
+		end
+	else
+		return false, "notValid"
+	end
+end
+
 function META:getID()
 	return self.id or 0
 end
