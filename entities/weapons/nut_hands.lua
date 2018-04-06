@@ -376,7 +376,7 @@ function SWEP:PrimaryAttack()
 	self:SetNW2Bool( "startPunch", true );
 end
 
-
+local hull = Vector(4, 4, 4)
 function SWEP:SecondaryAttack()
 	if (!IsFirstTimePredicted()) then
 		return
@@ -387,8 +387,8 @@ function SWEP:SecondaryAttack()
 		data.start = client:GetShootPos()
 		data.endpos = data.start + client:GetAimVector() * PLAYER_PICKUP_RANGE
 		data.filter = {self, client}
-		data.mins = Vector(-8, -8, -8)
-		data.maxs = Vector(8, 8, 8)
+		data.mins = -hull
+		data.maxs = hull
 	local trace = util.TraceHull(data)
 	
 	local entity = trace.Entity
