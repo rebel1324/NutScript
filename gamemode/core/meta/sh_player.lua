@@ -20,12 +20,12 @@ function PLAYER:takeMoney()
     end
 end
 
-function PLAYER:hasMoney(amt)
+function PLAYER:getMoney()
     local char = self:getChar()
-    
-    if (char) then
-        return char:hasMoney(amt)
-    end
+    return (char and char:getMoney() or 0)
+end
 
-    return false
+function PLAYER:canAfford(amount)
+    local char = self:getChar()
+    return (char and char:hasMoney(amount))
 end
