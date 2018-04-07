@@ -267,8 +267,18 @@ if (SERVER) then
 				end
 
 				local invOkay = true
-				for k, v in pairs(client:getChar():getInv():getItems()) do
-					if (v.uniqueID == uniqueID and v:getID() != 0 and istable(nut.item.instances[v:getID()]) and !v:getData("equip", true)) then
+				local inv = client:getChar():getInv()
+				local virtualInv = nut.item.inventories[0]
+				for k, v in pairs(inv:getItems()) do
+					if (v.uniqueID == uniqueID and v:getID() != 0 and istable(nut.item.instances[v:getID()])) then
+						if (hook.Run("CanItemBeTransfered", v, inv, virtualInv) == false) then
+							return false, "notAllowed"
+						end
+
+						if (!authorized and v.onCanBeTransfered and v:onCanBeTransfered(inv, virtualInv) == false) then
+							return false, "notAllowed"
+						end
+
 						invOkay = v:remove()
 						found = true
 						name = L(v.name, client)
