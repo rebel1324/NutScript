@@ -358,7 +358,7 @@ function nut.db.wipeTables()
 	if (nut.db.object) then
 		local queries = string.Explode(";", DROP_QUERY)
 
-		for i = 1, 4 do
+		for i = 1, #queries do
 			nut.db.query(queries[i], callback)
 		end
 	else
