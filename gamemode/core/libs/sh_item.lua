@@ -444,7 +444,7 @@ do
 								item2.gridX = x
 								item2.gridY = y
 								item2.invID = invID
-								item2.quantity = item._quantity
+								item2.quantity = tonumber(item._quantity)
 
 								for x2 = 0, item2.width - 1 do
 									for y2 = 0, item2.height - 1 do
@@ -695,7 +695,7 @@ do
 
 							item.data = data or {}
 							item.invID = 0
-							item.quantity = v._quantity
+							item.quantity = tonumber(v._quantity)
 						end
 					end
 				end
