@@ -6,6 +6,7 @@ META.slots = META.slots or {}
 META.w = META.w or 4
 META.h = META.h or 4
 META.vars = META.vars or {}
+debug.getregistry().Inventory = nut.meta.inventory -- hi mark
 
 -- Declare some supports for logic inventory
 local zeroInv = nut.item.inventories[0]

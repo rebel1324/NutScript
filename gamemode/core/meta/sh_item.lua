@@ -1,6 +1,8 @@
 if (nut.config.useListInventory == true) then return end
 
 local ITEM = nut.meta.item or {}
+debug.getregistry().Item = nut.meta.item -- hi mark
+
 ITEM.__index = ITEM
 ITEM.name = "INVALID ITEM"
 ITEM.desc = ITEM.desc or "[[INVALID ITEM]]"

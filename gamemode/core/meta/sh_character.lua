@@ -3,6 +3,7 @@ local CHAR = nut.meta.character or {}
 CHAR.__index = CHAR
 CHAR.id = CHAR.id or 0
 CHAR.vars = CHAR.vars or {}
+debug.getregistry().Character = nut.meta.character -- hi mark
 
 -- Called when the character is being printed as a string.
 function CHAR:__tostring()
