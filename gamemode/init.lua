@@ -1,5 +1,5 @@
--- Include NutScript content.
-resource.AddWorkshop("207739713")
+-- Include NutScript content. changed the rebel1324's version.
+resource.AddWorkshop("1355625344")
 
 -- Include features from the Sandbox gamemode.
 DeriveGamemode("sandbox")
@@ -29,10 +29,6 @@ timer.Simple(0, function()
         MsgC(Color(0, 255, 0), "Database Type: " .. nut.db.module .. ".\n")
     end)
 end)
-
--- Resources that are required for players to download are here.
-resource.AddFile("materials/nutscript/gui/vignette.png")
-resource.AddFile("resource/fonts/fontello.ttf")
 
 concommand.Add("nut_setowner", function(client, command, arguments)
     if (!IsValid(client)) then
