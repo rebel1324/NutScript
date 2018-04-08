@@ -67,37 +67,7 @@ else
 	local toScreen = FindMetaTable("Vector").ToScreen
 	local colorAlpha = ColorAlpha
 	local drawText = nut.util.drawText
-	
-	local cir = {}
-	local cir2= setmetatable({},{__index=function(self,key)
-		local t = {}
-		self[key]=t
-		return t
-	end})
-
-	local function drawCircle( x, y, radius, seg,angle,offset )
-		for i = 1, seg+1 do
-			cir[i] = cir2[i]
-		end
-
-		for i=#cir,seg+2,-1 do
-			cir[i]=nil
-		end
 		
-		for i = 0, seg do
-			local a = math.rad( ( i / seg ) * angle + offset )
-			local sa = math.sin( a )
-			local ca = math.cos( a )
-			local t = cir[i+1]
-			t.x = x + sa * radius
-			t.y = y + ca * radius
-			t.u = sa * 0.5 + 0.5
-			t.v = ca * 0.5 + 0.5
-		end
-		
-		surface.DrawPoly( cir )
-	end
-	
 	local size = 150
 	local tempMat = Material("particle/warp1_warp", "alphatest")
 	function ENT:Draw()
