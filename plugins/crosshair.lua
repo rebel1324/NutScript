@@ -3,26 +3,49 @@ PLUGIN.author = "Black Tea"
 PLUGIN.desc = "A Crosshair."
 
 if (CLIENT) then
+    nut.xhair = nut.xhair or {}
+
 	local function drawdot( pos, size, col )
 		local color = col[2]
 		surface.SetDrawColor(color.r, color.g, color.b, color.a)
-		surface.DrawRect(pos[1] - size/2, pos[2] - size/2, size, size)
+		surface.DrawRect(pos[1] - size/2 + 1, pos[2] - size/2 + 1, size - 2, size - 2)
 
 		local color = col[1]
-		surface.SetDrawColor(color.r, color.g, color.b, color.a)
+		surface.SetDrawColor(0, 0, 0, col[2].a)
 		surface.DrawOutlinedRect(pos[1] - size/2, pos[2] - size/2 , size, size)
 	end
+
+	surface.CreateFont("nutCrossIcons", {
+		font = "nsicons",
+		size = ScreenScale(11),
+		extended = true,
+    })
 
 	local w, h, aimVector, punchAngle, ft, screen, scaleFraction, distance, entity
 	local math_round = math.Round
 	local curGap = 0
 	local curAlpha = 0
+	local curIconAlpha = 0
 	local maxDistance = 1000 ^ 2
 	local crossSize = 4
 	local crossGap = 0
 	local colors = {color_black}
-	local filter = {}
-
+    local filter = {}
+    local sw, sh = ScrW(), ScrH()
+	local lastIcon = ""
+	
+    nut.xhair.entIcon = {
+        nut_vnd_medical = "",
+        nut_m_recycler = "",
+        nut_stash = "",
+        nut_money = "",
+    }
+    nut.xhair.entIgnore = {
+        nut_atm = true,
+        func_physbox = true,
+        prop_dynamic = true,
+	}
+	
 	function PLUGIN:PostDrawHUD()
 		local client = LocalPlayer()
 		if (!client:getChar() or !client:Alive()) then
@@ -66,23 +89,84 @@ if (CLIENT) then
 		scaleFraction = 1 - math.Clamp(distance / maxDistance, 0, .5)
 		screen = trace.HitPos:ToScreen()
 		crossSize = 4
-		crossGap = 25 * (scaleFraction - (client:isWepRaised() and 0 or .1))
+		crossGap = 20 * (scaleFraction*(client:isWepRaised() and 1 or 3))
 
-		if (IsValid(entity) and entity:GetClass() == "nut_item" and 
-			entity:GetPos():DistToSqr(data.start) <= 16384) then
-			crossGap = 0
-			crossSize = 5
-		end
+		curGap = Lerp(ft * 5, curGap, crossGap)
+		colors[2] = Color(255, 255, 255, curAlpha, distance)
 
-		curGap = Lerp(ft * 2, curGap, crossGap)
-		curAlpha = Lerp(ft * 2, curAlpha, (!client:isWepRaised() and 255 or 150))
-		curAlpha = hook.Run("GetCrosshairAlpha", curAlpha) or curAlpha
-		colors[2] = Color(255, curAlpha, curAlpha, curAlpha)
+        local icon, adx, ady = hook.Run("GetCrosshairIcon", curAlpha, entity, wep, distance)
+        local cx, cy = sw/2, sh/2
 
-		drawdot( {math_round(screen.x), math_round(screen.y)}, crossSize, colors)
-		drawdot( {math_round(screen.x + curGap), math_round(screen.y)}, crossSize, colors)
-		drawdot( {math_round(screen.x - curGap), math_round(screen.y)}, crossSize, colors) 
-		drawdot( {math_round(screen.x), math_round(screen.y + curGap * .8)}, crossSize, colors) 
-		drawdot( {math_round(screen.x), math_round(screen.y - curGap * .8)}, crossSize, colors) 
+        if (icon) then
+            if (icon != lastIcon) then
+                lastIcon = icon
+            end
+
+		    curIconAlpha = Lerp(ft * 10, curIconAlpha, 255)
+		    curAlpha = Lerp(ft * 30, curAlpha, 0)
+        else
+            curIconAlpha = Lerp(ft * 30, curIconAlpha, 0)
+		    curAlpha = Lerp(ft * 10, curAlpha, (!client:isWepRaised() and 0 or 150))
+        end
+            
+        curAlpha = hook.Run("GetCrosshairAlpha", curAlpha, entity) or curAlpha
+        
+		drawdot( {math_round(cx), math_round(cy)}, crossSize, colors)
+		drawdot( {math_round(cx + curGap), math_round(cy)}, crossSize, colors)
+		drawdot( {math_round(cx - curGap), math_round(cy)}, crossSize, colors) 
+		drawdot( {math_round(cx), math_round(cy + curGap * .8)}, crossSize, colors) 
+        drawdot( {math_round(cx), math_round(cy - curGap * .8)}, crossSize, colors) 
+
+		nut.util.drawText(lastIcon or "", cx + (adx or 0), cy + (ady or 0), ColorAlpha(color_white, curIconAlpha), 1, 1, "nutCrossIcons")
+	end
+
+	function PLUGIN:GetCrosshairAlpha(curAlpha, entity, weapon, distance)
+        if (table.Count(nut.menu.list) > 0) then
+            return "", 0, ScreenScale(5)
+        end
+
+        if (IsValid(wep)) then
+            if (wep:GetNW2Bool("holdingObject", false) == true) then
+                return ""
+            end
+        end
+
+        if (IsValid(entity) and distance < 16384) then
+            if (!entity:IsPlayer() and !entity:IsNPC()) then
+                local class = entity:GetClass()
+                
+                if (!nut.xhair.entIgnore[class]) then 
+                    -- lmao
+                    if (class == "class C_BaseEntity") then
+                        return ""
+                    end
+
+                    if (nut.xhair.entIcon[class]) then
+                        return nut.xhair.entIcon[class]
+                    end
+                    
+                    if (IsValid(wep)) then
+                        local class = wep:GetClass()
+
+                        if (entity.isDoor and entity:isDoor()) then
+                                if (class == "nut_keys") then
+                                    local owner = entity.GetDTEntity(entity, 0)
+                                    local hey = entity:checkDoorAccess(wep.Owner)
+
+                                    if (owner == LocalPlayer() or hey) then
+                                        return ""
+                                    end
+                                end
+
+                            return ""
+                        end
+
+                        if (class == "nut_hands") then
+                            return ""
+                        end
+                    end
+                end
+            end
+        end
 	end
 end
