@@ -2851,48 +2851,6 @@
       "src": "fontawesome"
     },
     {
-      "uid": "12f4ece88e46abd864e40b35e05b11cd",
-      "css": "ok",
-      "code": 59546,
-      "src": "fontawesome"
-    },
-    {
-      "uid": "43ab845088317bd348dee1d975700c48",
-      "css": "ok-circled",
-      "code": 59547,
-      "src": "fontawesome"
-    },
-    {
-      "uid": "ad33e708f4d2e25c5056c931da1528d6",
-      "css": "ok-circled2",
-      "code": 59548,
-      "src": "fontawesome"
-    },
-    {
-      "uid": "1400d5103edd2fa6d2d61688fee79a5a",
-      "css": "ok-squared",
-      "code": 61770,
-      "src": "fontawesome"
-    },
-    {
-      "uid": "5211af474d3a9848f67f945e2ccaf143",
-      "css": "cancel",
-      "code": 59549,
-      "src": "fontawesome"
-    },
-    {
-      "uid": "0f4cae16f34ae243a6144c18a003f2d8",
-      "css": "cancel-circled",
-      "code": 59550,
-      "src": "fontawesome"
-    },
-    {
-      "uid": "2e2dba0307a502a8507c1729084c7ab5",
-      "css": "cancel-circled2",
-      "code": 59551,
-      "src": "fontawesome"
-    },
-    {
       "uid": "44e04715aecbca7f266a17d5a7863c68",
       "css": "plus",
       "code": 59552,
@@ -3535,6 +3493,144 @@
       "search": [
         "medical"
       ]
+    },
+    {
+      "uid": "b08cfe8039de2ce815686aced2caef06",
+      "css": "download-1",
+      "code": 59609,
+      "src": "entypo"
+    },
+    {
+      "uid": "44199a54057e6e264fde61a49b034171",
+      "css": "upload-1",
+      "code": 59615,
+      "src": "entypo"
+    },
+    {
+      "uid": "e3699d145bd628d2a35d4a508b616f0c",
+      "css": "equalizer",
+      "code": 59616,
+      "src": "iconic"
+    },
+    {
+      "uid": "991360fdaaad39ce2e91cae81cdc244c",
+      "css": "cd",
+      "code": 59617,
+      "src": "iconic"
+    },
+    {
+      "uid": "5386cf333c67332c278b798c9fded7e5",
+      "css": "loop-alt",
+      "code": 59618,
+      "src": "iconic"
+    },
+    {
+      "uid": "5d3ef4b7c90d2931e641b840ee42f694",
+      "css": "loop",
+      "code": 59619,
+      "src": "iconic"
+    },
+    {
+      "uid": "12f4ece88e46abd864e40b35e05b11cd",
+      "css": "ok-1",
+      "code": 59549,
+      "src": "fontawesome"
+    },
+    {
+      "uid": "5211af474d3a9848f67f945e2ccaf143",
+      "css": "cancel-1",
+      "code": 59550,
+      "src": "fontawesome"
+    },
+    {
+      "uid": "43ab845088317bd348dee1d975700c48",
+      "css": "ok-circled",
+      "code": 59551,
+      "src": "fontawesome"
+    },
+    {
+      "uid": "ad33e708f4d2e25c5056c931da1528d6",
+      "css": "ok-circled2",
+      "code": 59620,
+      "src": "fontawesome"
+    },
+    {
+      "uid": "1400d5103edd2fa6d2d61688fee79a5a",
+      "css": "ok-squared",
+      "code": 61770,
+      "src": "fontawesome"
+    },
+    {
+      "uid": "0f4cae16f34ae243a6144c18a003f2d8",
+      "css": "cancel-circled",
+      "code": 59621,
+      "src": "fontawesome"
+    },
+    {
+      "uid": "2e2dba0307a502a8507c1729084c7ab5",
+      "css": "cancel-circled2",
+      "code": 59622,
+      "src": "fontawesome"
+    },
+    {
+      "uid": "too2rspp5e6z6m0y6lconmv23uw3qlqo",
+      "css": "location-3",
+      "code": 59546,
+      "src": "modernpics"
+    },
+    {
+      "uid": "e6t4yvmv401e9gpo2anslq4uqy2iz692",
+      "css": "signal-1",
+      "code": 59547,
+      "src": "modernpics"
+    },
+    {
+      "uid": "858e967d1c67608546add6beebade5b3",
+      "css": "mic-1",
+      "code": 61512,
+      "src": "mfglabs"
+    },
+    {
+      "uid": "5dc427ad9f0644447ca5292911c378f1",
+      "css": "mic-off",
+      "code": 59548,
+      "src": "mfglabs"
+    },
+    {
+      "uid": "a8ed7903f8f548da5a8084e1773f0bbb",
+      "css": "chat-1",
+      "code": 61501,
+      "src": "mfglabs"
+    },
+    {
+      "uid": "51fb22f9ff9d7f60c95ef31e4c59502d",
+      "css": "comment-1",
+      "code": 62636,
+      "src": "mfglabs"
+    },
+    {
+      "uid": "018571e697f22ca41803de480e10ed10",
+      "css": "home-1",
+      "code": 59623,
+      "src": "mfglabs"
+    },
+    {
+      "uid": "77928c849ac2ae6e77d4eae9f2927c00",
+      "css": "flash-1",
+      "code": 59624,
+      "src": "mfglabs"
+    },
+    {
+      "uid": "5c8822b310f20896a3c55a25b71008a8",
+      "css": "bar",
+      "code": 59625,
+      "src": "maki"
+    },
+    {
+      "uid": "a4232c4b087d715e826ba0793dab59ae",
+      "css": "book-1",
+      "code": 59626,
+      "src": "elusive"
     },
     {
       "uid": "2af34401194b03d22d4ea47799cb4d50",

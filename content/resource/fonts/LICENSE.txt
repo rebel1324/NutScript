@@ -37,6 +37,15 @@ Font license info
    Homepage:  http://www.entypo.com
 
 
+## MFG Labs
+
+   Copyright (C) 2012 by Daniel Bruce
+
+   Author:    MFG Labs
+   License:   SIL (http://scripts.sil.org/OFL)
+   Homepage:  http://www.mfglabs.com/
+
+
 ## Iconic
 
    Copyright (C) 2012 by P.J. Onori
@@ -55,12 +64,12 @@ Font license info
    Homepage:  http://aristeides.com/
 
 
-## MFG Labs
+## Maki
 
-   Copyright (C) 2012 by Daniel Bruce
+   Copyright (C) Mapbox, LCC
 
-   Author:    MFG Labs
-   License:   SIL (http://scripts.sil.org/OFL)
-   Homepage:  http://www.mfglabs.com/
+   Author:    Mapbox
+   License:   BSD (https://github.com/mapbox/maki/blob/gh-pages/LICENSE.txt)
+   Homepage:  http://mapbox.com/maki/
 
 
