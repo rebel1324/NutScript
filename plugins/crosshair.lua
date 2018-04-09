@@ -34,14 +34,8 @@ if (CLIENT) then
     local sw, sh = ScrW(), ScrH()
 	local lastIcon = ""
 	
-    nut.xhair.entIcon = {
-        nut_vnd_medical = "",
-        nut_m_recycler = "",
-        nut_stash = "",
-        nut_money = "",
-    }
+    nut.xhair.entIcon = {}
     nut.xhair.entIgnore = {
-        nut_atm = true,
         func_physbox = true,
         prop_dynamic = true,
 	}
