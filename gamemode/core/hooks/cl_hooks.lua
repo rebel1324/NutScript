@@ -652,7 +652,7 @@ function GM:PlayerBindPress(client, bind, pressed)
 			local trace = util.TraceLine(data)
 			local entity = trace.Entity
 
-			if (IsValid(entity) and entity:GetClass() == "nut_item") then
+			if (IsValid(entity) and (entity:GetClass() == "nut_item" or entity.hasMenu == true)) then
 				hook.Run("ItemShowEntityMenu", entity)
 			end
 		end
@@ -677,11 +677,6 @@ function GM:ItemShowEntityMenu(entity)
 
 	local options = {}
 	local itemTable = entity:getItemTable()
-
-	if (!itemTable) then
-		nut.util.notifyLocalized("tellAdmin", "wid!xt_cl")
-		return false
-	end
 
 	local function callback(index)
 		if (IsValid(entity)) then
