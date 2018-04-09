@@ -60,7 +60,7 @@ function nut.menu.drawAll()
 			if (IsValid(entity)) then
 				local realPos = entity:LocalToWorld(v.position)
 
-				v.entPos = LerpVector(frameTime * 0.25, v.entPos or realPos, realPos)
+				v.entPos = LerpVector(frameTime * 0.5, v.entPos or realPos, realPos)
 				position = v.entPos:ToScreen()
 			-- The attached entity is gone, remove the menu.
 			else
@@ -86,7 +86,7 @@ function nut.menu.drawAll()
 
 		-- Make the menu more visible if the center is inside the menu or it hasn't peaked in alpha yet.
 		if (!v.displayed or inside) then
-			v.alpha = math.Approach(alpha or 0, 255, frameTime * 10)
+			v.alpha = math.Approach(alpha or 0, 255, frameTime * 25)
 
 			-- If this is the first time we reach full alpha, store it.
 			if (v.alpha == 255) then
@@ -94,7 +94,7 @@ function nut.menu.drawAll()
 			end
 		-- Otherwise the menu should fade away.
 		else
-			v.alpha = math.Approach(alpha or 0, 0, inRange and frameTime or (frameTime * 15))
+			v.alpha = math.Approach(alpha or 0, 0, inRange and frameTime or (frameTime * 45))
 
 			-- If it has completely faded away, remove it.
 			if (v.alpha == 0) then
