@@ -211,6 +211,7 @@ function SWEP:reset(throw)
 
 	self.dt.carried_rag = nil
 
+	self:SetNW2Bool("holdingObject", nil)
 	self.holdingEntity = nil
 	self.carryHack = nil
 	self.constr = nil
@@ -598,7 +599,8 @@ function SWEP:pickup(entity)
 			else
 			   self.dt.carried_rag = nil
 			end
-		 
+			
+			self:SetNW2Bool("holdingObject", true)
 			self.constr = constraint.Weld(self.carryHack, self.holdingEntity, 0, bone, max_force, true)
 			self.Owner:EmitSound("physics/body/body_medium_impact_soft"..math.random(1, 3)..".wav", 75)
 
