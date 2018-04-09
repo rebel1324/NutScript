@@ -223,6 +223,15 @@
 .icon-emo-laugh { *zoom: expression( this.runtimeStyle['zoom'] = '1', this.innerHTML = '&#xe8d2;&nbsp;'); }
 .icon-emo-shoot { *zoom: expression( this.runtimeStyle['zoom'] = '1', this.innerHTML = '&#xe8d3;&nbsp;'); }
 .icon-emo-wink { *zoom: expression( this.runtimeStyle['zoom'] = '1', this.innerHTML = '&#xe8d4;&nbsp;'); }
+.icon-moneybag { *zoom: expression( this.runtimeStyle['zoom'] = '1', this.innerHTML = '&#xe8d5;&nbsp;'); }
+.icon-sale { *zoom: expression( this.runtimeStyle['zoom'] = '1', this.innerHTML = '&#xe8d6;&nbsp;'); }
+.icon-starsign { *zoom: expression( this.runtimeStyle['zoom'] = '1', this.innerHTML = '&#xe8d7;&nbsp;'); }
+.icon-salesign { *zoom: expression( this.runtimeStyle['zoom'] = '1', this.innerHTML = '&#xe8d8;&nbsp;'); }
+.icon-exchange { *zoom: expression( this.runtimeStyle['zoom'] = '1', this.innerHTML = '&#xe8da;&nbsp;'); }
+.icon-document { *zoom: expression( this.runtimeStyle['zoom'] = '1', this.innerHTML = '&#xe8db;&nbsp;'); }
+.icon-pill { *zoom: expression( this.runtimeStyle['zoom'] = '1', this.innerHTML = '&#xe8dc;&nbsp;'); }
+.icon-pill2 { *zoom: expression( this.runtimeStyle['zoom'] = '1', this.innerHTML = '&#xe8dd;&nbsp;'); }
+.icon-medical { *zoom: expression( this.runtimeStyle['zoom'] = '1', this.innerHTML = '&#xe8de;&nbsp;'); }
 .icon-move { *zoom: expression( this.runtimeStyle['zoom'] = '1', this.innerHTML = '&#xf047;&nbsp;'); }
 .icon-lock-open-alt-1 { *zoom: expression( this.runtimeStyle['zoom'] = '1', this.innerHTML = '&#xf075;&nbsp;'); }
 .icon-link-ext { *zoom: expression( this.runtimeStyle['zoom'] = '1', this.innerHTML = '&#xf08e;&nbsp;'); }
@@ -256,7 +265,7 @@
 .icon-sitemap { *zoom: expression( this.runtimeStyle['zoom'] = '1', this.innerHTML = '&#xf0e8;&nbsp;'); }
 .icon-paste { *zoom: expression( this.runtimeStyle['zoom'] = '1', this.innerHTML = '&#xf0ea;&nbsp;'); }
 .icon-lightbulb { *zoom: expression( this.runtimeStyle['zoom'] = '1', this.innerHTML = '&#xf0eb;&nbsp;'); }
-.icon-exchange { *zoom: expression( this.runtimeStyle['zoom'] = '1', this.innerHTML = '&#xf0ec;&nbsp;'); }
+.icon-exchange-1 { *zoom: expression( this.runtimeStyle['zoom'] = '1', this.innerHTML = '&#xf0ec;&nbsp;'); }
 .icon-download-cloud { *zoom: expression( this.runtimeStyle['zoom'] = '1', this.innerHTML = '&#xf0ed;&nbsp;'); }
 .icon-upload-cloud { *zoom: expression( this.runtimeStyle['zoom'] = '1', this.innerHTML = '&#xf0ee;&nbsp;'); }
 .icon-user-md { *zoom: expression( this.runtimeStyle['zoom'] = '1', this.innerHTML = '&#xf0f0;&nbsp;'); }

@@ -1,11 +1,11 @@
 @font-face {
   font-family: 'nsicons';
-  src: url('../font/nsicons.eot?75097289');
-  src: url('../font/nsicons.eot?75097289#iefix') format('embedded-opentype'),
-       url('../font/nsicons.woff2?75097289') format('woff2'),
-       url('../font/nsicons.woff?75097289') format('woff'),
-       url('../font/nsicons.ttf?75097289') format('truetype'),
-       url('../font/nsicons.svg?75097289#nsicons') format('svg');
+  src: url('../font/nsicons.eot?41378625');
+  src: url('../font/nsicons.eot?41378625#iefix') format('embedded-opentype'),
+       url('../font/nsicons.woff2?41378625') format('woff2'),
+       url('../font/nsicons.woff?41378625') format('woff'),
+       url('../font/nsicons.ttf?41378625') format('truetype'),
+       url('../font/nsicons.svg?41378625#nsicons') format('svg');
   font-weight: normal;
   font-style: normal;
 }
@@ -15,7 +15,7 @@
 @media screen and (-webkit-min-device-pixel-ratio:0) {
   @font-face {
     font-family: 'nsicons';
-    src: url('../font/nsicons.svg?75097289#nsicons') format('svg');
+    src: url('../font/nsicons.svg?41378625#nsicons') format('svg');
   }
 }
 */
@@ -268,6 +268,15 @@
 .icon-emo-laugh:before { content: '\e8d2'; } /* '' */
 .icon-emo-shoot:before { content: '\e8d3'; } /* '' */
 .icon-emo-wink:before { content: '\e8d4'; } /* '' */
+.icon-moneybag:before { content: '\e8d5'; } /* '' */
+.icon-sale:before { content: '\e8d6'; } /* '' */
+.icon-starsign:before { content: '\e8d7'; } /* '' */
+.icon-salesign:before { content: '\e8d8'; } /* '' */
+.icon-exchange:before { content: '\e8da'; } /* '' */
+.icon-document:before { content: '\e8db'; } /* '' */
+.icon-pill:before { content: '\e8dc'; } /* '' */
+.icon-pill2:before { content: '\e8dd'; } /* '' */
+.icon-medical:before { content: '\e8de'; } /* '' */
 .icon-move:before { content: '\f047'; } /* '' */
 .icon-lock-open-alt-1:before { content: '\f075'; } /* '' */
 .icon-link-ext:before { content: '\f08e'; } /* '' */
@@ -301,7 +310,7 @@
 .icon-sitemap:before { content: '\f0e8'; } /* '' */
 .icon-paste:before { content: '\f0ea'; } /* '' */
 .icon-lightbulb:before { content: '\f0eb'; } /* '' */
-.icon-exchange:before { content: '\f0ec'; } /* '' */
+.icon-exchange-1:before { content: '\f0ec'; } /* '' */
 .icon-download-cloud:before { content: '\f0ed'; } /* '' */
 .icon-upload-cloud:before { content: '\f0ee'; } /* '' */
 .icon-user-md:before { content: '\f0f0'; } /* '' */
