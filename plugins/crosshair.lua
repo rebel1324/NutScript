@@ -120,7 +120,7 @@ if (CLIENT) then
 		nut.util.drawText(lastIcon or "", cx + (adx or 0), cy + (ady or 0), ColorAlpha(color_white, curIconAlpha), 1, 1, "nutCrossIcons")
 	end
 
-	function PLUGIN:GetCrosshairAlpha(curAlpha, entity, weapon, distance)
+	function PLUGIN:GetCrosshairIcon(curAlpha, entity, weapon, distance)
         if (table.Count(nut.menu.list) > 0) then
             return "", 0, ScreenScale(5)
         end
