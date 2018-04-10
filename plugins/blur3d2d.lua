@@ -39,7 +39,7 @@ function nut.blur3d2d.resume(id)
     end
 end
 
-hook.Add("PostDrawTranslucentRenderables", "blur", function()
+function PLUGIN:PostDrawTranslucentRenderables()
     render.ClearStencil()
     render.SetStencilEnable(true)
     
@@ -53,33 +53,35 @@ hook.Add("PostDrawTranslucentRenderables", "blur", function()
     render.SetStencilReferenceValue(1)
     
     -- I had to change this because I don't want to make draw post process compute run by O(n) 
-    SUPPRESS_FROM_STENCIL = true
-        for _, data in pairs(nut.blur3d2d.list) do
-            if (data.draw == false) then continue end
+    if (table.Count(nut.blur3d2d.list) > 0) then
+        SUPPRESS_FROM_STENCIL = true
+            for _, data in pairs(nut.blur3d2d.list) do
+                if (data.draw == false) then continue end
 
-            cam.Start3D2D(data.pos, data.ang, data.scale)
-                data.callback()
-            cam.End3D2D()
-        end     
+                cam.Start3D2D(data.pos, data.ang, data.scale)
+                    data.callback()
+                cam.End3D2D()
+            end     
 
-        render.SetStencilReferenceValue(2)
-        render.SetStencilCompareFunction( STENCILCOMPARISONFUNCTION_EQUAL )
-        render.SetStencilPassOperation( STENCILOPERATION_REPLACE )
-        render.SetStencilReferenceValue(1)
-        cam.Start2D()
-            nut.util.drawBlurAt(0, 0, ScrW(), ScrH())
-        cam.End2D()
-        render.SetStencilEnable( false )
+            render.SetStencilReferenceValue(2)
+            render.SetStencilCompareFunction( STENCILCOMPARISONFUNCTION_EQUAL )
+            render.SetStencilPassOperation( STENCILOPERATION_REPLACE )
+            render.SetStencilReferenceValue(1)
+            cam.Start2D()
+                nut.util.drawBlurAt(0, 0, ScrW(), ScrH(), nut.blur3d2d.amount, nut.blur3d2d.passes)
+            cam.End2D()
+            render.SetStencilEnable( false )
 
-        for _, data in pairs(nut.blur3d2d.list) do
-            if (data.draw == false) then continue end
+            for _, data in pairs(nut.blur3d2d.list) do
+                if (data.draw == false) then continue end
 
-            cam.Start3D2D(data.pos, data.ang, data.scale)
-                data.callback(true)
-            cam.End3D2D()
-        end
-    SUPPRESS_FROM_STENCIL = nil
-end)
+                cam.Start3D2D(data.pos, data.ang, data.scale)
+                    data.callback(true)
+                cam.End3D2D()
+            end
+        SUPPRESS_FROM_STENCIL = nil
+    end
+end
 
 --[[
 ]]--
