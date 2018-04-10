@@ -91,6 +91,10 @@ if (CLIENT) then
         local icon, adx, ady = hook.Run("GetCrosshairIcon", curAlpha, entity, wep, distance)
         local cx, cy = sw/2, sh/2
 
+		if (client:ShouldDrawLocalPlayer()) then
+			cx, cy = screen.x, screen.y
+		end
+
         if (icon) then
             if (icon != lastIcon) then
                 lastIcon = icon
