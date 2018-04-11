@@ -74,7 +74,15 @@ function ENT:getStock(uniqueID)
 end
 
 function ENT:getPrice(uniqueID, selling)
-	local price = nut.item.list[uniqueID] and self.items[uniqueID] and self.items[uniqueID][VENDOR_PRICE] or nut.item.list[uniqueID].price or 0
+	local price 
+
+	if (isstring(uniqueID)) then
+		price = nut.item.list[uniqueID] and self.items[uniqueID] and self.items[uniqueID][VENDOR_PRICE] or nut.item.list[uniqueID]:getPrice() or 0
+	elseif (istable(uniqueID)) then
+		price = uniqueID:getPrice()
+	elseif (isnumber(uniqueID)) then
+		price = nut.item.instances[uniqueID]:getPrice()
+	end
 
 	if (selling) then
 		price = math.floor(price * (self.scale or 0.5))

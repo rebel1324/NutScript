@@ -261,14 +261,9 @@ if (SERVER) then
 			if (isSellingToVendor) then
 				local found = false
 				local name
-				
-				if (!entity:hasMoney(price)) then
-					return client:notifyLocalized("vendorNoMoney")
-				end
-
-				local invOkay = true
 				local inv = client:getChar():getInv()
 				local virtualInv = nut.item.inventories[0]
+				
 				for k, v in pairs(inv:getItems()) do
 					if (v.uniqueID == uniqueID and v:getID() != 0 and istable(nut.item.instances[v:getID()])) then
 						if (hook.Run("CanItemBeTransfered", v, inv, virtualInv) == false) then
@@ -279,17 +274,23 @@ if (SERVER) then
 							return false, "notAllowed"
 						end
 
-						invOkay = v:remove()
-						found = true
+						found = v
 						name = L(v.name, client)
-
 						break
 					end
 				end
-
+				
 				if (!found) then
-					return
+					return client:notifyLocalized("noItem")
 				end
+				
+				price = entity:getPrice(found, isSellingToVendor)
+
+				if (!entity:hasMoney(price)) then
+					return client:notifyLocalized("vendorNoMoney")
+				end
+				
+				local invOkay = v:remove()
 				
 				if (!invOkay) then
 					client:getChar():getInv():sync(client, true)

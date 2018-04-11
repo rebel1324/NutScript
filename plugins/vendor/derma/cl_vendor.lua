@@ -85,7 +85,9 @@ local PANEL = {}
 	function PANEL:addItem(uniqueID, listID)
 		local entity = self.entity
 		local items = entity.items
-		local data = items[uniqueID]
+		local data = istable(uniqueID) and items[uniqueID.uniqueID] or items[uniqueID]
+		local itemData = istable(uniqueID) and uniqueID or nut.item.list[uniqueID]
+		uniqueID = istable(uniqueID) and uniqueID.uniqueID or uniqueID
 
 		if ((!listID or listID == "selling") and !IsValid(self.sellingList[uniqueID])) then
 			if (data and data[VENDOR_MODE] and data[VENDOR_MODE] != VENDOR_BUYONLY) then
@@ -97,13 +99,14 @@ local PANEL = {}
 			end
 		end
 
-		if ((!listID or listID == "buying") and !IsValid(self.buyingList[uniqueID]) and LocalPlayer():getChar():getInv():hasItem(uniqueID)) then
+		if ((!listID or listID == "buying") and !IsValid(self.buyingList[uniqueID])) then
 			if (data and data[VENDOR_MODE] and data[VENDOR_MODE] != VENDOR_SELLONLY) then
+				--  and LocalPlayer():getChar():getInv():hasItem(uniqueID)
 				local item = self.buyingItems:Add("nutVendorItem")
-				item:setup(uniqueID)
+				item:setup(itemData)
 				item.isLocal = true
 
-				self.buyingList[uniqueID] = item
+				self.buyingList[itemData.isStackable and itemData.id or itemData.uniqueID] = item
 				self.buyingItems:InvalidateLayout()
 			end
 		end
@@ -135,7 +138,11 @@ local PANEL = {}
 		end
 
 		for k, v in SortedPairs(LocalPlayer():getChar():getInv():getItems()) do
-			self:addItem(v.uniqueID, "buying")
+			if (v.isStackable) then
+				self:addItem(v, "buying")
+			else
+				self:addItem(v.uniqueID, "buying")
+			end
 		end
 	end
 
@@ -218,13 +225,17 @@ PANEL = {}
 	end
 
 	function PANEL:setup(uniqueID)
-		local item = nut.item.list[uniqueID]
+		local item = istable(uniqueID) and uniqueID or nut.item.list[uniqueID]
 
 		if (item) then
-			self.item = uniqueID
+			self.item = istable(uniqueID) and uniqueID.uniqueID or uniqueID
 			self.icon:SetModel(item.model, item.skin or 0)
 			self.name:SetText(L(item.name))
 			self.itemName = L(item.name)
+
+			if (item.id != 0) then
+				self.itemTable = item
+			end
 		end
 	end
 
@@ -235,7 +246,13 @@ PANEL = {}
 
 			if (entity) then
 				if (self.isLocal) then
-					local count = LocalPlayer():getChar():getInv():getItemCount(self.item)
+					local count = 0
+
+					if (self.itemTable) then
+						count = self.itemTable:getQuantity()
+					else
+						count = LocalPlayer():getChar():getInv():getItemCount(self.item)
+					end
 
 					if (count == 0) then
 						self:Remove()
