@@ -3,7 +3,7 @@ PLUGIN.author = "Black Tea"
 PLUGIN.desc = "Plugin for Developers."
 
 nut.blur3d2d = nut.blur3d2d or {}
-nut.blur3d2d.list = {}
+nut.blur3d2d.list = nut.blur3d2d.list or {}
 
 -- for easy managements
 function nut.blur3d2d.add(id, pos, ang, scale, callback)
