@@ -39,6 +39,10 @@ function nut.blur3d2d.resume(id)
     end
 end
 
+function nut.blur3d2d.get(id)
+    return nut.blur3d2d.list[id]
+end
+
 function PLUGIN:PostDrawTranslucentRenderables()
     render.ClearStencil()
     render.SetStencilEnable(true)
