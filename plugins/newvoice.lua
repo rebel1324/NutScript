@@ -44,6 +44,7 @@ if (CLIENT) then
         
         surface.SetDrawColor(0, 0, 0, 50 + self.client:VoiceVolume() * 50)
         surface.DrawRect(0, 0, w, h)
+        
         surface.SetDrawColor(255, 255, 255, 50 + self.client:VoiceVolume() * 120)
         surface.DrawOutlinedRect(0, 0, w, h)
     end
@@ -72,7 +73,7 @@ if (CLIENT) then
 
     vgui.Register("VoicePanel", PANEL,  "DPanel")
 
-    function GM:PlayerStartVoice(client)
+    function PLUGIN:PlayerStartVoice(client)
         if (!IsValid(g_VoicePanelList)) then return end
         
         hook.Run("PlayerEndVoice", client)
@@ -105,7 +106,7 @@ if (CLIENT) then
     end
     timer.Create("VoiceClean", 10, 0, VoiceClean)
 
-    function GM:PlayerEndVoice(client)
+    function PLUGIN:PlayerEndVoice(client)
         if (IsValid(nsVoicePanels[client])) then
             if (nsVoicePanels[client].fadeAnim) then return end
 
@@ -115,6 +116,9 @@ if (CLIENT) then
     end
 
     local function CreateVoiceVGUI()
+        gmod.GetGamemode().PlayerStartVoice = function() end
+        gmod.GetGamemode().PlayerEndVoice = function() end
+        
         g_VoicePanelList = vgui.Create("DPanel")
 
         g_VoicePanelList:ParentToHUD()
