@@ -5,7 +5,9 @@ PLUGIN.name = "PAC3 Integration"
 PLUGIN.author = "Black Tea"
 PLUGIN.desc = "More Upgraded, More well organized PAC3 Integration made by Black Tea"
 
-if (!pace) then return end
+if (!pace) then
+	return
+end
 
 nut.config.add("pacAdminOnly", true, "Whether or not PAC is admin only.", nil, {
 	category = "server"
@@ -37,40 +39,11 @@ if (CLIENT) then
 		hook.Remove("HUDPaint", "pac_InPAC3Editor")
 		hook.Remove("InitPostEntity", "pace_autoload_parts")
 	end
+end
 
-	-- Remove PAC3 LoadParts
-	function pace.LoadParts(name, clear, override_part)
-		-- fuck your loading, pay me money bitch
-	end
-
-	-- Prohibits players from deleting their own PAC3 outfit.
-	concommand.Add("pac_clear_parts", function()
-		RunConsoleCommand("pac_restart")
-		--STOP BREAKING STUFFS!
-	end)
-
-	-- You should be admin to access PAC3 editor.
-	function PLUGIN:PrePACEditorOpen()
-		local client = LocalPlayer()
-
-		if (nut.config.get("pacAdminOnly") and !client:IsSuperAdmin()) then
-			return false
-		end
-
-		return true
-	end
-else
-	-- Reject unauthorized PAC3 submits
-	net.Receive("pac_submit", function(_, ply)
-		if (!ply) then return end -- ???
-		if (nut.config.get("pacAdminOnly") and !ply:IsSuperAdmin()) then
-			ply:notifyLocalized("illegalAccess")
-			return 
-		end
-
-		local data = pace.net.DeserializeTable()
-		pace.HandleReceivedData(ply, data)
-	end)
+-- the latest PAC3 required 2018/04/15
+function PLUGIN:CanWearParts(client, file)
+	return nut.config.get("pacAdminOnly") and client:IsAdmin() or true, "illegalAccess"
 end
 
 -- Get Player's PAC3 Parts.
@@ -82,9 +55,7 @@ end
 
 if (SERVER) then
 	function meta:addPart(uid, item)
-		if (!pac) then
-			ErrorNoHalt("NO PAC3!\n")
-		return end
+		if (!pac) then return end
 		
 		local curParts = self:getParts()
 
@@ -115,6 +86,11 @@ if (SERVER) then
 	end
 
 	function PLUGIN:PlayerLoadedChar(client, curChar, prevChar)
+		if (!client.pacSynced) then
+			client.pacSynced = true
+			netstream.Start(client, "updatePAC")
+		end
+
 		-- If player is changing the char and the character ID is differs from the current char ID.
 		if (prevChar and curChar:getID() != prevChar:getID()) then
 			client:resetParts()
@@ -123,30 +99,45 @@ if (SERVER) then
 		-- After resetting all PAC3 outfits, wear all equipped PAC3 outfits.
 		if (curChar) then
 			local inv = curChar:getInv()
+
 			for k, v in pairs(inv:getItems()) do
 				if (v:getData("equip") == true and v.pacData) then
-					client:addPart(v.uniqueID, v)
+					client:addPart(v.uniqueID)
 				end
 			end
 		end
-	end
-
-	function PLUGIN:PlayerInitialSpawn(client)
-		netstream.Start(client, "updatePAC")
 	end
 else
 	netstream.Hook("updatePAC", function()
 		if (!pac) then return end
 
-		for k, v in ipairs(player.GetAll()) do
-			local char = v:getChar()
+		for _, wearer in ipairs(player.GetAll()) do
+			local char = wearer:getChar()
 
 			if (char) then
-				local parts = client:getParts()
+				local parts = wearer:getParts()
 
 				for pacKey, pacValue in pairs(parts) do
-					if (nut.pac.list[pacKey]) then
-						v:AttachPACPart(nut.pac.list[pacKey])
+					local pacData = nut.pac.list[pacKey]
+					local itemTable = nut.item.list[pacKey]
+
+					if (pacData) then
+						if (itemTable and itemTable.pacAdjust) then
+							pacData = table.Copy(nut.pac.list[pacKey])
+							pacData = itemTable:pacAdjust(pacData, wearer)
+						end
+
+						if (wearer.AttachPACPart) then
+							wearer:AttachPACPart(pacData)
+						else
+							pac.SetupENT(wearer)
+
+							timer.Simple(0.1, function()
+								if (IsValid(wearer) and wearer.AttachPACPart) then
+									wearer:AttachPACPart(pacData)
+								end
+							end)
+						end
 					end
 				end
 			end
@@ -155,10 +146,6 @@ else
 
 	netstream.Hook("partWear", function(wearer, outfitID)
 		if (!pac) then return end
-		
-		if (!wearer.pac_owner) then
-			pac.SetupENT(wearer)
-		end
 		
 		local itemTable = nut.item.list[outfitID]
 		local newPac = nut.pac.list[outfitID]
@@ -177,8 +164,6 @@ else
 				timer.Simple(0.1, function()
 					if (IsValid(wearer) and wearer.AttachPACPart) then
 						wearer:AttachPACPart(newPac)
-					else
-						print("alright, no more PAC3 for you. Go away.")
 					end
 				end)
 			end
@@ -187,23 +172,19 @@ else
 
 	netstream.Hook("partRemove", function(wearer, outfitID)
 		if (!pac) then return end
-		
-		if (!wearer.pac_owner) then
-			pac.SetupENT(wearer)
-		end
 
 		if (nut.pac.list[outfitID]) then
 			if (wearer.RemovePACPart) then
 				wearer:RemovePACPart(nut.pac.list[outfitID])
-			else
-				pac.SetupENT(wearer)
 			end
 		end
 	end)
 
 	netstream.Hook("partReset", function(wearer, outfitList)
 		for k, v in pairs(outfitList) do
-			wearer:RemovePACPart(nut.pac.list[k])
+			if (wearer.RemovePACPart) then
+				wearer:RemovePACPart(nut.pac.list[k])
+			end
 		end
 	end)
 
