@@ -26,12 +26,11 @@ else
 	-- List of notice panels.
 	nut.notices = nut.notices or {}
 	
-	local scrW = ScrW()
 	-- Move all notices to their proper positions.
 	local function OrganizeNotices()
 
 		for k, v in ipairs(nut.notices) do
-			v:MoveTo(scrW - (v:GetWide() + 4), (k - 1) * (v:GetTall() + 4) + 4, 0.15, (k / #nut.notices) * 0.25, nil)
+			v:MoveTo(ScrW() - (v:GetWide() + 4), (k - 1) * (v:GetTall() + 4) + 4, 0.15, (k / #nut.notices) * 0.25, nil)
 		end
 	end
 	
