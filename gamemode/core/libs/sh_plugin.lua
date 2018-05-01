@@ -184,6 +184,11 @@ function nut.plugin.initialize()
 	nut.plugin.loadFromDir("nutscript/plugins")
 	nut.plugin.loadFromDir(engine.ActiveGamemode().."/plugins")
 	hook.Run("InitializedPlugins")
+	
+	if (SERVER) then
+		hook.Run("LoadData")
+		hook.Run("PostLoadData")
+	end
 end
 
 function nut.plugin.loadFromDir(directory)
