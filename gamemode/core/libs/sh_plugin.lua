@@ -27,8 +27,6 @@ function nut.plugin.load(uniqueID, path, isSingleFile, variable)
 	_G[variable] = PLUGIN
 	PLUGIN.loading = true
 
-	nut.util.include(isSingleFile and path or path.."/sh_"..variable:lower()..".lua", "shared")
-	
 	if (!isSingleFile) then
 		nut.util.includeDir(path.."/libs", true, true)
 		nut.attribs.loadFromDir(path.."/attributes")
@@ -42,6 +40,8 @@ function nut.plugin.load(uniqueID, path, isSingleFile, variable)
 
 		hook.Run("DoPluginIncludes", path, PLUGIN)
 	end
+	
+	nut.util.include(isSingleFile and path or path.."/sh_"..variable:lower()..".lua", "shared")
 	
 	PLUGIN.loading = false
 
