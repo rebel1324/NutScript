@@ -11,8 +11,8 @@ nut.log.color = {
 	[FLAG_SUCCESS] = Color(50, 200, 50),
 	[FLAG_WARNING] = Color(255, 255, 0),
 	[FLAG_DANGER] = Color(255, 50, 50),
-	[FLAG_SERVER] = Color(200, 200, 220),
-	[FLAG_DEV] = Color(200, 200, 220),
+	[FLAG_SERVER] = Color(120, 0, 255),
+	[FLAG_DEV] = Color(0, 160, 255),
 }
 local consoleColor = Color(50, 200, 50)
 
@@ -50,10 +50,10 @@ if (SERVER) then
 		return text
 	end
 
-	function nut.log.addRaw(logString)		
-		nut.log.send(nut.util.getAdmins(), logString)
+	function nut.log.addRaw(logString, flag)		
+		nut.log.send(nut.util.getAdmins(), logString, flag)
 		
-		Msg("[LOG] ", logString .. "\n")
+		MsgC(consoleColor, "[LOG] ", nut.log.color[flag] or color_white, logString .. "\n")
 		
 		if (!noSave) then
 			file.Append("nutscript/logs/"..os.date("%x"):gsub("/", "-")..".txt", "["..os.date("%X").."]\t"..logString.."\r\n")
@@ -66,7 +66,7 @@ if (SERVER) then
 
 		nut.log.send(nut.util.getAdmins(), logString)
 		
-		Msg("[LOG] ", logString .. "\n")
+		MsgC(consoleColor, "[LOG] ", color_white, logString .. "\n")
 		
 		if (!noSave) then
 			file.Append("nutscript/logs/"..os.date("%x"):gsub("/", "-")..".txt", "["..os.date("%X").."]\t"..logString.."\r\n")
@@ -84,6 +84,6 @@ if (SERVER) then
 	end
 else
 	netstream.Hook("nutLogStream", function(logString, flag)
-		MsgC(consoleColor, "[SERVER] ", color_white, logString .. "\n")
+		MsgC(consoleColor, "[SERVER] ", nut.log.color[flag] or color_white, logString .. "\n")
 	end)
 end
