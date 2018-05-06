@@ -16,7 +16,7 @@ if (SERVER) then
 	end)
 	nut.log.addType("charLoad", function(client, ...)
 		local arg = {...}
-		return (L("%s loaded the character #%s(%s)", client:Name(), arg[1], arg[2]))
+		return (L("%s loaded the character #%s (%s)", client:steamName(), arg[1], arg[2]))
 	end)
 	nut.log.addType("charDelete", function(client, ...)
 		local arg = {...}
