@@ -61,16 +61,22 @@ nut.item.loadFromDir("nutscript/gamemode/items")
 
 -- Called after the gamemode has loaded.
 function GM:Initialize()
-
+	if (CLIENT) then
+		-- Load all of the NutScript plugins.
+		nut.plugin.initialize()
+		-- Restore the configurations from earlier if applicable.
+		nut.config.load()
+	end
 end
 
+
 -- Called after nut.db.connect callback is ran.
-hook.Add("OnDatabaseLoaded", function()
+function GM:OnDatabaseLoaded()
 	-- Load all of the NutScript plugins.
 	nut.plugin.initialize()
 	-- Restore the configurations from earlier if applicable.
 	nut.config.load()
-end)
+end
 
 ITSTIMETOSTOP = false
 -- Called when a file has been modified.

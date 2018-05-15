@@ -183,8 +183,10 @@ function nut.plugin.initialize()
 	hook.Run("InitializedPlugins")
 	
 	if (SERVER) then
-		hook.Run("LoadData")
-		hook.Run("PostLoadData")
+		timer.Simple(0, function()
+			hook.Run("LoadData")
+			hook.Run("PostLoadData")
+		end)
 	end
 end
 

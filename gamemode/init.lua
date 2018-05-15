@@ -24,8 +24,8 @@ timer.Simple(0, function()
         -- Create the SQL tables if they do not exist.
         nut.db.loadTables()
         nut.log.loadTables()
-				
-	hook.Run("OnDatabaseLoaded")
+        
+	    hook.Run("OnDatabaseLoaded")
         
         MsgC(Color(0, 255, 0), "NutScript has connected to the database.\n")
         MsgC(Color(0, 255, 0), "Database Type: " .. nut.db.module .. ".\n")
