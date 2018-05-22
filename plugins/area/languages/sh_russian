@@ -1,0 +1,18 @@
+-- Written by kirukiru (http://steamcommunity.com/profiles/76561198155438309/)
+
+LANGUAGE = {
+	areaPlugin = "Плагин: Зонирование",
+	areaFontSize = "Размер Шрифта Зоны",
+	areaDispSpeed = "Скорость Отображения Зоны",
+	areaCommand = "Вызовите команду снова в другом месте чтобы назначить конечную точку.",
+	areaRemoved = "Вы удалили Зону '%s'.",
+	areaAdded = "Вы добавили Зону '%s'.",
+	areaChanged = "Вы изменили название Зоны с '%s' на '%s'.",
+	areaModified = "Вы изменили свойство Зоны '%s'.",
+	areaManager = "Управление Зонами",
+	areaManagerTip = "Кликните чтобы взаимодействовать с Зоной.",
+	enterAreaName = "Введите новое название Зоны.",
+	moveToArea = "Переместиться к Зоне",
+	renameArea = "Переименовать Зону",
+	deleteArea = "Удалить Зону",
+}
