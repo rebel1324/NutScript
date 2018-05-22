@@ -48,6 +48,10 @@ if (SERVER) then
 	end
 
 	function PLUGIN:LoadData()
+		for k, v in ipairs(ents.FindByClass("nut_vendor")) do
+			v:Remove()
+		end
+
 		for k, v in ipairs(self:getData() or {}) do
 			local entity = ents.Create("nut_vendor")
 			entity:SetPos(v.pos)
