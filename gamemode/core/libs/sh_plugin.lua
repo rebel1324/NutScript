@@ -177,6 +177,7 @@ function nut.plugin.loadEntities(path)
 	HandleEntityInclusion("effects", "EFFECT", effects and effects.Register, nil, true)
 end
 
+DATA_INIT = DATA_INIT or false
 function nut.plugin.initialize()
 	nut.plugin.load("schema", engine.ActiveGamemode().."/schema")
 	hook.Run("InitializedSchema")
@@ -186,7 +187,11 @@ function nut.plugin.initialize()
 	hook.Run("InitializedPlugins")
 	
 	if (SERVER) then
-		hook.Run("LoadData")
+		if (!DATA_INIT) then
+			hook.Run("LoadData")
+		end
+
+		DATA_INIT = true
 		hook.Run("PostLoadData")
 	end
 end
