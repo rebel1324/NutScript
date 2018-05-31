@@ -38,6 +38,21 @@ function PLUGIN:callOnDoorChildren(entity, callback)
 	end
 end
 
+
+local kekDarkRP = {
+    ["DarkRPNonOwnable"] = function(ent, val) ent:setNetVar("noSell", true) end,
+    ["DarkRPTitle"]      = function(ent, val) ent:setNetVar("name", val) end,
+    --["DarkRPDoorGroup"]  = function(ent, val) if RPExtraTeamDoors[val] then ent:setDoorGroup(val) end end,
+    ["DarkRPCanLockpick"] = function(ent, val) ent.noPick = tobool(val) end
+}
+function PLUGIN:EntityKeyValue(ent, key, value)
+	if (!ent:isDoor()) then return end
+	
+    if kekDarkRP[key] then
+        kekDarkRP[key](ent, value)
+	end
+end
+
 function PLUGIN:copyParentDoor(child)
 	local parent = child.nutParent
 
