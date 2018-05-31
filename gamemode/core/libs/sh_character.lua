@@ -485,6 +485,10 @@ do
 			panel.payload.attribs = {}
 
 			for k, v in SortedPairsByMemberValue(nut.attribs.list, "name") do
+				if (v.noStartBonus) then
+					continue
+				end
+
 				panel.payload.attribs[k] = 0
 
 				local bar = container:Add("nutAttribBar")
@@ -499,10 +503,6 @@ do
 
 					total = total + difference
 					panel.payload.attribs[k] = panel.payload.attribs[k] + difference
-				end
-
-				if (v.noStartBonus) then
-					bar:setReadOnly()
 				end
 
 				y2 = y2 + bar:GetTall() + 4
