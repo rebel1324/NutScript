@@ -189,10 +189,10 @@ function nut.plugin.initialize()
 	if (SERVER) then
 		if (!DATA_INIT) then
 			hook.Run("LoadData")
+			hook.Run("PostLoadData")
 		end
 
 		DATA_INIT = true
-		hook.Run("PostLoadData")
 	end
 end
 

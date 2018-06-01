@@ -250,7 +250,6 @@ function GM:CalcViewModelView(weapon, viewModel, oldEyePos, oldEyeAngles, eyePos
 	if (!IsValid(weapon)) then
 		return
 	end
-
 	local vm_origin, vm_angles = eyePos, eyeAngles
 
 	--Intervention of Nutscript Holster/Raise Angle/Positions. 

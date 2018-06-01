@@ -501,6 +501,8 @@ function GM:PlayerDisconnected(client)
 	end
 end
 
+
+	
 function GM:InitPostEntity()
 	local doors = ents.FindByClass("prop_door_rotating")
 
@@ -525,6 +527,9 @@ function GM:InitPostEntity()
 	timer.Simple(2, function()
 		nut.entityDataLoaded = true
 	end)
+
+	hook.Run("LoadData")
+	hook.Run("PostLoadData")
 end
 
 function GM:ShutDown()
