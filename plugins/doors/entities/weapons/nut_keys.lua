@@ -15,7 +15,7 @@ SWEP.Drop = false
 
 SWEP.ViewModelFOV = 45
 SWEP.ViewModelFlip = false
-SWEP.AnimPrefix	 = "rpg"
+SWEP.AnimPrefix	 = "passive"
 
 SWEP.ViewTranslation = 4
 
@@ -40,7 +40,7 @@ SWEP.LowerAngles2 = Angle(0, 5, -22)
 
 SWEP.IsAlwaysLowered = true
 SWEP.FireWhenLowered = true
-SWEP.HoldType = "passive"
+SWEP.HoldType = "normal"
 
 function SWEP:PreDrawViewModel(viewModel, weapon, client)
 	local hands = player_manager.TranslatePlayerHands(player_manager.TranslateToPlayerModelName(client:GetModel()))

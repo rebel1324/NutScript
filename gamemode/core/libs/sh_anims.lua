@@ -258,12 +258,12 @@ nut.anim.vort = {
 	glide = ACT_GLIDE
 }
 nut.anim.player = {
-	normal = {
+	--[[normal = {
 		[ACT_MP_STAND_IDLE] = ACT_HL2MP_IDLE,
 		[ACT_MP_CROUCH_IDLE] = ACT_HL2MP_IDLE_CROUCH,
 		[ACT_MP_WALK] = ACT_HL2MP_WALK,
 		[ACT_MP_RUN] = ACT_HL2MP_RUN
-	},
+	},]]--
 	passive = {
 		[ACT_MP_STAND_IDLE] = ACT_HL2MP_IDLE_PASSIVE,
 		[ACT_MP_WALK] = ACT_HL2MP_WALK_PASSIVE,
