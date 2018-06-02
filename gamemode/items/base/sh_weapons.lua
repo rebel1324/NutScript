@@ -111,9 +111,12 @@ ITEM.functions.Equip = {
 		local weapon = client:Give(item.class)
 
 		if (IsValid(weapon)) then
+			print("niba")
+			timer.Simple(0, function()
+				client:SelectWeapon(weapon:GetClass())
+				--client:SetActiveWeapon(weapon)
+			end)
 			client.carryWeapons[item.weaponCategory] = weapon
-			client:SelectWeapon(weapon:GetClass())
-			client:SetActiveWeapon(weapon)
 			client:EmitSound("items/ammo_pickup.wav", 80)
 
 			-- Remove default given ammo.
