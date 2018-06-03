@@ -242,6 +242,27 @@ function GM:LoadFonts(font, genericFont)
 		size = 48,
 		weight = 500
 	})
+
+	surface.CreateFont("nutIconsSmallNew", {
+		font = "nsicons",
+		size = 22,
+		extended = true,
+		weight = 500
+	})
+
+	surface.CreateFont("nutIconsMediumNew", {
+		font = "nsicons",
+		extended = true,
+		size = 28,
+		weight = 500
+	})
+
+	surface.CreateFont("nutIconsBigNew", {
+		font = "nsicons",
+		extended = true,
+		size = 48,
+		weight = 500
+	})
 end
 
 local LOWERED_ANGLES = Angle(30, -30, -25)
