@@ -29,3 +29,13 @@ function PLAYER:canAfford(amount)
     local char = self:getChar()
     return (char and char:hasMoney(amount))
 end
+
+if (CLIENT) then
+    netstream.Hook("nutSyncGesture", function(entity, a, b, c)
+        entity:AnimRestartGesture(a, b, c)
+    end)
+end
+function PLAYER:doGesture(a, b, c)
+    self:AnimRestartGesture(a, b, c)
+    netstream.Start(self:GetPos(), "nutSyncGesture", self, a, b, c)
+end
