@@ -108,6 +108,14 @@ if (SERVER) then
 		end
 	end
 else
+	function PLUGIN:PrePACEditorOpen(client)
+		return client:IsSuperAdmin()
+	end
+
+	function PLUGIN:PrePACConfigApply(client)
+		return client:IsSuperAdmin()
+	end
+
 	netstream.Hook("updatePAC", function()
 		if (!pac) then return end
 
