@@ -1,5 +1,6 @@
 local playerMeta = FindMetaTable("Player")
 
+nut.util.include("nutscript/gamemode/core/meta/sh_player.lua")
 -- nutData information for the player.
 do
 	if (SERVER) then
