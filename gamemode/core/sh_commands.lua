@@ -430,6 +430,8 @@ nut.command.add("givemoney", {
 
 			target:notifyLocalized("moneyTaken", nut.currency.get(amount))
 			client:notifyLocalized("moneyGiven", nut.currency.get(amount))
+
+			client:AnimRestartGesture(GESTURE_SLOT_ATTACK_AND_RELOAD, ACT_GMOD_GESTURE_ITEM_PLACE, true)
 		end
 	end
 })
@@ -477,6 +479,8 @@ nut.command.add("dropmoney", {
 		local money = nut.currency.spawn(client:getItemDropPos(), amount)
 		money.client = client
 		money.charID = client:getChar():getID()
+		
+		client:doGesture(GESTURE_SLOT_ATTACK_AND_RELOAD, ACT_GMOD_GESTURE_ITEM_PLACE, true)
 	end
 })
 
