@@ -294,7 +294,7 @@ if (SERVER) then
 					return client:notifyLocalized("vendorNoMoney")
 				end
 				
-				local invOkay = v:remove()
+				local invOkay = found:remove()
 				
 				if (!invOkay) then
 					client:getChar():getInv():sync(client, true)
@@ -306,7 +306,6 @@ if (SERVER) then
 				entity:takeMoney(price)
 				entity:addStock(uniqueID)
 
-				PLUGIN:SaveData()
 				hook.Run("OnCharTradeVendor", client, entity, uniqueID, isSellingToVendor)
 			else
 				local stock = entity:getStock(uniqueID)
@@ -334,7 +333,6 @@ if (SERVER) then
 
 				entity:takeStock(uniqueID)
 
-				PLUGIN:SaveData()
 				hook.Run("OnCharTradeVendor", client, entity, uniqueID, isSellingToVendor)
 			end
 		else
