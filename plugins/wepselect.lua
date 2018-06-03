@@ -147,7 +147,10 @@ if (CLIENT) then
 			elseif (bind:find("attack") and pressed and self.alpha > 0) then
 				lPly:EmitSound(hook.Run("WeaponSelectSound", lPly:GetWeapons()[self.index]) or "buttons/button16.wav")
 
-				lPly:SelectWeapon(lPly:GetWeapons()[self.index]:GetClass())
+				local weapon = lPly:GetWeapons()[self.index]
+				if (IsValid(weapon)) then
+					lPly:SelectWeapon(weapon:GetClass())
+				end
 				self.alpha = 0
 				return true
 			end
