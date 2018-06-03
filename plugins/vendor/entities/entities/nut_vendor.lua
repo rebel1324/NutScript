@@ -4,6 +4,7 @@ ENT.Category = "NutScript"
 ENT.Spawnable = true
 ENT.AdminOnly = true
 ENT.isVendor = true
+NUT_VENDORS = NUT_VENDORS or {}
 
 function ENT:Initialize()
 	if (SERVER) then
@@ -30,6 +31,8 @@ function ENT:Initialize()
 			physObj:EnableMotion(false)
 			physObj:Sleep()
 		end
+
+		NUT_VENDORS[self:EntIndex()] = self
 	end
 
 	timer.Simple(1, function()
@@ -254,6 +257,10 @@ if (SERVER) then
 		end
 
 		self:addStock(uniqueID, -(value or 1))
+	end
+
+	function ENT:OnRemove()
+		NUT_VENDORS[self:EntIndex()] = nil
 	end
 else
 	function ENT:createBubble()
