@@ -136,10 +136,16 @@ if (SERVER) then
 		local dist = entity:GetPos():Distance(client:GetPos())
 
 		if (dist < 128 and password) then
+			if !client.LastPass then client.LastPass = "" end
 			if (entity.password and entity.password == password) then
 				entity:OpenInv(client)
+				client.LastPass = password
 			else
-				client:notifyLocalized("wrongPassword")
+				if client.LastPass == entity.password then
+					entity:OpenInv(client)
+				else
+					client:notifyLocalized("wrongPassword")
+				end
 			end
 		end
 	end)
