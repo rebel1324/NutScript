@@ -5,21 +5,10 @@ AccessorFunc( PANEL, "m_bHangOpen", "HangOpen" )
 
 
 function PANEL:Init()
-
-	--
-	-- This makes it so that when you're hovering over this panel
-	-- you can `click` on the world. Your viewmodel will aim etc.
-	--
 	self:SetWorldClicker( true )
 
 	self.Canvas = vgui.Create( "DCategoryList", self )
 	self.m_bHangOpen = false
-	
-	--self.Canvas:EnableVerticalScrollbar( true )
-	--self.Canvas:SetSpacing( 0 )
-	--self.Canvas:SetPadding( 5 )
-	--self.Canvas:SetDrawBackground( false )
-	
 end
 
 
@@ -27,7 +16,6 @@ function PANEL:Open()
 
 	self:SetHangOpen( false )
 	
-	-- If the spawn menu is open, try to close it..
 	if ( g_SpawnMenu:IsVisible() ) then
 		g_SpawnMenu:Close( true )
 	end
@@ -45,9 +33,6 @@ function PANEL:Open()
 
 	local bShouldShow = true;
 
-	-- TODO: Any situation in which we shouldn't show the tool menu on the context menu?
-	
-	-- Set up the active panel..
 	if ( bShouldShow && IsValid( spawnmenu.ActiveControlPanel() ) ) then
 
 		self.OldParent = spawnmenu.ActiveControlPanel():GetParent()
@@ -232,8 +217,6 @@ end
 
 
 function GM:OnContextMenuOpen()
-
-	-- Let the gamemode decide whether we should open or not..
 	if ( !hook.Call( "ContextMenuOpen", GAMEMODE ) ) then return end
 		
 	if ( IsValid( g_ContextMenu ) && !g_ContextMenu:IsVisible() ) then
@@ -242,8 +225,7 @@ function GM:OnContextMenuOpen()
 		vgui.Create("nutQuick")
 
 		menubar.ParentTo( g_ContextMenu )
-	end
-	
+	end	
 end
 
 
