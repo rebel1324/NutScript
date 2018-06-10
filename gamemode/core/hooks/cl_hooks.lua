@@ -190,7 +190,6 @@ function GM:LoadFonts(font, genericFont)
 		weight = 800
 	})
 
-
 	-- Introduction fancy font.
 	font = "Cambria"
 
@@ -262,6 +261,14 @@ function GM:LoadFonts(font, genericFont)
 		extended = true,
 		size = 48,
 		weight = 500
+	})
+
+	surface.CreateFont("nutNoticeFont", {
+		font = genericFont,
+		size = 16,
+		weight = 500,
+		extended = true,
+		antialias = true
 	})
 end
 
@@ -697,6 +704,7 @@ function GM:ItemShowEntityMenu(entity)
 
 	local options = {}
 	local itemTable = entity:getItemTable()
+	if (!itemTable) then return end -- MARK: This is the where error came from.
 
 	local function callback(index)
 		if (IsValid(entity)) then
