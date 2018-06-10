@@ -92,10 +92,8 @@ if (SERVER) then
 		end
 
 		-- If player is changing the char and the character ID is differs from the current char ID.
-		if (prevChar and curChar:getID() != prevChar:getID()) then
-			client:resetParts()
-		end
-
+		client:resetParts()
+		
 		-- After resetting all PAC3 outfits, wear all equipped PAC3 outfits.
 		if (curChar) then
 			local inv = curChar:getInv()
