@@ -102,98 +102,70 @@ function nut.item.load(path, baseID, isBaseItem)
 	end
 end
 
-function nut.item.register(uniqueID, baseID, isBaseItem, path, luaGenerated)
-	local meta = nut.meta.item
+NUT_ITEM_DEFAULT_FUNCTIONS = {
+	drop = {
+		tip = "dropTip",
+		icon = "icon16/world.png",
+		onRun = function(item)
+			item:transfer()
 
-	if (uniqueID) then
-		ITEM = (isBaseItem and nut.item.base or nut.item.list)[uniqueID] or setmetatable({}, meta)
-			ITEM.desc = "noDesc"
-			ITEM.uniqueID = uniqueID
-			ITEM.base = baseID
-			ITEM.isBase = isBaseItem
-			ITEM.hooks = ITEM.hooks or {}
-			ITEM.postHooks = ITEM.postHooks or {}
-			ITEM.functions = ITEM.functions or {}
-			ITEM.functions.drop = ITEM.functions.drop or {
-				tip = "dropTip",
-				icon = "icon16/world.png",
-				onRun = function(item)
-					item:transfer()
+			return false
+		end,
+		onCanRun = function(item)
+			return (item.entity == nil and !IsValid(item.entity) and !item.noDrop)
+		end
+	},
+	take = {
+		tip = "takeTip",
+		icon = "icon16/box.png",
+		onRun = function(item)
+			-- is inventory exists and not a logical inventory 
+			local inventory = item.player:getChar():getInv()
+			
+			if (inventory) then
+				if (item.isStackable == true and item.canSplit == true) then
+					-- prevent data crashing
+					if (table.Count(item.data) == 0) then
+						local quantity = item:getQuantity()
+						local itemList = inventory:getItemsByUniqueID(item.uniqueID)
+						local fillTargets = {}
+						
+						for _, invItem in pairs(itemList) do
+							local itemMaxQuantity = invItem:getMaxQuantity()
+							local itemQuantity = invItem:getQuantity()
+							local dataAmount = table.Count(invItem.data) -- i don't want it
 
-					return false
-				end,
-				onCanRun = function(item)
-					return (!IsValid(item.entity) and !item.noDrop)
-				end
-			}
-			ITEM.functions.take = {
-			--ITEM.functions.take = ITEM.functions.take or {
-				tip = "takeTip",
-				icon = "icon16/box.png",
-				onRun = function(item)
-					local inventory = item.player:getChar():getInv()
-					-- is inventory exists and not a logical inventory 
-					
-					if (inventory) then
-						if (item.isStackable == true and item.canSplit == true) then
-							-- prevent data crashing
-							if (table.Count(item.data) == 0) then
-								local quantity = item:getQuantity()
-								local itemList = inventory:getItemsByUniqueID(item.uniqueID)
-								local fillTargets = {}
-								
-								for _, invItem in pairs(itemList) do
-									local itemMaxQuantity = invItem:getMaxQuantity()
-									local itemQuantity = invItem:getQuantity()
-									local dataAmount = table.Count(invItem.data) -- i don't want it
-
-									if (data or dataAmount > 0) then
-										continue
-									end
-
-									if (itemQuantity >= itemMaxQuantity) then 
-										continue
-									end
-
-									local stockQuantity = itemMaxQuantity - itemQuantity
-									local leftOver = quantity - stockQuantity
-									
-									if (leftOver <= 0) then
-										fillTargets[invItem] = itemQuantity + quantity
-										quantity = 0
-
-										break
-									else
-										fillTargets[invItem] = itemMaxQuantity
-										quantity = quantity - stockQuantity
-									end
-								end
-
-								for fillItem, amount in pairs(fillTargets) do
-									fillItem:setQuantity(amount, nil, item.player)
-								end
-
-								if (quantity <= 0) then
-									return true
-								else
-									item:setQuantity(quantity, nil, item.player)
-
-									local status, result = item.player:getChar():getInv():add(item.id)
-
-									if (!status) then
-										item.player:notify(result)
-
-										return false
-									else
-										if (item.data) then -- I don't like it but, meh...
-											for k, v in pairs(item.data) do
-												item:setData(k, v)
-											end
-										end
-									end
-								end
+							if (data or dataAmount > 0) then
+								continue
 							end
+
+							if (itemQuantity >= itemMaxQuantity) then 
+								continue
+							end
+
+							local stockQuantity = itemMaxQuantity - itemQuantity
+							local leftOver = quantity - stockQuantity
+							
+							if (leftOver <= 0) then
+								fillTargets[invItem] = itemQuantity + quantity
+								quantity = 0
+
+								break
+							else
+								fillTargets[invItem] = itemMaxQuantity
+								quantity = quantity - stockQuantity
+							end
+						end
+
+						for fillItem, amount in pairs(fillTargets) do
+							fillItem:setQuantity(amount, nil, item.player)
+						end
+
+						if (quantity <= 0) then
+							return true
 						else
+							item:setQuantity(quantity, nil, item.player)
+
 							local status, result = item.player:getChar():getInv():add(item.id)
 
 							if (!status) then
@@ -209,147 +181,152 @@ function nut.item.register(uniqueID, baseID, isBaseItem, path, luaGenerated)
 							end
 						end
 					end
-				end,
-				onCanRun = function(item)
-					return IsValid(item.entity)
+				else
+					local status, result = item.player:getChar():getInv():add(item.id)
+
+					if (!status) then
+						item.player:notify(result)
+
+						return false
+					else
+						if (item.data) then -- I don't like it but, meh...
+							for k, v in pairs(item.data) do
+								item:setData(k, v)
+							end
+						end
+					end
 				end
-			}
-			ITEM.functions.combine = ITEM.functions.combine or {
-				-- combine is not accessible via Derma Menu.
-				onCanRun = function(item, data)
-					if (IsValid(item.entity)) then return false end
-					
-					if (item.isStackable == true and item.canSplit == true) then
-						local targetItem = nut.item.instances[data]
+			end
+		end,
+		onCanRun = function(item)
+			return (item.entity != nil and IsValid(item.entity)) -- lmao just in case.
+		end
+	},
+	combine = {
+		-- combine is not accessible via Derma Menu.
+		onCanRun = function(item, data)
+			if (item.entity != nil and IsValid(item.entity)) then return false end
+			
+			if (item.isStackable == true and item.canSplit == true) then
+				local targetItem = nut.item.instances[data]
 
-						if (data and targetItem) then
-							if (targetItem.uniqueID == item.uniqueID) then
-								return true
-							end
-						end
-					end
-
-					return false
-				end,
-				onRun = function(item, data)
-					if (item.isStackable == true and item.canSplit == true) then
-						local targetItem = nut.item.instances[data]
-
-						if (data and targetItem) then
-							if (targetItem.uniqueID == item.uniqueID) then
-								local maxQuantity = item:getMaxQuantity()
-								local combinedQuantity = item:getQuantity() + targetItem:getQuantity()
-
-								if ((combinedQuantity / maxQuantity) > 1) then
-									targetItem:setQuantity(maxQuantity)
-									item:setQuantity(combinedQuantity - maxQuantity)
-
-									return false
-								else
-									targetItem:setQuantity(combinedQuantity)
-
-									return true
-								end
-							end
-						end
-					end
-
-					return false
-				end,
-			}
-			ITEM.functions.split = ITEM.functions.split or {
-				tip = "splitTip",
-				icon = "icon16/wrench.png",
-				onClick = function(item)
-					if (IsValid(item.entity)) then
-						return false
-					end
-					
-					if (nut.gui.split) then
-						nut.gui.split:Remove()
-					end
-
-					nut.gui.split = vgui.Create("nutItemSplit")
-					nut.gui.split:setItem(item)
-					nut.gui.split:noticeMe()
-
-					return false
-				end,
-				onCanRun = function(item)
-					if (IsValid(item.entity)) then
-						return false
-					end
-
-					if (item.isStackable == true and item.canSplit == true and item:getQuantity() > 1) then
+				if (data and targetItem) then
+					if (targetItem.uniqueID == item.uniqueID) then
 						return true
 					end
-
-					return false
-				end
-			}
-
-			local oldBase = ITEM.base
-
-			if (ITEM.base) then
-				local baseTable = nut.item.base[ITEM.base]
-
-				if (baseTable) then
-					for k, v in pairs(baseTable) do
-						if (ITEM[k] == nil) then
-							ITEM[k] = v
-						end
-
-						ITEM.baseTable = baseTable
-					end
-
-					local mergeTable = table.Copy(baseTable)
-					ITEM = table.Merge(mergeTable, ITEM)
-				else
-					ErrorNoHalt("[NutScript] Item '"..ITEM.uniqueID.."' has a non-existent base! ("..ITEM.base..")\n")
 				end
 			end
 
+			return false
+		end,
+		onRun = function(item, data)
+			if (item.isStackable == true and item.canSplit == true) then
+				local targetItem = nut.item.instances[data]
+
+				if (data and targetItem) then
+					if (targetItem.uniqueID == item.uniqueID) then
+						local maxQuantity = item:getMaxQuantity()
+						local combinedQuantity = item:getQuantity() + targetItem:getQuantity()
+
+						if ((combinedQuantity / maxQuantity) > 1) then
+							targetItem:setQuantity(maxQuantity)
+							item:setQuantity(combinedQuantity - maxQuantity)
+
+							return false
+						else
+							targetItem:setQuantity(combinedQuantity)
+
+							return true
+						end
+					end
+				end
+			end
+
+			return false
+		end,
+	},
+	split = {
+		tip = "splitTip",
+		icon = "icon16/wrench.png",
+		onClick = function(item)
+			if (IsValid(item.entity)) then
+				return false
+			end
+			
+			if (nut.gui.split) then
+				nut.gui.split:Remove()
+			end
+
+			nut.gui.split = vgui.Create("nutItemSplit")
+			nut.gui.split:setItem(item)
+			nut.gui.split:noticeMe()
+
+			return false
+		end,
+		onCanRun = function(item)
+			if (item.entity != nil and IsValid(item.entity)) then
+				return false
+			end
+
+			if (item.isStackable == true and item.canSplit == true and item:getQuantity() > 1) then
+				return true
+			end
+
+			return false
+		end
+	}
+}
+function nut.item.register(uniqueID, baseID, isBaseItem, path, luaGenerated)
+	if (uniqueID) then
+		local meta = nut.meta.item
+		local baseTable = nut.item.base[baseID]
+
+		if (baseID) then
+			if (!baseTable) then
+				ErrorNoHalt("[NutScript] Item '"..uniqueID.."' has a non-existent base! ("..baseID..")\n")
+				return 
+			end
+		end
+
+		ITEM = (baseTable and table.Copy(baseTable) or {})
+			ITEM.desc = "noDesc"
+			ITEM.uniqueID = uniqueID
+			ITEM.base = baseID
+			ITEM.isBase = isBaseItem
+			ITEM.hooks = ITEM.postHooks or {}
+			ITEM.postHooks = ITEM.postHooks or {}
+			ITEM.functions = ITEM.functions or table.Copy(NUT_ITEM_DEFAULT_FUNCTIONS)
+			ITEM.width = ITEM.width or 1
+			ITEM.height = ITEM.width or 1
+			ITEM.category = ITEM.category or "misc"
+
 			if (PLUGIN) then
 				ITEM.plugin = PLUGIN.uniqueID
+			end
+
+			function ITEM:hook(k, f)
+				ITEM.hooks[k] = f
+			end
+
+			function ITEM:postHook(k, f)
+				ITEM.postHooks[k] = f
 			end
 
 			if (!luaGenerated and path) then
 				nut.util.include(path)
 			end
 
-			if (ITEM.base and oldBase != ITEM.base) then
-				local baseTable = nut.item.base[ITEM.base]
-
-				if (baseTable) then
-					for k, v in pairs(baseTable) do
-						if (ITEM[k] == nil) then
-							ITEM[k] = v
-						end
-
-						ITEM.baseTable = baseTable
-					end
-
-					local mergeTable = table.Copy(baseTable)
-					ITEM = table.Merge(mergeTable, ITEM)
-				else
-					ErrorNoHalt("[NutScript] Item '"..ITEM.uniqueID.."' has a non-existent base! ("..ITEM.base..")\n")
-				end
-			end
-
-			ITEM.width = ITEM.width or 1
-			ITEM.height = ITEM.height or 1
-			ITEM.category = ITEM.category or "misc"
-
 			if (ITEM.onRegistered) then
 				ITEM:onRegistered()
 			end
 
-			(isBaseItem and nut.item.base or nut.item.list)[ITEM.uniqueID] = ITEM
-		if (luaGenerated) then
-			return ITEM
-		else
-			ITEM = nil
-		end
+			local targetTable = (isBaseItem and nut.item.base or nut.item.list)
+			targetTable[ITEM.uniqueID] = setmetatable(ITEM, nut.meta.item)
+			
+			if (luaGenerated) then
+				return targetTable[ITEM.uniqueID]
+			end
+		ITEM = nil
 	else
 		ErrorNoHalt("[NutScript] You tried to register an item without uniqueID!\n")
 	end
@@ -390,9 +367,10 @@ function nut.item.new(uniqueID, id)
 	local stockItem = nut.item.list[uniqueID]
 
 	if (stockItem) then
-		local item = setmetatable({}, {__index = stockItem})
-		item.id = id
-		item.data = {}
+		local item = setmetatable({
+			id = id,
+			data = {}
+		}, {__index = stockItem})
 
 		nut.item.instances[id] = item
 
