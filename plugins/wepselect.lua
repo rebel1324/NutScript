@@ -119,7 +119,7 @@ if (CLIENT) then
 		local weapon = client:GetActiveWeapon()
 		local lPly = LocalPlayer()
 
-		if (!client:InVehicle() and (!IsValid(weapon) or weapon:GetClass() != "weapon_physgun" or !client:KeyDown(IN_ATTACK)) and hook.Run("CanPlayerChooseWeapon")) then
+		if (!client:InVehicle() and (!IsValid(weapon) or weapon:GetClass() != "weapon_physgun" or !client:KeyDown(IN_ATTACK)) and hook.Run("CanPlayerChooseWeapon") != false) then
 			bind = bind:lower()
 
 			if (bind:find("invprev") and pressed) then
