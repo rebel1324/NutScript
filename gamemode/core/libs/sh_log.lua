@@ -38,7 +38,7 @@ if (SERVER) then
 
 	function nut.log.getString(client, logType, ...)
 		local text = nut.log.types[logType]
-		
+
 		if (text) then
 			if (isfunction(text)) then
 				text = text(client, ...)
@@ -65,7 +65,7 @@ if (SERVER) then
 		if (logString == -1) then return end
 
 		nut.log.send(nut.util.getAdmins(), logString)
-		
+
 		Msg("[LOG] ", logString .. "\n")
 		
 		if (!noSave) then
@@ -84,6 +84,6 @@ if (SERVER) then
 	end
 else
 	netstream.Hook("nutLogStream", function(logString, flag)
-		MsgC(consoleColor, "[SERVER] ", color_white, logString .. "\n")
+		MsgC(consoleColor, "[SERVER] ", color_white, logString.."\n")
 	end)
 end

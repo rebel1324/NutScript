@@ -39,7 +39,7 @@ local PANEL = {}
 		hook.Run("CreateMenuButtons", tabs)
 
 		self.tabList = {}
-		
+
 		for name, callback in SortedPairs(tabs) do
 			if (type(callback) == "string") then
 				local body = callback
@@ -62,7 +62,7 @@ local PANEL = {}
 			local tab = self:addTab(L(name), callback, name)
 			self.tabList[name] = tab
 		end
-		
+
 		self.noAnchor = CurTime() + .4
 		self.anchorMode = true
 		self:MakePopup()
@@ -145,7 +145,7 @@ local PANEL = {}
 				if (IsValid(nut.gui.info)) then
 					nut.gui.info:Remove()
 				end
-				
+
 				self.panel:Clear()
 
 				self.title:SetText(this:GetText())
@@ -180,7 +180,7 @@ local PANEL = {}
 
 	function PANEL:remove()
 		CloseDermaMenus()
-		
+
 		if (!self.closing) then
 			self:AlphaTo(0, 0.25, 0, function()
 				self:Remove()

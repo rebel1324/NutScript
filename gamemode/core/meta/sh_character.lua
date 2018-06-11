@@ -27,7 +27,7 @@ if (SERVER) then
 		if (self.isBot) then
 			return
 		end
-		
+
 		-- Prepare a list of information to be saved.
 		local data = {}
 
@@ -102,12 +102,11 @@ if (SERVER) then
 
 			-- Apply a saved skin.
 			client:SetSkin(self:getData("skin", 0))
-			
+
 			-- Synchronize the character if we should.
 			if (!noNetworking) then
 				self:sync()
-				
-				-- wtf
+
 				for k, v in ipairs(self:getInv(true)) do
 					if (type(v) == "table") then 
 						v:sync(client)	
@@ -132,7 +131,7 @@ if (SERVER) then
 		local steamID = client:SteamID64()
 		local id = self:getID()
 		local isCurrentChar = self and self:getID() == id
-		
+
 		-- Return the player to the character menu.
 		if (self and self.steamID == steamID) then			
 			netstream.Start(client, "charKick", id, isCurrentChar)
@@ -219,7 +218,7 @@ function nut.char.registerVar(key, data)
 				local oldVar = self.vars[key]
 					self.vars[key] = value
 				netstream.Start(nil, "charSet", key, value, self:getID())
-				
+
 				hook.Run("OnCharVarChanged", self, key, oldVar, value)
 			end
 		end

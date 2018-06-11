@@ -91,7 +91,7 @@ ITEM.functions.EquipUn = { -- sorry, for name order.
 	icon = "icon16/cross.png",
 	onRun = function(item)
 		item:removePart(item.player)
-		
+
 		return false
 	end,
 	onCanRun = function(item)

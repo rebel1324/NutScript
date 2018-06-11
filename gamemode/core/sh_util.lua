@@ -40,7 +40,11 @@ function nut.util.includeDir(directory, fromLua, recursive)
 	if recursive then
 		local function AddRecursive(folder)
 			local files, folders = file.Find(folder.."/*", "LUA")
-			if (!files) then MsgN("Warning! This folder is empty!") return end
+
+			if (!files) then
+				MsgN("Warning! This folder is empty!")
+				return
+			end
 
 			for k, v in pairs(files) do
 				nut.util.include(folder .. "/" .. v)

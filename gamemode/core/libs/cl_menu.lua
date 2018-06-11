@@ -215,7 +215,7 @@ function nut.menu.onButtonPressed(menu, callback)
 
 	if (callback) then
 		callback()
-		
+
 		return true
 	end
 

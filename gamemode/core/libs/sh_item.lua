@@ -121,7 +121,7 @@ NUT_ITEM_DEFAULT_FUNCTIONS = {
 		onRun = function(item)
 			-- is inventory exists and not a logical inventory 
 			local inventory = item.player:getChar():getInv()
-			
+
 			if (inventory) then
 				if (item.isStackable == true and item.canSplit == true) then
 					-- prevent data crashing
@@ -129,7 +129,7 @@ NUT_ITEM_DEFAULT_FUNCTIONS = {
 						local quantity = item:getQuantity()
 						local itemList = inventory:getItemsByUniqueID(item.uniqueID)
 						local fillTargets = {}
-						
+
 						for _, invItem in pairs(itemList) do
 							local itemMaxQuantity = invItem:getMaxQuantity()
 							local itemQuantity = invItem:getQuantity()
@@ -778,7 +778,7 @@ do
 
 				item.player = client
 			end
-			
+
 			if (!inventory:getItemByID(item.id)) then
 				-- print << invalid request
 				return false
@@ -790,7 +790,7 @@ do
 				-- print << cantsplit
 				return false
 			end
-			
+
 			amount = math.Round(amount)
 			local leftOver = itemQuantity - amount
 

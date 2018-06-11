@@ -1,6 +1,6 @@
 function GM:PlayerInitialSpawn(client)
 	client.nutJoinTime = RealTime()
-	
+
 	if (client:IsBot()) then
 		local botID = os.time()
 		local index = math.random(1, table.Count(nut.faction.indices))
@@ -29,7 +29,7 @@ function GM:PlayerInitialSpawn(client)
 
 	nut.config.send(client)
 	nut.date.send(client)
-	
+
 	client:loadNutData(function(data)
 		if (!IsValid(client)) then return end
 
@@ -68,7 +68,7 @@ function GM:PlayerInitialSpawn(client)
 
 	timer.Simple(1, function()
 		if (!IsValid(client)) then return end
-		
+
 		client:KillSilent()
 		client:StripAmmo()
 	end)
@@ -137,7 +137,7 @@ end
 function GM:CanPlayerTakeItem(client, item)
 	if (type(item) == "Entity") then
 		local char = client:getChar()
-		
+
 		if (item.nutSteamID and item.nutSteamID == client:SteamID() and item.nutCharID != char:getID()) then
 			client:notifyLocalized("playerCharBelonging")
 
@@ -727,7 +727,7 @@ local psaString = [[
 /*------------------------------------------------------------
 
 PUBLIC SERVICE ANNOUNCEMENT FOR NUTSCRIPT SERVER OWNERS
-				  
+
 There is a ENOURMOUS performance issue with ULX Admin mod.
 Nutscript Development Team found ULX is the main issue
 that make the server freeze when player count is higher 

@@ -16,7 +16,7 @@ ITEM.functions.View = {
 			local panel = nut.gui["inv"..index]
 			local parent = item.invID and nut.gui["inv"..item.invID] or nil
 			local inventory = nut.item.inventories[index]
-			
+
 			if (IsValid(panel)) then
 				panel:Remove()
 			end

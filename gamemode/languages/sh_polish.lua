@@ -1,8 +1,5 @@
---[[
 
-	Polish translation by Veran120 (http://steamcommunity.com//id/Veran120)
-
---]]
+-- Polish translation by Veran120 (http://steamcommunity.com//id/Veran120)
 NAME = "Polski"
 
 LANGUAGE = {

@@ -1,5 +1,3 @@
-
-
 nut.playerInteract = nut.playerInteract or {}
 nut.playerInteract.funcs = {}
 
@@ -35,13 +33,13 @@ hook.Add("KeyPress", "nut.playerInteract", function(client, key)
     if key ~= IN_USE then return end
 
     local entity = client:GetEyeTrace().Entity
-    if entity:IsPlayer() then
+    if (entity:IsPlayer()) then
         nut.playerInteract.interact(entity, nut.config.get("playerInteractSpeed", 1))
     end
 end)
 
 hook.Add("KeyRelease", "nut.playerInteract", function(client, key)
-    if key == IN_USE and isInteracting then
+    if (key == IN_USE and isInteracting) then
         nut.playerInteract.clear()
     end
 end)
@@ -53,12 +51,12 @@ end
 local scrW = ScrW()
 local scrH = ScrH()
 hook.Add("HUDPaint", "nut.playerInteract", function()
-    if not isInteracting and interfaceScale < 0 then return end
+    if (!isInteracting and interfaceScale < 0) then return end
 
     local client = LocalPlayer()
     local target = nut.playerInteract.currentEnt
 
-    if IsValid(target) and target:GetPos():DistToSqr(client:GetPos()) > 30000 then
+    if (IsValid(target) and target:GetPos():DistToSqr(client:GetPos()) > 30000) then
         nut.playerInteract.clear()
     end
 
@@ -68,7 +66,7 @@ hook.Add("HUDPaint", "nut.playerInteract", function()
 
     interfaceScale = Lerp(FrameTime() * 8, interfaceScale, (isInteracting and interactPressTime < curTime) and 1 or -0.1)
 
-    if isLoading() then
+    if (isLoading()) then
         local loadingMaxW = 128
         local progress = 1 - (interactPressTime - curTime)
         local curLoadingW = loadingMaxW * progress
@@ -88,13 +86,13 @@ hook.Add("HUDPaint", "nut.playerInteract", function()
         surface.DrawRect(loadingCentreX - (curLoadingW / 2) + 2, loadingCentreY + 2, ( loadingMaxW - 4 ) * progress, loadingH - 4, 1)      
     end
 
-    if interfaceScale < 0 then return end
+    if (interfaceScale < 0) then return end
 
     local pitchDifference = (cachedPitch - EyeAngles().p) * 6
 
     local funcCount = 0
     for _, funcData in SortedPairs(nut.playerInteract.funcs) do
-        if not funcData.canSee(target) then continue end
+        if (!funcData.canSee(target)) then continue end
 
         local name = funcData.name or L( funcData.nameLocalized )
         surface.SetFont( "nutGenericLightFont" )
@@ -106,7 +104,7 @@ hook.Add("HUDPaint", "nut.playerInteract", function()
 
         local isSelected = math.abs(yAlignment + pitchDifference) < 32
 
-        if isSelected and interfaceScale > 0.75 then
+        if (isSelected and interfaceScale > 0.75) then
             nut.util.drawBlurAt(barX, barY, barW, barH)
 
             surface.SetDrawColor(55, 55, 55, 120)
@@ -125,7 +123,7 @@ hook.Add("HUDPaint", "nut.playerInteract", function()
 end)
 
 hook.Add("PlayerBindPress", "nut.playerInteract", function(_, bind)
-    if isInteracting and interactPressTime < CurTime() and selectedFunction ~= nil and bind == "+attack" then
+    if (isInteracting and interactPressTime < CurTime() and selectedFunction ~= nil and bind == "+attack") then
         selectedFunction.callback(nut.playerInteract.currentEnt)
 
         nut.playerInteract.clear()

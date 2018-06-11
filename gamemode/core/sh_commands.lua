@@ -695,7 +695,7 @@ nut.command.add("plytransfer", {
 	end
 })
 
-// Credit goes to SmithyStanley
+-- Credit goes to SmithyStanley
 nut.command.add("clearinv", {
 	adminOnly = true,
 	syntax = "<string name>",

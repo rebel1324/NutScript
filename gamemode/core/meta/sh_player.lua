@@ -6,7 +6,7 @@ local PLAYER = FindMetaTable("Player")
 
 function PLAYER:addMoney(amt)
     local char = self:getChar()
-    
+
     if (char) then
         char:giveMoney(amt)
     end
@@ -14,7 +14,7 @@ end
 
 function PLAYER:takeMoney()
     local char = self:getChar()
-    
+
     if (char) then
         char:giveMoney(-amt)
     end
@@ -35,6 +35,7 @@ if (CLIENT) then
         entity:AnimRestartGesture(a, b, c)
     end)
 end
+
 function PLAYER:doGesture(a, b, c)
     self:AnimRestartGesture(a, b, c)
     netstream.Start(self:GetPos(), "nutSyncGesture", self, a, b, c)

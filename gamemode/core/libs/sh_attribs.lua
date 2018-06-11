@@ -37,7 +37,7 @@ end
 -- Add updating of attributes to the character metatable.
 do
 	local charMeta = nut.meta.character
-	
+
 	if (SERVER) then
 		function charMeta:updateAttrib(key, value)
 			local attribute = nut.attribs.list[key]
@@ -77,7 +77,7 @@ do
 					end
 				end
 			end
-			
+
 			hook.Run("OnCharAttribUpdated", client, self, key, value)
 		end
 
@@ -91,7 +91,7 @@ do
 
 			return self:setVar("boosts", boosts, nil, self:getPlayer())
 		end
-		
+
 		function charMeta:removeBoost(boostID, attribID)
 			local boosts = self:getVar("boosts", {})
 
@@ -131,7 +131,7 @@ do
 				att = att + v
 			end
 		end 
-	
+
 		return att
 	end
 end

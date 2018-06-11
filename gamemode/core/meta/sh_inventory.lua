@@ -48,15 +48,15 @@ function zeroInv:add(uniqueID, quantity, data, callback)
 					if (item.isStackable) then
 						item:setQuantity(leftQuantity)
 					end
-	
+
 					self[item:getID()] = item
-					
+
 					if (callback) then
 						callback(item, item:getID())
 					end
 				end)
 			end
-			
+
 			return nil, nil, 0
 		end
 	else
@@ -158,7 +158,7 @@ function META:setOwner(owner, fullUpdate)
 				end
 			end
 		end
-		
+
 		nut.db.query("UPDATE nut_inventories SET _charID = "..owner.." WHERE _invID = "..self:getID())
 	end
 
@@ -211,7 +211,7 @@ function META:findEmptySlot(w, h, onlyMain)
 
 	if (onlyMain != true) then
 		local bags = self:getBags()
-		
+
 		if (#bags > 0) then
 			for _, invID in ipairs(bags) do
 				local bagInv = nut.item.inventories[invID]
@@ -267,7 +267,7 @@ function META:remove(id, noReplication, noDelete)
 			if (item and item.onRemoved) then
 				item:onRemoved()
 			end
-			
+
 			nut.db.query("DELETE FROM nut_items WHERE _itemID = "..id)
 			nut.item.instances[id] = nil
 		end
@@ -409,7 +409,7 @@ end
 
 function META:hasItem(targetID, data)
 	local items = self:getItems()
-	
+
 	for k, v in pairs(items) do
 		if (v.uniqueID == targetID) then
 			if (data) then
@@ -553,13 +553,13 @@ if (SERVER) then
 					local numInstance = math.floor(quantity/maxQuantity)
 					local leftQuantity = (quantity%maxQuantity)
 					local w, h = itemTable.width, itemTable.height
-					
+
 					if (itemTable.isStackable != true) then
 						numInstance = quantity
 						leftQuantity = 0
 					end
-					
-					local function pushCoord(requestQuantity) 		
+
+					local function pushCoord(requestQuantity)
 						x, y, bagInv = self:findEmptySlot(w, h)
 
 						if (bagInv) then
@@ -602,7 +602,7 @@ if (SERVER) then
 
 						if (halt) then
 							removeCoords()
-							
+
 							return false, "noSpace"
 						end
 						-- create request maxQuantity

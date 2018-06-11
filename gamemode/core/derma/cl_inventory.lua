@@ -59,7 +59,7 @@ PANEL = {}
 
 		self.panels = {}
 	end
-		
+
 	function PANEL:OnRemove()
 		if (self.childPanels) then
 			for k, v in ipairs(self.childPanels) do
@@ -166,7 +166,7 @@ PANEL = {}
 			end
 		end
 	end
-	
+
 	local activePanels = {}
 	function PANEL:PaintOver(w, h)
 		local item = nut.item.held
@@ -175,7 +175,7 @@ PANEL = {}
 			local mouseX, mouseY = self:LocalCursorPos()
 			local dropX, dropY = math.ceil((mouseX - 4 - (item.gridW - 1) * NS_ICON_SIZE/2) / NS_ICON_SIZE), math.ceil((mouseY - 27 - (item.gridH - 1) * NS_ICON_SIZE/2) / NS_ICON_SIZE)
 
-			if ((mouseX < -w*0.05 or mouseX > w*1.05) or (mouseY < h*0.05 or mouseY > h*1.05)) then
+			if ((mouseX < -w * 0.05 or mouseX > w * 1.05) or (mouseY < h * 0.05 or mouseY > h * 1.05)) then
 				activePanels[self] = nil
 			else
 				activePanels[self] = true
@@ -189,17 +189,17 @@ PANEL = {}
 			for x = 0, item.gridW - 1 do
 				for y = 0, item.gridH - 1 do
 					local x2, y2 = dropX + x, dropY + y
-					
+
 					-- Is Drag and Drop icon is in the Frame?
 					if (self.slots[x2] and IsValid(self.slots[x2][y2])) then
 						local bool = self:isEmpty(x2, y2, item)
-						
+
 						surface.SetDrawColor(0, 0, 255, 10)
 
 						if (x == 0 and y == 0) then
-							item.dropPos[self] = {x = (x2 - 1)*NS_ICON_SIZE + 4, y = (y2 - 1)*NS_ICON_SIZE + 27, x2 = x2, y2 = y2}
+							item.dropPos[self] = {x = (x2 - 1) * NS_ICON_SIZE + 4, y = (y2 - 1) * NS_ICON_SIZE + 27, x2 = x2, y2 = y2}
 						end
-							
+
 						if (bool) then
 							surface.SetDrawColor(0, 255, 0, 10)
 						else
@@ -209,8 +209,8 @@ PANEL = {}
 								item.dropPos[self].item = self.slots[x2][y2].item
 							end
 						end
-					
-						surface.DrawRect((x2 - 1)*NS_ICON_SIZE + 4, (y2 - 1)*NS_ICON_SIZE + 27, NS_ICON_SIZE, NS_ICON_SIZE)
+
+						surface.DrawRect((x2 - 1) * NS_ICON_SIZE + 4, (y2 - 1)*NS_ICON_SIZE + 27, NS_ICON_SIZE, NS_ICON_SIZE)
 					else
 						if (item.dropPos) then
 							item.dropPos[self] = nil
@@ -220,11 +220,11 @@ PANEL = {}
 			end
 		end
 	end
-	
+
 	function PANEL:isEmpty(x, y, this)
 		return (!IsValid(self.slots[x][y].item) or self.slots[x][y].item == this)
 	end
-	
+
 	function PANEL:onTransfer(oldX, oldY, x, y, oldInventory, noSend)
 		local inventory = nut.item.inventories[oldInventory.invID]
 		local inventory2 = nut.item.inventories[self.invID]
@@ -232,7 +232,7 @@ PANEL = {}
 		
 		if (inventory) then
 			item = inventory:getItemAt(oldX, oldY)
-			
+
 			if (!item) then
 				return false
 			end
@@ -240,7 +240,7 @@ PANEL = {}
 			if (hook.Run("CanItemBeTransfered", item, nut.item.inventories[oldInventory.invID], nut.item.inventories[self.invID]) == false) then
 				return false, "notAllowed"
 			end
-		
+
 			if (item.onCanBeTransfered and item:onCanBeTransfered(inventory, inventory != inventory2 and inventory2 or nil) == false) then
 				return false
 			end
@@ -254,7 +254,7 @@ PANEL = {}
 			end
 		end
 
-		if (inventory) then			
+		if (inventory) then
 			inventory.slots[oldX][oldY] = nil
 		end
 
@@ -267,7 +267,7 @@ PANEL = {}
 	function PANEL:addIcon(model, x, y, w, h, skin)
 		w = w or 1
 		h = h or 1
-		
+
 		if (self.slots[x] and self.slots[x][y]) then
 			local panel = self:Add("nutItemIcon")
 			panel:SetSize(w * NS_ICON_SIZE, h * NS_ICON_SIZE)
@@ -294,7 +294,7 @@ PANEL = {}
 			if (self.panels[itemTable:getID()]) then
 				self.panels[itemTable:getID()]:Remove()
 			end
-			
+
 			if (itemTable.exRender) then
 				panel.Icon:SetVisible(false)
 
@@ -321,7 +321,6 @@ PANEL = {}
 					end
 				end
 			else
-				-- yeah..
 				renderNewIcon(panel, itemTable)
 			end
 
@@ -349,7 +348,7 @@ PANEL = {}
 						end
 					end
 				end
-				
+
 				this.slots = {}
 
 				for x = 1, this.gridW do
@@ -451,7 +450,7 @@ PANEL = {}
 								end
 							end
 						end
-						
+
 						this:DragMousePress(code)
 						this:MouseCapture(true)
 
@@ -478,7 +477,7 @@ PANEL = {}
 						if (item and inv) then
 							netstream.Start("invAct", "drop", item.id, inv:getID(), item.id)
 						end
-						
+
 						return false
 					end
 					activePanels = {}
@@ -494,9 +493,8 @@ PANEL = {}
 
 								if (inventory) then
 									local targetItem = data.item.itemTable
-									
+
 									if (targetItem) then
-										-- to make sure...
 										if (targetItem.id == itemTable.id) then return end
 
 										if (itemTable.functions) then
@@ -519,7 +517,7 @@ PANEL = {}
 							else
 								local oldX, oldY = this.gridX, this.gridY
 
-								if (oldX != data.x2 or oldY != data.y2 or inventory != self) then									
+								if (oldX != data.x2 or oldY != data.y2 or inventory != self) then
 									this:move(data, inventory)
 								end
 							end
@@ -613,9 +611,9 @@ PANEL = {}
 					itemTable.player = nil
 				end
 			end
-			
+
 			panel.slots = {}
-			
+
 			for i = 0, w - 1 do
 				for i2 = 0, h - 1 do
 					local slot = self.slots[x + i] and self.slots[x + i][y + i2]
@@ -634,7 +632,7 @@ PANEL = {}
 					end
 				end
 			end
-			
+
 			return panel
 		end
 	end
@@ -642,7 +640,7 @@ vgui.Register("nutInventory", PANEL, "DFrame")
 
 hook.Add("CreateMenuButtons", "nutInventory", function(tabs)
 	if (hook.Run("CanPlayerViewInventory") != false) then
-		tabs["inv"] = function(panel)		
+		tabs["inv"] = function(panel)
 			nut.gui.inv1 = panel:Add("nutInventory")
 			nut.gui.inv1.childPanels = {}
 

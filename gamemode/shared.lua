@@ -67,10 +67,9 @@ function GM:Initialize()
 	nut.config.load()
 end
 
-ITSTIMETOSTOP = false
+NUT_PLUGINS_ALREADY_LOADED = false
 -- Called when a file has been modified.
 function GM:OnReloaded()
-
 	-- Reload the default fonts.
 	if (CLIENT) then
 		hook.Run("LoadFonts", nut.config.get("font"), nut.config.get("genericFont"))
@@ -97,15 +96,15 @@ function GM:OnReloaded()
 		end
 	end
 
-	if (!ITSTIMETOSTOP) then
+	if (!NUT_PLUGINS_ALREADY_LOADED) then
 		-- Load all of the NutScript plugins.
 		nut.plugin.initialize()
+
 		-- Restore the configurations from earlier if applicable.
 		nut.config.load()
 
-		ITSTIMETOSTOP = true
+		NUT_PLUGINS_ALREADY_LOADED = true
 	end
-
 end
 
 -- Include default NutScript chat commands.
@@ -113,7 +112,7 @@ nut.util.include("core/sh_commands.lua")
 
 if (SERVER and game.IsDedicated()) then
 	concommand.Remove("gm_save")
-	
+
 	concommand.Add("gm_save", function(client, command, arguments)
 		client:ChatPrint("You are not allowed to do that, administrators have been notified.")
 

@@ -33,7 +33,6 @@ do
             self.set:DockMargin(10, 0, 10, 0)
             self.set.Paint = function() end
 
-
             self.label = self.input:Add("DLabel")
             self.label:SetText(L"splitHelp")
             self.label:SetFont("nutSmallFont")
@@ -72,7 +71,6 @@ do
             self.amount.OnEnter = function()
                 self:doSplit(self.amount:GetText())
             end
-
 
             self.maxLabel = self.set2:Add("DLabel")
             self.maxLabel:SetText(maxQuantity)
@@ -138,7 +136,7 @@ do
                 self:Close()
                 return
             end
-                            
+
             netstream.Start("invSplit", item:getID(), amount, item.invID)   
             self:Close()
         else
