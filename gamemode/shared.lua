@@ -114,19 +114,14 @@ if (SERVER and game.IsDedicated()) then
 	concommand.Remove("gm_save")
 
 	concommand.Add("gm_save", function(client, command, arguments)
-		client:ChatPrint("You are not allowed to do that, administrators have been notified.")
+		if (IsValid(client)) then
+			client:ChatPrint("You are not allowed to do that.")
 
-		if ((client.nutNextWarn or 0) < CurTime()) then
-			local message = client:Name().." ["..client:SteamID().."] has possibly attempted to crash the server with 'gm_save'"
-
-			for k, v in ipairs(player.GetAll()) do
-				if (v:IsAdmin()) then
-					v:ChatPrint(message)
-				end
+			if ((client.nutNextCommandSaveWarn or 0) < CurTime())
+				Msg("[NutScript] Player "..client:Name().."("..client:steamName()..")["..client:SteamID().."]<"..client:IPAddress().."> may have attempted to crash the server using 'gm_save'.".."\n")
 			end
 
-			MsgC(Color(255, 255, 0), message.."\n")
-			client.nutNextWarn = CurTime() + 60
+			client.nutNextCommandSaveWarn = CurTime() + 60
 		end
-	end)
+	end
 end
