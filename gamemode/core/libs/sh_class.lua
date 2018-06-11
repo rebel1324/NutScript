@@ -137,13 +137,13 @@ function charMeta:kickClass()
 	for k, v in pairs(nut.class.list) do
 		if (v.faction == client:Team() and v.isDefault) then
 			goClass = k
-			
+
 			break
 		end
 	end
 
 	self:joinClass(goClass)
-	
+
 	hook.Run("OnPlayerJoinClass", client, goClass)
 end
 

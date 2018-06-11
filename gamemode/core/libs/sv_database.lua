@@ -354,7 +354,7 @@ function nut.db.wipeTables()
 	local function callback()
 		MsgC(Color(255, 0, 0), "[Nutscript] ALL NUTSCRIPT DATA HAS BEEN WIPED\n")
 	end
-	
+
 	if (nut.db.object) then
 		local queries = string.Explode(";", DROP_QUERY)
 
