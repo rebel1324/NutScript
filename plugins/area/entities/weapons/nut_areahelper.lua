@@ -1,11 +1,12 @@
 AddCSLuaFile()
 
-if( CLIENT ) then
-	SWEP.PrintName = "Area Helper";
-	SWEP.Slot = 0;
-	SWEP.SlotPos = 0;
+if (CLIENT) then
+	SWEP.PrintName = "Area Helper"
+	SWEP.Slot = 0
+	SWEP.SlotPos = 0
 	SWEP.CLMode = 0
 end
+
 SWEP.HoldType = "fists"
 
 SWEP.Category = "Nutscript"
@@ -16,15 +17,15 @@ SWEP.ViewModel = "models/weapons/v_pistol.mdl"
 SWEP.WorldModel = "models/weapons/w_pistol.mdl"
 
 SWEP.Primary.Delay			= 1
-SWEP.Primary.Recoil			= 0	
+SWEP.Primary.Recoil			= 0
 SWEP.Primary.Damage			= 0
 SWEP.Primary.NumShots		= 0
-SWEP.Primary.Cone			= 0 	
-SWEP.Primary.ClipSize		= -1	
-SWEP.Primary.DefaultClip	= -1	
-SWEP.Primary.Automatic   	= false	
-SWEP.Primary.Ammo         	= "none"
- 
+SWEP.Primary.Cone			= 0
+SWEP.Primary.ClipSize		= -1
+SWEP.Primary.DefaultClip	= -1
+SWEP.Primary.Automatic		= false
+SWEP.Primary.Ammo			= "none"
+
 SWEP.Secondary.Delay		= 0.9
 SWEP.Secondary.Recoil		= 0
 SWEP.Secondary.Damage		= 0
@@ -32,13 +33,13 @@ SWEP.Secondary.NumShots		= 1
 SWEP.Secondary.Cone			= 0
 SWEP.Secondary.ClipSize		= -1
 SWEP.Secondary.DefaultClip	= -1
-SWEP.Secondary.Automatic   	= true
-SWEP.Secondary.Ammo         = "none"
+SWEP.Secondary.Automatic	= true
+SWEP.Secondary.Ammo			= "none"
 
 function SWEP:Initialize()
 	self:SetWeaponHoldType("knife")
 end
-	
+
 function SWEP:Deploy()
 	return true
 end
@@ -48,7 +49,7 @@ end
 
 local gridsize = 1
 
-if SERVER then
+if (SERVER) then
 	function SWEP:PrimaryAttack()
 	end
 
@@ -57,13 +58,11 @@ if SERVER then
 
 	function SWEP:SecondaryAttack()
 	end
-end
-
-if CLIENT then
+else
 	areaPoint = areaPoint or {}
 
 	function SWEP:PrimaryAttack()
-		if IsFirstTimePredicted() then
+		if (IsFirstTimePredicted()) then
 			local trace = LocalPlayer():GetEyeTraceNoCursor()
 			local pos = trace.HitPos
 
@@ -77,12 +76,13 @@ if CLIENT then
 		end
 	end
 
-	function SWEP:openAreaManager()		
+	function SWEP:openAreaManager()
 	end
 
 	function SWEP:Reload()
 		if (!self.ohWow and areaPoint.startVector and areaPoint.endVector) then
 			self.ohWow = true
+
 			Derma_StringRequest("Area Name?", "Area Name?", "", function(text)
 				self.ohWow = false
 				netstream.Start("areaAdd", text, areaPoint.startVector, areaPoint.endVector)
@@ -91,7 +91,7 @@ if CLIENT then
 			end)
 		end
 	end
-	
+
 	function SWEP:SecondaryAttack()
 		if (IsFirstTimePredicted()) then
 			areaPoint = {}

@@ -1,44 +1,45 @@
 AddCSLuaFile()
 
-if( CLIENT ) then
-	SWEP.PrintName 		= "Entity Position Helper";
-	SWEP.Slot 		= 0;
-	SWEP.SlotPos 		= 0;
-	SWEP.CLMode 		= 0
+if (CLIENT) then
+	SWEP.PrintName 			= "Entity Position Helper"
+	SWEP.Slot 				= 0
+	SWEP.SlotPos 			= 0
+	SWEP.CLMode 			= 0
 end
-SWEP.HoldType 			= "fists"
 
-SWEP.Category 			= "Nutscript"
-SWEP.Spawnable			= true
-SWEP.AdminSpawnable		= true
+SWEP.HoldType 				= "fists"
 
-SWEP.ViewModel 			= "models/weapons/v_pistol.mdl"
-SWEP.WorldModel 		= "models/weapons/w_pistol.mdl"
+SWEP.Category 				= "Nutscript"
+SWEP.Spawnable				= true
+SWEP.AdminSpawnable			= true
 
-SWEP.Primary.Delay		= 1
-SWEP.Primary.Recoil		= 0	
-SWEP.Primary.Damage		= 0
+SWEP.ViewModel 				= "models/weapons/v_pistol.mdl"
+SWEP.WorldModel 			= "models/weapons/w_pistol.mdl"
+
+SWEP.Primary.Delay			= 1
+SWEP.Primary.Recoil			= 0
+SWEP.Primary.Damage			= 0
 SWEP.Primary.NumShots		= 0
-SWEP.Primary.Cone		= 0 	
-SWEP.Primary.ClipSize		= -1	
-SWEP.Primary.DefaultClip	= -1	
-SWEP.Primary.Automatic   	= false	
-SWEP.Primary.Ammo         	= "none"
+SWEP.Primary.Cone			= 0 
+SWEP.Primary.ClipSize		= -1
+SWEP.Primary.DefaultClip	= -1
+SWEP.Primary.Automatic		= false
+SWEP.Primary.Ammo			= "none"
  
 SWEP.Secondary.Delay		= 0.9
 SWEP.Secondary.Recoil		= 0
 SWEP.Secondary.Damage		= 0
 SWEP.Secondary.NumShots		= 1
-SWEP.Secondary.Cone		= 0
+SWEP.Secondary.Cone			= 0
 SWEP.Secondary.ClipSize		= -1
 SWEP.Secondary.DefaultClip	= -1
-SWEP.Secondary.Automatic   	= true
-SWEP.Secondary.Ammo         	= "none"
+SWEP.Secondary.Automatic	= true
+SWEP.Secondary.Ammo			= "none"
 
 function SWEP:Initialize()
 	self:SetWeaponHoldType("knife")
 end
-	
+
 function SWEP:Deploy()
 	return true
 end
@@ -48,7 +49,7 @@ end
 
 local gridsize = 1
 
-if SERVER then
+if (SERVER) then
 	function SWEP:PrimaryAttack()
 	end
 
@@ -57,9 +58,7 @@ if SERVER then
 
 	function SWEP:SecondaryAttack()
 	end
-end
-
-if CLIENT then
+else
 	local PANEL = {}
 	local vTxt = "xyz"
 	local aTxt = "pyr"
@@ -76,11 +75,11 @@ if CLIENT then
 		for i = 1, 3 do
 			local cfg = self.list:Add("DNumSlider")
 			cfg:Dock(TOP)
-			cfg:SetText("VECTOR" .. vTxt[i]) 
-			cfg:SetMin(-100)				 
-			cfg:SetMax(100)				
-			cfg:SetDecimals(3)		
-			cfg:SetValue(HELPER_INFO.renderPos[i])		 
+			cfg:SetText("VECTOR"..vTxt[i])
+			cfg:SetMin(-100)
+			cfg:SetMax(100)
+			cfg:SetDecimals(3)
+			cfg:SetValue(HELPER_INFO.renderPos[i])
 			cfg:DockMargin(10, 0, 0, 5)
 			function cfg:OnValueChanged(value)
 				HELPER_INFO.renderPos[i] = value
@@ -90,11 +89,11 @@ if CLIENT then
 		for i = 1, 3 do
 			local cfg = self.list:Add("DNumSlider")
 			cfg:Dock(TOP)
-			cfg:SetText("ANGLE" .. aTxt[i]) 
-			cfg:SetMin(-180)				 
-			cfg:SetMax(180)				
-			cfg:SetDecimals(3)	
-			cfg:SetValue(HELPER_INFO.renderAng[i])		 
+			cfg:SetText("ANGLE"..aTxt[i])
+			cfg:SetMin(-180)
+			cfg:SetMax(180)
+			cfg:SetDecimals(3)
+			cfg:SetValue(HELPER_INFO.renderAng[i])
 			cfg:DockMargin(10, 0, 0, 5)
 			function cfg:OnValueChanged(value)
 				HELPER_INFO.renderAng[i] = value
@@ -177,7 +176,7 @@ if CLIENT then
 			end)
 		end
 	end
-	
+
 	function SWEP:SecondaryAttack()
 		return false
 	end
@@ -190,7 +189,7 @@ if CLIENT then
 		HELPER_INFO.renderAng = Angle()
 		HELPER_INFO.modelAng = Angle()
 		HELPER_INFO.entity = nil
-		
+
 		if (HELPER_INFO.modelObject and IsValid(HELPER_INFO.modelObject)) then
 			HELPER_INFO.modelObject:Remove()
 		end

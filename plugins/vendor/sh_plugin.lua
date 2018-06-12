@@ -267,7 +267,7 @@ if (SERVER) then
 				local name
 				local inv = client:getChar():getInv()
 				local virtualInv = nut.item.inventories[0]
-				
+
 				for k, v in pairs(inv:getItems()) do
 					if (v.uniqueID == uniqueID and v:getID() != 0 and istable(nut.item.instances[v:getID()])) then
 						if (hook.Run("CanItemBeTransfered", v, inv, virtualInv) == false) then
@@ -283,19 +283,19 @@ if (SERVER) then
 						break
 					end
 				end
-				
+
 				if (!found) then
 					return client:notifyLocalized("noItem")
 				end
-				
+
 				price = entity:getPrice(found, isSellingToVendor)
 
 				if (!entity:hasMoney(price)) then
 					return client:notifyLocalized("vendorNoMoney")
 				end
-				
+
 				local invOkay = found:remove()
-				
+
 				if (!invOkay) then
 					client:getChar():getInv():sync(client, true)
 					return client:notifyLocalized("tellAdmin", "trd!iid")
@@ -319,10 +319,10 @@ if (SERVER) then
 				end
 
 				local name = L(nut.item.list[uniqueID].name, client)
-			
+
 				client:getChar():takeMoney(price)
 				client:notifyLocalized("businessPurchase", name, nut.currency.get(price))
-				
+
 				entity:giveMoney(price)
 
 				if (!client:getChar():getInv():add(uniqueID)) then

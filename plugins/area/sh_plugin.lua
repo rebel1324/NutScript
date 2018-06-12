@@ -331,7 +331,6 @@ else
 
 		-- scale lerp
 		scale = Lerp(ft*1, scale, targetScale)
-		--scale = targetScale
 
 		-- change event
 		if (maxDisplay != curChar and curChar < strEnd) then
@@ -346,7 +345,6 @@ else
 			-- character scale/color lerp
 			flipTable[i] = flipTable[i] or {}
 			flipTable[i][1] = flipTable[i][1] or .1
-			--flipTable[i][1] = flipTable[i][1] or targetScale*3
 			flipTable[i][2] = flipTable[i][2] or 0
 			flipTable[i][1] = Lerp(ft*4, flipTable[i][1], scale)
 			flipTable[i][2] = Lerp(ft*4, flipTable[i][2], 255)
@@ -412,7 +410,7 @@ nut.command.add("areaadd", {
 			client:setNetVar("areaName", nil, client)
 
 			nut.area.addArea(name, min, max)
-			
+
 			return "@areaAdded", name
 		end
 	end

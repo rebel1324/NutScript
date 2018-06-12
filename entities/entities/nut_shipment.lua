@@ -19,13 +19,13 @@ if (SERVER) then
 			physObj:EnableMotion(true)
 			physObj:Wake()
 		end
-		
+
 		self:setNetVar("delTime", CurTime() + 120)
-		
+
 		timer.Simple(120, function()
 			if (IsValid(self)) then
 				self:Remove()
-			end			
+			end
 		end)
 	end
 
@@ -67,41 +67,41 @@ else
 	local toScreen = FindMetaTable("Vector").ToScreen
 	local colorAlpha = ColorAlpha
 	local drawText = nut.util.drawText
-		
+
 	local size = 150
 	local tempMat = Material("particle/warp1_warp", "alphatest")
 	function ENT:Draw()
 		local pos, ang = self:GetPos(), self:GetAngles()
-		
+
 		self:DrawModel()
-		
+
 		pos = pos + self:GetUp()*25
 		pos = pos + self:GetForward()*1
 		pos = pos + self:GetRight()*3
-		
+
 		local delTime = math.max(math.ceil(self:getNetVar("delTime", 0) - CurTime()), 0)
-		
+
 		local func = function() 
 			surface.SetMaterial(tempMat)
 			surface.SetDrawColor(0, 0, 0, 200)
 			surface.DrawTexturedRect(-size/2, -size/2 - 10, size, size)
-	
+
 			nut.util.drawText("k", 0, 0, color_white, 1, 4, "nutIconsBig")
 			nut.util.drawText(delTime, 0, -10, color_white, 1, 5, "nutBigFont")
 		end
-		
+
 		cam.Start3D2D(pos, ang, .15)
 			func()
 		cam.End3D2D()
-		
+
 		ang:RotateAroundAxis(ang:Right(), 180)
 		pos = pos - self:GetUp()*26
-		
+
 		cam.Start3D2D(pos, ang, .15)
 			func()
 		cam.End3D2D()
 	end
-	
+
 	function ENT:onDrawEntityInfo(alpha)
 		local position = toScreen(self.LocalToWorld(self, self.OBBCenter(self)))
 		local x, y = position.x, position.y

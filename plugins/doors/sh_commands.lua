@@ -320,7 +320,7 @@ nut.command.add("doorsetparent", {
 		else
 			-- Tell the player the door isn't valid.
 			client:notifyLocalized("dNotValid")
-		end		
+		end
 	end
 })
 

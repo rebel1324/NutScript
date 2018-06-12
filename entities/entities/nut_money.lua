@@ -32,12 +32,12 @@ if (SERVER) then
 			if (char) then
 				if (self.charID != char:getID() and self.client == activator) then
 					activator:notifyLocalized("logged")
-					
+
 					return false
 				end
 			end
 		end
-		
+
 		if (hook.Run("OnPickupMoney", activator, self) != false) then
 			self:Remove()
 		end

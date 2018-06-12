@@ -123,7 +123,7 @@ if (CLIENT) then
 
 		if (client:CanOverrideView() and LocalPlayer():GetViewEntity() == LocalPlayer()) then
 			if ((client:OnGround() and client:KeyDown(IN_DUCK)) or client:Crouching()) then
-				crouchFactor = Lerp(ft*5, crouchFactor, 1) 
+				crouchFactor = Lerp(ft*5, crouchFactor, 1)
 			else
 				crouchFactor = Lerp(ft*5, crouchFactor, 0)
 			end
@@ -131,7 +131,7 @@ if (CLIENT) then
 			curAng = owner.camAng or Angle(0, 0, 0)
 			view = {}
 			traceData = {}
-				traceData.start = 	client:GetPos() + client:GetViewOffset() + 
+				traceData.start =	client:GetPos() + client:GetViewOffset() + 
 									curAng:Up() * clmp(NUT_CVAR_TP_VERT:GetInt(), 0, maxValues.height) + 
 									curAng:Right() * clmp(NUT_CVAR_TP_HORI:GetInt(), -maxValues.horizontal, maxValues.horizontal) -
 									client:GetViewOffsetDucked()*.5 * crouchFactor
@@ -159,7 +159,7 @@ if (CLIENT) then
 	function PLUGIN:CreateMove(cmd)
 		owner = LocalPlayer()
 
-	    if (owner:CanOverrideView() and owner:GetMoveType() != MOVETYPE_NOCLIP and LocalPlayer():GetViewEntity() == LocalPlayer()) then
+		if (owner:CanOverrideView() and owner:GetMoveType() != MOVETYPE_NOCLIP and LocalPlayer():GetViewEntity() == LocalPlayer()) then
 			fm = cmd:GetForwardMove()
 			sm = cmd:GetSideMove()
 			diff = (owner:EyeAngles() - (owner.camAng or Angle(0, 0, 0)))[2] or 0
@@ -173,16 +173,16 @@ if (CLIENT) then
 
 	function PLUGIN:InputMouseApply(cmd, x, y, ang)
 		owner = LocalPlayer( )
-	       
+
 		if (!owner.camAng) then
 		    owner.camAng = Angle( 0, 0, 0 )
 		end
 
-	    if (owner:CanOverrideView() and LocalPlayer():GetViewEntity() == LocalPlayer()) then
-		        
-		    owner.camAng.p = clmp(math.NormalizeAngle( owner.camAng.p + y / 50 ), -85, 85)
-		    owner.camAng.y = math.NormalizeAngle( owner.camAng.y - x / 50 )
-		   
+		if (owner:CanOverrideView() and LocalPlayer():GetViewEntity() == LocalPlayer()) then
+
+			owner.camAng.p = clmp(math.NormalizeAngle( owner.camAng.p + y / 50 ), -85, 85)
+			owner.camAng.y = math.NormalizeAngle( owner.camAng.y - x / 50 )
+
 			return true
 		end
 	end

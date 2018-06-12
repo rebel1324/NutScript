@@ -165,7 +165,7 @@ nut.command.add("textadd", {
 		local angles = trace.HitNormal:Angle()
 		angles:RotateAroundAxis(angles:Up(), 90)
 		angles:RotateAroundAxis(angles:Forward(), 90)
-		
+
 		-- Add the text.
 		PLUGIN:addText(position + angles:Up()*0.1, angles, arguments[1], tonumber(arguments[2]))
 
