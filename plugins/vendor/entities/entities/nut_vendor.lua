@@ -181,6 +181,8 @@ if (SERVER) then
 			return
 		end
 
+		nut.log.add(activator, "vendorAccess", self:getNetVar("name"))
+
 		self.receivers[#self.receivers + 1] = activator
 
 		if (self.messages[VENDOR_WELCOME]) then

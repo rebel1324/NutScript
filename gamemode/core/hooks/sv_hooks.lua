@@ -467,6 +467,8 @@ function GM:PlayerHurt(client, attacker, health, damage)
 
 		client:EmitSound(painSound)
 		client.nutNextPain = CurTime() + 0.33
+
+		nut.log.add(client, "playerHurt", attacker:IsPlayer() and attacker:Name() or attacker:GetClass(), damage, health)
 	end
 end
 
@@ -496,12 +498,16 @@ function GM:PlayerDisconnected(client)
 			end
 		end
 
+		nut.log.add(client, "playerDisconnected")
+
 		hook.Run("OnCharDisconnect", client, character)
 		character:save()
 	end
 end
 
-
+function GM:PlayerAuthed(client, steamID, uniqueID)
+	nut.log.add(client, "playerConnected", client, steamID)
+end
 	
 function GM:InitPostEntity()
 	local doors = ents.FindByClass("prop_door_rotating")
@@ -656,6 +662,14 @@ function GM:CharacterPreSave(character)
 	end
 end
 
+function GM:OnServerLog(client, logType, ...)
+	for k, v in pairs(nut.util.getAdmins()) do
+		if (hook.Run("CanPlayerSeeLog", v, logType) != false) then
+			nut.log.send(v, nut.log.getString(client, logType, ...))
+		end
+	end
+end
+
 timer.Create("nutLifeGuard", 1, 0, function()
 	for k, v in ipairs(player.GetAll()) do
 		if (v:getChar() and v:Alive() and hook.Run("ShouldPlayerDrowned", v) != false) then
@@ -723,6 +737,7 @@ function GM:GetPreferredCarryAngles(entity)
 		return defaultAngleData[model]
 	end
 end
+
 local psaString = [[
 /*------------------------------------------------------------
 

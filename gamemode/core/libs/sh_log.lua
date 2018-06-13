@@ -32,6 +32,7 @@ if (SERVER) then
 	end
 
 	nut.log.types = nut.log.types or {}
+
 	function nut.log.addType(logType, func)
 		nut.log.types[logType] = func
 	end
@@ -50,11 +51,13 @@ if (SERVER) then
 		return text
 	end
 
-	function nut.log.addRaw(logString)		
-		nut.log.send(nut.util.getAdmins(), logString)
-		
-		Msg("[LOG] ", logString .. "\n")
-		
+	function nut.log.addRaw(logString, shouldNotify)		
+		if (shouldNotify) then
+			nut.log.send(nut.util.getAdmins(), logString)
+		end
+
+		Msg("[LOG] ", logString.."\n")
+
 		if (!noSave) then
 			file.Append("nutscript/logs/"..os.date("%x"):gsub("/", "-")..".txt", "["..os.date("%X").."]\t"..logString.."\r\n")
 		end
@@ -64,10 +67,10 @@ if (SERVER) then
 		local logString = nut.log.getString(client, logType, ...)
 		if (logString == -1) then return end
 
-		nut.log.send(nut.util.getAdmins(), logString)
+		hook.Run("OnServerLog", client, logType, ...)
 
-		Msg("[LOG] ", logString .. "\n")
-		
+		Msg("[LOG] ", logString.."\n")
+
 		if (!noSave) then
 			file.Append("nutscript/logs/"..os.date("%x"):gsub("/", "-")..".txt", "["..os.date("%X").."]\t"..logString.."\r\n")
 		end
@@ -82,6 +85,66 @@ if (SERVER) then
 	function nut.log.send(client, logString, flag)
 		netstream.Start(client, "nutLogStream", logString, flag)
 	end
+
+	-- Log Types
+	nut.log.addType("playerHurt", function(client, ...)
+		local data = {...}
+		local attacker = data[1] or "unknown"
+		local damage = data[2] or 0
+		local remainingHealth = data[3] or 0
+
+		return string.format("%s has taken %d damage from %s, leaving them at %d health.", client:Name(), damage, attacker, remaingingHealth)
+	end
+
+	nut.log.addType("playerDeath", function(client, ...)
+		local data = {...}
+		local attacker = data[1] or "unknown"
+
+		return string.format("%s has killed %s.", attacker, client:Name())
+	end)
+
+	nut.log.addType("playerConnected", function(client, ...)
+		local data = {...}
+		local steamID = data[1]
+
+		return string.format("%s[%s] has connected to the server.", client:Name(), steamID or client:SteamID())
+	end)
+
+	nut.log.addType("playerDisconnected", function(client, ...)
+		return string.format("%s has disconnected from the server.", client:Name())
+	end)
+
+	nut.log.addType("itemTake", function(client, ...)
+		local data = {...}
+		local itemName = data[1] or "unknown"
+		local itemCount = data[2] or 1
+
+		return string.format("%s has picked up %dx%s.", client:Name(), itemCount, itemName)
+	end)
+
+	nut.log.addType("itemDrop", function(client, ...)
+		local data = {...}
+		local itemName = data[1] or "unknown"
+		local itemCount = data[2] or "unknown"
+
+		return string.format("%s has lost %dx%s.", client:Name(), itemCount, itemName)
+	end)
+
+	nut.log.addType("command", function(client, ...)
+		local data = {...}
+		local text = data[1] or ""
+		local args = data[2] or ""
+
+		return string.format("%s has used \"%s\" with arguments: .", client:Name(), text, args)
+	end)
+
+	nut.log.addType("chat", function(client, ...)
+		local data = {...}
+		local chatType = data[1] or "IC"
+		local message = data[2] or ""
+
+		return string.format("[%s]%s has said: \"%s\"", chatType, client:Name(), message)
+	end)
 else
 	netstream.Hook("nutLogStream", function(logString, flag)
 		MsgC(consoleColor, "[SERVER] ", color_white, logString.."\n")

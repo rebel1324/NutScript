@@ -165,6 +165,8 @@ if (SERVER) then
 					else
 						client:notify(result)
 					end
+
+					nut.log.add(client, "command", command, table.concat(arguments, ", "))
 				else
 					-- Show the message in server console since we're running from RCON.
 					print(result)
