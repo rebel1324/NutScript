@@ -125,7 +125,7 @@ if (SERVER) then
 	nut.log.addType("itemDrop", function(client, ...)
 		local data = {...}
 		local itemName = data[1] or "unknown"
-		local itemCount = data[2] or "unknown"
+		local itemCount = data[2] or 1
 
 		return string.format("%s has lost %dx%s.", client:Name(), itemCount, itemName)
 	end)
@@ -135,7 +135,7 @@ if (SERVER) then
 		local text = data[1] or ""
 		local args = data[2] or ""
 
-		return string.format("%s has used \"%s\" with arguments: .", client:Name(), text, args)
+		return string.format("%s has used \"%s\" with arguments: %s.", client:Name(), text, args)
 	end)
 
 	nut.log.addType("chat", function(client, ...)
@@ -143,7 +143,14 @@ if (SERVER) then
 		local chatType = data[1] or "IC"
 		local message = data[2] or ""
 
-		return string.format("[%s]%s has said: \"%s\"", chatType, client:Name(), message)
+		return string.format("[%s]%s has said: \"%s\".", chatType, client:Name(), message)
+	end)
+
+	nut.log.addType("money", function(client, ...)
+		local data = {...}
+		local amount = data[1] or 0
+
+		return string.format("%s's money has changed by %d.", client:Name(), amount)
 	end)
 else
 	netstream.Hook("nutLogStream", function(logString, flag)
