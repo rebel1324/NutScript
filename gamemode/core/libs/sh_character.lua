@@ -113,24 +113,30 @@ if (SERVER) then
 						nut.db.query("SELECT _invID, _invType FROM nut_inventories WHERE _charID = "..id, function(data)
 							if (data and #data > 0) then
 								for k, v in pairs(data) do
-									if (v._invType and isstring(v._invType) and v._invType == "NULL") then
-										v._invType = nil
+									local inventoryType = v._invType
+									if (inventoryType and isstring(inventoryType) and inventoryType == "NULL") then
+										inventoryType = nil
 									end
 
 									local w, h = nut.config.get("invW"), nut.config.get("invH")
 
 									local invType 
-									if (v._invType) then
-										invType = nut.item.inventoryTypes[v._invType]
+									if (inventoryType) then
+										invType = nut.item.inventoryTypes[inventoryType]
 
 										if (invType) then
 											w, h = invType.w, invType.h
 										end
+									else
+										local newW, newH = hook.Run("GetCharacterInventorySize", client, character:getID())
+										if (newW and newH) then
+											w, h = newW, newH
+										end
 									end
 
 									nut.item.restoreInv(tonumber(v._invID), w, h, function(inventory)
-										if (v._invType) then
-											inventory.vars.invType = v._invType
+										if (inventoryType) then
+											inventory.vars.invType = inventoryType
 											table.insert(character.vars.inv, inventory)
 										else
 											character.vars.inv[1] = inventory
