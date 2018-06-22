@@ -706,6 +706,10 @@ local defaultAngleData = {
 }
 
 function GM:GetPreferredCarryAngles(entity)
+	if (entity.preferedAngle) then
+		return entity.preferedAngle
+	end
+
 	local class = entity:GetClass()
 	if (class == "nut_item") then
 		local itemTable = entity:getItemTable()
