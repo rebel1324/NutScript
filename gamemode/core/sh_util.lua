@@ -622,6 +622,7 @@ do
 		return trace.HitPos
 	end
 
+
 	-- Do an action that requires the player to stare at something.
 	function playerMeta:doStaredAction(entity, callback, time, onCancel, distance)
 		local uniqueID = "nutStare"..self:UniqueID()
@@ -632,8 +633,15 @@ do
 			if (IsValid(self) and IsValid(entity)) then
 				data.start = self:GetShootPos()
 				data.endpos = data.start + self:GetAimVector()*(distance or 96)
+				
+				local targetEntity = util.TraceLine(data).Entity
+				if (IsValid(targetEntity)) then
+					if (targetEntity:GetClass() == "prop_ragdoll" and IsValid(targetEntity:getNetVar("player"))) then
+						targetEntity = targetEntity:getNetVar("player")
+					end
+				end
 
-				if (util.TraceLine(data).Entity != entity) then
+				if (targetEntity != entity) then
 					timer.Remove(uniqueID)
 
 					if (onCancel) then
@@ -1024,5 +1032,22 @@ do
 		end
 
 		return time
+	end
+end
+
+
+if (SERVER) then
+	function nut.util.parseItem(addedItems)
+		local actualItem = {}
+		
+		for _, itemCoord in pairs(addedItems) do
+			local x, y, quantity, bagID = itemCoord[1], itemCoord[2], itemCoord[3], itemCoord[4]
+
+			local bag = nut.item.inventories[bagID]
+			
+			table.insert(actualItem, bag:getItemAt(x, y))
+		end
+
+		return actualItem
 	end
 end
