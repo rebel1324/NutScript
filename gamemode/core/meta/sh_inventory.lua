@@ -567,7 +567,6 @@ if (SERVER) then
 						end
 
 						if (x and y) then
-							-- niggerify
 							for x2 = x, (x + (w - 1)) do
 								for y2= y, (y + (h - 1)) do
 									targetInv.slots[x2] = targetInv.slots[x2] or {}
@@ -575,7 +574,8 @@ if (SERVER) then
 								end
 							end
 
-							table.insert(targetCoords, {x, y, requestQuantity})
+							table.insert(targetCoords, {x, y, requestQuantity, targetInv:getID()})
+							
 							return false
 						else
 							return true
