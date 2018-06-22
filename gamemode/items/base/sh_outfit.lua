@@ -7,7 +7,7 @@ ITEM.height = 1
 ITEM.outfitCategory = "model"
 ITEM.pacData = {}
 
-/*
+--[[
 -- This will change a player's skin after changing the model. Keep in mind it starts at 0.
 ITEM.newSkin = 1
 -- This will change a certain part of the model.
@@ -25,7 +25,7 @@ ITEM.bodyGroups = {
 	["blade"] = 1,
 	["bladeblur"] = 1
 }
-*/
+]]
 
 -- Inventory drawing
 if (CLIENT) then
@@ -47,7 +47,7 @@ function ITEM:removeOutfit(client)
 		character:setModel(character:getData("oldMdl"))
 		character:setData("oldMdl", nil)
 	end
-	
+
 	if (self.newSkin) then
 		if (character:getData("oldSkin")) then
 			client:SetSkin(character:getData("oldSkin"))
@@ -93,7 +93,7 @@ ITEM.functions.EquipUn = { -- sorry, for name order.
 	icon = "icon16/cross.png",
 	onRun = function(item)
 		item:removeOutfit(item.player)
-		
+
 		return false
 	end,
 	onCanRun = function(item)
@@ -123,7 +123,7 @@ ITEM.functions.Equip = {
 		end
 
 		item:setData("equip", true)
-		
+
 		if (type(item.onGetReplacement) == "function") then
 			char:setData("oldMdl", char:getData("oldMdl", item.player:GetModel()))
 			char:setModel(item:onGetReplacement())
@@ -142,12 +142,12 @@ ITEM.functions.Equip = {
 				char:setModel(item.replacement or item.replacements)
 			end
 		end
-		
+
 		if (item.newSkin) then
 			char:setData("oldSkin", item.player:GetSkin())
 			item.player:SetSkin(item.newSkin)
 		end
-		
+
 		if (item.bodyGroups) then
 			local groups = {}
 
@@ -176,7 +176,7 @@ ITEM.functions.Equip = {
 				char:addBoost(item.uniqueID, k, v)
 			end
 		end
-		
+
 		return false
 	end,
 	onCanRun = function(item)

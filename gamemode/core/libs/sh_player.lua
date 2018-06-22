@@ -8,7 +8,7 @@ do
 			if (key == true) then
 				return self.nutData
 			end
-			
+
 			local data = self.nutData and self.nutData[key]
 
 			if (data == nil) then
@@ -61,7 +61,7 @@ do
 
 	function playerMeta:getItems()
 		local char = self:getChar()
-		
+
 		if (char) then
 			local inv = char:getInv()
 

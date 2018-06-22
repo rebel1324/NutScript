@@ -20,14 +20,14 @@ if (SERVER) then
 			physObj:EnableMotion(true)
 			physObj:Wake()
 		end
-		
+
 		hook.Run("OnItemSpawned", self)
 	end
 
 	function ENT:setHealth(amount)
 		self.health = amount
 	end
-	
+
 	function ENT:OnTakeDamage(dmginfo)
 		local damage = dmginfo:GetDamage()
 		self:setHealth(self.health - damage)
@@ -110,10 +110,10 @@ if (SERVER) then
 			end
 		end
 	end
-	
+
 	function ENT:Think()
 		local itemTable = self:getItemTable()
-				
+
 		if (itemTable.think) then
 			itemTable:think(self)
 		end
@@ -140,9 +140,9 @@ else
 
 			if (description != self.desc) then
 				self.desc = description
-				self.markup = nut.markup.parse("<font=nutItemDescFont>" .. description .. "</font>", ScrW() * 0.7)
+				self.markup = nut.markup.parse("<font=nutItemDescFont>"..description.."</font>", ScrW() * 0.7)
 			end
-			
+
 			nut.util.drawText(itemTable.getName and itemTable:getName() or L(itemTable.name), x, y, colorAlpha(nut.config.get("color"), alpha), 1, 1, nil, alpha * 0.65)
 
 			y = y + 12
@@ -154,7 +154,7 @@ else
 
 			itemTable.entity = nil
 			itemTable.data = oldData
-		end		
+		end
 	end
 
 	function ENT:DrawTranslucent()

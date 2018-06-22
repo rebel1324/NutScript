@@ -2,6 +2,7 @@ local SKIN = {}
 	SKIN.fontFrame = "BudgetLabel"
 	SKIN.fontTab = "nutSmallFont"
 	SKIN.fontButton = "nutSmallFont"
+
 	SKIN.Colours = table.Copy(derma.SkinList.Default.Colours)
 	SKIN.Colours.Window.TitleActive = Color(0, 0, 0)
 	SKIN.Colours.Window.TitleInactive = Color(255, 255, 255)
@@ -71,11 +72,10 @@ local SKIN = {}
 	end
 
 	-- I don't think we gonna need minimize button and maximize button.
-	function SKIN:PaintWindowMinimizeButton( panel, w, h )
+	function SKIN:PaintWindowMinimizeButton(panel, w, h)
 	end
 
-	function SKIN:PaintWindowMaximizeButton( panel, w, h )
+	function SKIN:PaintWindowMaximizeButton(panel, w, h)
 	end
-
 derma.DefineSkin("nutscript", "The base skin for the NutScript framework.", SKIN)
 derma.RefreshSkins()

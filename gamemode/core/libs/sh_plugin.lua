@@ -40,9 +40,9 @@ function nut.plugin.load(uniqueID, path, isSingleFile, variable)
 
 		hook.Run("DoPluginIncludes", path, PLUGIN)
 	end
-	
+
 	nut.util.include(isSingleFile and path or path.."/sh_"..variable:lower()..".lua", "shared")
-	
+
 	PLUGIN.loading = false
 
 	local uniqueID2 = uniqueID
@@ -64,7 +64,7 @@ function nut.plugin.load(uniqueID, path, isSingleFile, variable)
 	if (uniqueID != "schema") then
 		PLUGIN.name = PLUGIN.name or "Unknown"
 		PLUGIN.desc = PLUGIN.desc or "No description available."
-		
+
 		if (!PLUGIN.IsValid) then
 			function PLUGIN:IsValid()
 				-- if you gonna return false of this, you should remove/make nil your PLUGIN table! 

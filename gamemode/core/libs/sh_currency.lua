@@ -26,7 +26,6 @@ function nut.currency.spawn(pos, amount, angle)
 
 	local money = ents.Create("nut_money")
 	money:SetPos(pos)
-	-- double check for negative.
 	money:setNetVar("amount", math.Round(math.abs(amount)))
 	money:SetAngles(angle or Angle(0, 0, 0))
 	money:Spawn()
@@ -44,32 +43,32 @@ function GM:OnPickupMoney(client, moneyEntity)
 	end
 end
 
-do
-	local character = nut.meta.character
 
-	function character:hasMoney(amount)
-		if (amount < 0) then
-			print("Negative Money Check Received.")	
-		end
+local charMeta = nut.meta.character
 
-		return self:getMoney() >= amount
+function charMeta:hasMoney(amount)
+	if (amount < 0) then
+		print("Negative Money Check Received.")	
 	end
 
-	function character:giveMoney(amount, kek)
-		if (!kek) then
-			nut.log.add(self:getPlayer(), "money", amount)
-		end
+	return self:getMoney() >= amount
+end
+
+function charMeta:giveMoney(amount, takingMoney)
+	if (!takingMoney) then
+		nut.log.add(self:getPlayer(), "money", amount)
+	end
 		
-		self:setMoney(self:getMoney() + amount)
+	self:setMoney(self:getMoney() + amount)
 
-		return true
-	end
+	return true
+end
 
-	function character:takeMoney(amount)
-		nut.log.add(self:getPlayer(), "money", -amount)
-		amount = math.abs(amount)
-		self:giveMoney(-amount, true)
+function charMeta:takeMoney(amount)
+	nut.log.add(self:getPlayer(), "money", -amount)
 
-		return true
-	end
+	amount = math.abs(amount)
+	self:giveMoney(-amount, true)
+
+	return true
 end

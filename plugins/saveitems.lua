@@ -2,20 +2,6 @@ PLUGIN.name = "Save Items"
 PLUGIN.author = "Chessnut"
 PLUGIN.desc = "Saves items that were dropped."
 
-/*
-	function PLUGIN:OnSavedItemLoaded(items)
-		for k, v in ipairs(items) do
-			-- do something
-		end
-	end
-
-	function PLUGIN:ShouldDeleteSavedItems()
-		return true
-	end
-*/
-
--- as title says.
-
 function PLUGIN:LoadData()
 	local items = self:getData()
 
@@ -32,7 +18,6 @@ function PLUGIN:LoadData()
 			local range = "("..table.concat(idRange, ", ")..")"
 
 			if (hook.Run("ShouldDeleteSavedItems") == true) then
-				-- don't spawn saved item and just delete them.
 				nut.db.query("DELETE FROM nut_items WHERE _itemID IN " .. range)
 				print("Server Deleted Server Items (does not includes Logical Items)")
 				print(range)
@@ -60,7 +45,7 @@ function PLUGIN:LoadData()
 							end
 						end
 
-						hook.Run("OnSavedItemLoaded", loadedItems) -- when you have something in the dropped item.
+						hook.Run("OnSavedItemLoaded", loadedItems)
 					end
 				end)
 			end

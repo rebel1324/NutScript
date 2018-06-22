@@ -90,6 +90,45 @@ if (SERVER) then
 	function PLUGIN:OnCharTradeVendor(client, vendor, x, y, invID, price, isSell)
 	end
 
+	nut.log.addType("vendorAccess", function(client, ...)
+		local data = {...}
+		local vendorName = data[1] or "unknown"
+
+		return string.format("%s has accessed vendor %s.", client:Name(), vendorName)
+	end)
+
+	nut.log.addType("vendorExit", function(client, ...)
+		local data = {...}
+		local vendorName = data[1] or "unknown"
+
+		return string.format("%s has exited vendor %s.", client:Name(), vendorName)
+	end)
+
+	nut.log.addType("vendorEdit", function(client, ...)
+		local data = {...}
+		local vendorName = data[1] or "unknown"
+		local key = data[2] or "unknown"
+		local value = data[3] or "unknown"
+
+		return string.format("%s has modified vendor %s's key \"%s\": %s.", client:Name(), vendorName, key, value)
+	end)
+
+	nut.log.addType("vendorSell", function(client, ...)
+		local data = {...}
+		local vendorName = data[1] or "unknown"
+		local itemName = data[2] or "unknown"
+
+		return string.format("%s has sold a %s to %s.", client:Name(), itemName, vendorName)
+	end)
+
+	nut.log.addType("vendorBuy", function(client, ...)
+		local data = {...}
+		local vendorName = data[1] or "unknown"
+		local itemName = data[2] or "unknown"
+
+		return string.format("%s has bought a %s from %s.", client:Name(), itemName, vendorName)
+	end)
+
 	netstream.Hook("vendorExit", function(client)
 		local entity = client.nutVendor
 
@@ -101,6 +140,8 @@ if (SERVER) then
 					break
 				end
 			end
+
+			nut.log.add(client, "vendorExit", entity:getNetVar("name"))
 
 			client.nutVendor = nil
 		end
@@ -231,6 +272,8 @@ if (SERVER) then
 
 			PLUGIN:SaveData()
 
+			nut.log.add(client, "vendorEdit", entity:getNetVar("name"), tostring(key), type(data) == "table" and "{"..table.concat(data, ", ").."}" or tostring(data))
+
 			if (feedback) then
 				local receivers = {}
 
@@ -267,7 +310,7 @@ if (SERVER) then
 				local name
 				local inv = client:getChar():getInv()
 				local virtualInv = nut.item.inventories[0]
-				
+
 				for k, v in pairs(inv:getItems()) do
 					if (v.uniqueID == uniqueID and v:getID() != 0 and istable(nut.item.instances[v:getID()])) then
 						if (hook.Run("CanItemBeTransfered", v, inv, virtualInv) == false) then
@@ -283,19 +326,19 @@ if (SERVER) then
 						break
 					end
 				end
-				
+
 				if (!found) then
 					return client:notifyLocalized("noItem")
 				end
-				
+
 				price = entity:getPrice(found, isSellingToVendor)
 
 				if (!entity:hasMoney(price)) then
 					return client:notifyLocalized("vendorNoMoney")
 				end
-				
+
 				local invOkay = found:remove()
-				
+
 				if (!invOkay) then
 					client:getChar():getInv():sync(client, true)
 					return client:notifyLocalized("tellAdmin", "trd!iid")
@@ -305,6 +348,8 @@ if (SERVER) then
 				client:notifyLocalized("businessSell", name, nut.currency.get(price))
 				entity:takeMoney(price)
 				entity:addStock(uniqueID)
+
+				nut.log.add(client, "vendorSell", name, entity:getNetVar("name"))
 
 				hook.Run("OnCharTradeVendor", client, entity, uniqueID, isSellingToVendor)
 			else
@@ -319,10 +364,10 @@ if (SERVER) then
 				end
 
 				local name = L(nut.item.list[uniqueID].name, client)
-			
+
 				client:getChar():takeMoney(price)
 				client:notifyLocalized("businessPurchase", name, nut.currency.get(price))
-				
+
 				entity:giveMoney(price)
 
 				if (!client:getChar():getInv():add(uniqueID)) then
@@ -332,6 +377,8 @@ if (SERVER) then
 				end
 
 				entity:takeStock(uniqueID)
+
+				nut.log.add(client, "vendorBuy", name, entity:getNetVar("name"))
 
 				hook.Run("OnCharTradeVendor", client, entity, uniqueID, isSellingToVendor)
 			end

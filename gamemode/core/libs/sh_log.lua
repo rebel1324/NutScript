@@ -32,13 +32,14 @@ if (SERVER) then
 	end
 
 	nut.log.types = nut.log.types or {}
+
 	function nut.log.addType(logType, func)
 		nut.log.types[logType] = func
 	end
 
 	function nut.log.getString(client, logType, ...)
 		local text = nut.log.types[logType]
-		
+
 		if (text) then
 			if (isfunction(text)) then
 				text = text(client, ...)
@@ -50,11 +51,13 @@ if (SERVER) then
 		return text
 	end
 
-	function nut.log.addRaw(logString)		
-		nut.log.send(nut.util.getAdmins(), logString)
-		
-		Msg("[LOG] ", logString .. "\n")
-		
+	function nut.log.addRaw(logString, shouldNotify)		
+		if (shouldNotify) then
+			nut.log.send(nut.util.getAdmins(), logString)
+		end
+
+		Msg("[LOG] ", logString.."\n")
+
 		if (!noSave) then
 			file.Append("nutscript/logs/"..os.date("%x"):gsub("/", "-")..".txt", "["..os.date("%X").."]\t"..logString.."\r\n")
 		end
@@ -64,10 +67,10 @@ if (SERVER) then
 		local logString = nut.log.getString(client, logType, ...)
 		if (logString == -1) then return end
 
-		nut.log.send(nut.util.getAdmins(), logString)
-		
-		Msg("[LOG] ", logString .. "\n")
-		
+		hook.Run("OnServerLog", client, logType, ...)
+
+		Msg("[LOG] ", logString.."\n")
+
 		if (!noSave) then
 			file.Append("nutscript/logs/"..os.date("%x"):gsub("/", "-")..".txt", "["..os.date("%X").."]\t"..logString.."\r\n")
 		end
@@ -84,6 +87,6 @@ if (SERVER) then
 	end
 else
 	netstream.Hook("nutLogStream", function(logString, flag)
-		MsgC(consoleColor, "[SERVER] ", color_white, logString .. "\n")
+		MsgC(consoleColor, "[SERVER] ", color_white, logString.."\n")
 	end)
 end

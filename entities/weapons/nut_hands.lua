@@ -43,10 +43,10 @@ SWEP.LowerAngles2 = Angle(0, 5, -22)
 SWEP.FireWhenLowered = true
 SWEP.HoldType = "fist"
 
-SWEP.holdingEntity             = nil
-SWEP.carryHack              = nil
-SWEP.constr                 = nil
-SWEP.prevOwner              = nil
+SWEP.holdingEntity			= nil
+SWEP.carryHack				= nil
+SWEP.constr					= nil
+SWEP.prevOwner				= nil
 
 CARRY_STRENGTH_NERD = 1
 CARRY_STRENGTH_CHAD = 2
@@ -174,11 +174,11 @@ end
 
 function SWEP:reset(throw)
 	if (IsValid(self.carryHack)) then
-	   self.carryHack:Remove()
+		self.carryHack:Remove()
 	end
 
 	if (IsValid(self.constr)) then
-	   self.constr:Remove()
+		self.constr:Remove()
 	end
 
 	if (IsValid(self.holdingEntity)) then
@@ -190,7 +190,7 @@ function SWEP:reset(throw)
 			end
 		end
 
-	   	local phys = self.holdingEntity:GetPhysicsObject()
+		local phys = self.holdingEntity:GetPhysicsObject()
 		if (IsValid(phys)) then
 			phys:ClearGameFlag(FVPHYSICS_PLAYER_HELD)
 			phys:AddGameFlag(FVPHYSICS_WAS_THROWN)
@@ -222,47 +222,46 @@ function SWEP:drop(throw)
 	if (!self:allowEntityDrop()) then return end
 
 	if (SERVER) then
-	 	self.constr:Remove()
-	 	self.carryHack:Remove()
+		self.constr:Remove()
+		self.carryHack:Remove()
 
-	 	local entity = self.holdingEntity
+		local entity = self.holdingEntity
 
-	 	local phys = entity:GetPhysicsObject()
-	 	if (IsValid(phys)) then
-	 		phys:EnableCollisions(true)
-	 		phys:EnableGravity(true)
-	 		phys:EnableDrag(true)
-	 		phys:EnableMotion(true)
-	 		phys:Wake()
-	 		--phys:ApclientForceCenter(self:GetOwner():GetAimVector() * 500)
+		local phys = entity:GetPhysicsObject()
+		if (IsValid(phys)) then
+			phys:EnableCollisions(true)
+			phys:EnableGravity(true)
+			phys:EnableDrag(true)
+			phys:EnableMotion(true)
+			phys:Wake()
+			--phys:ApclientForceCenter(self:GetOwner():GetAimVector() * 500)
 
-	 		phys:ClearGameFlag(FVPHYSICS_PLAYER_HELD)
-	 		phys:AddGameFlag(FVPHYSICS_WAS_THROWN)
-	 	end
+			phys:ClearGameFlag(FVPHYSICS_PLAYER_HELD)
+			phys:AddGameFlag(FVPHYSICS_WAS_THROWN)
+		end
 
-	 	-- Try to limit ragdoll slinging
+		-- Try to limit ragdoll slinging
 		if (entity:GetClass() == "prop_ragdoll") then
 			removeVelocity(entity)
-	 	end
+		end
 
-	 	entity:SetPhysicsAttacker(self:GetOwner())
+		entity:SetPhysicsAttacker(self:GetOwner())
 	end
 
 	self:reset(throw)
 end
 
 function SWEP:checkValidity()
-   if (!IsValid(self.holdingEntity)) or (!IsValid(self.carryHack)) or (!IsValid(self.constr)) then
+	if (!IsValid(self.holdingEntity)) or (!IsValid(self.carryHack)) or (!IsValid(self.constr)) then
+		-- if one of them is not valid but another is non-nil...
+		if (self.holdingEntity or self.carryHack or self.constr) then
+			self:reset()
+		end
 
-      -- if one of them is not valid but another is non-nil...
-      if (self.holdingEntity or self.carryHack or self.constr) then
-         self:reset()
-      end
-
-      return false
-   else
-      return true
-   end
+		return false
+	else
+		return true
+	end
 end
 
 local function isPlayerStandsOn(entity)
@@ -308,7 +307,7 @@ if (SERVER) then
 
 		local obb = math.abs(self.holdingEntity:GetModelBounds():Length2D())
 
-		self.carryHack:SetPos(self:GetOwner():EyePos() + self:GetOwner():GetAimVector() * (35+obb) )
+		self.carryHack:SetPos(self:GetOwner():EyePos() + self:GetOwner():GetAimVector() * (35+obb))
 
 		local targetAng = self:GetOwner():GetAngles()
 
@@ -340,12 +339,12 @@ function SWEP:PrimaryAttack()
 
 	if (IsValid(self.holdingEntity)) then
 		self:doPickup(self:GetOwner():isWepRaised())
-		
+
 		return
 	end
 
 	self:SetNextPrimaryFire(CurTime() + self.Primary.Delay)
-	
+
 	if (hook.Run("CanPlayerThrowPunch", self.Owner) == false) then
 		return
 	end
@@ -391,9 +390,9 @@ function SWEP:SecondaryAttack()
 		data.mins = -hull
 		data.maxs = hull
 	local trace = util.TraceHull(data)
-	
+
 	local entity = trace.Entity
-	
+
 	if (SERVER and IsValid(entity)) then
 		if (entity:isDoor()) then
 			if (hook.Run("PlayerCanKnock", self.Owner, entity) == false) then
@@ -408,7 +407,7 @@ function SWEP:SecondaryAttack()
 			self:SetNextSecondaryFire(CurTime() + 0.4)
 			self:SetNextPrimaryFire(CurTime() + 1)
 		elseif (!entity:IsPlayer() and !entity:IsNPC()) then
-   			self:doPickup(false, entity)
+			self:doPickup(false, entity)
 		elseif (IsValid(self.heldEntity) and !self.heldEntity:IsPlayerHolding()) then
 			self.heldEntity = nil
 		end
@@ -446,7 +445,7 @@ end
 function SWEP:allowPickup(target)
 	local phys = target:GetPhysicsObject()
 	local client = self:GetOwner()
-	
+
 	return (
 			IsValid(phys) and IsValid(client) and client:getChar() and
 			(not phys:HasGameFlag(FVPHYSICS_NO_PLAYER_PICKUP)) and
@@ -474,7 +473,7 @@ function SWEP:doPickup(throw, entity)
 		local phys = entity:GetPhysicsObject()
 		
 		if (!IsValid(phys) or !phys:IsMoveable() or phys:HasGameFlag(FVPHYSICS_PLAYER_HELD)) then
-		   return
+			return
 		end
 			
 		-- if we let the client mess with physics, desync ensues
@@ -528,29 +527,29 @@ function SWEP:pickup(entity)
 
 	if (IsValid(entity) and IsValid(entphys)) then
 		self.carryHack = ents.Create("prop_physics")
-		
+
 		if (IsValid(self.carryHack)) then
 			local pos, obb = self.holdingEntity:GetPos(), self.holdingEntity:OBBCenter()
 			pos = pos + self.holdingEntity:GetForward()*obb.x
 			pos = pos + self.holdingEntity:GetRight()*obb.y
 			pos = pos + self.holdingEntity:GetUp()*obb.z
-			
+
 			self.carryHack:SetPos(pos)
 				
 			self.carryHack:SetModel("models/weapons/w_bugbait.mdl")
-				
+
 			self.carryHack:SetColor(Color(50, 250, 50, 240))
 			self.carryHack:SetNoDraw(true)
 			self.carryHack:DrawShadow(false)
-				
+
 			self.carryHack:SetHealth(999)
 			self.carryHack:SetOwner(client)
 			self.carryHack:SetCollisionGroup(COLLISION_GROUP_DEBRIS)
 			self.carryHack:SetSolid(SOLID_NONE)
-			
+
 			-- TODO: set the desired angles before adding the constraint
 			local preferredAngles = hook.Run("GetPreferredCarryAngles", self.holdingEntity)
-					
+
 			if (self:GetOwner():KeyDown(IN_RELOAD) and !preferredAngles) then
 				preferredAngles = Angle()
 			end
@@ -568,44 +567,44 @@ function SWEP:pickup(entity)
 			else
 				self.carryHack:SetAngles(self:GetOwner():GetAngles())
 			end
-				
+
 			self.carryHack:Spawn()
-				
+
 			if (!self.holdingEntity:IsWeapon()) then
-			   self.prevOwner = self.holdingEntity:GetOwner()
-				
-			   self.holdingEntity:SetOwner(client)
+				self.prevOwner = self.holdingEntity:GetOwner()
+
+				self.holdingEntity:SetOwner(client)
 			end
-		 
+
 			local phys = self.carryHack:GetPhysicsObject()
 			if (IsValid(phys)) then
-			   phys:SetMass(200)
-			   phys:SetDamping(0, 1000)
-			   phys:EnableGravity(false)
-			   phys:EnableCollisions(false)
-			   phys:EnableMotion(false)
-			   phys:AddGameFlag(FVPHYSICS_PLAYER_HELD)
+				phys:SetMass(200)
+				phys:SetDamping(0, 1000)
+				phys:EnableGravity(false)
+				phys:EnableCollisions(false)
+				phys:EnableMotion(false)
+				phys:AddGameFlag(FVPHYSICS_PLAYER_HELD)
 			end
-		 
+
 			entphys:AddGameFlag(FVPHYSICS_PLAYER_HELD)
 			local bone = math.Clamp(0, 0, 1)
 			local max_force = CARRY_FORCE_LIMIT
-		 
+
 			if (entity:GetClass() == "prop_ragdoll") then
-			   self.dt.carried_rag = ent
-				
-			   bone = trace.PhysicsBone
-			   max_force = 0
+				self.dt.carried_rag = ent
+
+				bone = trace.PhysicsBone
+				max_force = 0
 			else
-			   self.dt.carried_rag = nil
+				self.dt.carried_rag = nil
 			end
-			
+
 			self:SetNW2Bool("holdingObject", true)
 			self.constr = constraint.Weld(self.carryHack, self.holdingEntity, 0, bone, max_force, true)
 			self.Owner:EmitSound("physics/body/body_medium_impact_soft"..math.random(1, 3)..".wav", 75)
 
 			hook.Run("GravGunOnPickedUp", self:GetOwner(), self.holdingEntity)
-	   	end
+		end
 	end
 end
 
@@ -624,14 +623,14 @@ function SWEP:allowEntityDrop()
 end
 
 function SWEP:SetupDataTables()
- 	-- client actually has no idea what we're holding, and almost never needs to know
- 	self:DTVar("Entity", 0, "carried_rag")
+	-- client actually has no idea what we're holding, and almost never needs to know
+	self:DTVar("Entity", 0, "carried_rag")
 end
 
 
 function SWEP:Initialize()
 	if (SERVER) then
-      self.dt.carried_rag = nil
+		self.dt.carried_rag = nil
 	end
 
 	self:SetHoldType(self.HoldType)
@@ -639,7 +638,7 @@ function SWEP:Initialize()
 end
 
 function SWEP:OnRemove()
-   self:reset()
+	self:reset()
 end
 
 ACT_VM_FISTS_DRAW = 3
@@ -682,9 +681,9 @@ end
 function SWEP:Precache()
 	util.PrecacheSound("npc/vort/claw_swing1.wav")
 	util.PrecacheSound("npc/vort/claw_swing2.wav")
-	util.PrecacheSound("physics/plastic/plastic_box_impact_hard1.wav")	
-	util.PrecacheSound("physics/plastic/plastic_box_impact_hard2.wav")	
-	util.PrecacheSound("physics/plastic/plastic_box_impact_hard3.wav")	
+	util.PrecacheSound("physics/plastic/plastic_box_impact_hard1.wav")
+	util.PrecacheSound("physics/plastic/plastic_box_impact_hard2.wav")
+	util.PrecacheSound("physics/plastic/plastic_box_impact_hard3.wav")
 	util.PrecacheSound("physics/plastic/plastic_box_impact_hard4.wav")
 	util.PrecacheSound("physics/wood/wood_crate_impact_hard2.wav")
 	util.PrecacheSound("physics/wood/wood_crate_impact_hard3.wav")
@@ -700,7 +699,7 @@ function SWEP:doPunchAnimation()
 		viewModel:SetPlaybackRate(0.5)
 		viewModel:SetSequence(sequence)
 	end
-	
+
 	if(self:GetNW2Bool( "startPunch", false )) then
 		if( CurTime() > self:GetNW2Float( "startTime", CurTime() ) + 0.055 ) then
 			self:doPunch();

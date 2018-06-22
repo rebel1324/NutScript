@@ -155,7 +155,7 @@ if (SERVER) then
 			-- Run the command's callback and get the return.
 			local results = {command.onRun(client, arguments or {})}
 			local result = results[1]
-			
+
 			-- If a string is returned, it is a notification.
 			if (type(result) == "string") then
 				-- Normal player here.
@@ -165,6 +165,8 @@ if (SERVER) then
 					else
 						client:notify(result)
 					end
+
+					nut.log.add(client, "command", command, table.concat(arguments, ", "))
 				else
 					-- Show the message in server console since we're running from RCON.
 					print(result)

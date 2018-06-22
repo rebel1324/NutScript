@@ -304,7 +304,7 @@ function ITEM:remove()
 			if (item and item.onRemoved) then
 				item:onRemoved()
 			end
-			
+
 			nut.db.query("DELETE FROM nut_items WHERE _itemID = "..self.id)
 			nut.item.instances[self.id] = nil
 		end
@@ -357,11 +357,11 @@ if (SERVER) then
 	-- Transfers an item to a specific inventory.
 	function ITEM:transfer(invID, x, y, client, noReplication, isLogical)		
 		invID = invID or 0
-		
+
 		if (self.invID == invID) then
 			return false, "same inv"
 		end
-		
+
 		local inventory = nut.item.inventories[invID]
 		local curInv = nut.item.inventories[self.invID or 0]
 

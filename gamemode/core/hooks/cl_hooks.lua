@@ -89,7 +89,7 @@ function GM:LoadFonts(font, genericFont)
 
 	-- The more readable font.
 	font = genericFont
-	
+
 	surface.CreateFont("nutCleanTitleFont", {
 		font = font,
 		size = 200,
@@ -131,6 +131,7 @@ function GM:LoadFonts(font, genericFont)
 		extended = true,
 		weight = 1000
 	})
+
 	surface.CreateFont("nutGenericLightFont", {
 		font = font,
 		size = 20,
@@ -278,6 +279,7 @@ function GM:CalcViewModelView(weapon, viewModel, oldEyePos, oldEyeAngles, eyePos
 	if (!IsValid(weapon)) then
 		return
 	end
+
 	local vm_origin, vm_angles = eyePos, eyeAngles
 
 	--Intervention of Nutscript Holster/Raise Angle/Positions. 
@@ -338,7 +340,7 @@ end
 
 function GM:InitializedConfig()
 	hook.Run("LoadFonts", nut.config.get("font"), nut.config.get("genericFont"))
-	
+
 	if (!nut.config.loaded and !IsValid(nut.gui.loading)) then
 		local loader = vgui.Create("EditablePanel")
 		loader:ParentToHUD()
@@ -454,7 +456,7 @@ function GM:HUDPaintBackground()
 	if (!localPlayer.getChar(localPlayer)) then
 		return
 	end
-	
+
 	local realTime = RealTime()
 	local frameTime = FrameTime()
 	local scrW, scrH = surface.ScreenWidth(), surface.ScreenHeight()
@@ -471,10 +473,10 @@ function GM:HUDPaintBackground()
 		nextUpdate = realTime + 0.5
 
 		lastTrace.start = localPlayer.GetShootPos(localPlayer)
-		lastTrace.endpos = lastTrace.start + localPlayer.GetAimVector(localPlayer)*160
-		lastTrace.filter = localPlayer		
-		lastTrace.mins = Vector( -4, -4, -4 )
-		lastTrace.maxs = Vector( 4, 4, 4 )
+		lastTrace.endpos = lastTrace.start + localPlayer.GetAimVector(localPlayer) * 160
+		lastTrace.filter = localPlayer
+		lastTrace.mins = Vector(-4, -4, -4)
+		lastTrace.maxs = Vector(4, 4, 4)
 		lastTrace.mask = MASK_SHOT_HULL
 
 		lastEntity = util.TraceHull(lastTrace).Entity
@@ -483,7 +485,7 @@ function GM:HUDPaintBackground()
 			paintedEntitiesCache[lastEntity] = true
 		end
 	end
-    
+
 	for entity, drawing in pairs(paintedEntitiesCache) do
 		if (IsValid(entity)) then
 			local goal = drawing and 255 or 0
@@ -622,7 +624,7 @@ function GM:DrawEntityInfo(entity, alpha, position)
 	if (entity.IsPlayer(entity)) then
 		local localPlayer = LocalPlayer()
 		local character = entity.getChar(entity)
-		
+
 		position = position or toScreen(entity.GetPos(entity) + (entity.Crouching(entity) and OFFSET_CROUCHING or OFFSET_NORMAL))
 
 		if (character) then
@@ -647,7 +649,7 @@ function GM:DrawEntityInfo(entity, alpha, position)
 
 			for i = 1, #charInfo do
 				local info = charInfo[i]
-				
+
 				_, ty = drawText(info[1], x, y, colorAlpha(info[2] or color_white, alpha), 1, 1, "nutSmallFont")
 				y = y + ty
 			end
@@ -881,7 +883,7 @@ function GM:ShowPlayerOptions(client, options)
 	options["viewProfile"] = {"icon16/user.png", function()
 		if (IsValid(client)) then
 			client:ShowProfile()
-		end	
+		end
 	end}
 	options["Copy Steam ID"] = {"icon16/user.png", function()
 		if (IsValid(client)) then

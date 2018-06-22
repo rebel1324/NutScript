@@ -25,7 +25,7 @@ if (SERVER) then
 else
 	-- List of notice panels.
 	nut.notices = nut.notices or {}
-	
+
 	-- Move all notices to their proper positions.
 	local function OrganizeNotices()
 
@@ -33,7 +33,7 @@ else
 			v:MoveTo(ScrW() - (v:GetWide() + 4), (k - 1) * (v:GetTall() + 4) + 4, 0.15, (k / #nut.notices) * 0.25, nil)
 		end
 	end
-	
+
 	-- Create a notification panel.
 	function nut.util.notify(message)
 		local notice = vgui.Create("nutNotice")

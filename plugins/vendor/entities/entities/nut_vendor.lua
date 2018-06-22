@@ -139,7 +139,7 @@ function ENT:hasMoney(amount)
 	if (!self.money) then
 		return true
 	end
-	
+
 	return self.money >= amount
 end
 
@@ -181,12 +181,14 @@ if (SERVER) then
 			return
 		end
 
+		nut.log.add(activator, "vendorAccess", self:getNetVar("name"))
+
 		self.receivers[#self.receivers + 1] = activator
 
 		if (self.messages[VENDOR_WELCOME]) then
 			activator:ChatPrint(self:getNetVar("name")..": "..self.messages[VENDOR_WELCOME])
 		end
-			
+
 		local items = {}
 
 		-- Only send what is needed.
@@ -271,7 +273,7 @@ else
 
 	function ENT:Draw()
 		local bubble = self.bubble
-		
+
 		if (IsValid(bubble)) then
 			local realTime = RealTime()
 

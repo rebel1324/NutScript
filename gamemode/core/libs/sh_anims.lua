@@ -1,4 +1,5 @@
 nut.anim = nut.anim or {}
+
 nut.anim.citizen_male = {
 	normal = {
 		[ACT_MP_STAND_IDLE] = {ACT_IDLE, ACT_IDLE_ANGRY_SMG1},
@@ -111,6 +112,7 @@ nut.anim.citizen_female = {
 	glide = ACT_GLIDE,
 	vehicle = nut.anim.citizen_male.vehicle
 }
+
 nut.anim.metrocop = {
 	normal = {
 		[ACT_MP_STAND_IDLE] = {ACT_IDLE, ACT_IDLE_ANGRY_SMG1},
@@ -166,6 +168,7 @@ nut.anim.metrocop = {
 		["prop_vehicle_prisoner_pod"] = {ACT_IDLE, Vector(-4, -0.5, 0)}
 	}
 }
+
 nut.anim.overwatch = {
 	normal = {
 		[ACT_MP_STAND_IDLE] = {"idle_unarmed", ACT_IDLE_ANGRY},
@@ -212,6 +215,7 @@ nut.anim.overwatch = {
 	},
 	glide = ACT_GLIDE
 }
+
 nut.anim.vort = {
 	normal = {
 		[ACT_MP_STAND_IDLE] = {ACT_IDLE, "actionidle"},
@@ -257,6 +261,7 @@ nut.anim.vort = {
 	},
 	glide = ACT_GLIDE
 }
+
 nut.anim.player = {
 	--[[normal = {
 		[ACT_MP_STAND_IDLE] = ACT_HL2MP_IDLE,
@@ -271,6 +276,7 @@ nut.anim.player = {
 		[ACT_MP_RUN] = ACT_HL2MP_RUN_PASSIVE
 	}
 }
+
 nut.anim.zombie = {
 	[ACT_MP_STAND_IDLE] = ACT_HL2MP_IDLE_ZOMBIE,
 	[ACT_MP_CROUCH_IDLE] = ACT_HL2MP_IDLE_CROUCH_ZOMBIE,
@@ -278,6 +284,7 @@ nut.anim.zombie = {
 	[ACT_MP_WALK] = ACT_HL2MP_WALK_ZOMBIE_02,
 	[ACT_MP_RUN] = ACT_HL2MP_RUN_ZOMBIE
 }
+
 nut.anim.fastZombie = {
 	[ACT_MP_STAND_IDLE] = ACT_HL2MP_WALK_ZOMBIE,
 	[ACT_MP_CROUCH_IDLE] = ACT_HL2MP_IDLE_CROUCH_ZOMBIE,
@@ -286,14 +293,13 @@ nut.anim.fastZombie = {
 	[ACT_MP_RUN] = ACT_HL2MP_RUN_ZOMBIE_FAST
 }
 
-
 local translations = {}
 
 function nut.anim.setModelClass(model, class)
 	if (!nut.anim[class]) then
 		error("'"..tostring(class).."' is not a valid animation class!")
 	end
-	
+
 	translations[model:lower()] = class
 end
 

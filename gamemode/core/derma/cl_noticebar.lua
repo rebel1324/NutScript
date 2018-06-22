@@ -28,7 +28,7 @@ PANEL.pnlTypes = {
 	[7] = { -- TUTORIAL/GUIDE
 		col = Color(100, 185, 255),
 		icon = "icon16/information.png"
-	},
+	}
 }
 
 function PANEL:Init()
@@ -63,7 +63,7 @@ function PANEL:Paint()
 
 	local col = self.pnlTypes[self.type].col
 	local mat = self.material
-	local size = self:GetTall()*.6
+	local size = self:GetTall() * .6
 	local marg = 3
 
 	draw.RoundedBox(4, 0, 0, self:GetWide(), self:GetTall(), col)
@@ -71,7 +71,7 @@ function PANEL:Paint()
 	if (mat) then
 		surface.SetDrawColor(color_white)
 		surface.SetMaterial(mat)
-		surface.DrawTexturedRect(size/2, self:GetTall()/2-size/2 + 1, size, size)
+		surface.DrawTexturedRect(size / 2, self:GetTall() / 2 - size / 2 + 1, size, size)
 	end
 end
 

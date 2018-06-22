@@ -1,6 +1,6 @@
 function GM:PlayerInitialSpawn(client)
 	client.nutJoinTime = RealTime()
-	
+
 	if (client:IsBot()) then
 		local botID = os.time()
 		local index = math.random(1, table.Count(nut.faction.indices))
@@ -29,7 +29,7 @@ function GM:PlayerInitialSpawn(client)
 
 	nut.config.send(client)
 	nut.date.send(client)
-	
+
 	client:loadNutData(function(data)
 		if (!IsValid(client)) then return end
 
@@ -68,7 +68,7 @@ function GM:PlayerInitialSpawn(client)
 
 	timer.Simple(1, function()
 		if (!IsValid(client)) then return end
-		
+
 		client:KillSilent()
 		client:StripAmmo()
 	end)
@@ -137,7 +137,7 @@ end
 function GM:CanPlayerTakeItem(client, item)
 	if (type(item) == "Entity") then
 		local char = client:getChar()
-		
+
 		if (item.nutSteamID and item.nutSteamID == client:SteamID() and item.nutCharID != char:getID()) then
 			client:notifyLocalized("playerCharBelonging")
 
@@ -467,6 +467,8 @@ function GM:PlayerHurt(client, attacker, health, damage)
 
 		client:EmitSound(painSound)
 		client.nutNextPain = CurTime() + 0.33
+
+		nut.log.add(client, "playerHurt", attacker:IsPlayer() and attacker:Name() or attacker:GetClass(), damage, health)
 	end
 end
 
@@ -496,12 +498,16 @@ function GM:PlayerDisconnected(client)
 			end
 		end
 
+		nut.log.add(client, "playerDisconnected")
+
 		hook.Run("OnCharDisconnect", client, character)
 		character:save()
 	end
 end
 
-
+function GM:PlayerAuthed(client, steamID, uniqueID)
+	nut.log.add(client, "playerConnected", client, steamID)
+end
 	
 function GM:InitPostEntity()
 	local doors = ents.FindByClass("prop_door_rotating")
@@ -656,6 +662,14 @@ function GM:CharacterPreSave(character)
 	end
 end
 
+function GM:OnServerLog(client, logType, ...)
+	for k, v in pairs(nut.util.getAdmins()) do
+		if (hook.Run("CanPlayerSeeLog", v, logType) != false) then
+			nut.log.send(v, nut.log.getString(client, logType, ...))
+		end
+	end
+end
+
 timer.Create("nutLifeGuard", 1, 0, function()
 	for k, v in ipairs(player.GetAll()) do
 		if (v:getChar() and v:Alive() and hook.Run("ShouldPlayerDrowned", v) != false) then
@@ -727,11 +741,12 @@ function GM:GetPreferredCarryAngles(entity)
 		return defaultAngleData[model]
 	end
 end
+
 local psaString = [[
 /*------------------------------------------------------------
 
 PUBLIC SERVICE ANNOUNCEMENT FOR NUTSCRIPT SERVER OWNERS
-				  
+
 There is a ENOURMOUS performance issue with ULX Admin mod.
 Nutscript Development Team found ULX is the main issue
 that make the server freeze when player count is higher 

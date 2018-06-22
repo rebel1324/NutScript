@@ -16,9 +16,10 @@ function nut.data.set(key, value, global, ignoreMap)
 
 	-- If we're not ignoring the map, create a folder for the map.
 	file.CreateDir(path)
+
 	-- Write the data using pON encoding.
 	file.Write(path..key..".txt", pon.encode({value}))
-	
+
 	-- Cache the data value here.
 	nut.data.stored[key] = value
 
@@ -38,6 +39,7 @@ function nut.data.get(key, default, global, ignoreMap, refresh)
 
 	-- Get the path to read from.
 	local path = "nutscript/"..(global and "" or SCHEMA.folder.."/")..(ignoreMap and "" or game.GetMap().."/")
+
 	-- Read the data from a local file.
 	local contents = file.Read(path..key..".txt", "DATA")
 
@@ -66,6 +68,7 @@ end
 function nut.data.delete(key, global, ignoreMap)
 	-- Get the path to read from.
 	local path = "nutscript/"..(global and "" or SCHEMA.folder.."/")..(ignoreMap and "" or game.GetMap().."/")
+
 	-- Read the data from a local file.
 	local contents = file.Read(path..key..".txt", "DATA")
 

@@ -81,14 +81,14 @@ function nut.chat.parse(client, message, noSend)
 	local anonymous = false
 	local chatType = "ic"
 
-	/*
+	--[[
 	-- fuckoff
 	-- Handle anonymous/unknown speaker chat.
 	if (message:sub(1, 1) == "?" and message:sub(2):find("%S")) then
 		anonymous = true
 		message = message:sub(2)
 	end
-	*/
+	]]
 
 	-- Loop through all chat classes and see if the message contains their prefix.
 	for k, v in pairs(nut.chat.classes) do

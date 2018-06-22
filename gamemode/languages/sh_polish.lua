@@ -1,8 +1,6 @@
---[[
 
-	Polish translation by Veran120 (http://steamcommunity.com//id/Veran120)
-
---]]
+-- Polish translation by Veran120 (http://steamcommunity.com//id/Veran120)
+-- Fixes by JohnyReaper (https://steamcommunity.com/id/JohnyReaper)
 NAME = "Polski"
 
 LANGUAGE = {
@@ -19,12 +17,12 @@ LANGUAGE = {
 	["return"] = "Powrót",
 	returnTip = "Powrót do poprzedniego menu.",
 	name = "Imię i nazwisko",
-	desc = "Rysopis",
+	desc = "Opis",
 	model = "Model",
 	attribs = "Atrybuty",
 	charCreateTip = "Wypełnij pola poniżej i klinij 'Zakończ' aby stworzyć swoją postać.",
 	invalid = "Podałeś niewłaściwe(ą) %s",
-	descMinLen = "Rysopis musi zawierać minimum %d znak(ów).",
+	descMinLen = "Opis musi zawierać minimum %d znak(ów).",
 	model = "Model",
 	player = "Gracz",
 	finish = "Zakończ",
@@ -55,7 +53,7 @@ LANGUAGE = {
 	notAllowed = "Przepraszamy, nie masz uprawnień do zrobienia tego.",
 	itemNoExist = "Przepraszamy, przedmiot o który prosiłeś nie istnieje.",
 	cmdNoExist = "Przepraszamy, ta komenda nie istnieje.",
-	plyNoExist = "Przerpaszamy, nie znaleziono pasującego gracza.",
+	plyNoExist = "Przepraszamy, nie znaleziono pasującego gracza.",
 	cfgSet = "%s ustawił \"%s\" na %s.",
 	drop = "Upuść",
 	dropTip = "Upuszcza ten przedmiot z Twojego ekwipunku.",
@@ -80,7 +78,7 @@ LANGUAGE = {
 	dConfigName = "Drzwi",
 	dSetFaction = "Te drzwi należą teraz do frakcji %s.",
 	dRemoveFaction = "Te drzwi już nie należą do żadnej frakcji.",
-	dNotValid = "Nie patrzysz na prawidłowe drzwi.",
+	dNotValid = "Patrzysz na nie prawidłowe drzwi.",
 	canNotAfford = "Nie stać Cię na kupienie tego.",
 	dPurchased = "Kupiłeś te drzwi za %s.",
 	dSold = "Sprzedałeś te drzwi za %s.",
@@ -144,8 +142,8 @@ LANGUAGE = {
 	doorSettings = "Ustawienia drzwi",
 	sell = "Sprzedaj",
 	access = "Dostęp",
-	locking = "Zamykanie tego przedmiotu...",
-	unlocking = "Otwieranie tego przedmiotu...",
+	locking = "Zamykanie przedmiotu...",
+	unlocking = "Otwieranie przedmiotu...",
 	modelNoSeq = "Twój model nie obsługuje tej animacji.",
 	notNow = "Nie możesz tego aktualnie zrobić.",
 	faceWall = "Musisz patrzeć na ścianę aby to wykonać.",

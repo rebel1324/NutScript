@@ -13,7 +13,7 @@ function nut.lang.loadFromDir(directory)
 				nut.lang.names[niceName] = NAME
 				NAME = nil
 			end
-			
+
 			nut.lang.stored[niceName] = table.Merge(nut.lang.stored[niceName] or {}, LANGUAGE)
 			LANGUAGE = nil
 		end
@@ -29,7 +29,7 @@ if (SERVER) then
 		local languages = nut.lang.stored
 		local langKey = ClientGetInfo(client, "nut_language")
 		local info = languages[langKey] or languages.english
-		
+
 		return FormatString(info and info[key] or key, ...)
 	end
 
@@ -37,7 +37,7 @@ if (SERVER) then
 		local languages = nut.lang.stored
 		local langKey = ClientGetInfo(client, "nut_language")
 		local info = languages[langKey] or languages.english
-		
+
 		if (info and info[key]) then
 			return FormatString(info[key], ...)
 		end
@@ -47,7 +47,7 @@ if (SERVER) then
 		local languages = nut.lang.stored
 		if (langKey) then
 			local info = languages[langKey] or languages.english
-			
+
 			return FormatString(info and info[key] or key, ...)
 		else
 			return (key)
@@ -60,7 +60,7 @@ else
 		local languages = nut.lang.stored
 		local langKey = NUT_CVAR_LANG:GetString()
 		local info = languages[langKey] or languages.english
-		
+
 		return FormatString(info and info[key] or key, ...)
 	end
 

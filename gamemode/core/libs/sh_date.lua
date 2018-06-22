@@ -10,10 +10,12 @@ nut.config.add("year", 2015, "The starting year of the schema.", nil, {
 	data = {min = 0, max = 4000},
 	category = "date"
 })
+
 nut.config.add("month", 1, "The starting month of the schema.", nil, {
 	data = {min = 1, max = 12},
 	category = "date"
 })
+
 nut.config.add("day", 1, "The starting day of the schema.", nil, {
 	data = {min = 1, max = 31},
 	category = "date"

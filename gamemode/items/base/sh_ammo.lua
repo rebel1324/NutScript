@@ -4,7 +4,7 @@ ITEM.width = 1
 ITEM.height = 1
 ITEM.isStackable = true
 ITEM.maxQuantity = 45
-ITEM.ammo = "pistol" // type of the ammo
+ITEM.ammo = "pistol" -- type of the ammo
 ITEM.desc = "A Box that contains %s of Pistol Ammo"
 ITEM.category = "Ammunition"
 
@@ -59,8 +59,7 @@ ITEM.functions.use = { -- sorry, for name order.
 	end,
 	onClick = function(item, data)
 		if (data == -1) then
-			-- stop right there you criminal scum.
-			
+
 			return false
 		end
 	end,

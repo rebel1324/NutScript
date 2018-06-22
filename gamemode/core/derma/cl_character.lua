@@ -195,7 +195,7 @@ local PANEL = {}
 										self.creation:setUp(v.index)
 										self.creation:AlphaTo(255, 0.5, 0)
 										self.fadePanels[#self.fadePanels + 1] = self.creation
-	
+
 										self.finish = self:Add("nutMenuButton")
 										self.finish:SetPos(ScrW() * 0.3 - 32, ScrH() * 0.3 + 16)
 										self.finish:setText("finish")
@@ -251,11 +251,11 @@ local PANEL = {}
 															end)
 														end
 													end
-	
+
 													self.fadePanels = {}
-													ClearAllButtons(CreateMainButtons)												
+													ClearAllButtons(CreateMainButtons)
 												end)
-	
+
 												timer.Create("nutCharTimeout", 20, 1, function()
 													if (IsValid(self.creation) and self.creation.creating) then
 														self.creation.notice:setType(1)
@@ -264,13 +264,13 @@ local PANEL = {}
 														self.finish:AlphaTo(255, 0.5, 0)
 													end
 												end)
-	
+
 												netstream.Start("charCreate", payload)
 											end
 										end
-	
+
 										self.fadePanels[#self.fadePanels + 1] = self.finish
-										
+
 										fadedIn = true
 									end
 								end)
@@ -507,13 +507,13 @@ local PANEL = {}
 
 		CreateMainButtons()
 	end
-	
+
 	function PANEL:Think()
 		if (input.IsKeyDown(KEY_F1) and LocalPlayer():getChar() and !self.choosing) then
 			self:Remove()
 		end
 	end
-	
+
 	function PANEL:playMusic()
 		if (nut.menuMusic) then
 			nut.menuMusic:Stop()

@@ -1,7 +1,3 @@
-if (engine.ActiveGamemode() == "dayz") then
-	return
-end
-
 PLUGIN.name = "Doors"
 PLUGIN.author = "Chessnut"
 PLUGIN.desc = "A simple door system."
@@ -15,44 +11,41 @@ nut.util.include("sv_plugin.lua")
 nut.util.include("cl_plugin.lua")
 nut.util.include("sh_commands.lua")
 
-do
-	local entityMeta = FindMetaTable("Entity")
+local entityMeta = FindMetaTable("Entity")
 
-	function entityMeta:checkDoorAccess(client, access)
-		if (!self:isDoor()) then
-			return false
-		end
-
-		access = access or DOOR_GUEST
-
-		local parent = self.nutParent
-
-		if (IsValid(parent)) then
-			return parent:checkDoorAccess(client, access)
-		end
-
-		if (hook.Run("CanPlayerAccessDoor", client, self, access)) then
-			return true
-		end
-
-		if (self.nutAccess and (self.nutAccess[client] or 0) >= access) then
-			return true
-		end
-
+function entityMeta:checkDoorAccess(client, access)
+	if (!self:isDoor()) then
 		return false
 	end
 
-	if (SERVER) then
-		function entityMeta:removeDoorAccessData()
-			-- Don't ask why. This happened with 60 player servers.
-			if (IsValid(self)) then
-				for k, v in pairs(self.nutAccess or {}) do
-					netstream.Start(k, "doorMenu")
-				end
-				
-				self.nutAccess = {}
-				self:SetDTEntity(0, nil)
+	access = access or DOOR_GUEST
+
+	local parent = self.nutParent
+
+	if (IsValid(parent)) then
+		return parent:checkDoorAccess(client, access)
+	end
+
+	if (hook.Run("CanPlayerAccessDoor", client, self, access)) then
+		return true
+	end
+
+	if (self.nutAccess and (self.nutAccess[client] or 0) >= access) then
+		return true
+	end
+
+	return false
+end
+
+if (SERVER) then
+	function entityMeta:removeDoorAccessData()
+		if (IsValid(self)) then
+			for k, v in pairs(self.nutAccess or {}) do
+				netstream.Start(k, "doorMenu")
 			end
+
+			self.nutAccess = {}
+			self:SetDTEntity(0, nil)
 		end
 	end
 end

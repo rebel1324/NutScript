@@ -8,7 +8,7 @@ nut.bar.actionEnd = 0
 function nut.bar.get(identifier)
 	for i = 1, #nut.bar.list do
 		local bar = nut.bar.list[i]
-		
+
 		if (bar and bar.identifier == identifier) then
 			return bar
 		end
@@ -18,7 +18,7 @@ end
 function nut.bar.add(getValue, color, priority, identifier)
 	if (identifier) then
 		local oldBar = nut.bar.get(identifier)
-		
+
 		if (oldBar) then
 			table.remove(nut.bar.list, oldBar.priority)
 		end
@@ -48,7 +48,7 @@ function nut.bar.remove(identifier)
 			break
 		end
 	end
-	
+
 	if (bar) then
 		table.remove(nut.bar.list, bar.priority)
 	end
@@ -74,7 +74,7 @@ function nut.bar.draw(x, y, w, h, value, color)
 	surface.SetDrawColor(255, 255, 255, 8)
 	surface.SetMaterial(gradient)
 	surface.DrawTexturedRect(x, y, w, h)
-end	
+end
 
 local TEXT_COLOR = Color(240, 240, 240)
 local SHADOW_COLOR = Color(20, 20, 20)
@@ -123,27 +123,27 @@ function nut.bar.drawAll()
 	if (hook.Run("ShouldHideBars")) then
 		return
 	end
-	
+
 	local w, h = surface.ScreenWidth() * 0.35, BAR_HEIGHT
 	local x, y = 4, 4
 	local deltas = nut.bar.delta
 	local frameTime = FrameTime()
 	local curTime = CurTime()
 	local updateValue = frameTime * 0.6
-	
+
 	for i = 1, #nut.bar.list do
 		local bar = nut.bar.list[i]
-		
+
 		if (bar) then
 			local realValue = bar.getValue()
 			local value = Approach(deltas[i] or 0, realValue, updateValue)
-			
+
 			deltas[i] = value
-			
+
 			if (deltas[i] != realValue) then
 				bar.lifeTime = curTime + 5
 			end
-			
+
 			if (bar.lifeTime >= curTime or bar.visible or hook.Run("ShouldBarDraw", bar)) then
 				nut.bar.draw(x, y, w, h, value, bar.color, bar)
 				y = y + h + 2

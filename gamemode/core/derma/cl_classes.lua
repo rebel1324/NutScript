@@ -141,7 +141,7 @@ hook.Add("CreateMenuButtons", "nutClasses", function(tabs)
     local cnt = table.Count(nut.class.list)
 
     if (cnt <= 1) then return end
-    
+
     for k, v in ipairs(nut.class.list) do
         if (!nut.class.canBe(LocalPlayer(), k)) then
             continue
