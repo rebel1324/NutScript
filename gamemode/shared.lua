@@ -114,14 +114,6 @@ if (SERVER and game.IsDedicated()) then
 	concommand.Remove("gm_save")
 
 	concommand.Add("gm_save", function(client, command, arguments)
-		if (IsValid(client)) then
-			client:ChatPrint("You are not allowed to do that.")
-
-			if ((client.nutNextCommandSaveWarn or 0) < CurTime())
-				Msg("[NutScript] Player "..client:Name().."("..client:steamName()..")["..client:SteamID().."]<"..client:IPAddress().."> may have attempted to crash the server using 'gm_save'.".."\n")
-			end
-
-			client.nutNextCommandSaveWarn = CurTime() + 60
-		end
-	end
+		
+	end)
 end

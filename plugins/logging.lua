@@ -13,7 +13,7 @@ if (SERVER) then
 		local remainingHealth = data[3] or 0
 
 		return string.format("%s has taken %d damage from %s, leaving them at %d health.", client:Name(), damage, attacker, remaingingHealth)
-	end
+	end)
 
 	nut.log.addType("playerDeath", function(client, ...)
 		local data = {...}
