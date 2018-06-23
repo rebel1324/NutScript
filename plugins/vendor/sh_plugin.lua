@@ -348,6 +348,7 @@ if (SERVER) then
 				client:notifyLocalized("businessSell", name, nut.currency.get(price))
 				entity:takeMoney(price)
 				entity:addStock(uniqueID)
+				netstream.Start(client, "vendorTradeDone")
 
 				nut.log.add(client, "vendorSell", name, entity:getNetVar("name"))
 

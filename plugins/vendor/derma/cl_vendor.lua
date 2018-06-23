@@ -1,3 +1,12 @@
+netstream.Hook("vendorTradeDone", function()
+	if (IsValid(nut.gui.vendor)) then
+		if (nut.gui.vendor.toRemove) then
+            nut.gui.vendor.toRemove:Remove()
+            nut.gui.vendor.toRemove = nil
+		end
+	end
+end)
+
 local PANEL = {}
 	function PANEL:Init()
 		self:SetSize(ScrW() * 0.45, ScrH() * 0.65)
@@ -53,6 +62,7 @@ local PANEL = {}
 		self.vendorBuy:SetTextColor(color_white)
 		self.vendorBuy.DoClick = function(this)
 			if (IsValid(self.activeBuy)) then
+				self.toRemove = self.activeBuy
 				netstream.Start("vendorTrade", self.activeBuy.item, true)
 			end
 		end
@@ -173,9 +183,14 @@ local PANEL = {}
 	end
 
 	function PANEL:onItemSelected(panel)
+		local itemTable = panel.itemTable
 		local price = self.entity:getPrice(panel.item, panel.isLocal)
 
 		if (panel.isLocal) then
+			if (itemTable.isStackable) then
+				price = price / itemTable:getMaxQuantity() * itemTable:getQuantity()
+			end
+
 			self.vendorBuy:SetText(L"sell".." ("..nut.currency.get(price)..")")
 		else
 			self.vendorSell:SetText(L"purchase".." ("..nut.currency.get(price)..")")
@@ -205,8 +220,6 @@ PANEL = {}
 		self.click:SetText("")
 		self.click.Paint = function() end
 		self.click.DoClick = function(this)
-			SELECTED_ITEM = self
-			
 			if (self.isLocal) then
 				nut.gui.vendor.activeBuy = self
 			else
@@ -234,6 +247,7 @@ PANEL = {}
 			self.itemName = L(item.name)
 
 			if (item.id != 0) then
+				self.itemID = item.id
 				self.itemTable = item
 			end
 		end
