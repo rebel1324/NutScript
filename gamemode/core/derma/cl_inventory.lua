@@ -264,6 +264,12 @@ PANEL = {}
 		end
 	end
 
+	local function drawIcon(mat, self, x, y)
+		surface.SetDrawColor(color_white)
+		surface.SetMaterial(mat)
+		surface.DrawTexturedRect(0, 0, x, y)
+	end
+
 	function PANEL:addIcon(model, x, y, w, h, skin)
 		w = w or 1
 		h = h or 1
@@ -321,7 +327,14 @@ PANEL = {}
 					end
 				end
 			else
-				renderNewIcon(panel, itemTable)
+				if (itemTable.icon) then
+					panel.Icon:SetVisible(false)
+					panel.ExtraPaint = function(self, x, y)
+						drawIcon(itemTable.icon, self, x, y)
+					end
+				else
+					renderNewIcon(panel, itemTable)
+				end
 			end
 
 			panel.move = function(this, data, inventory, noSend)
