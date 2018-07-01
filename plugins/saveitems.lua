@@ -37,7 +37,7 @@ function PLUGIN:LoadData()
 								local position = positions[itemID]
 								local item = nut.item.new(uniqueID, itemID)
 								item.data = data or {}
-								item.quantity = v._quantity
+								item.quantity = tonumber(v._quantity)
 								item:spawn(position).nutItemID = itemID
 
 								item.invID = 0

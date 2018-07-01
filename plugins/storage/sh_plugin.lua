@@ -35,8 +35,9 @@ if (SERVER) then
 			storage:SetSolid(SOLID_VPHYSICS)
 			storage:PhysicsInit(SOLID_VPHYSICS)
 
-			nut.item.newInv(0, "st"..data.name, function(inventory)
-				inventory.vars.isStorage = true
+			local typeName = "st"..data.name
+			nut.item.newInv(0, typeName, function(inventory)
+				inventory.vars.invType = typeName
 				if (IsValid(storage)) then
 					storage:setInventory(inventory)
 				end
@@ -105,7 +106,7 @@ if (SERVER) then
 					end
 					
 					nut.item.restoreInv(v[3], data2.width, data2.height, function(inventory)
-						inventory.vars.isStorage = true
+						inventory.vars.invType = "st"..data2.name
 						
 						if (IsValid(storage)) then
 							storage:setInventory(inventory)
