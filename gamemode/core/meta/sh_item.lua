@@ -261,7 +261,9 @@ function ITEM:remove()
 				if (v.invID == inv:getID()) then
 					for x = self.gridX, self.gridX + (self.width - 1) do
 						for y = self.gridY, self.gridY + (self.height - 1) do
-							inv.slots[x][y] = v.id
+							if (inv.slots[x]) then
+								inv.slots[x][y] = v.id
+							end
 						end
 					end
 				end
