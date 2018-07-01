@@ -189,7 +189,6 @@ hook.Add("PlayerDeath", "nutStripClip", function(client)
 	for k, v in pairs(client:getChar():getInv():getItems()) do
 		if (v.isWeapon and v:getData("equip")) then
 			v:setData("ammo", nil)
-			v:setData("equip", nil)
 		end
 	end
 end)
