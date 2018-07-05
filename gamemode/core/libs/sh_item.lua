@@ -109,7 +109,7 @@ NUT_ITEM_DEFAULT_FUNCTIONS = {
 		onRun = function(item)
 			item:transfer()
 
-			nut.log.add(item.player, "itemDrop", L(item.name, client), 1)
+			nut.log.add(item.player, "itemDrop", item.name, 1)
 
 			return false
 		end,
