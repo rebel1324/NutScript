@@ -416,31 +416,39 @@ do
 							local item2 = nut.item.new(item._uniqueID, itemID)
 
 							if (item2) then
-								item2.data = {}
-								if (data) then
-									item2.data = data
-								end
+								if (x + (item2.width - 1) > w or y + (item2.height - 1) > h) then
+									-- remove items that is overflowing the inventory.
+									badItemsUniqueID[#badItemsUniqueID + 1] = item._uniqueID
+									badItems[#badItems + 1] = itemID
+								else
+									item2.data = {}
+									if (data) then
+										item2.data = data
+									end
 
-								item2.gridX = x
-								item2.gridY = y
-								item2.invID = invID
-								item2.quantity = tonumber(item._quantity)
+									item2.gridX = x
+									item2.gridY = y
+									item2.invID = invID
+									item2.quantity = tonumber(item._quantity)
 
-								for x2 = 0, item2.width - 1 do
-									for y2 = 0, item2.height - 1 do
-										slots[x + x2] = slots[x + x2] or {}
-										slots[x + x2][y + y2] = item2
+									for x2 = 0, item2.width - 1 do
+										for y2 = 0, item2.height - 1 do
+											slots[x + x2] = slots[x + x2] or {}
+											slots[x + x2][y + y2] = item2
+										end
+									end
+
+									if (item2.onRestored) then
+										item2:onRestored(item2, invID)
 									end
 								end
-
-								if (item2.onRestored) then
-									item2:onRestored(item2, invID)
-								end
 							else
+								-- remove items that is not valid.
 								badItemsUniqueID[#badItemsUniqueID + 1] = item._uniqueID
 								badItems[#badItems + 1] = itemID
 							end
 						else
+							-- remove items that is not valid.
 							badItemsUniqueID[#badItemsUniqueID + 1] = item._uniqueID
 							badItems[#badItems + 1] = itemID
 						end
