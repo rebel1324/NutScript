@@ -32,7 +32,9 @@ end
 
 if (CLIENT) then
     netstream.Hook("nutSyncGesture", function(entity, a, b, c)
-        entity:AnimRestartGesture(a, b, c)
+        if (IsValid(entity)) then
+            entity:AnimRestartGesture(a, b, c)
+        end
     end)
 end
 
