@@ -883,7 +883,6 @@ do
 				local result
 
 				if (item.hooks[action]) then
-					print(item.hooks, action)
 					result = item.hooks[action](item, data)
 				end
 
@@ -893,7 +892,6 @@ do
 
 				if (item.postHooks[action]) then
 					-- Posthooks shouldn't override the result from onRun
-					print(item.postHooks, action)
 					item.postHooks[action](item, result, data)
 				end
 
