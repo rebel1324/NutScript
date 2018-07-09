@@ -35,19 +35,19 @@ function PANEL:setItem(itemTable)
 		surface.DrawRect(0, 0, w, h)
 	end
 
-	self.Icon = self:Add("SpawnIcon")
-	self.Icon:SetZPos(1)
-	self.Icon:SetSize(self:GetWide(), self:GetWide())
-	self.Icon:Dock(FILL)
-	self.Icon:DockMargin(5, 5, 5, 10)
-	self.Icon:InvalidateLayout(true)
-	self.Icon:SetModel(itemTable.model, itemTable.skin or 0)
-	self.Icon:SetToolTip(
+	self.icon = self:Add("SpawnIcon")
+	self.icon:SetZPos(1)
+	self.icon:SetSize(self:GetWide(), self:GetWide())
+	self.icon:Dock(FILL)
+	self.icon:DockMargin(5, 5, 5, 10)
+	self.icon:InvalidateLayout(true)
+	self.icon:SetModel(itemTable.model, itemTable.skin or 0)
+	self.icon:SetToolTip(
 		Format(nut.config.itemFormat,
 		itemTable.getName and itemTable:getName() or L(itemTable.name), itemTable:getDesc() or "")
 	)
-	self.Icon.itemID = true
-	self.Icon.DoClick = function(this)
+	self.icon.itemID = true
+	self.icon.DoClick = function(this)
 		if (!IsValid(nut.gui.checkout) and (this.nextClick or 0) < CurTime()) then
 			local parent = nut.gui.business
 			parent:buyItem(itemTable.uniqueID)
@@ -56,7 +56,7 @@ function PANEL:setItem(itemTable)
 			this.nextClick = CurTime() + 0.5
 		end
 	end
-	self.Icon.PaintOver = function(this, w, h)
+	self.icon.PaintOver = function(this, w, h)
 		if (itemTable and itemTable.paintOver) then
 			local w, h = this:GetSize()
 
@@ -65,7 +65,7 @@ function PANEL:setItem(itemTable)
 	end
 
 	if (itemTable.icon) then
-		self.Icon:SetVisible(false)
+		self.icon.Icon:SetVisible(false)
 		self.Paint = function(self, x, y)
 			drawIcon(itemTable.icon, self, x, y)
 		end
