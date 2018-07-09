@@ -139,46 +139,6 @@ function CreateContextMenu()
 	IconLayout:SetSpaceY(8)
 	IconLayout:SetWide(200)
 	IconLayout:SetLayoutDir(LEFT)
-
-	for k, v in pairs(list.Get("DesktopWindows")) do
-		local icon = IconLayout:Add("DButton")
-		icon:SetText("")
-		icon:SetSize(80, 82)
-		icon.Paint = function() end
-
-		local label = icon:Add("DLabel")
-		label:Dock(BOTTOM)
-		label:SetText(v.title)
-		label:SetContentAlignment(5)
-		label:SetTextColor(Color(255, 255, 255, 255))
-		label:SetExpensiveShadow(1, Color(0, 0, 0, 200))
-
-		local image = icon:Add("DImage")
-		image:SetImage(v.icon)
-		image:SetSize(64, 64)
-		image:Dock(TOP)
-		image:DockMargin(8, 0, 8, 0)
-
-		icon.DoClick = function()
-			-- v might have changed using autorefresh so grab it again
-			local newv = list.Get("DesktopWindows")[k]
-
-			if (v.onewindow) then
-				if (IsValid(icon.Window)) then
-					icon.Window:Center()
-					return
-				end
-			end
-
-			-- Make the window
-			icon.Window = g_ContextMenu:Add("DFrame")
-			icon.Window:SetSize(newv.width, newv.height)
-			icon.Window:SetTitle(newv.title)
-			icon.Window:Center()
-
-			newv.init(icon, icon.Window)
-		end
-	end
 end
 
 
