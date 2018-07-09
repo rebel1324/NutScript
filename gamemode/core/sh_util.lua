@@ -87,11 +87,11 @@ function nut.util.getAdmins(isSuper)
 	for k, v in ipairs(player.GetAll()) do
 		if (isSuper) then
 			if (v:IsSuperAdmin()) then
-				table.insert(admins, v)
+				admins[#admins + 1] = v
 			end
 		else
 			if (v:IsAdmin()) then
-				table.insert(admins, v)
+				admins[#admins + 1] = v
 			end
 		end
 	end
