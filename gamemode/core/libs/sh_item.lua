@@ -295,7 +295,7 @@ function nut.item.register(uniqueID, baseID, isBaseItem, path, luaGenerated)
 			ITEM.uniqueID = uniqueID
 			ITEM.base = baseID
 			ITEM.isBase = isBaseItem
-			ITEM.hooks = ITEM.postHooks or {}
+			ITEM.hooks = ITEM.hooks or {}
 			ITEM.postHooks = ITEM.postHooks or {}
 			ITEM.functions = ITEM.functions or table.Copy(NUT_ITEM_DEFAULT_FUNCTIONS)
 			ITEM.width = ITEM.width or 1
@@ -883,6 +883,7 @@ do
 				local result
 
 				if (item.hooks[action]) then
+					print(item.hooks, action)
 					result = item.hooks[action](item, data)
 				end
 
@@ -892,6 +893,7 @@ do
 
 				if (item.postHooks[action]) then
 					-- Posthooks shouldn't override the result from onRun
+					print(item.postHooks, action)
 					item.postHooks[action](item, result, data)
 				end
 
