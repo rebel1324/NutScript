@@ -373,6 +373,45 @@ function META:getItemsCount(onlyMain)
 	return items
 end
 
+-- This function may pretty heavy.
+function META:getItemsByClass(onlyMain)
+	local items = {}
+
+	for k, v in pairs(self.slots) do
+		for k2, v2 in pairs(v) do
+			if (v2 and type(v2) == "table" and !items[v2.id]) then
+				if (items[v2.uniqueID]) then
+					table.insert(items[v2.uniqueID], v2)
+				else
+					items[v2.uniqueID] = {v2}
+				end
+
+				v2.data = v2.data or {}
+				local isBag = v2.data.id
+				if (isBag and isBag != self:getID() and onlyMain != true) then
+					local bagInv = nut.item.inventories[isBag]
+
+					if (bagInv) then
+						local bagItems = bagInv:getItemsByClass()
+
+						for uID, itemList in pairs(bagItems) do
+							if (items[uID]) then
+								for _, itemObject in pairs(itemList) do
+									table.insert(items[uID], itemObject)
+								end
+							else
+								items[uID] = itemList
+							end
+						end
+					end
+				end
+			end
+		end
+	end
+
+	return items
+end
+
 function META:getBags()
 	local invs = {}
 
@@ -584,6 +623,8 @@ if (SERVER) then
 
 					local function removeCoords()
 						for _, coord in ipairs(targetCoords) do
+							local targetInv = nut.item.inventories[coord[4]]
+
 							for x2 = coord[1], (coord[1] + (w - 1)) do
 								for y2= coord[2], (coord[2] + (h - 1)) do
 									targetInv.slots[x2] = targetInv.slots[x2] or {}
