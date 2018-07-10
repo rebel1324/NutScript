@@ -70,10 +70,9 @@ function PANEL:setItem(itemTable)
 			drawIcon(itemTable.icon, self, x, y)
 		end
 	else
-		renderNewIcon(self, itemTable)
+		renderNewIcon(self.icon, itemTable)
 	end
 end
-
 vgui.Register("nutBusinessItem", PANEL, "DPanel")
 
 PANEL = {}
