@@ -511,10 +511,6 @@ if (SERVER) then
 					targetInv = bagInv
 				end
 
-				if (hook.Run("CanItemBeTransfered", item, nut.item.inventories[0], targetInv) == false) then
-					return false, "notAllowed"
-				end
-
 				if (x and y) then
 					targetInv.slots[x] = targetInv.slots[x] or {}
 					targetInv.slots[x][y] = true
