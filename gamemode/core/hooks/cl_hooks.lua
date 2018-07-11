@@ -912,10 +912,19 @@ netstream.Hook("strReq", function(time, title, subTitle, default)
 	end)
 end)
 
-local lastCall = CurTime()
+local lastCall = FrameNumber()
+local lastCallPlayer
 function GM:PostPlayerDraw(client)
-	local bullshit = CurTime() - lastCall
-	if (bullshit <= 0) then lastCall = CurTime() return else lastCall = CurTime() end
+	do
+		local halt = false
+		if (lastCallPlayer == client) then 
+			if (lastCall == FrameNumber()) then halt = true end
+		end
+		
+		lastCall = FrameNumber()
+		lastCallPlayer = client
+		if (halt) then return false end
+	end
 
 	if (client and client:getChar() and client:GetNoDraw() != true) then
 		local wep = client:GetActiveWeapon()
