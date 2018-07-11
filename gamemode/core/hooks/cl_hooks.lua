@@ -912,7 +912,11 @@ netstream.Hook("strReq", function(time, title, subTitle, default)
 	end)
 end)
 
+local lastCall = CurTime()
 function GM:PostPlayerDraw(client)
+	local bullshit = CurTime() - lastCall
+	if (bullshit <= 0) then lastCall = CurTime() return else lastCall = CurTime() end
+
 	if (client and client:getChar() and client:GetNoDraw() != true) then
 		local wep = client:GetActiveWeapon()
 		local curClass = ((wep and wep:IsValid()) and wep:GetClass():lower() or "")
