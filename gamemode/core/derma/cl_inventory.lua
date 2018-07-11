@@ -1,17 +1,17 @@
 -- The queue for the rendered icons.
-renderdIcons = renderdIcons or {}
+renderedIcons = renderedIcons or {}
 
 -- To make making inventory variant, This must be followed up.
 function renderNewIcon(panel, itemTable)
 	-- re-render icons
-	if ((itemTable.iconCam and !renderdIcons[string.lower(itemTable.model)]) or itemTable.forceRender) then
+	if ((itemTable.iconCam and !renderedIcons[string.lower(itemTable.model)]) or itemTable.forceRender) then
 		local iconCam = itemTable.iconCam
 		iconCam = {
 			cam_pos = iconCam.pos,
 			cam_ang = iconCam.ang,
 			cam_fov = iconCam.fov,
 		}
-		renderdIcons[string.lower(itemTable.model)] = true
+		renderedIcons[string.lower(itemTable.model)] = true
 		
 		panel.Icon:RebuildSpawnIconEx(
 			iconCam
