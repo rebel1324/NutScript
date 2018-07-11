@@ -699,6 +699,22 @@ if (SERVER) then
 		end
 	end
 
+	function META:setSize(w, h)
+		self.w = w
+		self.h = h
+		
+		local owner = self.owner
+		if (isnumber(owner)) then
+			for k, v in ipairs(player.GetAll()) do
+				if (v:getNetVar("char") == owner) then
+					owner = v
+				end
+			end
+		end
+
+		self:sync(owner, true)
+	end
+
 	function META:sync(receiver, fullUpdate)
 		local slots = {}
 
