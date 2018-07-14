@@ -43,7 +43,7 @@ function ITEM:getMaxQuantity()
 	return tonumber(self.maxQuantity)
 end
 
-function ITEM:setQuantity(quantity, forced, receivers, noSave, noCheckEntity)
+function ITEM:setQuantity(quantity, forced, receivers, noCheckEntity)
 	self.quantity = (forced and quantity or math.Clamp(quantity, 1, self:getMaxQuantity()))
 	
 	if (SERVER) then
