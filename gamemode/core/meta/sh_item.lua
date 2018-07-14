@@ -63,7 +63,11 @@ function ITEM:setQuantity(quantity, forced, receivers, noCheckEntity)
 
 		if (!noSave) then
 			if (nut.db) then
-				nut.db.updateTable({_quantity = quantity}, nil, "items", "_itemID = "..self:getID())
+				if (MYSQLOO_PREPARED) then
+					nut.db.preparedCall("itemQuantity", nil, quantity, self:getID())
+				else
+					nut.db.updateTable({_quantity = quantity}, nil, "items", "_itemID = "..self:getID())
+				end
 			end
 		end
 	end
@@ -184,7 +188,11 @@ function ITEM:setData(key, value, receivers, noSave, noCheckEntity)
 
 	if (!noSave) then
 		if (nut.db) then
-			nut.db.updateTable({_data = self.data}, nil, "items", "_itemID = "..self:getID())
+			if (MYSQLOO_PREPARED) then
+				nut.db.preparedCall("itemData", nil, self.data, self:getID())
+			else
+				nut.db.updateTable({_data = self.data}, nil, "items", "_itemID = "..self:getID())
+			end
 		end
 	end	
 end

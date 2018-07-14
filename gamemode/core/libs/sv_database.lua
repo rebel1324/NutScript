@@ -144,6 +144,13 @@ modules.mysqloo = {
 			return setNetVar("dbError", system.IsWindows() and "Server is missing VC++ redistributables!" or "Server is missing binaries for mysqloo!")
 		end
 
+		if (mysqloo.VERSION != "9" || !mysqloo.MINOR_VERSION || tonumber(mysqloo.MINOR_VERSION) < 1) then
+			MsgC(Color(255, 0, 0), "You are using an outdated mysqloo version\n")
+			MsgC(Color(255, 0, 0), "Download the latest mysqloo9 from here\n")
+			MsgC(Color(86, 156, 214), "https://github.com/syl0r/MySQLOO/releases")
+			return
+		end
+
 		local hostname = nut.db.hostname
 		local username = nut.db.username
 		local password = nut.db.password
@@ -165,6 +172,8 @@ modules.mysqloo = {
 			if (callback) then
 				callback()
 			end
+			
+			hook.Run("OnMySQLOOConnected")
 		end
 
 		function object:onConnectionFailed(fault)
@@ -176,6 +185,7 @@ modules.mysqloo = {
 		timer.Create("nutMySQLWakeUp", 300, 0, function()
 			nut.db.query("SELECT 1 + 1")
 		end)
+
 	end
 }
 
@@ -406,4 +416,65 @@ function nut.db.updateTable(value, callback, dbTable, condition)
 
 	query = query..table.concat(changes, ", ")..(condition and " WHERE "..condition or "")
 	nut.db.query(query, callback)
+end
+
+function GM:OnMySQLOOConnected()
+	nut.db.prepared = {}
+	function nut.db.prepare(key, str, values)
+		nut.db.prepared[key] = {
+			object = nut.db.object:prepare(str),
+			values = values,
+		}
+	end
+
+	function nut.db.preparedCall(key, callback, ...)
+		local preparedStatement = nut.db.prepared[key]
+
+		if (preparedStatement) then
+			local prepObj = preparedStatement.object
+
+			function prepObj.onSuccess(qu, data)
+				if (callback) then
+					callback()
+				end
+			end
+
+			local arguments = {...}
+
+			if (table.Count(arguments) == table.Count(preparedStatement.values)) then
+				local index = 1
+
+				for name, type in pairs(preparedStatement.values) do
+					if (type == MYSQLOO_INTEGER) then
+						prepObj:setNumber(index, arguments[index]) 
+					elseif (type == MYSQLOO_STRING) then
+						print(arguments[index])
+						prepObj:setString(index, nut.db.convertDataType(arguments[index])) 
+					elseif (type == MYSQLOO_BOOL) then
+						prepObj:setBoolean(index, arguments[index]) 
+					end
+					
+					index = index + 1
+				end
+			end
+
+			prepObj:start()
+
+			return prepObj
+		else
+			MsgC(Color(255, 0, 0), "INVALID PREPARED STATEMENT\n")
+		end
+	end
+
+	hook.Run("RegisterPreparedQueries")
+	MYSQLOO_PREPARED = true
+end
+
+MYSQLOO_INTEGER = 0
+MYSQLOO_STRING = 1
+MYSQLOO_BOOL = 2
+function GM:RegisterPreparedQueries()
+	MsgC(Color(0, 255, 0), "[Nutscript] ADDED 2 PREPARED STATEMENTS\n")
+	nut.db.prepare("itemQuantity", "UPDATE nut_items SET _quantity = ? WHERE _itemID = ?", {_quantity = MYSQLOO_INTEGER, _itemID = MYSQLOO_INTEGER})
+	nut.db.prepare("itemData", "UPDATE nut_items SET _data = ? WHERE _itemID = ?", {_quantity = MYSQLOO_STRING, _itemID = MYSQLOO_INTEGER})
 end
