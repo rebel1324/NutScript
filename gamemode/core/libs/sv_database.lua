@@ -105,10 +105,11 @@ modules.tmysql4 = {
 MYSQLOO_QUEUE = MYSQLOO_QUEUE or {}
 
 -- mysqloo for MySQL storage.
+nut.db.prepared = nut.db.prepared or {}
 modules.mysqloo = {
 	query = function(query, callback)
-		if (nut.db.object) then
-			local object = nut.db.object:query(query)
+		if (nut.db.getObject()) then
+			local object = nut.db.getObject():query(query)
 
 			if (callback) then
 				function object:onSuccess(data)
@@ -117,7 +118,7 @@ modules.mysqloo = {
 			end
 
 			function object:onError(fault)
-				if (nut.db.object:status() == mysqloo.DATABASE_NOT_CONNECTED) then
+				if (nut.db.getObject():status() == mysqloo.DATABASE_NOT_CONNECTED) then
 					MYSQLOO_QUEUE[#MYSQLOO_QUEUE + 1] = {query, callback}
 					nut.db.connect()
 
@@ -131,13 +132,45 @@ modules.mysqloo = {
 		end
 	end,
 	escape = function(value)
-		local object = nut.db.object
+		local object = nut.db.getObject()
 
 		if (object) then
 			return object:escape(value)
 		else
 			return sql.SQLStr(value, true)
 		end
+	end,
+	queue = function()
+		local count = 0
+
+		for k, v in pairs(nut.db.pool) do
+			count = count + v:queueSize()
+		end
+
+		return count
+	end,
+	abort = function()
+		for k, v in pairs(nut.db.pool) do
+			v:abortAllQueries()
+		end
+	end,
+	getObject = function()
+		local lowest = nil
+		local lowestCount = 0
+
+		for k, db in pairs(nut.db.pool) do
+			local queueSize = db:queueSize()
+			if (!lowest || queueSize < lowestCount) then
+				lowest = db
+				lowestCount = queueSize
+			end
+		end
+
+		if (not lowest) then
+			error("failed to find database in the pool")
+		end
+
+		return lowest
 	end,
 	connect = function(callback)
 		if (!pcall(require, "mysqloo")) then
@@ -158,36 +191,59 @@ modules.mysqloo = {
 		local port = nut.db.port
 		local object = mysqloo.connect(hostname, username, password, database, port)
 
-		function object:onConnected()
-			nut.db.object = self
-			nut.db.escape = modules.mysqloo.escape
-			nut.db.query = modules.mysqloo.query
+		nut.db.pool = {}
+		local poolNum = 8
+		local connectedPools = 0
 
-			for k, v in ipairs(MYSQLOO_QUEUE) do
-				nut.db.query(v[1], v[2])
+		for i = 1, poolNum do
+			nut.db.pool[i] = mysqloo.connect(hostname, username, password, database, port)
+			local pool = nut.db.pool[i]
+			pool:connect()
+
+			function pool:onConnectionFailed(fault)
+				ThrowConnectionFault(fault)
 			end
 
-			MYSQLOO_QUEUE = {}
+			function pool:onConnected()
+				connectedPools = connectedPools + 1
 
-			if (callback) then
-				callback()
+				if (connectedPools == poolNum) then
+					nut.db.escape = modules.mysqloo.escape
+					nut.db.query = modules.mysqloo.query
+					nut.db.prepare = modules.mysqloo.prepare
+					nut.db.abort = modules.mysqloo.abort
+					nut.db.queue = modules.mysqloo.queue
+					nut.db.getObject = modules.mysqloo.getObject
+
+					for k, v in ipairs(MYSQLOO_QUEUE) do
+						nut.db.query(v[1], v[2])
+					end
+
+					MYSQLOO_QUEUE = {}
+
+					if (callback) then
+						callback()
+					end
+					
+					hook.Run("OnMySQLOOConnected")
+				end
 			end
-			
-			hook.Run("OnMySQLOOConnected")
+
+			timer.Create("nutMySQLWakeUp" .. i, 1 + i, 0, function()
+				pool:query("SELECT 1 + 1")
+			end)
 		end
 
-		function object:onConnectionFailed(fault)
-			ThrowConnectionFault(fault)
-		end
-
-		object:connect()
-
-		timer.Create("nutMySQLWakeUp", 300, 0, function()
-			nut.db.query("SELECT 1 + 1")
-		end)
-
+		nut.db.object = nut.db.pool
+	end,
+	prepare = function(key, str, values)
+		nut.db.prepared[key] = {
+			query = str,
+			values = values,
+		}
 	end
 }
+
 
 -- Add default values here.
 nut.db.escape = modules.sqlite.escape
@@ -418,20 +474,15 @@ function nut.db.updateTable(value, callback, dbTable, condition)
 	nut.db.query(query, callback)
 end
 
+PREPARE_CACHE = PREPARE_CACHE or {}
 function GM:OnMySQLOOConnected()
-	nut.db.prepared = {}
-	function nut.db.prepare(key, str, values)
-		nut.db.prepared[key] = {
-			object = nut.db.object:prepare(str),
-			values = values,
-		}
-	end
-
 	function nut.db.preparedCall(key, callback, ...)
 		local preparedStatement = nut.db.prepared[key]
 
 		if (preparedStatement) then
-			local prepObj = preparedStatement.object
+			local freeDB = nut.db.getObject()
+			PREPARE_CACHE[freeDB] = PREPARE_CACHE[freeDB] or nut.db.getObject():prepare(preparedStatement.query)
+			local prepObj = PREPARE_CACHE[freeDB]
 
 			function prepObj.onSuccess(qu, data)
 				if (callback) then
@@ -448,7 +499,6 @@ function GM:OnMySQLOOConnected()
 					if (type == MYSQLOO_INTEGER) then
 						prepObj:setNumber(index, arguments[index]) 
 					elseif (type == MYSQLOO_STRING) then
-						print(arguments[index])
 						prepObj:setString(index, nut.db.convertDataType(arguments[index])) 
 					elseif (type == MYSQLOO_BOOL) then
 						prepObj:setBoolean(index, arguments[index]) 
@@ -462,19 +512,19 @@ function GM:OnMySQLOOConnected()
 
 			return prepObj
 		else
-			MsgC(Color(255, 0, 0), "INVALID PREPARED STATEMENT\n")
+			MsgC(Color(255, 0, 0), "INVALID PREPARED STATEMENT : " .. key .. "\n")
 		end
 	end
 
-	hook.Run("RegisterPreparedQueries")
+	hook.Run("RegisterPreparedStatements")
 	MYSQLOO_PREPARED = true
 end
 
 MYSQLOO_INTEGER = 0
 MYSQLOO_STRING = 1
 MYSQLOO_BOOL = 2
-function GM:RegisterPreparedQueries()
+function GM:RegisterPreparedStatements()
 	MsgC(Color(0, 255, 0), "[Nutscript] ADDED 2 PREPARED STATEMENTS\n")
 	nut.db.prepare("itemQuantity", "UPDATE nut_items SET _quantity = ? WHERE _itemID = ?", {_quantity = MYSQLOO_INTEGER, _itemID = MYSQLOO_INTEGER})
-	nut.db.prepare("itemData", "UPDATE nut_items SET _data = ? WHERE _itemID = ?", {_quantity = MYSQLOO_STRING, _itemID = MYSQLOO_INTEGER})
+	nut.db.prepare("itemData", "UPDATE nut_items SET _data = ? WHERE _itemID = ?", {_data = MYSQLOO_STRING, _itemID = MYSQLOO_INTEGER})
 end
