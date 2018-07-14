@@ -192,7 +192,7 @@ modules.mysqloo = {
 		local object = mysqloo.connect(hostname, username, password, database, port)
 
 		nut.db.pool = {}
-		local poolNum = 8
+		local poolNum = 6 -- it won't utilize full potential beyond 6.
 		local connectedPools = 0
 
 		for i = 1, poolNum do
@@ -484,14 +484,16 @@ function GM:OnMySQLOOConnected()
 			PREPARE_CACHE[freeDB] = PREPARE_CACHE[freeDB] or nut.db.getObject():prepare(preparedStatement.query)
 			local prepObj = PREPARE_CACHE[freeDB]
 
-			function prepObj.onSuccess(qu, data)
+			function prepObj:onSuccess(data)
 				if (callback) then
-					callback()
+					callback(data, self:lastInsert())
 				end
+			end
+			function prepObj:onError(err)
+				print(err)
 			end
 
 			local arguments = {...}
-
 			if (table.Count(arguments) == table.Count(preparedStatement.values)) then
 				local index = 1
 
@@ -525,6 +527,14 @@ MYSQLOO_STRING = 1
 MYSQLOO_BOOL = 2
 function GM:RegisterPreparedStatements()
 	MsgC(Color(0, 255, 0), "[Nutscript] ADDED 2 PREPARED STATEMENTS\n")
-	nut.db.prepare("itemQuantity", "UPDATE nut_items SET _quantity = ? WHERE _itemID = ?", {_quantity = MYSQLOO_INTEGER, _itemID = MYSQLOO_INTEGER})
-	nut.db.prepare("itemData", "UPDATE nut_items SET _data = ? WHERE _itemID = ?", {_data = MYSQLOO_STRING, _itemID = MYSQLOO_INTEGER})
+	nut.db.prepare("itemQuantity", "UPDATE nut_items SET _quantity = ? WHERE _itemID = ?", {MYSQLOO_INTEGER, MYSQLOO_INTEGER})
+	nut.db.prepare("itemData", "UPDATE nut_items SET _data = ? WHERE _itemID = ?", {MYSQLOO_STRING, MYSQLOO_INTEGER})
+	nut.db.prepare("itemInstance", "INSERT INTO nut_items (_quantity, _invID, _uniqueID, _data, _x, _y) VALUES (?, ?, ?, ?, ?, ?)", {
+		MYSQLOO_INTEGER,
+		MYSQLOO_INTEGER,
+		MYSQLOO_STRING,
+		MYSQLOO_STRING,
+		MYSQLOO_INTEGER,
+		MYSQLOO_INTEGER,
+	})
 end

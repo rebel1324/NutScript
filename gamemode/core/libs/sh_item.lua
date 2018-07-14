@@ -13,29 +13,50 @@ function nut.item.instance(index, uniqueID, itemData, x, y, callback)
 	local itemTable = nut.item.list[uniqueID]
 
 	if (!uniqueID or itemTable) then
-		nut.db.insertTable({
-			_quantity = 1,
-			_invID = index,
-			_uniqueID = uniqueID,
-			_data = itemData,
-			_x = x,
-			_y = y
-		}, function(data, itemID)
-			local item = nut.item.new(uniqueID, itemID)
+		itemData = itemData or {}
 
-			if (item) then
-				item.data = itemData or {}
-				item.invID = index
+		if (MYSQLOO_PREPARED) then
+			nut.db.preparedCall("itemInstance", function(data, itemID)
+				local item = nut.item.new(uniqueID, itemID)
 
-				if (callback) then
-					callback(item)
+				if (item) then
+					item.data = itemData
+					item.invID = index
+
+					if (callback) then
+						callback(item)
+					end
+
+					if (item.onInstanced) then
+						item:onInstanced(index, x, y, item)
+					end
 				end
+			end, 1, index, uniqueID, itemData, x, y)
+		else
+			nut.db.insertTable({
+				_quantity = 1,
+				_invID = index,
+				_uniqueID = uniqueID,
+				_data = itemData,
+				_x = x,
+				_y = y
+			}, function(data, itemID)
+				local item = nut.item.new(uniqueID, itemID)
 
-				if (item.onInstanced) then
-					item:onInstanced(index, x, y, item)
+				if (item) then
+					item.data = itemData
+					item.invID = index
+
+					if (callback) then
+						callback(item)
+					end
+
+					if (item.onInstanced) then
+						item:onInstanced(index, x, y, item)
+					end
 				end
-			end
-		end, "items")
+			end, "items")
+		end
 	else
 		ErrorNoHalt("[NutScript] Attempt to give an invalid item! ("..(uniqueID or "nil")..")\n")
 	end
