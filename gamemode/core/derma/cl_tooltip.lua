@@ -1,19 +1,45 @@
-if (SERVER) then return end
+local itemWidth = ScrW()*.15
+hook.Add("TooltipInitialize", "nutItemTooltip", function(self, panel)
+	if (panel.itemID) then
+		self.markupObject = nut.markup.parse(self:GetText(), itemWidth)
+		self:SetText("")
+		self:SetWide(math.max(itemWidth, 200) + 15)
+		self:SetHeight(self.markupObject:getHeight() + 20)
+		self.isItemTooltip = true
+	end
+end)
 
-TOOLTIP_GENERIC = 0
-TOOLTIP_ITEM = 1
+hook.Add("TooltipPaint", "nutItemTooltip", function(self, w, h)
+	if (self.isItemTooltip) then
+		nut.util.drawBlur(self, 10)
+		surface.SetDrawColor(55, 55, 55, 120)
+		surface.DrawRect(0, 0, w, h)
+		surface.SetDrawColor(255, 255, 255, 120)
+		surface.DrawOutlinedRect(1, 1, w - 2, h - 2)
+
+		if (self.markupObject) then
+			self.markupObject:draw(15, 10)
+		end
+
+		return true
+	end
+end)
+
+hook.Add("TooltipLayout", "nutItemTooltip", function(self)
+	if (self.isItemTooltip) then
+		return true
+	end
+end)
 
 local tooltip_delay = 0.01
 
 local PANEL = {}
 
 function PANEL:Init()
-
 	self:SetDrawOnTop(true)
 	self.DeleteContentsOnClose = false
 	self:SetText("")
 	self:SetFont("nutToolTipText")
-
 end
 
 function PANEL:UpdateColours(skin)
@@ -32,7 +58,9 @@ function PANEL:SetContents(panel, bDelete)
 end
 
 function PANEL:PerformLayout()
-	if (self.iconMode != TOOLTIP_ITEM) then
+	local override = hook.Run("TooltipLayout", self)
+
+	if (not override) then
 		if (self.Contents) then
 			self:SetWide(self.Contents:GetWide() + 8)
 			self:SetTall(self.Contents:GetTall() + 8)
@@ -45,16 +73,6 @@ function PANEL:PerformLayout()
 	end
 end
 
-local arrow_mat = Material("vgui/arrow")
-
-function PANEL:DrawArrow(x, y)
-	self.Contents:SetVisible(true)
-
-	surface.SetMaterial(arrow_mat)
-	surface.DrawTexturedRect(self.ArrowPosX + x, self.ArrowPosY + y, self.ArrowWide, self.ArrowTall)
-end
-
-local itemWidth = ScrW()*.15
 function PANEL:PositionTooltip()
 	if (!IsValid(self.TargetPanel)) then
 		self:Remove()
@@ -80,17 +98,9 @@ end
 function PANEL:Paint( w, h )
 	self:PositionTooltip()
 
-	if (self.iconMode == TOOLTIP_ITEM) then
-		nut.util.drawBlur(self, 10)
-		surface.SetDrawColor(55, 55, 55, 120)
-		surface.DrawRect(0, 0, w, h)
-		surface.SetDrawColor(255, 255, 255, 120)
-		surface.DrawOutlinedRect(1, 1, w - 2, h - 2)
+	local override = hook.Run("TooltipPaint", self, w, h)
 
-		if (self.markupObject) then
-			self.markupObject:draw(15, 10)
-		end
-	else
+	if (not override) then
 		derma.SkinHook("Paint", "Tooltip", self, w, h)
 	end
 end
@@ -99,16 +109,7 @@ function PANEL:OpenForPanel(panel)
 	self.TargetPanel = panel
 	self:PositionTooltip()
 
-	if (panel.itemID) then
-		self.iconMode = TOOLTIP_ITEM
-	end
-
-	if (self.iconMode == TOOLTIP_ITEM) then
-		self.markupObject = nut.markup.parse(self:GetText(), itemWidth)
-		self:SetText("")
-		self:SetWide(math.max(itemWidth, 200) + 15)
-		self:SetHeight(self.markupObject:getHeight() + 20)
-	end
+	hook.Run("TooltipInitialize", self, panel)
 
 	if (tooltip_delay > 0) then
 		self:SetVisible(false)
@@ -130,15 +131,6 @@ function PANEL:Close()
 	end
 
 	self:Remove()
-end
-
-function PANEL:GenerateExample(className, propertySheet, width, height)
-	local ctrl = vgui.Create("DButton")
-	ctrl:SetText("Hover me")
-	ctrl:SetWide(200)
-	ctrl:SetTooltip("This is a tooltip")
-
-	propertySheet:AddSheet(className, ctrl, nil, true, true)
 end
 
 derma.DefineControl("DTooltip", "", PANEL, "DLabel")
