@@ -174,6 +174,17 @@ function CHAR:getPlayer()
 				return v
 			end
 		end
+	else
+		for k, v in ipairs(player.GetAll()) do
+			local char = v:getChar()
+			if (char) then
+				if (char:getID() == self:getID()) then
+					self.player = v
+
+					return v
+				end
+			end
+		end
 	end
 end
 
