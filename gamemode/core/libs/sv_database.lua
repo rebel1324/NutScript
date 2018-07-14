@@ -103,6 +103,7 @@ modules.tmysql4 = {
 }
 
 MYSQLOO_QUEUE = MYSQLOO_QUEUE or {}
+PREPARE_CACHE = {}
 
 -- mysqloo for MySQL storage.
 nut.db.prepared = nut.db.prepared or {}
@@ -157,12 +158,14 @@ modules.mysqloo = {
 	getObject = function()
 		local lowest = nil
 		local lowestCount = 0
+		local lowestIndex = 0
 
 		for k, db in pairs(nut.db.pool) do
 			local queueSize = db:queueSize()
 			if (!lowest || queueSize < lowestCount) then
 				lowest = db
 				lowestCount = queueSize
+				lowestIndex = k
 			end
 		end
 
@@ -170,7 +173,7 @@ modules.mysqloo = {
 			error("failed to find database in the pool")
 		end
 
-		return lowest
+		return lowest, lowestIndex
 	end,
 	connect = function(callback)
 		if (!pcall(require, "mysqloo")) then
@@ -214,6 +217,7 @@ modules.mysqloo = {
 					nut.db.abort = modules.mysqloo.abort
 					nut.db.queue = modules.mysqloo.queue
 					nut.db.getObject = modules.mysqloo.getObject
+					nut.db.preparedCall = modules.mysqloo.preparedCall
 
 					for k, v in ipairs(MYSQLOO_QUEUE) do
 						nut.db.query(v[1], v[2])
@@ -241,6 +245,47 @@ modules.mysqloo = {
 			query = str,
 			values = values,
 		}
+	end,
+	preparedCall = function(key, callback, ...)
+		local preparedStatement = nut.db.prepared[key]
+
+		if (preparedStatement) then
+			local freeDB, freeIndex = nut.db.getObject()
+			PREPARE_CACHE[key] = PREPARE_CACHE[key] or {}
+			PREPARE_CACHE[key][freeIndex] = PREPARE_CACHE[key][freeIndex] or nut.db.getObject():prepare(preparedStatement.query)
+			local prepObj = PREPARE_CACHE[key][freeIndex]
+
+			function prepObj:onSuccess(data)
+				if (callback) then
+					callback(data, self:lastInsert())
+				end
+			end
+			function prepObj:onError(err)
+				print(err)
+			end
+
+			local arguments = {...}
+
+			if (table.Count(arguments) == table.Count(preparedStatement.values)) then
+				local index = 1
+
+				for name, type in pairs(preparedStatement.values) do
+					if (type == MYSQLOO_INTEGER) then
+						prepObj:setNumber(index, arguments[index]) 
+					elseif (type == MYSQLOO_STRING) then
+						prepObj:setString(index, nut.db.convertDataType(arguments[index], true)) 
+					elseif (type == MYSQLOO_BOOL) then
+						prepObj:setBoolean(index, arguments[index]) 
+					end
+					
+					index = index + 1
+				end
+			end
+
+			prepObj:start()
+		else
+			MsgC(Color(255, 0, 0), "INVALID PREPARED STATEMENT : " .. key .. "\n")
+		end
 	end
 }
 
@@ -438,11 +483,19 @@ function nut.db.loadTables()
 	hook.Run("OnLoadTables")
 end
 
-function nut.db.convertDataType(value)
+function nut.db.convertDataType(value, noEscape)
 	if (type(value) == "string") then
-		return "'"..nut.db.escape(value).."'"
+		if (noEscape) then
+			return value
+		else
+			return "'"..nut.db.escape(value).."'"
+		end
 	elseif (type(value) == "table") then
-		return "'"..nut.db.escape(util.TableToJSON(value)).."'"
+		if (noEscape) then
+			return util.TableToJSON(value)
+		else
+			return "'"..nut.db.escape(util.TableToJSON(value)).."'"
+		end
 	end
 
 	return value
@@ -474,50 +527,7 @@ function nut.db.updateTable(value, callback, dbTable, condition)
 	nut.db.query(query, callback)
 end
 
-PREPARE_CACHE = PREPARE_CACHE or {}
 function GM:OnMySQLOOConnected()
-	function nut.db.preparedCall(key, callback, ...)
-		local preparedStatement = nut.db.prepared[key]
-
-		if (preparedStatement) then
-			local freeDB = nut.db.getObject()
-			PREPARE_CACHE[freeDB] = PREPARE_CACHE[freeDB] or nut.db.getObject():prepare(preparedStatement.query)
-			local prepObj = PREPARE_CACHE[freeDB]
-
-			function prepObj:onSuccess(data)
-				if (callback) then
-					callback(data, self:lastInsert())
-				end
-			end
-			function prepObj:onError(err)
-				print(err)
-			end
-
-			local arguments = {...}
-			if (table.Count(arguments) == table.Count(preparedStatement.values)) then
-				local index = 1
-
-				for name, type in pairs(preparedStatement.values) do
-					if (type == MYSQLOO_INTEGER) then
-						prepObj:setNumber(index, arguments[index]) 
-					elseif (type == MYSQLOO_STRING) then
-						prepObj:setString(index, nut.db.convertDataType(arguments[index])) 
-					elseif (type == MYSQLOO_BOOL) then
-						prepObj:setBoolean(index, arguments[index]) 
-					end
-					
-					index = index + 1
-				end
-			end
-
-			prepObj:start()
-
-			return prepObj
-		else
-			MsgC(Color(255, 0, 0), "INVALID PREPARED STATEMENT : " .. key .. "\n")
-		end
-	end
-
 	hook.Run("RegisterPreparedStatements")
 	MYSQLOO_PREPARED = true
 end

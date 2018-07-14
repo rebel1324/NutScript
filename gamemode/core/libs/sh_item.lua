@@ -26,7 +26,7 @@ function nut.item.instance(index, uniqueID, itemData, x, y, callback)
 					if (callback) then
 						callback(item)
 					end
-
+	
 					if (item.onInstanced) then
 						item:onInstanced(index, x, y, item)
 					end

@@ -478,7 +478,7 @@ if (SERVER) then
 		else
 			netstream.Start(receiver, "invSet", self:getID(), x, y, item and item.uniqueID or nil, item and item.id or nil, self.owner, sendData, item and item:getQuantity() or nil)
 		end
-
+		
 		if (item) then
 			if (type(receiver) == "table") then
 				for k, v in pairs(receiver) do
