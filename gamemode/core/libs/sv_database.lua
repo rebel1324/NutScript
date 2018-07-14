@@ -257,8 +257,7 @@ CREATE TABLE IF NOT EXISTS `nut_schemadata` (
 	PRIMARY KEY (`_schema`, `_id`),
 	UNIQUE INDEX `_schema` (`_schema`),
 	UNIQUE INDEX `_id` (`_id`)
-);
-]]
+)]]
 
 local SQLITE_CREATE_TABLES = [[
 CREATE TABLE IF NOT EXISTS nut_players (
@@ -305,24 +304,21 @@ CREATE TABLE IF NOT EXISTS nut_schemadata (
 	_schema varchar,
 	_id varchar,
 	_data varchar
-);
-]]
+);]]
 
 local DROP_QUERY = [[
 DROP TABLE IF EXISTS `nut_players`;
 DROP TABLE IF EXISTS `nut_characters`;
 DROP TABLE IF EXISTS `nut_inventories`;
 DROP TABLE IF EXISTS `nut_items`;
-DROP TABLE IF EXISTS `nut_schemadata`;
-]]
+DROP TABLE IF EXISTS `nut_schemadata`]]
 
 local DROP_QUERY_LITE = [[
 DROP TABLE IF EXISTS nut_players;
 DROP TABLE IF EXISTS nut_characters;
 DROP TABLE IF EXISTS nut_inventories;
 DROP TABLE IF EXISTS nut_items;
-DROP TABLE IF EXISTS nut_schemadata;
-]]
+DROP TABLE IF EXISTS nut_schemadata]]
 
 function nut.db.wipeTables()
 	local function callback()
