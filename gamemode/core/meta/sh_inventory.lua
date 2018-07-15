@@ -490,6 +490,73 @@ if (SERVER) then
 		end
 	end
 
+	function META:removeItems(uniqueID, quantity, data, noReplication, noDelete)
+		local itemRequirement = {}
+		if (istable(uniqueID)) then
+			itemRequirement = uniqueID
+		elseif (isstring(uniqueID) or isnumber(uniqueID)) then
+			itemRequirement = {
+				[uniqueID] = quantity
+			}
+		end
+		
+		local itemList = self:getItemsByClass()
+		local removeTargets = {}
+
+		for class, requirements in pairs(itemRequirement) do
+			local reqLeft = requirements
+			local items = itemList[class]
+			
+			if (reqLeft and items) then
+				for _, itemObject in pairs(items) do
+					local itemQuantity = itemObject:getQuantity()
+
+					if (reqLeft < 0) then
+						break
+					end
+
+					if ((reqLeft - itemQuantity) < 0) then
+						table.insert(removeTargets, {
+							item = itemObject,
+							remove = false,
+							quantity = reqLeft
+						})
+
+						reqLeft = 0
+						break
+					else
+						reqLeft = reqLeft - itemQuantity
+
+						table.insert(removeTargets, {
+							item = itemObject,
+							remove = true,
+						})
+					end
+				end
+			end
+			
+			if (reqLeft > 0) then
+				return false
+			end
+		end
+
+		if (not noDelete) then
+			for index, data in ipairs(removeTargets) do
+				local itemObject = data.item
+
+				if (data.remove) then
+					self:remove(itemObject.id, noReplication, noDelete)
+				else
+					itemObject:setQuantity(data.quantity)
+				end
+			end
+
+			return true
+		else
+			return removeTargets
+		end
+	end
+
 	-- this is for the debugging purpose. if you don't have idea what you're dealing with, don't even try to look at this
 	local suppressCreation = false
 	function META:add(uniqueID, quantity, data, x, y, noReplication, forceSplit)
