@@ -314,11 +314,11 @@ end
 
 local MYSQL_CREATE_TABLES = [[
 CREATE TABLE IF NOT EXISTS `nut_players` (
-	`_steamID` VARCHAR(20) NOT NULL,
-	`_steamName` VARCHAR(32) NOT NULL,
+	`_steamID` VARCHAR(20) NOT NULL COLLATE 'utf8mb4_general_ci',
+	`_steamName` VARCHAR(32) NOT NULL COLLATE 'utf8mb4_general_ci',
 	`_firstJoin` DATETIME NOT NULL,
 	`_lastJoin` DATETIME NOT NULL,
-	`_data` VARCHAR(255) NOT NULL,
+	`_data` VARCHAR(255) NOT NULL COLLATE 'utf8mb4_general_ci',
 	`_intro` BINARY(1) NOT NULL,
 	PRIMARY KEY (`_steamID`),
 	UNIQUE INDEX `_steamID` (`_steamID`)
@@ -326,17 +326,17 @@ CREATE TABLE IF NOT EXISTS `nut_players` (
 
 CREATE TABLE IF NOT EXISTS `nut_characters` (
 	`_id` INT(12) NOT NULL AUTO_INCREMENT,
-	`_steamID` VARCHAR(20) NOT NULL,
-	`_name` VARCHAR(70) NOT NULL,
-	`_desc` VARCHAR(512) NOT NULL,
-	`_model` VARCHAR(255) NOT NULL,
-	`_attribs` VARCHAR(512) NOT NULL,
-	`_schema` VARCHAR(24) NOT NULL,
+	`_steamID` VARCHAR(20) NOT NULL COLLATE 'utf8mb4_general_ci',
+	`_name` VARCHAR(70) NOT NULL COLLATE 'utf8mb4_general_ci',
+	`_desc` VARCHAR(512) NOT NULL COLLATE 'utf8mb4_general_ci',
+	`_model` VARCHAR(255) NOT NULL COLLATE 'utf8mb4_general_ci',
+	`_attribs` VARCHAR(512) NOT NULL COLLATE 'utf8mb4_general_ci',
+	`_schema` VARCHAR(24) NOT NULL COLLATE 'utf8mb4_general_ci',
 	`_createTime` DATETIME NOT NULL,
 	`_lastJoinTime` DATETIME NOT NULL,
-	`_data` VARCHAR(1024) NOT NULL,
+	`_data` VARCHAR(1024) NOT NULL COLLATE 'utf8mb4_general_ci',
 	`_money` INT(10) UNSIGNED NULL DEFAULT '0',
-	`_faction` VARCHAR(12) NOT NULL,
+	`_faction` VARCHAR(12) NOT NULL COLLATE 'utf8mb4_general_ci',
 	PRIMARY KEY (`_id`),
 	UNIQUE INDEX `_id` (`_id`)
 );
@@ -344,7 +344,7 @@ CREATE TABLE IF NOT EXISTS `nut_characters` (
 CREATE TABLE IF NOT EXISTS `nut_inventories` (
 	`_invID` INT(12) NOT NULL AUTO_INCREMENT,
 	`_charID` INT(12) NULL DEFAULT NULL,
-	`_invType` VARCHAR(24) NULL DEFAULT NULL,
+	`_invType` VARCHAR(24) NULL DEFAULT NULL COLLATE 'utf8mb4_general_ci',
 	PRIMARY KEY (`_invID`),
 	UNIQUE INDEX `_invID` (`_invID`)
 );
@@ -352,23 +352,15 @@ CREATE TABLE IF NOT EXISTS `nut_inventories` (
 CREATE TABLE IF NOT EXISTS `nut_items` (
 	`_itemID` INT(12) NOT NULL AUTO_INCREMENT,
 	`_invID` INT(12) NOT NULL,
-	`_uniqueID` VARCHAR(60) NOT NULL,
-	`_data` VARCHAR(512) NOT NULL,
+	`_uniqueID` VARCHAR(60) NOT NULL COLLATE 'utf8mb4_general_ci',
+	`_data` VARCHAR(512) NULL DEFAULT NULL COLLATE 'utf8mb4_general_ci',
 	`_x` INT(4) NOT NULL,
 	`_y` INT(4) NOT NULL,
 	`_quantity` INT(12) NOT NULL DEFAULT '1',
 	PRIMARY KEY (`_itemID`),
 	UNIQUE INDEX `_itemID` (`_itemID`)
 );
-
-CREATE TABLE IF NOT EXISTS `nut_schemadata` (
-	`_schema` VARCHAR(255) NOT NULL,
-	`_id` VARCHAR(255) NOT NULL,
-	`_data` VARCHAR(1024) NOT NULL,
-	PRIMARY KEY (`_schema`, `_id`),
-	UNIQUE INDEX `_schema` (`_schema`),
-	UNIQUE INDEX `_id` (`_id`)
-)]]
+]]
 
 local SQLITE_CREATE_TABLES = [[
 CREATE TABLE IF NOT EXISTS nut_players (
@@ -410,26 +402,19 @@ CREATE TABLE IF NOT EXISTS nut_items (
 	_y integer,
 	_quantity integer
 );
-
-CREATE TABLE IF NOT EXISTS nut_schemadata (
-	_schema varchar,
-	_id varchar,
-	_data varchar
-);]]
+]]
 
 local DROP_QUERY = [[
 DROP TABLE IF EXISTS `nut_players`;
 DROP TABLE IF EXISTS `nut_characters`;
 DROP TABLE IF EXISTS `nut_inventories`;
-DROP TABLE IF EXISTS `nut_items`;
-DROP TABLE IF EXISTS `nut_schemadata`]]
+DROP TABLE IF EXISTS `nut_items`;]]
 
 local DROP_QUERY_LITE = [[
 DROP TABLE IF EXISTS nut_players;
 DROP TABLE IF EXISTS nut_characters;
 DROP TABLE IF EXISTS nut_inventories;
-DROP TABLE IF EXISTS nut_items;
-DROP TABLE IF EXISTS nut_schemadata]]
+DROP TABLE IF EXISTS nut_items;]]
 
 function nut.db.wipeTables()
 	local function callback()
