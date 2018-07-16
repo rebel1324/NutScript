@@ -201,7 +201,6 @@ modules.mysqloo = {
 		for i = 1, poolNum do
 			nut.db.pool[i] = mysqloo.connect(hostname, username, password, database, port)
 			local pool = nut.db.pool[i]
-			pool:setCharacterSet("utf8_unicode_ci")
 			pool:connect()
 
 			function pool:onConnectionFailed(fault)
@@ -209,6 +208,7 @@ modules.mysqloo = {
 			end
 
 			function pool:onConnected()
+				pool:setCharacterSet("utf8")
 				connectedPools = connectedPools + 1
 
 				if (connectedPools == poolNum) then
