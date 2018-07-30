@@ -65,6 +65,10 @@ if (SERVER) then
 		if ((client.nutNextSpawn or 0) < CurTime()) then
 			client.nutNextSpawn = CurTime() + 0.75
 		else
+			if(client.AdvDupe2 and client.AdvDupe2.Pasting) then
+				return true
+			end
+			
 			return false
 		end
 
