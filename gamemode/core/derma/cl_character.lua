@@ -586,7 +586,7 @@ local PANEL = {}
 vgui.Register("nutCharMenu", PANEL, "EditablePanel")
 
 hook.Add("CreateMenuButtons", "nutCharButton", function(tabs)
-	tabs["Characters"] = function(panel)
+	tabs["characters"] = function(panel)
 		nut.gui.menu:Remove()
 		vgui.Create("nutCharMenu")
 	end
