@@ -669,7 +669,6 @@ nut.command.add("plytransfer", {
 			local old_faction = character:getFaction()
 			local limit = nut.faction.indices[old_faction].limit
 			local faction = nut.faction.teams[name]
-			print(limit)
 
 			if (!faction) then
 				for k, v in pairs(nut.faction.indices) do
