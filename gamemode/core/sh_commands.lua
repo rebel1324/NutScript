@@ -663,15 +663,18 @@ nut.command.add("plytransfer", {
 	onRun = function(client, arguments)
 		local target = nut.command.findPlayer(client, arguments[1])
 		local name = table.concat(arguments, " ", 2)
+		local character = target:getChar()
 
-		if (IsValid(target) and target:getChar()) then
+		if (IsValid(target) and character) then
+			local old_faction = character:getFaction()
+			local limit = nut.faction.indices[old_faction].limit
 			local faction = nut.faction.teams[name]
+			print(limit)
 
 			if (!faction) then
 				for k, v in pairs(nut.faction.indices) do
 					if (nut.util.stringMatches(L(v.name, client), name)) then
 						faction = v
-
 						break
 					end
 				end
@@ -679,14 +682,22 @@ nut.command.add("plytransfer", {
 
 			if (faction) then
 				target:getChar().vars.faction = faction.uniqueID
-				target:getChar():setFaction(faction.index)
+				local success = target:getChar():setFaction(faction.index)
 
 				if (faction.onTransfered) then
 					faction:onTransfered(target)
 				end
 
-				for k, v in ipairs(player.GetAll()) do
-					nut.util.notifyLocalized("cChangeFaction", v, client:Name(), target:Name(), L(faction.name, v))
+				if (success) then
+					local new_faction = character:getFaction()
+					if (limit and old_faction != new_faction) then
+						nut.faction.indices[old_faction].limit = limit + 1
+					end
+					for k, v in ipairs(player.GetAll()) do
+						nut.util.notifyLocalized("cChangeFaction", v, client:Name(), target:Name(), L(faction.name, v))
+					end
+				else
+					nut.util.notifyLocalized("limitFaction", client)
 				end
 			else
 				return "@invalidFaction"

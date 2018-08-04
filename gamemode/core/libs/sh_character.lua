@@ -449,10 +449,20 @@ do
 		default = "Citizen",
 		onSet = function(character, value)
 			local client = character:getPlayer()
-
+			local limit = nut.faction.indices[value].limit
+			
 			if (IsValid(client)) then
-				client:SetTeam(value)
+				if (limit and limit > 0) then
+					nut.faction.indices[value].limit = limit - 1
+					client:SetTeam(value)
+					return true
+				elseif (!limit) then
+					client:SetTeam(value)
+					return true
+				end
 			end
+
+			return false
 		end,
 		onGet = function(character, default)
 			local faction = nut.faction.teams[character.vars.faction]

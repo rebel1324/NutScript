@@ -106,6 +106,7 @@ LANGUAGE = {
 	playerCharBelonging = "This object is your other character's belonging.",
 	business = "Business",
 	invalidFaction = "You have provided an invalid faction.",
+	limitFaction = "This faction is full. Try again later.",
 	spawnAdd = "You have added a spawn for the %s.",
 	spawnDeleted = "You have removed %s spawn point(s).",
 	someone = "Someone",
@@ -236,7 +237,6 @@ LANGUAGE = {
 	flags = "Flags",
 	chooseTip = "Choose this character to play with.",
 	deleteTip = "Delete this character.",
-
 	moneyLeft = "Your Money: ",
 	currentMoney = "Money Left: ",
 	checkout = "Checkout",
