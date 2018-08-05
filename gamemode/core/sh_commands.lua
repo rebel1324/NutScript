@@ -667,6 +667,7 @@ nut.command.add("plytransfer", {
 
 		if (IsValid(target) and character) then
 			local old_faction = character:getFaction()
+			local old_faction_name = character.vars.faction
 			local limit = nut.faction.indices[old_faction].limit
 			local faction = nut.faction.teams[name]
 
@@ -691,7 +692,9 @@ nut.command.add("plytransfer", {
 					local new_faction = character:getFaction()
 					if (limit and old_faction != new_faction) then
 						nut.faction.indices[old_faction].limit = limit + 1
+						nut.faction.teams[old_faction_name].limit = limit + 1
 					end
+
 					for k, v in ipairs(player.GetAll()) do
 						nut.util.notifyLocalized("cChangeFaction", v, client:Name(), target:Name(), L(faction.name, v))
 					end
@@ -701,6 +704,8 @@ nut.command.add("plytransfer", {
 			else
 				return "@invalidFaction"
 			end
+		else
+			return "@plyNoExist"
 		end
 	end
 })

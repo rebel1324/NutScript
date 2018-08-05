@@ -449,11 +449,13 @@ do
 		default = "Citizen",
 		onSet = function(character, value)
 			local client = character:getPlayer()
+			local faction = character.vars.faction
 			local limit = nut.faction.indices[value].limit
 			
 			if (IsValid(client)) then
 				if (limit and limit > 0) then
 					nut.faction.indices[value].limit = limit - 1
+					nut.faction.teams[faction].limit = limit - 1
 					client:SetTeam(value)
 					return true
 				elseif (!limit) then
@@ -471,13 +473,16 @@ do
 		end,
 		noDisplay = true,
 		onValidate = function(value, data, client)
+			local limit = nut.faction.indices[value].limit
 			if (value) then
 				if (client:hasWhitelist(value)) then
-					return true
+					if ((limit and limit > 0) or !limit) then
+						return true
+					end
 				end
 			end
 
-			return false
+			return false, "limitFaction"
 		end,
 		onAdjust = function(client, data, value, newData)
 			newData.faction = nut.faction.indices[value].uniqueID
