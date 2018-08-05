@@ -181,5 +181,9 @@ nut.config.add("wepAlwaysRaised", false, "Whether or not weapons are always rais
 	category = "server"
 })
 
+nut.config.add("contentURL", "http://nutscript.net/", "Your server's collection pack.", nil, {
+	category = "server"
+})
+
 local dist = nut.config.get("voiceDistance")
 nut.config.squaredVoiceDistance = dist * dist

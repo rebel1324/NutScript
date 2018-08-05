@@ -726,3 +726,9 @@ nut.command.add("clearinv", {
 		end
 	end
 })
+
+nut.command.add("content", {
+	onRun = function(client)
+		client:SendLua([[gui.OpenURL(nut.config.get("contentURL", "https://nutscript.net"))]])
+	end
+})
