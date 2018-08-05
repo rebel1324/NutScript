@@ -720,6 +720,8 @@ do
 			local isCurrentChar = client:getChar() and client:getChar():getID() == id
 
 			if (character and character.steamID == steamID) then
+				if (hook.Run("CanDeleteChar", client, character)) then return end
+				
 				for k, v in ipairs(client.nutCharList or {}) do
 					if (v == id) then
 						table.remove(client.nutCharList, k)
