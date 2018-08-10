@@ -93,7 +93,17 @@ function SWEP:Initialize()
 end
 
 function SWEP:PrimaryAttack()
+	local run = hook.Run("doorLockTime", self.Owner)
+	if (run == false) then
+		return
+	end
+	
 	local time = nut.config.get("doorLockTime", 1)
+	
+	if (type(run) == "number") then
+		time = run
+	end
+	
 	local time2 = math.max(time, 1)
 
 	self:SetNextPrimaryFire(CurTime() + time2)
@@ -173,7 +183,17 @@ function SWEP:toggleLock(door, state)
 end
 
 function SWEP:SecondaryAttack()
+	local run = hook.Run("doorUnlockTime", self.Owner)
+	if (run == false) then
+		return
+	end
+	
 	local time = nut.config.get("doorLockTime", 1)
+	
+	if (type(run) == "number") then
+		time = run
+	end
+	
 	local time2 = math.max(time, 1)
 
 	self:SetNextPrimaryFire(CurTime() + time2)
