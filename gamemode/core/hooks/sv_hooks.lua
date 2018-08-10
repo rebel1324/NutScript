@@ -95,7 +95,7 @@ end
 function GM:KeyPress(client, key)
 	if (key == IN_RELOAD) then
 		timer.Create("nutToggleRaise"..client:SteamID(), 1, 1, function()
-			if (IsValid(client)) then
+			if (IsValid(client) and hook.Run("CanToggleWepRaise", client) == false) then
 				client:toggleWepRaised()
 			end
 		end)
