@@ -7,7 +7,7 @@ ENT.Spawnable = false
 
 if (SERVER) then
 	function ENT:Initialize()
-		self:SetModel("models/props_lab/box01a.mdl")
+		self:SetModel("models/props/cs_assault/Money.mdl")
 		self:SetSolid(SOLID_VPHYSICS)
 		self:PhysicsInit(SOLID_VPHYSICS)
 		self:SetUseType(SIMPLE_USE)
