@@ -110,6 +110,11 @@ local PANEL = {}
 		if (!client:getChar() or !IsValid(parent)) then
 			return
 		end
+	
+		local result = hook.Run("CanDisplayPlayer", client)
+		if (result) then
+			return
+		end
 
 		local slot = parent:Add("DPanel")
 		slot:Dock(TOP)
