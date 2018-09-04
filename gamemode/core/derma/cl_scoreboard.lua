@@ -112,7 +112,7 @@ local PANEL = {}
 		end
 	
 		local result = hook.Run("CanDisplayPlayer", client)
-		if (result) then
+		if (result == false) then
 			return
 		end
 
