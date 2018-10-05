@@ -361,6 +361,14 @@ CREATE TABLE IF NOT EXISTS `nut_items` (
 	PRIMARY KEY (`_itemID`),
 	UNIQUE INDEX `_itemID` (`_itemID`)
 );
+
+CREATE TABLE IF NOT EXISTS `nut_inventories2` (
+	`_invID` INT(12) NOT NULL AUTO_INCREMENT,
+	`_invType` VARCHAR(24) NULL DEFAULT NULL COLLATE 'utf8mb4_general_ci',
+	`_data` TEXT NULL DEFAULT NULL COLLATE 'utf8mb4_general_ci',
+	PRIMARY KEY (`_invID`),
+	UNIQUE INDEX `_invID` (`_invID`)
+);
 ]]
 
 local SQLITE_CREATE_TABLES = [[
@@ -403,19 +411,29 @@ CREATE TABLE IF NOT EXISTS nut_items (
 	_y integer,
 	_quantity integer
 );
+
+CREATE TABLE IF NOT EXISTS nut_inventories2 (
+	_invID integer PRIMARY KEY AUTOINCREMENT,
+	_invType varchar,
+	_data text
+);
 ]]
 
 local DROP_QUERY = [[
 DROP TABLE IF EXISTS `nut_players`;
 DROP TABLE IF EXISTS `nut_characters`;
 DROP TABLE IF EXISTS `nut_inventories`;
-DROP TABLE IF EXISTS `nut_items`;]]
+DROP TABLE IF EXISTS `nut_items`;
+DROP TABLE IF EXISTS `nut_inventories2`;
+]]
 
 local DROP_QUERY_LITE = [[
 DROP TABLE IF EXISTS nut_players;
 DROP TABLE IF EXISTS nut_characters;
 DROP TABLE IF EXISTS nut_inventories;
-DROP TABLE IF EXISTS nut_items;]]
+DROP TABLE IF EXISTS nut_items;
+DROP TABLE IF EXISTS nut_inventories2;
+]]
 
 function nut.db.wipeTables()
 	local function callback()
@@ -459,7 +477,7 @@ function nut.db.loadTables()
 		-- This is needed to perform multiple queries since the string is only 1 big query.
 		local queries = string.Explode(";", MYSQL_CREATE_TABLES)
 
-		for i = 1, 4 do
+		for i = 1, #queries do
 			nut.db.query(queries[i])
 		end
 	else
