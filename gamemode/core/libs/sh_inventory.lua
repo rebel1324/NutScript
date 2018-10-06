@@ -52,5 +52,5 @@ function nut.inventory.new(typeID)
 	local class = nut.inventory.types[typeID]
 	assert(class ~= nil, "bad inventory type "..typeID)
 
-	return setmetatable({__index = class}, class)
+	return setmetatable({}, class)
 end

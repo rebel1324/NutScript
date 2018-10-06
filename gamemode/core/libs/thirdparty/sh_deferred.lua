@@ -330,4 +330,6 @@ end
 --- @param value promise value
 --- @return rejected future result
 
-return M
+do
+	_G.deferred = M
+end

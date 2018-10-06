@@ -364,7 +364,7 @@ CREATE TABLE IF NOT EXISTS `nut_items` (
 
 CREATE TABLE IF NOT EXISTS `nut_inventories2` (
 	`_invID` INT(12) NOT NULL AUTO_INCREMENT,
-	`_invType` VARCHAR(24) NULL DEFAULT NULL COLLATE 'utf8mb4_general_ci',
+	`_invType` VARCHAR(24) NOT NULL COLLATE 'utf8mb4_general_ci',
 	`_data` TEXT NULL DEFAULT NULL COLLATE 'utf8mb4_general_ci',
 	PRIMARY KEY (`_invID`),
 	UNIQUE INDEX `_invID` (`_invID`)
@@ -414,7 +414,7 @@ CREATE TABLE IF NOT EXISTS nut_items (
 
 CREATE TABLE IF NOT EXISTS nut_inventories2 (
 	_invID integer PRIMARY KEY AUTOINCREMENT,
-	_invType varchar,
+	_invType text,
 	_data text
 );
 ]]
@@ -529,6 +529,27 @@ function nut.db.updateTable(value, callback, dbTable, condition)
 
 	query = query..table.concat(changes, ", ")..(condition and " WHERE "..condition or "")
 	nut.db.query(query, callback)
+end
+
+function nut.db.select(fields, dbTable, condition, limit)
+	local d = deferred.new()
+	local from =
+		type(fields) == "table" and table.concat(fields, ", ") or tostring(fields)
+	local tableName = "nut_"..(dbTable or "characters")
+	local query = "SELECT "..from.." FROM "..tableName
+
+	if (condition) then
+		query = query.." WHERE "..tostring(condition)
+	end
+
+	if (limit) then
+		query = query.." LIMIT "..tostring(limit)
+	end
+
+	nut.db.query(query, function(results, lastID)
+		d:resolve({results = results, lastID = lastID})
+	end)
+	return d
 end
 
 function GM:OnMySQLOOConnected()
