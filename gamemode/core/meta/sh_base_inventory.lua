@@ -1,6 +1,5 @@
-INV_LAST_TEMP_ID = INV_LAST_TEMP_ID or 0
-
 local INV_TABLE_NAME = "inventories2"
+local INV_DATA_TABLE_NAME = "invdata"
 
 local Inventory = nut.Inventory or {}
 Inventory.__index = Inventory
@@ -90,17 +89,25 @@ if (SERVER) then
 	function Inventory:initializeStorage(initialData)
 		local d = deferred.new()
 
-		if (self.config.persistent) then
-			nut.db.insertTable({
-				_invType = self.typeID,
-				_data = initialData,
-			}, function(results, lastID)
-				d:resolve(lastID)
-			end, INV_TABLE_NAME)
-		else
-			INV_LAST_TEMP_ID = INV_LAST_TEMP_ID - 1
-			d:resolve(INV_LAST_TEMP_ID)
-		end
+		nut.db.insertTable({
+			_invType = self.typeID,
+		}, function(results, lastID)
+			local count = 0
+			local expected = table.Count(initialData)
+
+			for key, value in pairs(initialData) do
+				nut.db.insertTable({
+					_invID = lastID,
+					_key = key,
+					_value = {value}
+				}, function()
+					count = count + 1
+					if (count == expected) then
+						d:resolve(lastID)
+					end
+				end, INV_DATA_TABLE_NAME)
+			end
+		end, INV_TABLE_NAME)
 
 		return d
 	end

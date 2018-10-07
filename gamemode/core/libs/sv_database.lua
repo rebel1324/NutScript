@@ -365,9 +365,15 @@ CREATE TABLE IF NOT EXISTS `nut_items` (
 CREATE TABLE IF NOT EXISTS `nut_inventories2` (
 	`_invID` INT(12) NOT NULL AUTO_INCREMENT,
 	`_invType` VARCHAR(24) NOT NULL COLLATE 'utf8mb4_general_ci',
-	`_data` TEXT NULL DEFAULT NULL COLLATE 'utf8mb4_general_ci',
 	PRIMARY KEY (`_invID`),
 	UNIQUE INDEX `_invID` (`_invID`)
+);
+
+CREATE TABLE IF NOT EXISTS `nut_invdata` (
+	`_invID` INT(12) FOREIGN KEY REFERENCES nut_inventories2(_invID),
+	`_key` VARCHAR(32) NOT NULL COLLATE 'utf8mb4_general_ci',
+	`_value` VARCHAR(255) NOT NULL COLLATE 'utf8mb4_general_ci',
+	PRIMARY KEY (`_invID`, `_key`)
 );
 ]]
 
@@ -414,9 +420,16 @@ CREATE TABLE IF NOT EXISTS nut_items (
 
 CREATE TABLE IF NOT EXISTS nut_inventories2 (
 	_invID integer PRIMARY KEY AUTOINCREMENT,
-	_invType text,
-	_data text
+	_invType text
 );
+
+CREATE TABLE IF NOT EXISTS nut_invdata (
+	_invID integer,
+	_key text,
+	_value text,
+	FOREIGN KEY(_invID) REFERENCES nut_inventories2(_invID),
+	PRIMARY KEY (_invID, _key)
+)
 ]]
 
 local DROP_QUERY = [[
@@ -425,6 +438,7 @@ DROP TABLE IF EXISTS `nut_characters`;
 DROP TABLE IF EXISTS `nut_inventories`;
 DROP TABLE IF EXISTS `nut_items`;
 DROP TABLE IF EXISTS `nut_inventories2`;
+DROP TABLE IF EXISTS `nut_invdata`;
 ]]
 
 local DROP_QUERY_LITE = [[
@@ -433,6 +447,7 @@ DROP TABLE IF EXISTS nut_characters;
 DROP TABLE IF EXISTS nut_inventories;
 DROP TABLE IF EXISTS nut_items;
 DROP TABLE IF EXISTS nut_inventories2;
+DROP TABLE IF EXISTS nut_invdata;
 ]]
 
 function nut.db.wipeTables()

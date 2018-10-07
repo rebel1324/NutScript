@@ -2,8 +2,10 @@ if (not nut.inventory) then
 	include("sh_inventory.lua")
 end
 
-local INV_FIELDS = {"_invID", "_invType", "_data"}
+local INV_FIELDS = {"_invID", "_invType"}
 local INV_TABLE = "inventories2"
+local DATA_FIELDS = {"_key", "_value"}
+local DATA_TABLE = "invdata"
 
 function nut.inventory.loadByID(id, noCache)
 	local instance = nut.inventory.instances[invID]
@@ -37,31 +39,34 @@ function nut.inventory.loadByID(id, noCache)
 end
 
 function nut.inventory.loadFromDefaultStorage(id)
-	return nut.db.select(INV_FIELDS, INV_TABLE, "_invID = "..id, 1)
-		:next(function(res)
-			local results = res.results and res.results[1] or nil
-			if (not results) then
-				return
-			end
+	return deferred.all({
+		nut.db.select(INV_FIELDS, INV_TABLE, "_invID = "..id, 1),
+		nut.db.select(DATA_FIELDS, DATA_TABLE, "_invID = "..id)
+	})
+	:next(function(res)
+		local results = res[1].results and res[1].results[1] or nil
+		if (not results) then
+			return
+		end
 
-			local typeID = results._invType
-			local data = util.JSONToTable(results._data or "{}")
-			local invType = nut.inventory.types[typeID]
-			if (not invType) then
-				ErrorNoHalt(
-					"Inventory "..id.." has invalid type "..typeID.."\n"
-				)
-				return
-			end
+		local typeID = results._invType
+		local invType = nut.inventory.types[typeID]
+		if (not invType) then
+			ErrorNoHalt("Inventory "..id.." has invalid type "..typeID.."\n")
+			return
+		end
 
-			instance = invType:new()
-			instance.id = id
-			instance.data = data
+		instance = invType:new()
+		instance.id = id
+		instance.data = {}
+		for _, row in ipairs(res[2].results) do
+			instance.data[row._key] = util.JSONToTable(row._value)[1]
+		end
 
-			nut.inventory.instances[id] = instance
-			instance:onLoaded(false)
-			return instance
-		end)
+		nut.inventory.instances[id] = instance
+		instance:onLoaded()
+		return instance
+	end)
 end
 
 function nut.inventory.instance(typeID, initialData)
