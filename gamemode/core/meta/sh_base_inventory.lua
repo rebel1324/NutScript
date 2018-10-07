@@ -77,6 +77,16 @@ function Inventory:getType()
 	return nut.inventory.types[self.typeID]
 end
 
+-- Called when a data value has been changed for this inventory.
+function Inventory:onDataChanged(key, oldValue, newValue)
+	local keyData = self.config.data[key]
+	if (keyData.proxies) then
+		for _, proxy in pairs(keyData.proxies) do
+			proxy(oldValue, newValue)
+		end
+	end
+end
+
 if (SERVER) then
 	include("inventory/sv_base_inventory.lua")
 end

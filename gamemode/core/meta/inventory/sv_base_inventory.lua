@@ -1,5 +1,7 @@
 local Inventory = nut.Inventory
 
+local INV_DATA_TABLE_NAME = "invdata"
+
 -- Given an item type string, creates an instance of that item type
 -- and adds it to this inventory. A promise is returned containing
 -- the newly created item after it has been added to the inventory.
@@ -64,8 +66,26 @@ end
 
 -- Stores arbitrary data that can later be looked up using the given key.
 function Inventory:setData(key, value)
+	local oldValue = self.data[key]
 	self.data[key] = value
+
+	local keyData = self.config.data[key]
+	if (not keyData or not keyData.notPersistent) then
+		if (value == nil) then
+			nut.db.delete(
+				INV_DATA_TABLE_NAME,
+				"_invID = "..self.id.." AND _key = '"..nut.db.escape(key).."'"
+			)
+		else
+			nut.db.upsert(
+				{_invID = self.id, _key = key, _value = {value}},
+				INV_DATA_TABLE_NAME
+			)
+		end
+	end
+
 	-- TODO: add replication and persistent storage
+	self:onDataChanged(key, oldValue, value)
 	return self
 end
 
@@ -116,7 +136,7 @@ function Inventory:loadItems()
 	return nut.db.select(ITEM_FIELDS, ITEM_TABLE, "_invID = "..self.id)
 		:next(function(res)
 			local items = {}
-			for _, result in ipairs(res.results) do
+			for _, result in ipairs(res.results or {}) do
 				local itemID = tonumber(result._itemID)
 				local uniqueID = result._uniqueID
 				local itemTable = nut.item.list[uniqueID]
@@ -138,6 +158,7 @@ function Inventory:loadItems()
 					item:onRestored(self)
 				end
 			end
+			self.items = items
 			return items
 		end)
 end
