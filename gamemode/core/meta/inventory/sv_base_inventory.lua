@@ -107,3 +107,37 @@ end
 -- after it has been created.
 function Inventory:onLoaded()
 end
+
+-- Loads the items contained in this inventory.
+function Inventory:loadItems()
+	local ITEM_TABLE = "items"
+	local ITEM_FIELDS = {"_itemID", "_uniqueID", "_data"}
+
+	return nut.db.select(ITEM_FIELDS, ITEM_TABLE, "_invID = "..self.id)
+		:next(function(res)
+			local items = {}
+			for _, result in ipairs(res.results) do
+				local itemID = tonumber(result._itemID)
+				local uniqueID = result._uniqueID
+				local itemTable = nut.item.list[uniqueID]
+				if (not itemTable) then
+					ErrorNoHalt(
+						"Inventory "..self.id.." contains bad invalid item "
+						..uniqueID.." ("..itemID..")"
+					)
+					continue
+				end
+
+				local item = nut.item.new(uniqueID, itemID)
+				if (result._data) then
+					item.data = util.JSONToTable(result._data)
+				end
+
+				items[itemID] = item.data
+				if (item.onRestored) then
+					item:onRestored(self)
+				end
+			end
+			return items
+		end)
+end
