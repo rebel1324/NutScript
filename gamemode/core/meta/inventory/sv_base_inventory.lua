@@ -5,8 +5,12 @@ local INV_DATA_TABLE_NAME = "invdata"
 -- Given an item type string, creates an instance of that item type
 -- and adds it to this inventory. A promise is returned containing
 -- the newly created item after it has been added to the inventory.
-function Inventory:add(...)
-	error(self.className..":add() should be overwritten")
+function Inventory:add(item)
+	self.items[item:getID()] = item
+	nut.db.updateTable({
+		_invID = self.id
+	}, nil, "items", "_itemID = "..item:getID())
+	return self
 end
 
 -- Called to handle the logic for creating the data storage for this.
@@ -44,23 +48,13 @@ end
 function Inventory:restoreFromStorage(id)
 end
 
--- Given an ID of a valid item, the item is added to this inventory.
-function Inventory:addItem(itemID)
-	-- TODO: add a specific item to this inventory
-	return self
-end
-
--- Removes an item of a certain type from this inventory. A promise is
--- returned which is resolved after the item has been removed.
-function Inventory:remove(...)
-	error(self.className..":remove() should be overwritten")
-end
-
 -- Removes an item corresponding to the given item ID if it is in this
 -- inventory. If the item belongs to this inventory, it is then deleted.
 -- A promise is returned which is resolved after removal from this.
-function Inventory:removeItem(itemID)
-	-- TODO: remove a specific item from this inventory
+function Inventory:remove(itemID)
+	assert(type(itemID) == "number", "itemID must be a number for remove")
+	nut.db.delete("items", "_itemID = "..itemID)
+	self.items[itemID] = nil
 	return self
 end
 
@@ -152,8 +146,8 @@ function Inventory:loadItems()
 				if (result._data) then
 					item.data = util.JSONToTable(result._data)
 				end
-
-				items[itemID] = item.data
+				PrintTable(item)
+				items[itemID] = item
 				if (item.onRestored) then
 					item:onRestored(self)
 				end
@@ -161,4 +155,8 @@ function Inventory:loadItems()
 			self.items = items
 			return items
 		end)
+end
+
+function Inventory:instance(initialData)
+	return nut.inventory.instance(self.typeID, initialData)
 end

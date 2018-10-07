@@ -537,16 +537,14 @@ end
 
 local function genUpdateList(value)
 	local changes = {}
-
 	for k, v in pairs(value) do
 		changes[#changes + 1] = k.." = "..(k:find("steamID") and v or nut.db.convertDataType(v))
 	end
-
-	return query..table.concat(changes, ", ")
+	return table.concat(changes, ", ")
 end
 
 function nut.db.insertTable(value, callback, dbTable)
-	local query = "INSERT INTO "..genInsertQuery(value, dbTable)
+	local query = "INSERT INTO "..genInsertValues(value, dbTable)
 	nut.db.query(query, callback)
 end
 
@@ -595,17 +593,13 @@ function nut.db.upsert(value, dbTable)
 	return d
 end
 
-function nut.db.delete(dbTable, condition, limit)
+function nut.db.delete(dbTable, condition)
 	local query
 	dbTable = "nut_"..(dbTable or "character")
 	if (condition) then
 		query = "DELETE FROM "..dbTable.." WHERE "..condition
 	else
 		query = "DELETE * FROM "..dbTable
-	end
-
-	if (limit) then
-		query = query.." LIMIT "..limit
 	end
 
 	local d = deferred.new()

@@ -58,6 +58,7 @@ function Inventory:register(typeID)
 		"Expected argument #1 of "..self.className..".register to be a string"
 	)
 	self.typeID = typeID
+	self.config = {}
 	self:configure(self.config)
 	nut.inventory.newType(self.typeID, self)
 end
