@@ -520,8 +520,8 @@ function nut.db.convertDataType(value, noEscape)
 	return value
 end
 
-function nut.db.insertTable(value, callback, dbTable)
-	local query = "INSERT INTO "..("nut_"..(dbTable or "characters")).." ("
+local function genInsertValues(value, dbTable)
+	local query = "nut_"..(dbTable or "characters").." ("
 	local keys = {}
 	local values = {}
 
@@ -530,19 +530,30 @@ function nut.db.insertTable(value, callback, dbTable)
 		values[#keys] = k:find("steamID") and v or nut.db.convertDataType(v)
 	end
 
-	query = query..table.concat(keys, ", ")..") VALUES ("..table.concat(values, ", ")..")"
-	nut.db.query(query, callback)
+	return query
+		..table.concat(keys, ", ")
+		..") VALUES ("..table.concat(values, ", ")..")"
 end
 
-function nut.db.updateTable(value, callback, dbTable, condition)
-	local query = "UPDATE "..("nut_"..(dbTable or "characters")).." SET "
+local function genUpdateList(value)
 	local changes = {}
 
 	for k, v in pairs(value) do
 		changes[#changes + 1] = k.." = "..(k:find("steamID") and v or nut.db.convertDataType(v))
 	end
 
-	query = query..table.concat(changes, ", ")..(condition and " WHERE "..condition or "")
+	return query..table.concat(changes, ", ")
+end
+
+function nut.db.insertTable(value, callback, dbTable)
+	local query = "INSERT INTO "..genInsertQuery(value, dbTable)
+	nut.db.query(query, callback)
+end
+
+function nut.db.updateTable(value, callback, dbTable, condition)
+	local query = "UPDATE "..("nut_"..(dbTable or "characters")).." SET "
+		..genUpdateList(value)
+		..(condition and " WHERE "..condition or "")
 	nut.db.query(query, callback)
 end
 
@@ -561,6 +572,43 @@ function nut.db.select(fields, dbTable, condition, limit)
 		query = query.." LIMIT "..tostring(limit)
 	end
 
+	nut.db.query(query, function(results, lastID)
+		d:resolve({results = results, lastID = lastID})
+	end)
+	return d
+end
+
+function nut.db.upsert(value, dbTable)
+	local query
+	if (nut.db.object) then
+		query = "INSERT INTO "..genInsertValues(value, dbTable)
+			.." ON DUPLICATE KEY UPDATE "
+			..genUpdateList(value)
+	else
+		query = "INSERT OR REPLACE INTO "..genInsertValues(value, dbTable)
+	end
+
+	local d = deferred.new()
+	nut.db.query(query, function(results, lastID)
+		d:resolve({results = results, lastID = lastID})
+	end)
+	return d
+end
+
+function nut.db.delete(dbTable, condition, limit)
+	local query
+	dbTable = "nut_"..(dbTable or "character")
+	if (condition) then
+		query = "DELETE FROM "..dbTable.." WHERE "..condition
+	else
+		query = "DELETE * FROM "..dbTable
+	end
+
+	if (limit) then
+		query = query.." LIMIT "..limit
+	end
+
+	local d = deferred.new()
 	nut.db.query(query, function(results, lastID)
 		d:resolve({results = results, lastID = lastID})
 	end)
