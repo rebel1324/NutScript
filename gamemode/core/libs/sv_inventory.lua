@@ -59,14 +59,14 @@ function nut.inventory.loadFromDefaultStorage(id)
 		instance = invType:new()
 		instance.id = id
 		instance.data = {}
-		for _, row in ipairs(res[2].results) do
+		for _, row in ipairs(res[2].results or {}) do
 			instance.data[row._key] = util.JSONToTable(row._value)[1]
 		end
 
 		nut.inventory.instances[id] = instance
 		instance:onLoaded()
-		return instance
-	end)
+		return instance:loadItems():next(function() return instance end, error)
+	end, error)
 end
 
 function nut.inventory.instance(typeID, initialData)
@@ -87,5 +87,14 @@ function nut.inventory.instance(typeID, initialData)
 			nut.inventory.instances[id] = instance
 			instance:onInstanced()
 			return instance
+		end)
+end
+
+function nut.inventory.loadAllFromCharID(charID)
+	local sameCharCondition =
+		"_key = 'char' AND _value = '"..util.TableToJSON({charID}).."'"
+	return nut.db.select({"_invID"}, DATA_TABLE, sameCharCondition)
+		:next(function(res)
+			return deferred.map(res.results, nut.inventory.loadByID)
 		end)
 end
