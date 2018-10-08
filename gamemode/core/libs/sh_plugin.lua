@@ -1,8 +1,30 @@
+--[[--
+<b style="color: red">WARNING: THIS IS AN INTERNAL MODULE.</b></br></br>
+This module contains all the functions that handle plugins.
+
+The NutScript framework allows you to create and add plugins to it in order for
+each server to be different. You can add plugins by adding a file/folder in
+`plugins` directory under your schema folder.
+
+The NutScript folder also contains default plugins that can be disabled at anytime.
+
+]]
+-- @module nut.plugin
+
 nut.plugin = nut.plugin or {}
 nut.plugin.list = nut.plugin.list or {}
 nut.plugin.unloaded = nut.plugin.unloaded or {}
 
 HOOKS_CACHE = {}
+
+--- This function loads a plugin with a certain ID.
+-- It also checks whether the plugin is a single file or a folder with
+-- multiple files.
+-- @param uniqueID a number.
+-- @string path the plugins directory to load the plugins from.
+-- @param isSingleFile a boolean value.
+-- @string variable a string.
+-- @return nothing.
 
 function nut.plugin.load(uniqueID, path, isSingleFile, variable)
 	if (hook.Run("PluginShouldLoad", uniqueID) == false) then return end
@@ -81,6 +103,11 @@ function nut.plugin.load(uniqueID, path, isSingleFile, variable)
 	end
 end
 
+--- Gets a hook with the specified name.
+-- @string pluginName the name of the plugin.
+-- @string hookName the name of the a hook.
+-- @return a function or nil.
+
 function nut.plugin.getHook(pluginName, hookName)
 	local h = HOOKS_CACHE[hookName]
 
@@ -94,6 +121,10 @@ function nut.plugin.getHook(pluginName, hookName)
 
 	return
 end
+
+--- Loads entities present in a specified path.
+-- @string path the directory to load the entities from.
+-- @return a boolean value.
 
 function nut.plugin.loadEntities(path)
 	local files, folders
@@ -174,6 +205,9 @@ function nut.plugin.loadEntities(path)
 	HandleEntityInclusion("effects", "EFFECT", effects and effects.Register, nil, true)
 end
 
+--- Loads all plugins from the plugins directory and initializes the schema folder.
+-- @return nothing.
+
 function nut.plugin.initialize()
 	nut.plugin.load("schema", engine.ActiveGamemode().."/schema")
 	hook.Run("InitializedSchema")
@@ -189,6 +223,10 @@ function nut.plugin.initialize()
 		end)
 	end
 end
+
+--- Loads all plugins from the plugins directory.
+-- @string directory directory to load the plugins from.
+-- @return nothing.
 
 function nut.plugin.loadFromDir(directory)
 	local files, folders = file.Find(directory.."/*", "LUA")
@@ -251,6 +289,13 @@ if (SERVER) then
 	local function ThrowFault(fault)
 		MsgN(fault)
 	end
+	
+	--- Loads a repository with a specified name or URL.
+	-- @string url the repo's link.
+	-- @string name the repo's identifier.
+	-- @param callback a function.
+	-- @param faultCallback a function.
+	-- @return Error if it fails.
 
 	function nut.plugin.loadRepo(url, name, callback, faultCallback)
 		name = name or url
@@ -319,6 +364,12 @@ if (SERVER) then
 			MsgN("\t* ERROR: "..fault)
 		end)
 	end
+	
+	--- Downloads plugins from a specified repository, already loaded.
+	-- @string repo the repo's identifier.
+	-- @string plugin the plugin's identifier.
+	-- @param callback a function.
+	-- @return a boolean value if no success.
 
 	function nut.plugin.download(repo, plugin, callback)
 		local plugins = nut.plugin.repos[repo]
@@ -382,10 +433,6 @@ if (SERVER) then
 		else
 			return false, "cloud_no_repo"
 		end
-	end
-
-	function nut.plugin.loadFromLocal(repo, plugin)
-
 	end
 
 	concommand.Add("nut_cloudloadrepo", function(client, _, arguments)

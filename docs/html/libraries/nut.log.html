@@ -1,0 +1,298 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+<head>
+    <title>NutScript Documentation</title>
+    <link rel="stylesheet" href="../ldoc_pale.css" type="text/css" />
+</head>
+<body>
+
+<div id="container">
+
+<div id="product">
+	<div id="product_logo"></div>
+	<div id="product_name"><big><b></b></big></div>
+	<div id="product_description"></div>
+</div> <!-- id="product" -->
+
+
+<div id="main">
+
+
+<!-- Menu -->
+
+<div id="navigation">
+<br/>
+<h1>NutScript</h1>
+
+<ul>
+  <li><a href="../index.html">Index</a></li>
+</ul>
+
+<h2>Contents</h2>
+<ul>
+<li><a href="#Functions">Functions</a></li>
+</ul>
+
+
+<h2>Libraries</h2>
+<ul class="nowrap">
+  <li><a href="../libraries/nut.bar.html">nut.bar</a></li>
+  <li><a href="../libraries/nut.hud.html">nut.hud</a></li>
+  <li><a href="../libraries/nut.markup.html">nut.markup</a></li>
+  <li><a href="../libraries/nut.anim.html">nut.anim</a></li>
+  <li><a href="../libraries/nut.attribs.html">nut.attribs</a></li>
+  <li><a href="../libraries/nut.chat.html">nut.chat</a></li>
+  <li><a href="../libraries/nut.class.html">nut.class</a></li>
+  <li><a href="../libraries/nut.command.html">nut.command</a></li>
+  <li><a href="../libraries/nut.currency.html">nut.currency</a></li>
+  <li><a href="../libraries/nut.date.html">nut.date</a></li>
+  <li><a href="../libraries/nut.faction.html">nut.faction</a></li>
+  <li><a href="../libraries/nut.flag.html">nut.flag</a></li>
+  <li><a href="../libraries/nut.item.html">nut.item</a></li>
+  <li><strong>nut.log</strong></li>
+  <li><a href="../libraries/nut.plugin.html">nut.plugin</a></li>
+  <li><a href="../libraries/nut.db.html">nut.db</a></li>
+</ul>
+
+</div>
+
+<div id="content">
+
+<h1>Module <code>nut.log</code></h1>
+<p>This module contains all the functions that handle logging.</p>
+<p>NutScript has a logging system. It logs core related actions and custom actions
+that you wish to be logged. The framework seperates all logs into different
+categories.</p>
+
+<p><b>Enumerations:</b></p>
+
+<p>FLAG_NORMAL = 0 </br>
+FLAG_SUCCESS = 1 </br>
+FLAG_WARNING = 2 </br>
+FLAG_DANGER = 3 </br>
+FLAG_SERVER = 4 </br>
+FLAG_DEV = 5 </br></p>
+
+
+<p>Whenever you wish to log a command or something else, you use nut.log.add function.</p>
+
+
+<h2><a href="#Functions">Functions</a></h2>
+<table class="function_list">
+	<tr>
+	<td class="name" nowrap><a href="#nut.log.loadTables">nut.log.loadTables()</a></td>
+	<td class="summary">Creates the nutscript logs directory under DATA.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#nut.log.addType">nut.log.addType(logType, func)</a></td>
+	<td class="summary">Allows you to add a different logs section.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#nut.log.getString">nut.log.getString(client, logType)</a></td>
+	<td class="summary">Gets a specific log.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#nut.log.addRaw">nut.log.addRaw(logString, flag)</a></td>
+	<td class="summary">Sends a log to all the staff members online with a specific flag.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#nut.log.add">nut.log.add(client, logType)</a></td>
+	<td class="summary">Sends a log to all the staff members online.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#nut.log.send">nut.log.send(client, logString, flag)</a></td>
+	<td class="summary">Shows a log to the specified recipient.</td>
+	</tr>
+</table>
+
+<br/>
+<br/>
+
+
+    <h2 class="section-header "><a name="Functions"></a>Functions</h2>
+
+    <dl class="function">
+    <dt>
+    <a name = "nut.log.loadTables"></a>
+    <strong>nut.log.loadTables()</strong>
+    </dt>
+    <dd>
+    Creates the nutscript logs directory under DATA.
+
+
+
+    <h3>Returns:</h3>
+    <ol>
+
+        nothing.
+    </ol>
+
+
+
+
+</dd>
+    <dt>
+    <a name = "nut.log.addType"></a>
+    <strong>nut.log.addType(logType, func)</strong>
+    </dt>
+    <dd>
+    Allows you to add a different logs section.
+ Adds the new logs category to <code>nut.log.types</code>.
+
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">logType</span>
+            <span class="types"><a class="type" href="https://www.lua.org/manual/5.2/manual.html#6.4">string</a></span>
+         a log's category.
+        </li>
+        <li><span class="parameter">func</span>
+         a function.
+        </li>
+    </ul>
+
+    <h3>Returns:</h3>
+    <ol>
+
+        nothing.
+    </ol>
+
+
+
+
+</dd>
+    <dt>
+    <a name = "nut.log.getString"></a>
+    <strong>nut.log.getString(client, logType)</strong>
+    </dt>
+    <dd>
+    Gets a specific log.
+ If there is no logType in <code>nut.log.types</code> table, the function return "-1"
+ value.
+
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">client</span>
+            <span class="types"><span class="type">player</span></span>
+         a player.
+        </li>
+        <li><span class="parameter">logType</span>
+            <span class="types"><a class="type" href="https://www.lua.org/manual/5.2/manual.html#6.4">string</a></span>
+         a log's category.
+        </li>
+    </ul>
+
+    <h3>Returns:</h3>
+    <ol>
+
+        a string.
+    </ol>
+
+
+
+
+</dd>
+    <dt>
+    <a name = "nut.log.addRaw"></a>
+    <strong>nut.log.addRaw(logString, flag)</strong>
+    </dt>
+    <dd>
+    Sends a log to all the staff members online with a specific flag.
+ The function also appends the log to a logfile, under the logs directory.
+
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">logString</span>
+            <span class="types"><a class="type" href="https://www.lua.org/manual/5.2/manual.html#6.4">string</a></span>
+         a log entry.
+        </li>
+        <li><span class="parameter">flag</span>
+         a number.
+        </li>
+    </ul>
+
+    <h3>Returns:</h3>
+    <ol>
+
+        nothing.
+    </ol>
+
+
+
+
+</dd>
+    <dt>
+    <a name = "nut.log.add"></a>
+    <strong>nut.log.add(client, logType)</strong>
+    </dt>
+    <dd>
+    Sends a log to all the staff members online.
+ The function also appends the log to a logfile, under the logs directory.
+
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">client</span>
+            <span class="types"><span class="type">player</span></span>
+         a player.
+        </li>
+        <li><span class="parameter">logType</span>
+            <span class="types"><a class="type" href="https://www.lua.org/manual/5.2/manual.html#6.4">string</a></span>
+         a log's category.
+        </li>
+    </ul>
+
+    <h3>Returns:</h3>
+    <ol>
+
+        nothing.
+    </ol>
+
+
+
+
+</dd>
+    <dt>
+    <a name = "nut.log.send"></a>
+    <strong>nut.log.send(client, logString, flag)</strong>
+    </dt>
+    <dd>
+    Shows a log to the specified recipient.
+
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">client</span>
+            <span class="types"><span class="type">player</span></span>
+         a player.
+        </li>
+        <li><span class="parameter">logString</span>
+            <span class="types"><a class="type" href="https://www.lua.org/manual/5.2/manual.html#6.4">string</a></span>
+         a log entry.
+        </li>
+        <li><span class="parameter">flag</span>
+         a number.
+        </li>
+    </ul>
+
+
+
+
+
+</dd>
+</dl>
+
+
+</div> <!-- id="content" -->
+</div> <!-- id="main" -->
+<div id="about">
+<i>generated by <a href="http://github.com/stevedonovan/LDoc">LDoc 1.4.6</a></i>
+<i style="float:right;">Last updated 2018-10-08 22:54:40 </i>
+</div> <!-- id="about" -->
+</div> <!-- id="container" -->
+</body>
+</html>

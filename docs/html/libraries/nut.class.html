@@ -1,0 +1,223 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+<head>
+    <title>NutScript Documentation</title>
+    <link rel="stylesheet" href="../ldoc_pale.css" type="text/css" />
+</head>
+<body>
+
+<div id="container">
+
+<div id="product">
+	<div id="product_logo"></div>
+	<div id="product_name"><big><b></b></big></div>
+	<div id="product_description"></div>
+</div> <!-- id="product" -->
+
+
+<div id="main">
+
+
+<!-- Menu -->
+
+<div id="navigation">
+<br/>
+<h1>NutScript</h1>
+
+<ul>
+  <li><a href="../index.html">Index</a></li>
+</ul>
+
+<h2>Contents</h2>
+<ul>
+<li><a href="#Functions">Functions</a></li>
+</ul>
+
+
+<h2>Libraries</h2>
+<ul class="nowrap">
+  <li><a href="../libraries/nut.bar.html">nut.bar</a></li>
+  <li><a href="../libraries/nut.hud.html">nut.hud</a></li>
+  <li><a href="../libraries/nut.markup.html">nut.markup</a></li>
+  <li><a href="../libraries/nut.anim.html">nut.anim</a></li>
+  <li><a href="../libraries/nut.attribs.html">nut.attribs</a></li>
+  <li><a href="../libraries/nut.chat.html">nut.chat</a></li>
+  <li><strong>nut.class</strong></li>
+  <li><a href="../libraries/nut.command.html">nut.command</a></li>
+  <li><a href="../libraries/nut.currency.html">nut.currency</a></li>
+  <li><a href="../libraries/nut.date.html">nut.date</a></li>
+  <li><a href="../libraries/nut.faction.html">nut.faction</a></li>
+  <li><a href="../libraries/nut.flag.html">nut.flag</a></li>
+  <li><a href="../libraries/nut.item.html">nut.item</a></li>
+  <li><a href="../libraries/nut.log.html">nut.log</a></li>
+  <li><a href="../libraries/nut.plugin.html">nut.plugin</a></li>
+  <li><a href="../libraries/nut.db.html">nut.db</a></li>
+</ul>
+
+</div>
+
+<div id="content">
+
+<h1>Module <code>nut.class</code></h1>
+<p>This module contains all the functions that handle classes.</p>
+<p>Classes are different from factions, though all classes belong to a faction. They
+allow you to create different and specialized jobs and with that, custom salaries,
+models and other functions.</p>
+
+
+<h2><a href="#Functions">Functions</a></h2>
+<table class="function_list">
+	<tr>
+	<td class="name" nowrap><a href="#nut.class.loadFromDir">nut.class.loadFromDir(directory)</a></td>
+	<td class="summary">Loads data from the classes directory.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#nut.class.canBe">nut.class.canBe(client, class)</a></td>
+	<td class="summary">Determines whether a player is allowed to join a certain class.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#nut.class.get">nut.class.get(identifier)</a></td>
+	<td class="summary">Gets the class with the given identifier.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#nut.class.getPlayers">nut.class.getPlayers(class)</a></td>
+	<td class="summary">Gets all the players in a given class.</td>
+	</tr>
+</table>
+
+<br/>
+<br/>
+
+
+    <h2 class="section-header "><a name="Functions"></a>Functions</h2>
+
+    <dl class="function">
+    <dt>
+    <a name = "nut.class.loadFromDir"></a>
+    <strong>nut.class.loadFromDir(directory)</strong>
+    </dt>
+    <dd>
+    Loads data from the classes directory.
+ Loads all classes' data from the 'classes' directory inside your schema folder.
+
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">directory</span>
+            <span class="types"><a class="type" href="https://www.lua.org/manual/5.2/manual.html#6.4">string</a></span>
+         the path to the classes directory.
+        </li>
+    </ul>
+
+    <h3>Returns:</h3>
+    <ol>
+
+        nothing.
+    </ol>
+
+
+
+
+</dd>
+    <dt>
+    <a name = "nut.class.canBe"></a>
+    <strong>nut.class.canBe(client, class)</strong>
+    </dt>
+    <dd>
+    Determines whether a player is allowed to join a certain class.
+ The function checks if the client is eligible to join the class. Returns true
+ if the player is allowed to join the class and false otherwise, along with the
+ reason as to why the player is unable to join.
+
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">client</span>
+            <span class="types"><span class="type">player</span></span>
+         a player.
+        </li>
+        <li><span class="parameter">class</span>
+         a number.
+        </li>
+    </ul>
+
+    <h3>Returns:</h3>
+    <ol>
+
+        a boolean value.
+    </ol>
+
+
+
+    <h3>Usage:</h3>
+    <ul>
+        <pre class="example">nut.class.canBe(client, <span class="number">5</span>)</pre>
+    </ul>
+
+</dd>
+    <dt>
+    <a name = "nut.class.get"></a>
+    <strong>nut.class.get(identifier)</strong>
+    </dt>
+    <dd>
+    Gets the class with the given identifier.
+ The function returns the table of a specific class. This table is inside nut.class.list.
+
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">identifier</span>
+         a number.
+        </li>
+    </ul>
+
+    <h3>Returns:</h3>
+    <ol>
+
+        the class table.
+    </ol>
+
+
+
+
+</dd>
+    <dt>
+    <a name = "nut.class.getPlayers"></a>
+    <strong>nut.class.getPlayers(class)</strong>
+    </dt>
+    <dd>
+    Gets all the players in a given class.
+ The function returns a table with all the players in the given class.
+
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">class</span>
+         a number.
+        </li>
+    </ul>
+
+    <h3>Returns:</h3>
+    <ol>
+
+        the table with the players.
+    </ol>
+
+
+
+
+</dd>
+</dl>
+
+
+</div> <!-- id="content" -->
+</div> <!-- id="main" -->
+<div id="about">
+<i>generated by <a href="http://github.com/stevedonovan/LDoc">LDoc 1.4.6</a></i>
+<i style="float:right;">Last updated 2018-10-08 22:54:40 </i>
+</div> <!-- id="about" -->
+</div> <!-- id="container" -->
+</body>
+</html>

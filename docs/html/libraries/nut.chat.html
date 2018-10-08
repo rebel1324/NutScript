@@ -1,0 +1,317 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+<head>
+    <title>NutScript Documentation</title>
+    <link rel="stylesheet" href="../ldoc_pale.css" type="text/css" />
+</head>
+<body>
+
+<div id="container">
+
+<div id="product">
+	<div id="product_logo"></div>
+	<div id="product_name"><big><b></b></big></div>
+	<div id="product_description"></div>
+</div> <!-- id="product" -->
+
+
+<div id="main">
+
+
+<!-- Menu -->
+
+<div id="navigation">
+<br/>
+<h1>NutScript</h1>
+
+<ul>
+  <li><a href="../index.html">Index</a></li>
+</ul>
+
+<h2>Contents</h2>
+<ul>
+<li><a href="#Functions">Functions</a></li>
+</ul>
+
+
+<h2>Libraries</h2>
+<ul class="nowrap">
+  <li><a href="../libraries/nut.bar.html">nut.bar</a></li>
+  <li><a href="../libraries/nut.hud.html">nut.hud</a></li>
+  <li><a href="../libraries/nut.markup.html">nut.markup</a></li>
+  <li><a href="../libraries/nut.anim.html">nut.anim</a></li>
+  <li><a href="../libraries/nut.attribs.html">nut.attribs</a></li>
+  <li><strong>nut.chat</strong></li>
+  <li><a href="../libraries/nut.class.html">nut.class</a></li>
+  <li><a href="../libraries/nut.command.html">nut.command</a></li>
+  <li><a href="../libraries/nut.currency.html">nut.currency</a></li>
+  <li><a href="../libraries/nut.date.html">nut.date</a></li>
+  <li><a href="../libraries/nut.faction.html">nut.faction</a></li>
+  <li><a href="../libraries/nut.flag.html">nut.flag</a></li>
+  <li><a href="../libraries/nut.item.html">nut.item</a></li>
+  <li><a href="../libraries/nut.log.html">nut.log</a></li>
+  <li><a href="../libraries/nut.plugin.html">nut.plugin</a></li>
+  <li><a href="../libraries/nut.db.html">nut.db</a></li>
+</ul>
+
+</div>
+
+<div id="content">
+
+<h1>Module <code>nut.chat</code></h1>
+<p>This module contains all the functions that handle the chats.</p>
+<p>
+
+
+<p>With NutScript you can register different types of chats, and therefore create your
+own.</p>
+
+<p>Default Chats:</p>
+
+
+<ul>
+<li><b>
+OOC</b> - Out of character;
+</li>
+<li><b>IC
+</b> - In Character;
+</li>
+<li><b>ME
+</b> Character's action;
+</li>
+<li><b>IT
+</b> - Specific action;
+</li>
+<li><b>Y
+</b> - Yell;
+</li>
+<li><b>W
+</b>  - Whisper;
+</li>
+<li><b>LOOC
+</b> - Local out of character;
+</li>
+<li><b>EVENT
+</b> - Announcement chat;
+</li>
+<li><b>PM
+</b> - Private messages;
+</li>
+<li><b>ROLL
+</b> - Roll.
+</li>
+</ul>
+
+
+<p>You can register a new type of chat by using nut.chat.register function and by
+naming the chatType and by creating the data table with certain fields defined.
+The fields are as follows:</p>
+
+<ul>
+<li><code>onCanSay</code> </br>
+(default: "true"; optional)</br>
+All alive players are able to use the chat, by default. This field enables you
+to only allow specific players or teams to use the chat.
+</li>
+<li><code>onCanHear</code></br>
+(default: "true"; optional)</br>
+All players are able to hear the chat, by default. This field enables you
+to only allow specific players or teams to hear/see the chat.
+</li>
+<li><code>onGetColor</code></br>
+(default: Color(242, 230, 160); optional)</br>
+This field will set your chat's color.
+</li>
+<li><code>onChatAdd</code></br>
+(default: default format; optional)</br>
+This field allows you to edit and customize the chat format (color, etc).
+</li>
+<li><code>format</code></br>
+(default: "%s: \"%s\""; optional)</br>
+This field will set a new chat format.
+</li>
+<li><code>filter</code></br>
+(default: "ic"; optional)</br>
+This field will add a new filter for this chat.
+</li>
+<li><code>prefix</code></br>
+(default: chatType; optional)</br>
+This field allows you to add several prefixes to your chat. This will enable you
+to use the chat will all of the prefixes you set. This can be a single one or a
+table.
+</li>
+<li><code>font</code></br>
+(default: nutGenericFont; optional)</br>
+This field allows you to set a custom chat font.
+</li>
+<li><code>color</code></br>
+(default: Color(242, 230, 160); optional)</br>
+This field allows you to set a custom chat color.
+</li>
+<li><code>deadCanChat</code></br>
+(default: "false"; optional)</br>
+This field allows you enable chat communications for players who are dead.
+</li>
+</ul>
+
+</p>
+
+
+<h2><a href="#Functions">Functions</a></h2>
+<table class="function_list">
+	<tr>
+	<td class="name" nowrap><a href="#nut.chat.register">nut.chat.register(chatType, data)</a></td>
+	<td class="summary">Registers a new chat type with the information provided.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#nut.chat.parse">nut.chat.parse(client, message, noSend)</a></td>
+	<td class="summary">Identifies which chat mode should be used.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#nut.chat.send">nut.chat.send(speaker, chatType, text, anonymous, receivers)</a></td>
+	<td class="summary">Send a chat message using the specified chat type.</td>
+	</tr>
+</table>
+
+<br/>
+<br/>
+
+
+    <h2 class="section-header "><a name="Functions"></a>Functions</h2>
+
+    <dl class="function">
+    <dt>
+    <a name = "nut.chat.register"></a>
+    <strong>nut.chat.register(chatType, data)</strong>
+    </dt>
+    <dd>
+    Registers a new chat type with the information provided.
+ This function adds a new chat type to the nut.chat module. You can set who is
+ able to hear the chat, and a lot of other different things. Returns true
+if a player can hear the chat or if a player is able to use the chat.
+
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">chatType</span>
+            <span class="types"><a class="type" href="https://www.lua.org/manual/5.2/manual.html#6.4">string</a></span>
+         the type of the chat.
+        </li>
+        <li><span class="parameter">data</span>
+         a table.
+        </li>
+    </ul>
+
+    <h3>Returns:</h3>
+    <ol>
+
+        a boolean value.
+    </ol>
+
+
+
+    <h3>Usage:</h3>
+    <ul>
+        <pre class="example">nut.chat.register(<span class="string">"me"</span>, {
+	format = <span class="string">"**%s %s"</span>,
+	onGetColor = nut.chat.classes.ic.onGetColor,
+	onCanHear = nut.config.get(<span class="string">"chatRange"</span>, <span class="number">280</span>),
+	prefix = {<span class="string">"/me"</span>, <span class="string">"/action"</span>},
+	font = <span class="string">"nutChatFontItalics"</span>,
+	filter = <span class="string">"actions"</span>,
+	deadCanChat = <span class="keyword">true</span>
+})</pre>
+    </ul>
+
+</dd>
+    <dt>
+    <a name = "nut.chat.parse"></a>
+    <strong>nut.chat.parse(client, message, noSend)</strong>
+    </dt>
+    <dd>
+    Identifies which chat mode should be used.
+ If the checks say we have the proper chat type, then the chat type is the chosen one!
+ If this is not chosen, it continues searching. If it doesn't find the correct chat
+ type, then it falls back to IC chat.
+
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">client</span>
+            <span class="types"><span class="type">player</span></span>
+         a player.
+        </li>
+        <li><span class="parameter">message</span>
+            <span class="types"><a class="type" href="https://www.lua.org/manual/5.2/manual.html#6.4">string</a></span>
+         the message to send.
+        </li>
+        <li><span class="parameter">noSend</span>
+         a boolean value.
+        </li>
+    </ul>
+
+    <h3>Returns:</h3>
+    <ol>
+
+        nothing.
+    </ol>
+
+
+
+
+</dd>
+    <dt>
+    <a name = "nut.chat.send"></a>
+    <strong>nut.chat.send(speaker, chatType, text, anonymous, receivers)</strong>
+    </dt>
+    <dd>
+    Send a chat message using the specified chat type.
+ This function sends a message using the chatType to the receivers, created by
+ the speaker.
+
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">speaker</span>
+         an entity.
+        </li>
+        <li><span class="parameter">chatType</span>
+            <span class="types"><a class="type" href="https://www.lua.org/manual/5.2/manual.html#6.4">string</a></span>
+         the type of the chat.
+        </li>
+        <li><span class="parameter">text</span>
+            <span class="types"><a class="type" href="https://www.lua.org/manual/5.2/manual.html#6.4">string</a></span>
+         the message to send.
+        </li>
+        <li><span class="parameter">anonymous</span>
+         a boolean value.
+        </li>
+        <li><span class="parameter">receivers</span>
+         a table.
+        </li>
+    </ul>
+
+    <h3>Returns:</h3>
+    <ol>
+
+        nothing.
+    </ol>
+
+
+
+
+</dd>
+</dl>
+
+
+</div> <!-- id="content" -->
+</div> <!-- id="main" -->
+<div id="about">
+<i>generated by <a href="http://github.com/stevedonovan/LDoc">LDoc 1.4.6</a></i>
+<i style="float:right;">Last updated 2018-10-08 22:54:40 </i>
+</div> <!-- id="about" -->
+</div> <!-- id="container" -->
+</body>
+</html>

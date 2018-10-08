@@ -1,9 +1,19 @@
+--[[--
+This module contains all the functions that handle the death hud.
+
+]]
+-- @module nut.hud
+
 nut.hud = {}
 
 local owner, w, h, ceil, ft, clmp
 ceil = math.ceil
 clmp = math.Clamp
 local aprg, aprg2 = 0, 0
+
+--- Draws the death HUD.
+-- @return nothing.
+
 function nut.hud.drawDeath()
 	owner = LocalPlayer()
 	ft = FrameTime()

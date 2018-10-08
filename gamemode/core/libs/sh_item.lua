@@ -1,3 +1,18 @@
+--[[--
+This module contains all the functions that handle items.
+
+NutScript Framework allows you to create custom items that can be inserted/removed
+from a character's inventory. Usually these items are weapons, food, etc. In order
+to create a new item, create a new file in `items` directory under your schema
+folder. This file should be named as follows:
+</br>
+`sh_itemname.lua`
+</br>
+
+]]
+-- @module nut.item
+
+
 nut.item = nut.item or {}
 nut.item.list = nut.item.list or {}
 nut.item.base = nut.item.base or {}
@@ -75,6 +90,14 @@ function nut.item.instance(index, uniqueID, itemData, x, y, callback)
 	end
 end
 
+--- This function registers a new inventory type.
+-- Adds a new inventory type to `nut.item.inventoryTypes` table.
+-- @string invType the inventory type.
+-- @param w a number
+-- @param h a number
+-- @param isBag a boolean value
+-- @return the inventory type that was registered.
+
 function nut.item.registerInv(invType, w, h, isBag)
 	nut.item.inventoryTypes[invType] = {w = w, h = h}
 
@@ -84,6 +107,13 @@ function nut.item.registerInv(invType, w, h, isBag)
 
 	return nut.item.inventoryTypes[invType]
 end
+
+--- This function creates a new inventory from a certain type.
+-- Associates the new created inventory with a character (owner).
+-- @param owner a number
+-- @string invType the inventory type.
+-- @param callback a function
+-- @return nothing.
 
 function nut.item.newInv(owner, invType, callback)
 	local invData = nut.item.inventoryTypes[invType] or {w = 1, h = 1}
@@ -115,13 +145,29 @@ function nut.item.newInv(owner, invType, callback)
 	end, "inventories")
 end
 
+--- Gets the item with the specific identifier.
+-- Checks whether `nut.item.base` or `nut.item.list` tables have an item with the
+-- given identifier.
+-- @param identifier a number.
+-- @return the item or nil.
+
 function nut.item.get(identifier)
 	return nut.item.base[identifier] or nut.item.list[identifier]
 end
 
+--- Gets the inventory with the specific identifier.
+-- @param invID a number.
+-- @return the inventory or nil.
+
 function nut.item.getInv(invID)
 	return nut.item.inventories[invID]
 end
+
+--- Loads a specific item.
+-- @string path the items directory.
+-- @string baseID the base item's ID.
+-- @param isBaseItem a boolean value.
+-- @return error or nothing.
 
 function nut.item.load(path, baseID, isBaseItem)
 	local uniqueID = path:match("sh_([_%w]+)%.lua")
@@ -135,6 +181,14 @@ function nut.item.load(path, baseID, isBaseItem)
 		end
 	end
 end
+
+--- Registers a new item.
+-- @string uniqueID the item's unique ID.
+-- @string baseID the base item ID.
+-- @param isBaseItem a boolean value.
+-- @string path the items directory.
+-- @param luaGenerated a boolean value.
+-- @return the generated item or an error.
 
 function nut.item.register(uniqueID, baseID, isBaseItem, path, luaGenerated)
 	local meta = nut.meta.item
@@ -250,6 +304,9 @@ function nut.item.register(uniqueID, baseID, isBaseItem, path, luaGenerated)
 	end
 end
 
+--- Loads all item files from the specified directory.
+-- @string directory the path to the items directory.
+-- @return nothing.
 
 function nut.item.loadFromDir(directory)
 	local files, folders
@@ -277,6 +334,11 @@ function nut.item.loadFromDir(directory)
 	end
 end
 
+--- Creates a new item with the specified uniqueID and id if it doesnt exist.
+-- @string uniqueID the item's unique ID.
+-- @param id a number.
+-- @return the item.
+
 function nut.item.new(uniqueID, id)
 	if (nut.item.instances[id] and nut.item.instances[id].uniqueID == uniqueID) then
 		return nut.item.instances[id]
@@ -299,6 +361,12 @@ end
 
 do
 	nut.util.include("nutscript/gamemode/core/meta/sh_inventory.lua")
+	
+	--- Creates an inventory with a specific width, height and ID.
+	-- @param w a number.
+	-- @param h a number.
+	-- @param id a number.
+	-- @return the inventory that was created.
 
 	function nut.item.createInv(w, h, id)
 		local inventory = setmetatable({w = w, h = h, id = id, slots = {}, vars = {}}, nut.meta.inventory)
@@ -306,6 +374,13 @@ do
 
 		return inventory
 	end
+	
+	--- Restores an inventory with a specific ID.
+	-- @param invID a number.
+	-- @param w a number.
+	-- @param h a number.
+	-- @param callback a function.
+	-- @return error or nothing.
 
 	function nut.item.restoreInv(invID, w, h, callback)
 		if (type(invID) != "number" or invID < 0) then
@@ -733,7 +808,14 @@ do
 		end)
 	end
 
-	-- Instances and spawns a given item type.
+	--- Instances and spawns a given item type.
+	-- @param uniqueID the item's unique ID.
+	-- @param position a vector.
+	-- @param callback a function.
+	-- @param angles a vector.
+	-- @param data a table.
+	-- @return nothing.
+	
 	function nut.item.spawn(uniqueID, position, callback, angles, data)
 		nut.item.instance(0, uniqueID, data or {}, 1, 1, function(item)
 			local entity = item:spawn(position, angles)

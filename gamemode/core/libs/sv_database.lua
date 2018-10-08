@@ -1,3 +1,15 @@
+--[[--
+<b style="color: blue">ALERT: CAREFULL USING THIS LIBRARY.</b></br></br>
+This module contains all the functions that handle database requests.
+
+NutScript allows you to use one of three different database modules: </br>
+`sqlite`, `mysqloo` or `tmysql4`.
+
+You can add your database details to `nutscript/gamemode/config/sv_database.lua`.
+
+]]
+-- @module nut.db
+
 nut.db = nut.db or {}
 nut.util.include("nutscript/gamemode/config/sv_database.lua")
 
@@ -9,7 +21,6 @@ end
 local function ThrowConnectionFault(fault)
 	MsgC(Color(255, 0, 0), "NutScript has failed to connect to the database.\n")
 	MsgC(Color(255, 0, 0), fault.."\n")
-
 	setNetVar("dbError", fault)
 end
 
@@ -183,6 +194,11 @@ modules.mysqloo = {
 nut.db.escape = modules.sqlite.escape
 nut.db.query = modules.sqlite.query
 
+--- Connects to a database.
+-- This function establishes a connection to a database.
+-- @param callback a function.
+-- @return nothing.
+
 function nut.db.connect(callback)
 	local dbModule = modules[nut.db.module]
 
@@ -291,6 +307,9 @@ DROP TABLE IF EXISTS `nut_players`;
 DROP TABLE IF EXISTS `nut_inventories`;
 ]]
 
+--- Wipes out all data from the NutScript database.
+-- @return nothing.
+
 function nut.db.wipeTables()
 	local function callback()
 		MsgC(Color(255, 0, 0), "[Nutscript] ALL NUTSCRIPT DATA HAS BEEN WIPED\n")
@@ -328,6 +347,9 @@ concommand.Add("nut_recreatedb", function(client, cmd, arguments)
 	end
 end)
 
+--- Creates default tables.
+-- @return nothing.
+
 function nut.db.loadTables()
 	if (nut.db.object) then
 		-- This is needed to perform multiple queries since the string is only 1 big query.
@@ -343,6 +365,10 @@ function nut.db.loadTables()
 	hook.Run("OnLoadTables")
 end
 
+--- Converts data to certain type which is more suitable to save in SQL Database.
+-- @param value a generic value.
+-- @return a string or generic value.
+
 function nut.db.convertDataType(value)
 	if (type(value) == "string") then
 		return "'"..nut.db.escape(value).."'"
@@ -352,6 +378,13 @@ function nut.db.convertDataType(value)
 
 	return value
 end
+
+--- Inserts a row in the certain table with the callback. This is the function 
+-- that you're going to use mostly.
+-- @param value a table.
+-- @param callback a function.
+-- @string dbTable the name of the table that is going to be used.
+-- @return nothing.
 
 function nut.db.insertTable(value, callback, dbTable)
 	local query = "INSERT INTO "..("nut_"..(dbTable or "characters")).." ("
@@ -366,6 +399,14 @@ function nut.db.insertTable(value, callback, dbTable)
 	query = query..table.concat(keys, ", ")..") VALUES ("..table.concat(values, ", ")..")"
 	nut.db.query(query, callback)
 end
+
+--- Updates a row in the certain table with the callback. This is the function 
+-- that you're going to use mostly.
+-- @param value a table.
+-- @param callback a function.
+-- @string dbTable the name of the table that is going to be used.
+-- @string condition the condition that is part of the query.
+-- @return nothing.
 
 function nut.db.updateTable(value, callback, dbTable, condition)
 	local query = "UPDATE "..("nut_"..(dbTable or "characters")).." SET "

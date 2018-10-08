@@ -1,0 +1,202 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+<head>
+    <title>NutScript Documentation</title>
+    <link rel="stylesheet" href="../ldoc_pale.css" type="text/css" />
+</head>
+<body>
+
+<div id="container">
+
+<div id="product">
+	<div id="product_logo"></div>
+	<div id="product_name"><big><b></b></big></div>
+	<div id="product_description"></div>
+</div> <!-- id="product" -->
+
+
+<div id="main">
+
+
+<!-- Menu -->
+
+<div id="navigation">
+<br/>
+<h1>NutScript</h1>
+
+<ul>
+  <li><a href="../index.html">Index</a></li>
+</ul>
+
+<h2>Contents</h2>
+<ul>
+<li><a href="#Functions">Functions</a></li>
+</ul>
+
+
+<h2>Libraries</h2>
+<ul class="nowrap">
+  <li><a href="../libraries/nut.bar.html">nut.bar</a></li>
+  <li><a href="../libraries/nut.hud.html">nut.hud</a></li>
+  <li><a href="../libraries/nut.markup.html">nut.markup</a></li>
+  <li><a href="../libraries/nut.anim.html">nut.anim</a></li>
+  <li><a href="../libraries/nut.attribs.html">nut.attribs</a></li>
+  <li><a href="../libraries/nut.chat.html">nut.chat</a></li>
+  <li><a href="../libraries/nut.class.html">nut.class</a></li>
+  <li><a href="../libraries/nut.command.html">nut.command</a></li>
+  <li><strong>nut.currency</strong></li>
+  <li><a href="../libraries/nut.date.html">nut.date</a></li>
+  <li><a href="../libraries/nut.faction.html">nut.faction</a></li>
+  <li><a href="../libraries/nut.flag.html">nut.flag</a></li>
+  <li><a href="../libraries/nut.item.html">nut.item</a></li>
+  <li><a href="../libraries/nut.log.html">nut.log</a></li>
+  <li><a href="../libraries/nut.plugin.html">nut.plugin</a></li>
+  <li><a href="../libraries/nut.db.html">nut.db</a></li>
+</ul>
+
+</div>
+
+<div id="content">
+
+<h1>Module <code>nut.currency</code></h1>
+<p>This module contains all the functions that handle currency.</p>
+<p>You can set your gamemode's currency by using nut.currency.set. If no currency
+is set, the framework will use dollar ("$") as the default currency.</p>
+
+
+<h2><a href="#Functions">Functions</a></h2>
+<table class="function_list">
+	<tr>
+	<td class="name" nowrap><a href="#nut.currency.set">nut.currency.set(symbol, singular, plural)</a></td>
+	<td class="summary">Sets the gamemode currency, which is going to be used.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#nut.currency.get">nut.currency.get(amount)</a></td>
+	<td class="summary">Gets the gamemode currency that is currently being used.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#nut.currency.spawn">nut.currency.spawn(pos, amount, angle)</a></td>
+	<td class="summary">Spawns a certain amount of money.</td>
+	</tr>
+</table>
+
+<br/>
+<br/>
+
+
+    <h2 class="section-header "><a name="Functions"></a>Functions</h2>
+
+    <dl class="function">
+    <dt>
+    <a name = "nut.currency.set"></a>
+    <strong>nut.currency.set(symbol, singular, plural)</strong>
+    </dt>
+    <dd>
+    Sets the gamemode currency, which is going to be used.
+ This function changes the default values of <code>nut.currency.symbol</code>,
+ <code>nut.currency.singular</code> and <code>nut.currency.plural</code>.
+
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">symbol</span>
+            <span class="types"><a class="type" href="https://www.lua.org/manual/5.2/manual.html#6.4">string</a></span>
+         the currency's symbol.
+        </li>
+        <li><span class="parameter">singular</span>
+            <span class="types"><a class="type" href="https://www.lua.org/manual/5.2/manual.html#6.4">string</a></span>
+         singular.
+        </li>
+        <li><span class="parameter">plural</span>
+            <span class="types"><a class="type" href="https://www.lua.org/manual/5.2/manual.html#6.4">string</a></span>
+         plural.
+        </li>
+    </ul>
+
+    <h3>Returns:</h3>
+    <ol>
+
+        nothing.
+    </ol>
+
+
+
+    <h3>Usage:</h3>
+    <ul>
+        <pre class="example">nut.currency.set(<span class="string">"£"</span>, <span class="string">"coin"</span>, <span class="string">"coins"</span>)</pre>
+    </ul>
+
+</dd>
+    <dt>
+    <a name = "nut.currency.get"></a>
+    <strong>nut.currency.get(amount)</strong>
+    </dt>
+    <dd>
+    Gets the gamemode currency that is currently being used.
+ This functions returns a string with a specific amount along with the symbol
+ and the currency singular or plural.
+
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">amount</span>
+         a number.
+        </li>
+    </ul>
+
+    <h3>Returns:</h3>
+    <ol>
+
+        a string.
+    </ol>
+
+
+
+
+</dd>
+    <dt>
+    <a name = "nut.currency.spawn"></a>
+    <strong>nut.currency.spawn(pos, amount, angle)</strong>
+    </dt>
+    <dd>
+    Spawns a certain amount of money.
+ This function creates a money entity on a certain position and angle.
+
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">pos</span>
+         a vector.
+        </li>
+        <li><span class="parameter">amount</span>
+         a number.
+        </li>
+        <li><span class="parameter">angle</span>
+         an angle.
+        </li>
+    </ul>
+
+    <h3>Returns:</h3>
+    <ol>
+
+        the entity that was created.
+    </ol>
+
+
+
+
+</dd>
+</dl>
+
+
+</div> <!-- id="content" -->
+</div> <!-- id="main" -->
+<div id="about">
+<i>generated by <a href="http://github.com/stevedonovan/LDoc">LDoc 1.4.6</a></i>
+<i style="float:right;">Last updated 2018-10-08 22:54:40 </i>
+</div> <!-- id="about" -->
+</div> <!-- id="container" -->
+</body>
+</html>

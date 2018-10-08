@@ -1,9 +1,69 @@
+--[[--
+This module contains all the functions that handle commands in NutScript.
+
+You can easily add a command to NutScript by using the nut.command.add function.
+In order to do that, you must name the command and create a table with certain
+fields that enable you to set a function that runs once you evoke the command.
+
+<b>The table should have the fields as follows:</b>
+
+<ul>
+<li><b>`syntax`</b></br>
+(default: "[none]" | optional: yes) </br>
+This allows you to setup a syntax for the command.
+</li>
+<li><b>`adminOnly`</b></br>
+(default: "false" | optional: yes) </br>
+This allows you to restrict the command to administrators only.
+</li>
+<li><b>`superAdminOnly`</b></br>
+(default: "false" | optional: yes) </br>
+This allows you to restrict the command to superadministrators only.
+</li>
+<li><b>`group`</b></br>
+(default: nil | optional: yes) </br>
+This allows you to restrict the command to one or more user groups. This can
+either be a table or a string.
+</li>
+<li><b>`onCheckAccess`</b></br>
+(default: nil | optional: yes) </br>
+This allows you to restrict the command with a function.
+</li>
+<li><b>`onRun`</b></br>
+(default: nil | optional: no) </br>
+This field contains the function that is executed once the command is evoked.
+This function has `client` and `arguments` as arguments.
+</li>
+<li><b>`alias`</b></br>
+(default: nil | optional: yes) </br>
+This allows you to set alias to your command. This can either be one (a string) or
+more (a table).
+</li>
+</ul>
+
+]]
+-- @module nut.command
+
 nut.command = nut.command or {}
 nut.command.list = nut.command.list or {}
 
 local COMMAND_PREFIX = "/"
 
--- Adds a new command to the list of commands.
+--- Adds a new command to the list of commands.
+-- This function adds the command and its data to `nut.command.list`.
+-- @string command the command.
+-- @param data a table.
+-- @return Error if onRun field is nil or nothing.
+-- @usage
+--nut.command.add("toggleraise", {
+--	onRun = function(client, arguments)
+--		if ((client.nutNextToggle or 0) < CurTime()) then
+--			client:toggleWepRaised()
+--			client.nutNextToggle = CurTime() + 0.5
+--		end
+--	end
+--})
+
 function nut.command.add(command, data)
 	-- For showing users the arguments of the command.
 	data.syntax = data.syntax or "[none]"
@@ -80,7 +140,12 @@ function nut.command.add(command, data)
 	nut.command.list[command] = data
 end
 
--- Returns whether or not a player is allowed to run a certain command.
+--- Returns whether or not a player is allowed to run a certain command.
+-- Returns true if the player is able to use a certain command and false otherwise.
+-- @player client a player.
+-- @string command the command.
+-- @return a boolean value.
+
 function nut.command.hasAccess(client, command)
 	command = nut.command.list[command]
 
@@ -95,7 +160,11 @@ function nut.command.hasAccess(client, command)
 	return false
 end
 
--- Gets a table of arguments from a string.
+--- Gets a table of arguments from a string.
+-- Extracts the arguments from a command.
+-- @string text containing the arguments to be extracted.
+-- @return arguments a table.
+
 function nut.command.extractArgs(text)
 	local skip = 0
 	local arguments = {}
@@ -136,7 +205,12 @@ function nut.command.extractArgs(text)
 end
 
 if (SERVER) then
-	-- Finds a player or gives an error notification.
+	--- Finds a player or gives an error notification.
+	-- Finds the given player.
+	-- @player client a player.
+	-- @string name the player's name.
+	-- @return target an entity.
+	
 	function nut.command.findPlayer(client, name)
 		local target = type(name) == "string" and nut.util.findPlayer(name) or NULL
 
@@ -147,7 +221,13 @@ if (SERVER) then
 		end
 	end
 
-	-- Forces a player to run a command.
+	--- Forces a player to run a command.
+	-- The functions runs a specific command.
+	-- @player client a player.
+	-- @string command the command.
+	-- @param arguments a table.
+	-- @return nothing.
+	
 	function nut.command.run(client, command, arguments)
 		local command = nut.command.list[command]
 
@@ -173,15 +253,20 @@ if (SERVER) then
 		end
 	end
 
-	-- Add a function to parse a regular chat string.
+	--- Add a function to parse a regular chat string.
+	-- The function returns true or false.
+	-- @player client a player.
+	-- @string text a command.
+	-- @string realCommand the command to run.
+	-- @param arguments a table.
+	-- @return a boolean value.
+
 	function nut.command.parse(client, text, realCommand, arguments)
 		if (realCommand or text:utf8sub(1, 1) == COMMAND_PREFIX) then
 			-- See if the string contains a command.
 
 			local match = realCommand or text:lower():match(COMMAND_PREFIX.."([_%w]+)")
 
-			-- is it unicode text?
-			-- i hate unicode.
 			if (!match) then
 				local post = string.Explode(" ", text)
 				local len = string.len(post[1])

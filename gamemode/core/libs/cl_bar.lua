@@ -1,9 +1,22 @@
+--[[--
+This module contains all the functions that handle bars.
+
+This library is CLIENTSIDE library that allows you register and manage new bars
+on top left corner.
+
+]]
+-- @module nut.bar
+
 nut.bar = nut.bar or {}
 nut.bar.list = {}
 nut.bar.delta = nut.bar.delta or {}
 nut.bar.actionText = ""
 nut.bar.actionStart = 0
 nut.bar.actionEnd = 0
+
+--- This function returns the bar with the specified identifier.
+-- @string identifier the bar identifier.
+-- @return the bar with the specified identifier.
 
 function nut.bar.get(identifier)
 	for i = 1, #nut.bar.list do
@@ -14,6 +27,13 @@ function nut.bar.get(identifier)
 		end
 	end
 end
+
+--- Registers a new bar.
+-- @param getValue a number.
+-- @param color a vector.
+-- @param priority a number.
+-- @string identifier the bar identifier.
+-- @return the priority.
 
 function nut.bar.add(getValue, color, priority, identifier)
 	if (identifier) then
@@ -39,6 +59,10 @@ function nut.bar.add(getValue, color, priority, identifier)
 	return priority
 end
 
+--- Removes a bar with the specified identifier.
+-- @string identifier the bar identifier.
+-- @return nothing.
+
 function nut.bar.remove(identifier)
 	local bar
 	for k, v in ipairs(nut.bar.list) do
@@ -59,6 +83,15 @@ local gradient = nut.util.getMaterial("vgui/gradient-u")
 local gradient2 = nut.util.getMaterial("vgui/gradient-d")
 local surface = surface
 
+--- Draws a bar on the screen.
+-- @param x a number.
+-- @param y a number.
+-- @param w a number.
+-- @param h a number.
+-- @param value a number.
+-- @param color a vector.
+-- @return nothing.
+
 function nut.bar.draw(x, y, w, h, value, color)
 	nut.util.drawBlurAt(x, y, w, h)
 
@@ -78,6 +111,9 @@ end
 
 local TEXT_COLOR = Color(240, 240, 240)
 local SHADOW_COLOR = Color(20, 20, 20)
+
+--- Draw action progress bar.
+-- @return nothing.
 
 function nut.bar.drawAction()
 	local start, finish = nut.bar.actionStart, nut.bar.actionEnd
@@ -116,6 +152,9 @@ end
 local Approach = math.Approach
 
 BAR_HEIGHT = 10
+
+--- Draws all bars.
+-- @return nothing.
 
 function nut.bar.drawAll()
 	if (hook.Run("ShouldHideBars")) then

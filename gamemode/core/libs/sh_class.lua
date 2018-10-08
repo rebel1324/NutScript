@@ -1,9 +1,24 @@
+--[[--
+This module contains all the functions that handle classes.
+
+Classes are different from factions, though all classes belong to a faction. They
+allow you to create different and specialized jobs and with that, custom salaries,
+models and other functions.
+
+]]
+-- @module nut.class
+
 nut.class = nut.class or {}
 nut.class.list = {}
 
 local charMeta = nut.meta.character
 
--- Register classes from a directory.
+--- Loads data from the classes directory.
+-- Loads all classes' data from the 'classes' directory inside your schema folder.
+-- @string directory the path to the classes directory.
+-- @return nothing.
+
+
 function nut.class.loadFromDir(directory)
 	-- Search the directory for .lua files.
 	for k, v in ipairs(file.Find(directory.."/*.lua", "LUA")) do
@@ -60,7 +75,15 @@ function nut.class.loadFromDir(directory)
 	end
 end
 
--- Determines if a player is allowed to join a specific class.
+--- Determines whether a player is allowed to join a certain class.
+-- The function checks if the client is eligible to join the class. Returns true
+-- if the player is allowed to join the class and false otherwise, along with the
+-- reason as to why the player is unable to join.
+-- @player client a player.
+-- @param class a number.
+-- @return a boolean value.
+-- @usage nut.class.canBe(client, 5)
+
 function nut.class.canBe(client, class)
 	-- Get the class table by its numeric identifier.
 	local info = nut.class.list[class]
@@ -91,9 +114,19 @@ function nut.class.canBe(client, class)
 	return info:onCanBe(client)
 end
 
+--- Gets the class with the given identifier.
+-- The function returns the table of a specific class. This table is inside nut.class.list.
+-- @param identifier a number.
+-- @return the class table.
+
 function nut.class.get(identifier)
 	return nut.class.list[identifier]
 end
+
+--- Gets all the players in a given class.
+-- The function returns a table with all the players in the given class.
+-- @param class a number.
+-- @return the table with the players.
 
 function nut.class.getPlayers(class)
 	local players = {}
