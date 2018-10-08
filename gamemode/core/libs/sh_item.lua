@@ -9,6 +9,13 @@ nut.item.inventoryTypes = nut.item.inventoryTypes or {}
 
 nut.util.include("nutscript/gamemode/core/meta/sh_item.lua")
 
+local function DEPRECATED()
+	local warning = debug.getinfo(2, "n").name.." is deprecated"
+	local output = debug.traceback(warning, 3)
+	local lines = string.Explode("\n", output)
+	ErrorNoHalt("\n"..lines[1].."\n"..lines[3].."\n\n")
+end
+
 function nut.item.instance(index, uniqueID, itemData, x, y, callback)
 	local itemTable = nut.item.list[uniqueID]
 
@@ -63,6 +70,7 @@ function nut.item.instance(index, uniqueID, itemData, x, y, callback)
 end
 
 function nut.item.registerInv(invType, w, h, isBag)
+	DEPRECATED()
 	nut.item.inventoryTypes[invType] = {w = w, h = h}
 
 	if (isBag) then
@@ -73,6 +81,7 @@ function nut.item.registerInv(invType, w, h, isBag)
 end
 
 function nut.item.newInv(owner, invType, callback)
+	DEPRECATED()
 	local invData = nut.item.inventoryTypes[invType] or {w = 1, h = 1}
 
 	nut.db.insertTable({
@@ -107,6 +116,7 @@ function nut.item.get(identifier)
 end
 
 function nut.item.getInv(invID)
+	DEPRECATED()
 	return nut.item.inventories[invID]
 end
 
@@ -407,13 +417,15 @@ do
 	nut.util.include("nutscript/gamemode/core/meta/sh_inventory.lua")
 
 	function nut.item.createInv(w, h, id)
+		DEPRECATED()
 		local inventory = setmetatable({w = w, h = h, id = id, slots = {}, vars = {}}, nut.meta.inventory)
-			nut.item.inventories[id] = inventory
+		nut.item.inventories[id] = inventory
 
 		return inventory
 	end
 
 	function nut.item.restoreInv(invID, w, h, callback)
+		DEPRECATED()
 		if (type(invID) != "number" or invID < 0) then
 			error("Attempt to restore inventory with an invalid ID!")
 		end
