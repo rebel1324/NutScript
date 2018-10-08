@@ -1,6 +1,12 @@
 local Inventory = nut.Inventory
 
+-- Constants for inventory actions.
+INV_REPLICATE = "repl" -- Replicate data about the inventory to a player.
+
 local INV_DATA_TABLE_NAME = "invdata"
+
+util.AddNetworkString("nutInventoryInit")
+util.AddNetworkString("nutInventoryData")
 
 -- Given an item type string, creates an instance of that item type
 -- and adds it to this inventory. A promise is returned containing
@@ -78,7 +84,7 @@ function Inventory:setData(key, value)
 		end
 	end
 
-	-- TODO: add replication and persistent storage
+	self:syncData(key)
 	self:onDataChanged(key, oldValue, value)
 	return self
 end
@@ -86,7 +92,7 @@ end
 -- Whether or not a client can interact with this inventory.
 function Inventory:canPlayerAccess(client, action)
 	local result
-	for _, rule in ipairs(self.rules) do
+	for _, rule in ipairs(self.config.accessRules) do
 		result = rule(self, client, action)
 		if (result ~= nil) then
 			return result
@@ -106,7 +112,7 @@ end
 function Inventory:getRecipients()
 	local recipients = {}
 	for _, client in ipairs(player.GetAll()) do
-		if (self:canBeAccessedByPlayer(client, INV_REPLICATE)) then
+		if (self:canPlayerAccess(client, INV_REPLICATE)) then
 			recipients[#recipients + 1] = client
 		end
 	end
@@ -143,10 +149,13 @@ function Inventory:loadItems()
 				end
 
 				local item = nut.item.new(uniqueID, itemID)
+				item.invID = self.id
+
 				if (result._data) then
-					item.data = util.JSONToTable(result._data)
+					item.data =
+						table.Merge(item.data, util.JSONToTable(result._data))
 				end
-				PrintTable(item)
+
 				items[itemID] = item
 				if (item.onRestored) then
 					item:onRestored(self)
@@ -159,4 +168,37 @@ end
 
 function Inventory:instance(initialData)
 	return nut.inventory.instance(self.typeID, initialData)
+end
+
+function Inventory:syncData(key, recipients)
+	if (self.config.data[key] and self.config.data[key].noReplication) then
+		return
+	end
+
+	net.Start("nutInventoryData")
+		-- ID is not always a number.
+		net.WriteType(self.id)
+		net.WriteString(key)
+		net.WriteType(self.data[key])
+	net.Send(recipients or self:getRecipients())
+end
+
+function Inventory:sync(recipients)
+	net.Start("nutInventoryInit")
+		-- ID is not always a number.
+		net.WriteType(self.id)
+		net.WriteString(self.typeID)
+		net.WriteTable(self.data)
+
+		net.WriteUInt(table.Count(self.items), 32)		
+		local function writeItem(item)
+			net.WriteUInt(item:getID(), 32)
+			net.WriteString(item.uniqueID)
+			net.WriteTable(item.data)
+		end
+
+		for _, item in pairs(self.items) do
+			writeItem(item)
+		end
+	net.Send(recipients or self:getRecipients())
 end

@@ -14,15 +14,6 @@ Inventory.items = {}
 -- A unique identifier for an instance of this inventory.
 Inventory.id = -1
 
--- Constants for inventory actions.
-INV_REPLICATE = "repl" -- Replicate data about the inventory to a player.
-
-Inventory.config = {
-	persistent = true,
-	data = {},
-	accessRules = {},
-}
-
 -- Returns the value of the stored key if it exists, the default otherwise.
 -- If no default is given, then nil is returned.
 function Inventory:getData(key, default)
@@ -36,7 +27,10 @@ end
 
 -- Used to create sub-classes for the Inventory class.
 function Inventory:extend(className)
-	local subClass = table.Inherit({className = className}, self)
+	local base = debug.getregistry()[className] or {}
+	table.Empty(base) -- Allow updated base methods to update in instances.
+	base.className = className
+	local subClass = table.Inherit(base, self)
 	subClass.__index = subClass
 	return subClass
 end
@@ -58,7 +52,14 @@ function Inventory:register(typeID)
 		"Expected argument #1 of "..self.className..".register to be a string"
 	)
 	self.typeID = typeID
-	self.config = {}
+
+	self.config = {data = {}}
+
+	if (SERVER) then
+		self.config.persistent = true
+		self.config.accessRules = {}
+	end
+
 	self:configure(self.config)
 	nut.inventory.newType(self.typeID, self)
 end
@@ -81,7 +82,7 @@ end
 -- Called when a data value has been changed for this inventory.
 function Inventory:onDataChanged(key, oldValue, newValue)
 	local keyData = self.config.data[key]
-	if (keyData.proxies) then
+	if (keyData and keyData.proxies) then
 		for _, proxy in pairs(keyData.proxies) do
 			proxy(oldValue, newValue)
 		end
@@ -90,4 +91,7 @@ end
 
 if (SERVER) then
 	include("inventory/sv_base_inventory.lua")
+	AddCSLuaFile("inventory/cl_base_inventory.lua")
+else
+	include("inventory/cl_base_inventory.lua")
 end

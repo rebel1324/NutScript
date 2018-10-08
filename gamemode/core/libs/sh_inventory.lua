@@ -43,7 +43,7 @@ function nut.inventory.newType(typeID, invTypeStruct)
 	assert(type(invTypeStruct) == "table", "expected table for argument #2")
 	checkType(typeID, invTypeStruct, InvTypeStructType)
 
-	debug.getregistry()[invTypeStruct.className] = invTypeStruct.class
+	debug.getregistry()[invTypeStruct.className] = invTypeStruct
 	nut.inventory.types[typeID] = invTypeStruct
 end
 
