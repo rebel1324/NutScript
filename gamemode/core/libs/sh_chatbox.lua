@@ -1,3 +1,97 @@
+--[[--
+This module contains all the functions that handle the chats.
+
+With NutScript you can register different types of chats, and therefore create your
+own.
+
+Default Chats:
+
+<ul>
+<li><b>
+OOC</b> - Out of character;
+</li>
+<li><b>IC
+</b> - In Character;
+</li>
+<li><b>ME
+</b> Character's action;
+</li>
+<li><b>IT
+</b> - Specific action;
+</li>
+<li><b>Y
+</b> - Yell;
+</li>
+<li><b>W
+</b>  - Whisper;
+</li>
+<li><b>LOOC
+</b> - Local out of character;
+</li>
+<li><b>EVENT
+</b> - Announcement chat;
+</li>
+<li><b>PM
+</b> - Private messages;
+</li>
+<li><b>ROLL
+</b> - Roll.
+</li>
+</ul>
+
+You can register a new type of chat by using nut.chat.register function and by
+naming the chatType and by creating the data table with certain fields defined.
+The fields are as follows:
+<ul>
+<li>`onCanSay` </br>
+(default: "true"; optional)</br>
+All alive players are able to use the chat, by default. This field enables you
+to only allow specific players or teams to use the chat.
+</li>
+<li>`onCanHear`</br>
+(default: "true"; optional)</br>
+All players are able to hear the chat, by default. This field enables you
+to only allow specific players or teams to hear/see the chat.
+</li>
+<li>`onGetColor`</br>
+(default: Color(242, 230, 160); optional)</br>
+This field will set your chat's color.
+</li>
+<li>`onChatAdd`</br>
+(default: default format; optional)</br>
+This field allows you to edit and customize the chat format (color, etc).
+</li>
+<li>`format`</br>
+(default: "%s: \"%s\""; optional)</br>
+This field will set a new chat format.
+</li>
+<li>`filter`</br>
+(default: "ic"; optional)</br>
+This field will add a new filter for this chat.
+</li>
+<li>`prefix`</br>
+(default: chatType; optional)</br>
+This field allows you to add several prefixes to your chat. This will enable you
+to use the chat will all of the prefixes you set. This can be a single one or a
+table.
+</li>
+<li>`font`</br>
+(default: nutGenericFont; optional)</br>
+This field allows you to set a custom chat font.
+</li>
+<li>`color`</br>
+(default: Color(242, 230, 160); optional)</br>
+This field allows you to set a custom chat color.
+</li>
+<li>`deadCanChat`</br>
+(default: "false"; optional)</br>
+This field allows you enable chat communications for players who are dead.
+</li>
+</ul>
+
+]]
+-- @module nut.chat
+
 nut.chat = nut.chat or {}
 nut.chat.classes = nut.char.classes or {}
 
@@ -7,7 +101,25 @@ if (!nut.command) then
 	include("sh_command.lua")
 end
 
--- Registers a new chat type with the information provided.
+--- Registers a new chat type with the information provided.
+-- This function adds a new chat type to the nut.chat module. You can set who is
+-- able to hear the chat, and a lot of other different things. Returns true 
+--if a player can hear the chat or if a player is able to use the chat.
+-- @string chatType the type of the chat.
+-- @param data a table.
+-- @return a boolean value.
+-- @usage
+--nut.chat.register("me", {
+--	format = "**%s %s",
+--	onGetColor = nut.chat.classes.ic.onGetColor,
+--	onCanHear = nut.config.get("chatRange", 280),
+--	prefix = {"/me", "/action"},
+--	font = "nutChatFontItalics",
+--	filter = "actions",
+--	deadCanChat = true
+--})
+
+
 function nut.chat.register(chatType, data)
 	if (!data.onCanHear) then
 		-- Have a substitute if the canHear property is not found.
@@ -76,13 +188,20 @@ function nut.chat.register(chatType, data)
 	nut.chat.classes[chatType] = data
 end
 
--- Identifies which chat mode should be used.
+--- Identifies which chat mode should be used.
+-- If the checks say we have the proper chat type, then the chat type is the chosen one!
+-- If this is not chosen, it continues searching. If it doesn't find the correct chat
+-- type, then it falls back to IC chat.
+-- @player client a player.
+-- @string message the message to send.
+-- @param noSend a boolean value.
+-- @return nothing.
+
 function nut.chat.parse(client, message, noSend)
 	local anonymous = false
 	local chatType = "ic"
 
 	/*
-	-- fuckoff
 	-- Handle anonymous/unknown speaker chat.
 	if (message:sub(1, 1) == "?" and message:sub(2):find("%S")) then
 		anonymous = true
@@ -146,7 +265,16 @@ function nut.chat.parse(client, message, noSend)
 end
 
 if (SERVER) then
-	-- Send a chat message using the specified chat type.
+	--- Send a chat message using the specified chat type.
+	-- This function sends a message using the chatType to the receivers, created by
+	-- the speaker.
+	-- @param speaker an entity.
+	-- @string chatType the type of the chat.
+	-- @string text the message to send.
+	-- @param anonymous a boolean value.
+	-- @param receivers a table.
+	-- @return nothing.
+	
 	function nut.chat.send(speaker, chatType, text, anonymous, receivers)
 		local class = nut.chat.classes[chatType]
 

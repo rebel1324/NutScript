@@ -1,3 +1,12 @@
+--[[--
+This module contains all the functions that handle with the date.
+
+This module allows to have a roleplay date that you can set in the ingame config
+menu.
+]]
+-- @module nut.date
+
+
 nut.date = nut.date or {}
 nut.date.cache = nut.date.cache or {}
 nut.date.start = nut.date.start or os.time()
@@ -20,6 +29,11 @@ nut.config.add("day", 1, "The starting day of the schema.", nil, {
 })
 
 if (SERVER) then
+	
+	--- [SERVER] Gets the date with year, month and day.
+	-- This function gets the roleplay date with year, month and day.
+	-- @return time a number.
+	
 	function nut.date.get()
 		local unixTime = os.time()
 
@@ -34,6 +48,11 @@ if (SERVER) then
 		netstream.Start(client, "dateSync", CurTime(), os.time() - nut.date.start)
 	end
 else
+	
+	--- [CLIENT] Gets the date with year, month and day.
+	-- This function gets the roleplay date with year, month and day.
+	-- @return time a number.
+	
 	function nut.date.get()
 		local realTime = RealTime()
 

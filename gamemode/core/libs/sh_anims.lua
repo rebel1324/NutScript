@@ -1,3 +1,9 @@
+--[[--
+This module contains all the functions that handle animations.
+
+]]
+-- @module nut.anim
+
 nut.anim = nut.anim or {}
 nut.anim.citizen_male = {
 	normal = {
@@ -289,6 +295,14 @@ nut.anim.fastZombie = {
 
 local translations = {}
 
+--- A shared function to group a certain model with a specific animations. 
+-- Class is a string that can be: "citizen_male", "citizen_female", "metrocop", 
+-- "overwatch", "vort", "player", "zombie" and "fastZombie". Note that the last 
+-- three are only for regular player models, not NPC models.
+-- @string model the model's path.
+-- @string class the animation class.
+-- @return error if it is not a valid animation class.
+
 function nut.anim.setModelClass(model, class)
 	if (!nut.anim[class]) then
 		error("'"..tostring(class).."' is not a valid animation class!")
@@ -300,6 +314,12 @@ end
 -- Micro-optimization since the get class function gets called a lot.
 local stringLower = string.lower
 local stringFind = string.find
+
+--- Returns the class for the model specified.
+-- If one has not been set previously, it will default to "player" if the model 
+-- contains "/player", otherwise the citizen classes.
+-- @string model the model's path.
+-- @return the class for the model specified.
 
 function nut.anim.getModelClass(model)
 	model = stringLower(model)

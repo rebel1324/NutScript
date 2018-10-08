@@ -1,13 +1,37 @@
+--[[--
+This module contains all the functions that handle currency.
+
+You can set your gamemode's currency by using nut.currency.set. If no currency
+is set, the framework will use dollar ("$") as the default currency.
+
+]]
+-- @module nut.currency
+
 nut.currency = nut.currency or {}
 nut.currency.symbol = nut.currency.symbol or "$"
 nut.currency.singular = nut.currency.singular or "dollar"
 nut.currency.plural = nut.currency.plural or "dollars"
+
+--- Sets the gamemode currency, which is going to be used.
+-- This function changes the default values of `nut.currency.symbol`,
+-- `nut.currency.singular` and `nut.currency.plural`.
+-- @string symbol the currency's symbol.
+-- @string singular singular.
+-- @string plural plural.
+-- @return nothing.
+-- @usage nut.currency.set("£", "coin", "coins")
 
 function nut.currency.set(symbol, singular, plural)
 	nut.currency.symbol = symbol
 	nut.currency.singular = singular
 	nut.currency.plural = plural
 end
+
+--- Gets the gamemode currency that is currently being used.
+-- This functions returns a string with a specific amount along with the symbol
+-- and the currency singular or plural.
+-- @param amount a number.
+-- @return a string.
 
 function nut.currency.get(amount)
 	if (amount == 1) then
@@ -16,6 +40,13 @@ function nut.currency.get(amount)
 		return nut.currency.symbol..amount.." "..nut.currency.plural
 	end
 end
+
+--- Spawns a certain amount of money.
+-- This function creates a money entity on a certain position and angle.
+-- @param pos a vector.
+-- @param amount a number.
+-- @param angle an angle.
+-- @return the entity that was created.
 
 function nut.currency.spawn(pos, amount, angle)
 	if (!pos) then
@@ -26,7 +57,7 @@ function nut.currency.spawn(pos, amount, angle)
 
 	local money = ents.Create("nut_money")
 	money:SetPos(pos)
-	-- double check for negative.
+	-- Double check for negative.
 	money:setNetVar("amount", math.Round(math.abs(amount)))
 	money:SetAngles(angle or Angle(0, 0, 0))
 	money:Spawn()

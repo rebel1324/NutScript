@@ -1,0 +1,360 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+<head>
+    <title>NutScript Documentation</title>
+    <link rel="stylesheet" href="../ldoc_pale.css" type="text/css" />
+</head>
+<body>
+
+<div id="container">
+
+<div id="product">
+	<div id="product_logo"></div>
+	<div id="product_name"><big><b></b></big></div>
+	<div id="product_description"></div>
+</div> <!-- id="product" -->
+
+
+<div id="main">
+
+
+<!-- Menu -->
+
+<div id="navigation">
+<br/>
+<h1>NutScript</h1>
+
+<ul>
+  <li><a href="../index.html">Index</a></li>
+</ul>
+
+<h2>Contents</h2>
+<ul>
+<li><a href="#Functions">Functions</a></li>
+</ul>
+
+
+<h2>Libraries</h2>
+<ul class="nowrap">
+  <li><a href="../libraries/nut.bar.html">nut.bar</a></li>
+  <li><a href="../libraries/nut.hud.html">nut.hud</a></li>
+  <li><a href="../libraries/nut.markup.html">nut.markup</a></li>
+  <li><a href="../libraries/nut.anim.html">nut.anim</a></li>
+  <li><a href="../libraries/nut.attribs.html">nut.attribs</a></li>
+  <li><a href="../libraries/nut.chat.html">nut.chat</a></li>
+  <li><a href="../libraries/nut.class.html">nut.class</a></li>
+  <li><strong>nut.command</strong></li>
+  <li><a href="../libraries/nut.currency.html">nut.currency</a></li>
+  <li><a href="../libraries/nut.date.html">nut.date</a></li>
+  <li><a href="../libraries/nut.faction.html">nut.faction</a></li>
+  <li><a href="../libraries/nut.flag.html">nut.flag</a></li>
+  <li><a href="../libraries/nut.item.html">nut.item</a></li>
+  <li><a href="../libraries/nut.log.html">nut.log</a></li>
+  <li><a href="../libraries/nut.plugin.html">nut.plugin</a></li>
+  <li><a href="../libraries/nut.db.html">nut.db</a></li>
+</ul>
+
+</div>
+
+<div id="content">
+
+<h1>Module <code>nut.command</code></h1>
+<p>This module contains all the functions that handle commands in NutScript.</p>
+<p>
+
+
+<p>You can easily add a command to NutScript by using the nut.command.add function.
+In order to do that, you must name the command and create a table with certain
+fields that enable you to set a function that runs once you evoke the command.</p>
+
+<p><b>The table should have the fields as follows:</b></p>
+
+
+<ul>
+<li><b><code>syntax</code></b></br>
+(default: "[none]" | optional: yes) </br>
+This allows you to setup a syntax for the command.
+</li>
+<li><b><code>adminOnly</code></b></br>
+(default: "false" | optional: yes) </br>
+This allows you to restrict the command to administrators only.
+</li>
+<li><b><code>superAdminOnly</code></b></br>
+(default: "false" | optional: yes) </br>
+This allows you to restrict the command to superadministrators only.
+</li>
+<li><b><code>group</code></b></br>
+(default: nil | optional: yes) </br>
+This allows you to restrict the command to one or more user groups. This can
+either be a table or a string.
+</li>
+<li><b><code>onCheckAccess</code></b></br>
+(default: nil | optional: yes) </br>
+This allows you to restrict the command with a function.
+</li>
+<li><b><code>onRun</code></b></br>
+(default: nil | optional: no) </br>
+This field contains the function that is executed once the command is evoked.
+This function has <code>client</code> and <code>arguments</code> as arguments.
+</li>
+<li><b><code>alias</code></b></br>
+(default: nil | optional: yes) </br>
+This allows you to set alias to your command. This can either be one (a string) or
+more (a table).
+</li>
+</ul>
+
+</p>
+
+
+<h2><a href="#Functions">Functions</a></h2>
+<table class="function_list">
+	<tr>
+	<td class="name" nowrap><a href="#nut.command.add">nut.command.add(command, data)</a></td>
+	<td class="summary">Adds a new command to the list of commands.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#nut.command.hasAccess">nut.command.hasAccess(client, command)</a></td>
+	<td class="summary">Returns whether or not a player is allowed to run a certain command.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#nut.command.extractArgs">nut.command.extractArgs(text)</a></td>
+	<td class="summary">Gets a table of arguments from a string.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#nut.command.findPlayer">nut.command.findPlayer(client, name)</a></td>
+	<td class="summary">Finds a player or gives an error notification.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#nut.command.run">nut.command.run(client, command, arguments)</a></td>
+	<td class="summary">Forces a player to run a command.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#nut.command.parse">nut.command.parse(client, text, realCommand, arguments)</a></td>
+	<td class="summary">Add a function to parse a regular chat string.</td>
+	</tr>
+</table>
+
+<br/>
+<br/>
+
+
+    <h2 class="section-header "><a name="Functions"></a>Functions</h2>
+
+    <dl class="function">
+    <dt>
+    <a name = "nut.command.add"></a>
+    <strong>nut.command.add(command, data)</strong>
+    </dt>
+    <dd>
+    Adds a new command to the list of commands.
+ This function adds the command and its data to <code>nut.command.list</code>.
+
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">command</span>
+            <span class="types"><a class="type" href="https://www.lua.org/manual/5.2/manual.html#6.4">string</a></span>
+         the command.
+        </li>
+        <li><span class="parameter">data</span>
+         a table.
+        </li>
+    </ul>
+
+    <h3>Returns:</h3>
+    <ol>
+
+        Error if onRun field is nil or nothing.
+    </ol>
+
+
+
+    <h3>Usage:</h3>
+    <ul>
+        <pre class="example">nut.command.add(<span class="string">"toggleraise"</span>, {
+	onRun = <span class="keyword">function</span>(client, arguments)
+		<span class="keyword">if</span> ((client.nutNextToggle <span class="keyword">or</span> <span class="number">0</span>) &lt; CurTime()) <span class="keyword">then</span>
+			client:toggleWepRaised()
+			client.nutNextToggle = CurTime() + <span class="number">0.5</span>
+		<span class="keyword">end</span>
+	<span class="keyword">end</span>
+})</pre>
+    </ul>
+
+</dd>
+    <dt>
+    <a name = "nut.command.hasAccess"></a>
+    <strong>nut.command.hasAccess(client, command)</strong>
+    </dt>
+    <dd>
+    Returns whether or not a player is allowed to run a certain command.
+ Returns true if the player is able to use a certain command and false otherwise.
+
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">client</span>
+            <span class="types"><span class="type">player</span></span>
+         a player.
+        </li>
+        <li><span class="parameter">command</span>
+            <span class="types"><a class="type" href="https://www.lua.org/manual/5.2/manual.html#6.4">string</a></span>
+         the command.
+        </li>
+    </ul>
+
+    <h3>Returns:</h3>
+    <ol>
+
+        a boolean value.
+    </ol>
+
+
+
+
+</dd>
+    <dt>
+    <a name = "nut.command.extractArgs"></a>
+    <strong>nut.command.extractArgs(text)</strong>
+    </dt>
+    <dd>
+    Gets a table of arguments from a string.
+ Extracts the arguments from a command.
+
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">text</span>
+            <span class="types"><a class="type" href="https://www.lua.org/manual/5.2/manual.html#6.4">string</a></span>
+         containing the arguments to be extracted.
+        </li>
+    </ul>
+
+    <h3>Returns:</h3>
+    <ol>
+
+        arguments a table.
+    </ol>
+
+
+
+
+</dd>
+    <dt>
+    <a name = "nut.command.findPlayer"></a>
+    <strong>nut.command.findPlayer(client, name)</strong>
+    </dt>
+    <dd>
+    Finds a player or gives an error notification.
+ Finds the given player.
+
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">client</span>
+            <span class="types"><span class="type">player</span></span>
+         a player.
+        </li>
+        <li><span class="parameter">name</span>
+            <span class="types"><a class="type" href="https://www.lua.org/manual/5.2/manual.html#6.4">string</a></span>
+         the player's name.
+        </li>
+    </ul>
+
+    <h3>Returns:</h3>
+    <ol>
+
+        target an entity.
+    </ol>
+
+
+
+
+</dd>
+    <dt>
+    <a name = "nut.command.run"></a>
+    <strong>nut.command.run(client, command, arguments)</strong>
+    </dt>
+    <dd>
+    Forces a player to run a command.
+ The functions runs a specific command.
+
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">client</span>
+            <span class="types"><span class="type">player</span></span>
+         a player.
+        </li>
+        <li><span class="parameter">command</span>
+            <span class="types"><a class="type" href="https://www.lua.org/manual/5.2/manual.html#6.4">string</a></span>
+         the command.
+        </li>
+        <li><span class="parameter">arguments</span>
+         a table.
+        </li>
+    </ul>
+
+    <h3>Returns:</h3>
+    <ol>
+
+        nothing.
+    </ol>
+
+
+
+
+</dd>
+    <dt>
+    <a name = "nut.command.parse"></a>
+    <strong>nut.command.parse(client, text, realCommand, arguments)</strong>
+    </dt>
+    <dd>
+    Add a function to parse a regular chat string.
+ The function returns true or false.
+
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">client</span>
+            <span class="types"><span class="type">player</span></span>
+         a player.
+        </li>
+        <li><span class="parameter">text</span>
+            <span class="types"><a class="type" href="https://www.lua.org/manual/5.2/manual.html#6.4">string</a></span>
+         a command.
+        </li>
+        <li><span class="parameter">realCommand</span>
+            <span class="types"><a class="type" href="https://www.lua.org/manual/5.2/manual.html#6.4">string</a></span>
+         the command to run.
+        </li>
+        <li><span class="parameter">arguments</span>
+         a table.
+        </li>
+    </ul>
+
+    <h3>Returns:</h3>
+    <ol>
+
+        a boolean value.
+    </ol>
+
+
+
+
+</dd>
+</dl>
+
+
+</div> <!-- id="content" -->
+</div> <!-- id="main" -->
+<div id="about">
+<i>generated by <a href="http://github.com/stevedonovan/LDoc">LDoc 1.4.6</a></i>
+<i style="float:right;">Last updated 2018-10-08 22:54:40 </i>
+</div> <!-- id="about" -->
+</div> <!-- id="container" -->
+</body>
+</html>

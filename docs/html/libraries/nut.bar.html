@@ -1,0 +1,280 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+<head>
+    <title>NutScript Documentation</title>
+    <link rel="stylesheet" href="../ldoc_pale.css" type="text/css" />
+</head>
+<body>
+
+<div id="container">
+
+<div id="product">
+	<div id="product_logo"></div>
+	<div id="product_name"><big><b></b></big></div>
+	<div id="product_description"></div>
+</div> <!-- id="product" -->
+
+
+<div id="main">
+
+
+<!-- Menu -->
+
+<div id="navigation">
+<br/>
+<h1>NutScript</h1>
+
+<ul>
+  <li><a href="../index.html">Index</a></li>
+</ul>
+
+<h2>Contents</h2>
+<ul>
+<li><a href="#Functions">Functions</a></li>
+</ul>
+
+
+<h2>Libraries</h2>
+<ul class="nowrap">
+  <li><strong>nut.bar</strong></li>
+  <li><a href="../libraries/nut.hud.html">nut.hud</a></li>
+  <li><a href="../libraries/nut.markup.html">nut.markup</a></li>
+  <li><a href="../libraries/nut.anim.html">nut.anim</a></li>
+  <li><a href="../libraries/nut.attribs.html">nut.attribs</a></li>
+  <li><a href="../libraries/nut.chat.html">nut.chat</a></li>
+  <li><a href="../libraries/nut.class.html">nut.class</a></li>
+  <li><a href="../libraries/nut.command.html">nut.command</a></li>
+  <li><a href="../libraries/nut.currency.html">nut.currency</a></li>
+  <li><a href="../libraries/nut.date.html">nut.date</a></li>
+  <li><a href="../libraries/nut.faction.html">nut.faction</a></li>
+  <li><a href="../libraries/nut.flag.html">nut.flag</a></li>
+  <li><a href="../libraries/nut.item.html">nut.item</a></li>
+  <li><a href="../libraries/nut.log.html">nut.log</a></li>
+  <li><a href="../libraries/nut.plugin.html">nut.plugin</a></li>
+  <li><a href="../libraries/nut.db.html">nut.db</a></li>
+</ul>
+
+</div>
+
+<div id="content">
+
+<h1>Module <code>nut.bar</code></h1>
+<p>This module contains all the functions that handle bars.</p>
+<p>This library is CLIENTSIDE library that allows you register and manage new bars
+on top left corner.</p>
+
+
+<h2><a href="#Functions">Functions</a></h2>
+<table class="function_list">
+	<tr>
+	<td class="name" nowrap><a href="#nut.bar.get">nut.bar.get(identifier)</a></td>
+	<td class="summary">This function returns the bar with the specified identifier.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#nut.bar.add">nut.bar.add(getValue, color, priority, identifier)</a></td>
+	<td class="summary">Registers a new bar.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#nut.bar.remove">nut.bar.remove(identifier)</a></td>
+	<td class="summary">Removes a bar with the specified identifier.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#nut.bar.draw">nut.bar.draw(x, y, w, h, value, color)</a></td>
+	<td class="summary">Draws a bar on the screen.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#nut.bar.drawAction">nut.bar.drawAction()</a></td>
+	<td class="summary">Draw action progress bar.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#nut.bar.drawAll">nut.bar.drawAll()</a></td>
+	<td class="summary">Draws all bars.</td>
+	</tr>
+</table>
+
+<br/>
+<br/>
+
+
+    <h2 class="section-header "><a name="Functions"></a>Functions</h2>
+
+    <dl class="function">
+    <dt>
+    <a name = "nut.bar.get"></a>
+    <strong>nut.bar.get(identifier)</strong>
+    </dt>
+    <dd>
+    This function returns the bar with the specified identifier.
+
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">identifier</span>
+            <span class="types"><a class="type" href="https://www.lua.org/manual/5.2/manual.html#6.4">string</a></span>
+         the bar identifier.
+        </li>
+    </ul>
+
+    <h3>Returns:</h3>
+    <ol>
+
+        the bar with the specified identifier.
+    </ol>
+
+
+
+
+</dd>
+    <dt>
+    <a name = "nut.bar.add"></a>
+    <strong>nut.bar.add(getValue, color, priority, identifier)</strong>
+    </dt>
+    <dd>
+    Registers a new bar.
+
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">getValue</span>
+         a number.
+        </li>
+        <li><span class="parameter">color</span>
+         a vector.
+        </li>
+        <li><span class="parameter">priority</span>
+         a number.
+        </li>
+        <li><span class="parameter">identifier</span>
+            <span class="types"><a class="type" href="https://www.lua.org/manual/5.2/manual.html#6.4">string</a></span>
+         the bar identifier.
+        </li>
+    </ul>
+
+    <h3>Returns:</h3>
+    <ol>
+
+        the priority.
+    </ol>
+
+
+
+
+</dd>
+    <dt>
+    <a name = "nut.bar.remove"></a>
+    <strong>nut.bar.remove(identifier)</strong>
+    </dt>
+    <dd>
+    Removes a bar with the specified identifier.
+
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">identifier</span>
+            <span class="types"><a class="type" href="https://www.lua.org/manual/5.2/manual.html#6.4">string</a></span>
+         the bar identifier.
+        </li>
+    </ul>
+
+    <h3>Returns:</h3>
+    <ol>
+
+        nothing.
+    </ol>
+
+
+
+
+</dd>
+    <dt>
+    <a name = "nut.bar.draw"></a>
+    <strong>nut.bar.draw(x, y, w, h, value, color)</strong>
+    </dt>
+    <dd>
+    Draws a bar on the screen.
+
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">x</span>
+         a number.
+        </li>
+        <li><span class="parameter">y</span>
+         a number.
+        </li>
+        <li><span class="parameter">w</span>
+         a number.
+        </li>
+        <li><span class="parameter">h</span>
+         a number.
+        </li>
+        <li><span class="parameter">value</span>
+         a number.
+        </li>
+        <li><span class="parameter">color</span>
+         a vector.
+        </li>
+    </ul>
+
+    <h3>Returns:</h3>
+    <ol>
+
+        nothing.
+    </ol>
+
+
+
+
+</dd>
+    <dt>
+    <a name = "nut.bar.drawAction"></a>
+    <strong>nut.bar.drawAction()</strong>
+    </dt>
+    <dd>
+    Draw action progress bar.
+
+
+
+    <h3>Returns:</h3>
+    <ol>
+
+        nothing.
+    </ol>
+
+
+
+
+</dd>
+    <dt>
+    <a name = "nut.bar.drawAll"></a>
+    <strong>nut.bar.drawAll()</strong>
+    </dt>
+    <dd>
+    Draws all bars.
+
+
+
+    <h3>Returns:</h3>
+    <ol>
+
+        nothing.
+    </ol>
+
+
+
+
+</dd>
+</dl>
+
+
+</div> <!-- id="content" -->
+</div> <!-- id="main" -->
+<div id="about">
+<i>generated by <a href="http://github.com/stevedonovan/LDoc">LDoc 1.4.6</a></i>
+<i style="float:right;">Last updated 2018-10-08 22:54:40 </i>
+</div> <!-- id="about" -->
+</div> <!-- id="container" -->
+</body>
+</html>

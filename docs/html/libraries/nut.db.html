@@ -1,0 +1,277 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+<head>
+    <title>NutScript Documentation</title>
+    <link rel="stylesheet" href="../ldoc_pale.css" type="text/css" />
+</head>
+<body>
+
+<div id="container">
+
+<div id="product">
+	<div id="product_logo"></div>
+	<div id="product_name"><big><b></b></big></div>
+	<div id="product_description"></div>
+</div> <!-- id="product" -->
+
+
+<div id="main">
+
+
+<!-- Menu -->
+
+<div id="navigation">
+<br/>
+<h1>NutScript</h1>
+
+<ul>
+  <li><a href="../index.html">Index</a></li>
+</ul>
+
+<h2>Contents</h2>
+<ul>
+<li><a href="#Functions">Functions</a></li>
+</ul>
+
+
+<h2>Libraries</h2>
+<ul class="nowrap">
+  <li><a href="../libraries/nut.bar.html">nut.bar</a></li>
+  <li><a href="../libraries/nut.hud.html">nut.hud</a></li>
+  <li><a href="../libraries/nut.markup.html">nut.markup</a></li>
+  <li><a href="../libraries/nut.anim.html">nut.anim</a></li>
+  <li><a href="../libraries/nut.attribs.html">nut.attribs</a></li>
+  <li><a href="../libraries/nut.chat.html">nut.chat</a></li>
+  <li><a href="../libraries/nut.class.html">nut.class</a></li>
+  <li><a href="../libraries/nut.command.html">nut.command</a></li>
+  <li><a href="../libraries/nut.currency.html">nut.currency</a></li>
+  <li><a href="../libraries/nut.date.html">nut.date</a></li>
+  <li><a href="../libraries/nut.faction.html">nut.faction</a></li>
+  <li><a href="../libraries/nut.flag.html">nut.flag</a></li>
+  <li><a href="../libraries/nut.item.html">nut.item</a></li>
+  <li><a href="../libraries/nut.log.html">nut.log</a></li>
+  <li><a href="../libraries/nut.plugin.html">nut.plugin</a></li>
+  <li><strong>nut.db</strong></li>
+</ul>
+
+</div>
+
+<div id="content">
+
+<h1>Module <code>nut.db</code></h1>
+<p><b style="color: blue">ALERT: CAREFULL USING THIS LIBRARY.</b></br></br>
+This module contains all the functions that handle database requests.</p>
+<p>NutScript allows you to use one of three different database modules: </br>
+<code>sqlite</code>, <code>mysqloo</code> or <code>tmysql4</code>.</p>
+
+<p>You can add your database details to <code>nutscript/gamemode/config/sv_database.lua</code>.</p>
+
+
+<h2><a href="#Functions">Functions</a></h2>
+<table class="function_list">
+	<tr>
+	<td class="name" nowrap><a href="#nut.db.connect">nut.db.connect(callback)</a></td>
+	<td class="summary">Connects to a database.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#nut.db.wipeTables">nut.db.wipeTables()</a></td>
+	<td class="summary">Wipes out all data from the NutScript database.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#nut.db.loadTables">nut.db.loadTables()</a></td>
+	<td class="summary">Creates default tables.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#nut.db.convertDataType">nut.db.convertDataType(value)</a></td>
+	<td class="summary">Converts data to certain type which is more suitable to save in SQL Database.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#nut.db.insertTable">nut.db.insertTable(value, callback, dbTable)</a></td>
+	<td class="summary">Inserts a row in the certain table with the callback.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#nut.db.updateTable">nut.db.updateTable(value, callback, dbTable, condition)</a></td>
+	<td class="summary">Updates a row in the certain table with the callback.</td>
+	</tr>
+</table>
+
+<br/>
+<br/>
+
+
+    <h2 class="section-header "><a name="Functions"></a>Functions</h2>
+
+    <dl class="function">
+    <dt>
+    <a name = "nut.db.connect"></a>
+    <strong>nut.db.connect(callback)</strong>
+    </dt>
+    <dd>
+    Connects to a database.
+ This function establishes a connection to a database.
+
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">callback</span>
+         a function.
+        </li>
+    </ul>
+
+    <h3>Returns:</h3>
+    <ol>
+
+        nothing.
+    </ol>
+
+
+
+
+</dd>
+    <dt>
+    <a name = "nut.db.wipeTables"></a>
+    <strong>nut.db.wipeTables()</strong>
+    </dt>
+    <dd>
+    Wipes out all data from the NutScript database.
+
+
+
+    <h3>Returns:</h3>
+    <ol>
+
+        nothing.
+    </ol>
+
+
+
+
+</dd>
+    <dt>
+    <a name = "nut.db.loadTables"></a>
+    <strong>nut.db.loadTables()</strong>
+    </dt>
+    <dd>
+    Creates default tables.
+
+
+
+    <h3>Returns:</h3>
+    <ol>
+
+        nothing.
+    </ol>
+
+
+
+
+</dd>
+    <dt>
+    <a name = "nut.db.convertDataType"></a>
+    <strong>nut.db.convertDataType(value)</strong>
+    </dt>
+    <dd>
+    Converts data to certain type which is more suitable to save in SQL Database.
+
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">value</span>
+         a generic value.
+        </li>
+    </ul>
+
+    <h3>Returns:</h3>
+    <ol>
+
+        a string or generic value.
+    </ol>
+
+
+
+
+</dd>
+    <dt>
+    <a name = "nut.db.insertTable"></a>
+    <strong>nut.db.insertTable(value, callback, dbTable)</strong>
+    </dt>
+    <dd>
+    Inserts a row in the certain table with the callback.  This is the function
+ that you're going to use mostly.
+
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">value</span>
+         a table.
+        </li>
+        <li><span class="parameter">callback</span>
+         a function.
+        </li>
+        <li><span class="parameter">dbTable</span>
+            <span class="types"><a class="type" href="https://www.lua.org/manual/5.2/manual.html#6.4">string</a></span>
+         the name of the table that is going to be used.
+        </li>
+    </ul>
+
+    <h3>Returns:</h3>
+    <ol>
+
+        nothing.
+    </ol>
+
+
+
+
+</dd>
+    <dt>
+    <a name = "nut.db.updateTable"></a>
+    <strong>nut.db.updateTable(value, callback, dbTable, condition)</strong>
+    </dt>
+    <dd>
+    Updates a row in the certain table with the callback.  This is the function
+ that you're going to use mostly.
+
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">value</span>
+         a table.
+        </li>
+        <li><span class="parameter">callback</span>
+         a function.
+        </li>
+        <li><span class="parameter">dbTable</span>
+            <span class="types"><a class="type" href="https://www.lua.org/manual/5.2/manual.html#6.4">string</a></span>
+         the name of the table that is going to be used.
+        </li>
+        <li><span class="parameter">condition</span>
+            <span class="types"><a class="type" href="https://www.lua.org/manual/5.2/manual.html#6.4">string</a></span>
+         the condition that is part of the query.
+        </li>
+    </ul>
+
+    <h3>Returns:</h3>
+    <ol>
+
+        nothing.
+    </ol>
+
+
+
+
+</dd>
+</dl>
+
+
+</div> <!-- id="content" -->
+</div> <!-- id="main" -->
+<div id="about">
+<i>generated by <a href="http://github.com/stevedonovan/LDoc">LDoc 1.4.6</a></i>
+<i style="float:right;">Last updated 2018-10-08 22:54:40 </i>
+</div> <!-- id="about" -->
+</div> <!-- id="container" -->
+</body>
+</html>

@@ -1,0 +1,218 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+<head>
+    <title>NutScript Documentation</title>
+    <link rel="stylesheet" href="../ldoc_pale.css" type="text/css" />
+</head>
+<body>
+
+<div id="container">
+
+<div id="product">
+	<div id="product_logo"></div>
+	<div id="product_name"><big><b></b></big></div>
+	<div id="product_description"></div>
+</div> <!-- id="product" -->
+
+
+<div id="main">
+
+
+<!-- Menu -->
+
+<div id="navigation">
+<br/>
+<h1>NutScript</h1>
+
+<ul>
+  <li><a href="../index.html">Index</a></li>
+</ul>
+
+<h2>Contents</h2>
+<ul>
+<li><a href="#Functions">Functions</a></li>
+</ul>
+
+
+<h2>Libraries</h2>
+<ul class="nowrap">
+  <li><a href="../libraries/nut.bar.html">nut.bar</a></li>
+  <li><a href="../libraries/nut.hud.html">nut.hud</a></li>
+  <li><a href="../libraries/nut.markup.html">nut.markup</a></li>
+  <li><a href="../libraries/nut.anim.html">nut.anim</a></li>
+  <li><a href="../libraries/nut.attribs.html">nut.attribs</a></li>
+  <li><a href="../libraries/nut.chat.html">nut.chat</a></li>
+  <li><a href="../libraries/nut.class.html">nut.class</a></li>
+  <li><a href="../libraries/nut.command.html">nut.command</a></li>
+  <li><a href="../libraries/nut.currency.html">nut.currency</a></li>
+  <li><a href="../libraries/nut.date.html">nut.date</a></li>
+  <li><strong>nut.faction</strong></li>
+  <li><a href="../libraries/nut.flag.html">nut.flag</a></li>
+  <li><a href="../libraries/nut.item.html">nut.item</a></li>
+  <li><a href="../libraries/nut.log.html">nut.log</a></li>
+  <li><a href="../libraries/nut.plugin.html">nut.plugin</a></li>
+  <li><a href="../libraries/nut.db.html">nut.db</a></li>
+</ul>
+
+</div>
+
+<div id="content">
+
+<h1>Module <code>nut.faction</code></h1>
+<p>This module contains all the functions that handle factions.</p>
+<p>All functions that handle factions are inside this module, nut.faction. However,
+each faction's data (everything you set on each faction file) is stored in a table
+which is then stored in two global tables:
+<code>nut.faction.teams</code> and <code>nut.faction.indices</code>.</p>
+
+<p>Each function inside this module uses one or both of those tables.</p>
+
+
+<h2><a href="#Functions">Functions</a></h2>
+<table class="function_list">
+	<tr>
+	<td class="name" nowrap><a href="#nut.faction.loadFromDir">nut.faction.loadFromDir(directory)</a></td>
+	<td class="summary">Loads data from the factions directory.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#nut.faction.get">nut.faction.get(identifier)</a></td>
+	<td class="summary">Gets the faction with the given identifier.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#nut.faction.getIndex">nut.faction.getIndex(uniqueID)</a></td>
+	<td class="summary">Returns an indice from the factions table.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#nut.faction.hasWhitelist">nut.faction.hasWhitelist(faction)</a></td>
+	<td class="summary">Checks if faction requires whitelist.</td>
+	</tr>
+</table>
+
+<br/>
+<br/>
+
+
+    <h2 class="section-header "><a name="Functions"></a>Functions</h2>
+
+    <dl class="function">
+    <dt>
+    <a name = "nut.faction.loadFromDir"></a>
+    <strong>nut.faction.loadFromDir(directory)</strong>
+    </dt>
+    <dd>
+    Loads data from the factions directory.
+ Loads all factions' data from the 'factions' directory inside your schema folder.
+
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">directory</span>
+            <span class="types"><a class="type" href="https://www.lua.org/manual/5.2/manual.html#6.4">string</a></span>
+         the path to the factions directory.
+        </li>
+    </ul>
+
+    <h3>Returns:</h3>
+    <ol>
+
+        nothing.
+    </ol>
+
+
+
+
+</dd>
+    <dt>
+    <a name = "nut.faction.get"></a>
+    <strong>nut.faction.get(identifier)</strong>
+    </dt>
+    <dd>
+    Gets the faction with the given identifier.
+ The function returns the table of a specific faction. This table is inside nut.faction.indices.
+
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">identifier</span>
+         a number or string.
+        </li>
+    </ul>
+
+    <h3>Returns:</h3>
+    <ol>
+
+        the faction table.
+    </ol>
+
+
+
+
+</dd>
+    <dt>
+    <a name = "nut.faction.getIndex"></a>
+    <strong>nut.faction.getIndex(uniqueID)</strong>
+    </dt>
+    <dd>
+    Returns an indice from the factions table.
+ The function returns the indice from the nut.faction.indices, when the uniqueID matches
+ the function`s paramenter.
+
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">uniqueID</span>
+         a number.
+        </li>
+    </ul>
+
+    <h3>Returns:</h3>
+    <ol>
+
+        the indice, a number.
+    </ol>
+
+
+
+
+</dd>
+    <dt>
+    <a name = "nut.faction.hasWhitelist"></a>
+    <strong>nut.faction.hasWhitelist(faction)</strong>
+    </dt>
+    <dd>
+    Checks if faction requires whitelist.
+ If the specified faction exists, the function checks whether FACTION.isDefault
+ is true or false.
+
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">faction</span>
+         indice, a number.
+        </li>
+    </ul>
+
+    <h3>Returns:</h3>
+    <ol>
+
+        a boolean value.
+    </ol>
+
+
+
+
+</dd>
+</dl>
+
+
+</div> <!-- id="content" -->
+</div> <!-- id="main" -->
+<div id="about">
+<i>generated by <a href="http://github.com/stevedonovan/LDoc">LDoc 1.4.6</a></i>
+<i style="float:right;">Last updated 2018-10-08 22:54:40 </i>
+</div> <!-- id="about" -->
+</div> <!-- id="container" -->
+</body>
+</html>

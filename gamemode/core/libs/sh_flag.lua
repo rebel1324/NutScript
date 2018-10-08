@@ -1,7 +1,52 @@
+--[[--
+This module contains all the functions that handle flags.
+
+Flags allow you to restrict certain features to all those who have access to that
+specific flag. For example, you can make specific items available for purchase to
+only those who have a specific flag.
+
+NutScript already has default flags:
+
+<ul>
+<li><b>
+p</b> - grants access to the Physgun;
+</li>
+<li><b>t
+</b> - grants access to the Toolgun;
+</li>
+<li><b>c
+</b> - grants access to spawn chairs;
+</li>
+<li><b>C
+</b> - grants access to spawn vehicles;
+</li>
+<li><b>r
+</b> - grants access to spawn ragdolls;
+</li>
+<li><b>e
+</b> - grants access to spawn props;
+</li>
+<li><b>n
+</b> - grants access to spawn NPCs.
+</li>
+</ul>
+
+]]
+-- @module nut.flag
+
 nut.flag = nut.flag or {}
 nut.flag.list = nut.flag.list or {}
 
--- Adds a flag that does something when set.
+
+--- Adds a flag to the flags module.
+-- The function adds the flag, description and the callback function if there is
+-- one to the nut.flag module.
+-- @string flag the flag prefix.
+-- @string desc the flag's description.
+-- @param callback a function.
+-- @return nothing.
+-- @usage nut.flag.add("m", "access to a restricted business menu tab.")
+
 function nut.flag.add(flag, desc, callback)
 	-- Add the flag to a list, storing the description and callback (if there is one).
 	nut.flag.list[flag] = {desc = desc, callback = callback}

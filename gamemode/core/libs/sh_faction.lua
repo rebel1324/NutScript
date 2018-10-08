@@ -1,3 +1,16 @@
+--[[-- 
+This module contains all the functions that handle factions.
+
+All functions that handle factions are inside this module, nut.faction. However,
+each faction's data (everything you set on each faction file) is stored in a table 
+which is then stored in two global tables:
+`nut.faction.teams` and `nut.faction.indices`.
+
+Each function inside this module uses one or both of those tables.
+]]
+-- @module nut.faction
+
+
 nut.faction = nut.faction or {}
 nut.faction.teams = nut.faction.teams or {}
 nut.faction.indices = nut.faction.indices or {}
@@ -26,6 +39,11 @@ local CITIZEN_MODELS = {
 	"models/humans/group02/female_06.mdl",
 	"models/humans/group01/female_04.mdl"
 }
+
+--- Loads data from the factions directory.
+-- Loads all factions' data from the 'factions' directory inside your schema folder.
+-- @string directory the path to the factions directory.
+-- @return nothing.
 
 function nut.faction.loadFromDir(directory)
 	for k, v in ipairs(file.Find(directory.."/*.lua", "LUA")) do
@@ -72,9 +90,20 @@ function nut.faction.loadFromDir(directory)
 	end
 end
 
+--- Gets the faction with the given identifier.
+-- The function returns the table of a specific faction. This table is inside nut.faction.indices.
+-- @param identifier a number or string.
+-- @return the faction table.
+
 function nut.faction.get(identifier)
 	return nut.faction.indices[identifier] or nut.faction.teams[identifier]
 end
+
+--- Returns an indice from the factions table.
+-- The function returns the indice from the nut.faction.indices, when the uniqueID matches
+-- the function`s paramenter.
+-- @param uniqueID a number.
+-- @return the indice, a number.
 
 function nut.faction.getIndex(uniqueID)
 	for k, v in ipairs(nut.faction.indices) do
@@ -85,6 +114,13 @@ function nut.faction.getIndex(uniqueID)
 end
 
 if (CLIENT) then
+	
+	--- Checks if faction requires whitelist.
+	-- If the specified faction exists, the function checks whether FACTION.isDefault
+	-- is true or false.
+	-- @param faction indice, a number.
+	-- @return a boolean value.
+	
 	function nut.faction.hasWhitelist(faction)
 		local data = nut.faction.indices[faction]
 

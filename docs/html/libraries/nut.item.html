@@ -1,0 +1,491 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+<head>
+    <title>NutScript Documentation</title>
+    <link rel="stylesheet" href="../ldoc_pale.css" type="text/css" />
+</head>
+<body>
+
+<div id="container">
+
+<div id="product">
+	<div id="product_logo"></div>
+	<div id="product_name"><big><b></b></big></div>
+	<div id="product_description"></div>
+</div> <!-- id="product" -->
+
+
+<div id="main">
+
+
+<!-- Menu -->
+
+<div id="navigation">
+<br/>
+<h1>NutScript</h1>
+
+<ul>
+  <li><a href="../index.html">Index</a></li>
+</ul>
+
+<h2>Contents</h2>
+<ul>
+<li><a href="#Functions">Functions</a></li>
+</ul>
+
+
+<h2>Libraries</h2>
+<ul class="nowrap">
+  <li><a href="../libraries/nut.bar.html">nut.bar</a></li>
+  <li><a href="../libraries/nut.hud.html">nut.hud</a></li>
+  <li><a href="../libraries/nut.markup.html">nut.markup</a></li>
+  <li><a href="../libraries/nut.anim.html">nut.anim</a></li>
+  <li><a href="../libraries/nut.attribs.html">nut.attribs</a></li>
+  <li><a href="../libraries/nut.chat.html">nut.chat</a></li>
+  <li><a href="../libraries/nut.class.html">nut.class</a></li>
+  <li><a href="../libraries/nut.command.html">nut.command</a></li>
+  <li><a href="../libraries/nut.currency.html">nut.currency</a></li>
+  <li><a href="../libraries/nut.date.html">nut.date</a></li>
+  <li><a href="../libraries/nut.faction.html">nut.faction</a></li>
+  <li><a href="../libraries/nut.flag.html">nut.flag</a></li>
+  <li><strong>nut.item</strong></li>
+  <li><a href="../libraries/nut.log.html">nut.log</a></li>
+  <li><a href="../libraries/nut.plugin.html">nut.plugin</a></li>
+  <li><a href="../libraries/nut.db.html">nut.db</a></li>
+</ul>
+
+</div>
+
+<div id="content">
+
+<h1>Module <code>nut.item</code></h1>
+<p>This module contains all the functions that handle items.</p>
+<p>NutScript Framework allows you to create custom items that can be inserted/removed
+from a character's inventory. Usually these items are weapons, food, etc. In order
+to create a new item, create a new file in <code>items</code> directory under your schema
+folder. This file should be named as follows:
+</br>
+<code>sh_itemname.lua</code>
+</br></p>
+
+
+<h2><a href="#Functions">Functions</a></h2>
+<table class="function_list">
+	<tr>
+	<td class="name" nowrap><a href="#nut.item.registerInv">nut.item.registerInv(invType, w, h, isBag)</a></td>
+	<td class="summary">This function registers a new inventory type.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#nut.item.newInv">nut.item.newInv(owner, invType, callback)</a></td>
+	<td class="summary">This function creates a new inventory from a certain type.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#nut.item.get">nut.item.get(identifier)</a></td>
+	<td class="summary">Gets the item with the specific identifier.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#nut.item.getInv">nut.item.getInv(invID)</a></td>
+	<td class="summary">Gets the inventory with the specific identifier.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#nut.item.load">nut.item.load(path, baseID, isBaseItem)</a></td>
+	<td class="summary">Loads a specific item.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#nut.item.register">nut.item.register(uniqueID, baseID, isBaseItem, path, luaGenerated)</a></td>
+	<td class="summary">Registers a new item.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#nut.item.loadFromDir">nut.item.loadFromDir(directory)</a></td>
+	<td class="summary">Loads all item files from the specified directory.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#nut.item.new">nut.item.new(uniqueID, id)</a></td>
+	<td class="summary">Creates a new item with the specified uniqueID and id if it doesnt exist.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#nut.item.createInv">nut.item.createInv(w, h, id)</a></td>
+	<td class="summary">Creates an inventory with a specific width, height and ID.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#nut.item.restoreInv">nut.item.restoreInv(invID, w, h, callback)</a></td>
+	<td class="summary">Restores an inventory with a specific ID.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#nut.item.spawn">nut.item.spawn(uniqueID, position, callback, angles, data)</a></td>
+	<td class="summary">Instances and spawns a given item type.</td>
+	</tr>
+</table>
+
+<br/>
+<br/>
+
+
+    <h2 class="section-header "><a name="Functions"></a>Functions</h2>
+
+    <dl class="function">
+    <dt>
+    <a name = "nut.item.registerInv"></a>
+    <strong>nut.item.registerInv(invType, w, h, isBag)</strong>
+    </dt>
+    <dd>
+    This function registers a new inventory type.
+ Adds a new inventory type to <code>nut.item.inventoryTypes</code> table.
+
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">invType</span>
+            <span class="types"><a class="type" href="https://www.lua.org/manual/5.2/manual.html#6.4">string</a></span>
+         the inventory type.
+        </li>
+        <li><span class="parameter">w</span>
+         a number
+        </li>
+        <li><span class="parameter">h</span>
+         a number
+        </li>
+        <li><span class="parameter">isBag</span>
+         a boolean value
+        </li>
+    </ul>
+
+    <h3>Returns:</h3>
+    <ol>
+
+        the inventory type that was registered.
+    </ol>
+
+
+
+
+</dd>
+    <dt>
+    <a name = "nut.item.newInv"></a>
+    <strong>nut.item.newInv(owner, invType, callback)</strong>
+    </dt>
+    <dd>
+    This function creates a new inventory from a certain type.
+ Associates the new created inventory with a character (owner).
+
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">owner</span>
+         a number
+        </li>
+        <li><span class="parameter">invType</span>
+            <span class="types"><a class="type" href="https://www.lua.org/manual/5.2/manual.html#6.4">string</a></span>
+         the inventory type.
+        </li>
+        <li><span class="parameter">callback</span>
+         a function
+        </li>
+    </ul>
+
+    <h3>Returns:</h3>
+    <ol>
+
+        nothing.
+    </ol>
+
+
+
+
+</dd>
+    <dt>
+    <a name = "nut.item.get"></a>
+    <strong>nut.item.get(identifier)</strong>
+    </dt>
+    <dd>
+    Gets the item with the specific identifier.
+ Checks whether <code>nut.item.base</code> or <code>nut.item.list</code> tables have an item with the
+ given identifier.
+
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">identifier</span>
+         a number.
+        </li>
+    </ul>
+
+    <h3>Returns:</h3>
+    <ol>
+
+        the item or nil.
+    </ol>
+
+
+
+
+</dd>
+    <dt>
+    <a name = "nut.item.getInv"></a>
+    <strong>nut.item.getInv(invID)</strong>
+    </dt>
+    <dd>
+    Gets the inventory with the specific identifier.
+
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">invID</span>
+         a number.
+        </li>
+    </ul>
+
+    <h3>Returns:</h3>
+    <ol>
+
+        the inventory or nil.
+    </ol>
+
+
+
+
+</dd>
+    <dt>
+    <a name = "nut.item.load"></a>
+    <strong>nut.item.load(path, baseID, isBaseItem)</strong>
+    </dt>
+    <dd>
+    Loads a specific item.
+
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">path</span>
+            <span class="types"><a class="type" href="https://www.lua.org/manual/5.2/manual.html#6.4">string</a></span>
+         the items directory.
+        </li>
+        <li><span class="parameter">baseID</span>
+            <span class="types"><a class="type" href="https://www.lua.org/manual/5.2/manual.html#6.4">string</a></span>
+         the base item's ID.
+        </li>
+        <li><span class="parameter">isBaseItem</span>
+         a boolean value.
+        </li>
+    </ul>
+
+    <h3>Returns:</h3>
+    <ol>
+
+        error or nothing.
+    </ol>
+
+
+
+
+</dd>
+    <dt>
+    <a name = "nut.item.register"></a>
+    <strong>nut.item.register(uniqueID, baseID, isBaseItem, path, luaGenerated)</strong>
+    </dt>
+    <dd>
+    Registers a new item.
+
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">uniqueID</span>
+            <span class="types"><a class="type" href="https://www.lua.org/manual/5.2/manual.html#6.4">string</a></span>
+         the item's unique ID.
+        </li>
+        <li><span class="parameter">baseID</span>
+            <span class="types"><a class="type" href="https://www.lua.org/manual/5.2/manual.html#6.4">string</a></span>
+         the base item ID.
+        </li>
+        <li><span class="parameter">isBaseItem</span>
+         a boolean value.
+        </li>
+        <li><span class="parameter">path</span>
+            <span class="types"><a class="type" href="https://www.lua.org/manual/5.2/manual.html#6.4">string</a></span>
+         the items directory.
+        </li>
+        <li><span class="parameter">luaGenerated</span>
+         a boolean value.
+        </li>
+    </ul>
+
+    <h3>Returns:</h3>
+    <ol>
+
+        the generated item or an error.
+    </ol>
+
+
+
+
+</dd>
+    <dt>
+    <a name = "nut.item.loadFromDir"></a>
+    <strong>nut.item.loadFromDir(directory)</strong>
+    </dt>
+    <dd>
+    Loads all item files from the specified directory.
+
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">directory</span>
+            <span class="types"><a class="type" href="https://www.lua.org/manual/5.2/manual.html#6.4">string</a></span>
+         the path to the items directory.
+        </li>
+    </ul>
+
+    <h3>Returns:</h3>
+    <ol>
+
+        nothing.
+    </ol>
+
+
+
+
+</dd>
+    <dt>
+    <a name = "nut.item.new"></a>
+    <strong>nut.item.new(uniqueID, id)</strong>
+    </dt>
+    <dd>
+    Creates a new item with the specified uniqueID and id if it doesnt exist.
+
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">uniqueID</span>
+            <span class="types"><a class="type" href="https://www.lua.org/manual/5.2/manual.html#6.4">string</a></span>
+         the item's unique ID.
+        </li>
+        <li><span class="parameter">id</span>
+         a number.
+        </li>
+    </ul>
+
+    <h3>Returns:</h3>
+    <ol>
+
+        the item.
+    </ol>
+
+
+
+
+</dd>
+    <dt>
+    <a name = "nut.item.createInv"></a>
+    <strong>nut.item.createInv(w, h, id)</strong>
+    </dt>
+    <dd>
+    Creates an inventory with a specific width, height and ID.
+
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">w</span>
+         a number.
+        </li>
+        <li><span class="parameter">h</span>
+         a number.
+        </li>
+        <li><span class="parameter">id</span>
+         a number.
+        </li>
+    </ul>
+
+    <h3>Returns:</h3>
+    <ol>
+
+        the inventory that was created.
+    </ol>
+
+
+
+
+</dd>
+    <dt>
+    <a name = "nut.item.restoreInv"></a>
+    <strong>nut.item.restoreInv(invID, w, h, callback)</strong>
+    </dt>
+    <dd>
+    Restores an inventory with a specific ID.
+
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">invID</span>
+         a number.
+        </li>
+        <li><span class="parameter">w</span>
+         a number.
+        </li>
+        <li><span class="parameter">h</span>
+         a number.
+        </li>
+        <li><span class="parameter">callback</span>
+         a function.
+        </li>
+    </ul>
+
+    <h3>Returns:</h3>
+    <ol>
+
+        error or nothing.
+    </ol>
+
+
+
+
+</dd>
+    <dt>
+    <a name = "nut.item.spawn"></a>
+    <strong>nut.item.spawn(uniqueID, position, callback, angles, data)</strong>
+    </dt>
+    <dd>
+    Instances and spawns a given item type.
+
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">uniqueID</span>
+         the item's unique ID.
+        </li>
+        <li><span class="parameter">position</span>
+         a vector.
+        </li>
+        <li><span class="parameter">callback</span>
+         a function.
+        </li>
+        <li><span class="parameter">angles</span>
+         a vector.
+        </li>
+        <li><span class="parameter">data</span>
+         a table.
+        </li>
+    </ul>
+
+    <h3>Returns:</h3>
+    <ol>
+
+        nothing.
+    </ol>
+
+
+
+
+</dd>
+</dl>
+
+
+</div> <!-- id="content" -->
+</div> <!-- id="main" -->
+<div id="about">
+<i>generated by <a href="http://github.com/stevedonovan/LDoc">LDoc 1.4.6</a></i>
+<i style="float:right;">Last updated 2018-10-08 22:54:40 </i>
+</div> <!-- id="about" -->
+</div> <!-- id="container" -->
+</body>
+</html>

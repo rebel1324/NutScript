@@ -1,0 +1,331 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+<head>
+    <title>NutScript Documentation</title>
+    <link rel="stylesheet" href="../ldoc_pale.css" type="text/css" />
+</head>
+<body>
+
+<div id="container">
+
+<div id="product">
+	<div id="product_logo"></div>
+	<div id="product_name"><big><b></b></big></div>
+	<div id="product_description"></div>
+</div> <!-- id="product" -->
+
+
+<div id="main">
+
+
+<!-- Menu -->
+
+<div id="navigation">
+<br/>
+<h1>NutScript</h1>
+
+<ul>
+  <li><a href="../index.html">Index</a></li>
+</ul>
+
+<h2>Contents</h2>
+<ul>
+<li><a href="#Functions">Functions</a></li>
+</ul>
+
+
+<h2>Libraries</h2>
+<ul class="nowrap">
+  <li><a href="../libraries/nut.bar.html">nut.bar</a></li>
+  <li><a href="../libraries/nut.hud.html">nut.hud</a></li>
+  <li><a href="../libraries/nut.markup.html">nut.markup</a></li>
+  <li><a href="../libraries/nut.anim.html">nut.anim</a></li>
+  <li><a href="../libraries/nut.attribs.html">nut.attribs</a></li>
+  <li><a href="../libraries/nut.chat.html">nut.chat</a></li>
+  <li><a href="../libraries/nut.class.html">nut.class</a></li>
+  <li><a href="../libraries/nut.command.html">nut.command</a></li>
+  <li><a href="../libraries/nut.currency.html">nut.currency</a></li>
+  <li><a href="../libraries/nut.date.html">nut.date</a></li>
+  <li><a href="../libraries/nut.faction.html">nut.faction</a></li>
+  <li><a href="../libraries/nut.flag.html">nut.flag</a></li>
+  <li><a href="../libraries/nut.item.html">nut.item</a></li>
+  <li><a href="../libraries/nut.log.html">nut.log</a></li>
+  <li><strong>nut.plugin</strong></li>
+  <li><a href="../libraries/nut.db.html">nut.db</a></li>
+</ul>
+
+</div>
+
+<div id="content">
+
+<h1>Module <code>nut.plugin</code></h1>
+<p><b style="color: red">WARNING: THIS IS AN INTERNAL MODULE.</b></br></br>
+This module contains all the functions that handle plugins.</p>
+<p>The NutScript framework allows you to create and add plugins to it in order for
+each server to be different. You can add plugins by adding a file/folder in
+<code>plugins</code> directory under your schema folder.</p>
+
+<p>The NutScript folder also contains default plugins that can be disabled at anytime.</p>
+
+
+<h2><a href="#Functions">Functions</a></h2>
+<table class="function_list">
+	<tr>
+	<td class="name" nowrap><a href="#nut.plugin.load">nut.plugin.load(uniqueID, path, isSingleFile, variable)</a></td>
+	<td class="summary">This function loads a plugin with a certain ID.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#nut.plugin.getHook">nut.plugin.getHook(pluginName, hookName)</a></td>
+	<td class="summary">Gets a hook with the specified name.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#nut.plugin.loadEntities">nut.plugin.loadEntities(path)</a></td>
+	<td class="summary">Loads entities present in a specified path.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#nut.plugin.initialize">nut.plugin.initialize()</a></td>
+	<td class="summary">Loads all plugins from the plugins directory and initializes the schema folder.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#nut.plugin.loadFromDir">nut.plugin.loadFromDir(directory)</a></td>
+	<td class="summary">Loads all plugins from the plugins directory.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#nut.plugin.loadRepo">nut.plugin.loadRepo(url, name, callback, faultCallback)</a></td>
+	<td class="summary">Loads a repository with a specified name or URL.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#nut.plugin.download">nut.plugin.download(repo, plugin, callback)</a></td>
+	<td class="summary">Downloads plugins from a specified repository, already loaded.</td>
+	</tr>
+</table>
+
+<br/>
+<br/>
+
+
+    <h2 class="section-header "><a name="Functions"></a>Functions</h2>
+
+    <dl class="function">
+    <dt>
+    <a name = "nut.plugin.load"></a>
+    <strong>nut.plugin.load(uniqueID, path, isSingleFile, variable)</strong>
+    </dt>
+    <dd>
+    This function loads a plugin with a certain ID.
+ It also checks whether the plugin is a single file or a folder with
+ multiple files.
+
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">uniqueID</span>
+         a number.
+        </li>
+        <li><span class="parameter">path</span>
+            <span class="types"><a class="type" href="https://www.lua.org/manual/5.2/manual.html#6.4">string</a></span>
+         the plugins directory to load the plugins from.
+        </li>
+        <li><span class="parameter">isSingleFile</span>
+         a boolean value.
+        </li>
+        <li><span class="parameter">variable</span>
+            <span class="types"><a class="type" href="https://www.lua.org/manual/5.2/manual.html#6.4">string</a></span>
+         a string.
+        </li>
+    </ul>
+
+    <h3>Returns:</h3>
+    <ol>
+
+        nothing.
+    </ol>
+
+
+
+
+</dd>
+    <dt>
+    <a name = "nut.plugin.getHook"></a>
+    <strong>nut.plugin.getHook(pluginName, hookName)</strong>
+    </dt>
+    <dd>
+    Gets a hook with the specified name.
+
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">pluginName</span>
+            <span class="types"><a class="type" href="https://www.lua.org/manual/5.2/manual.html#6.4">string</a></span>
+         the name of the plugin.
+        </li>
+        <li><span class="parameter">hookName</span>
+            <span class="types"><a class="type" href="https://www.lua.org/manual/5.2/manual.html#6.4">string</a></span>
+         the name of the a hook.
+        </li>
+    </ul>
+
+    <h3>Returns:</h3>
+    <ol>
+
+        a function or nil.
+    </ol>
+
+
+
+
+</dd>
+    <dt>
+    <a name = "nut.plugin.loadEntities"></a>
+    <strong>nut.plugin.loadEntities(path)</strong>
+    </dt>
+    <dd>
+    Loads entities present in a specified path.
+
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">path</span>
+            <span class="types"><a class="type" href="https://www.lua.org/manual/5.2/manual.html#6.4">string</a></span>
+         the directory to load the entities from.
+        </li>
+    </ul>
+
+    <h3>Returns:</h3>
+    <ol>
+
+        a boolean value.
+    </ol>
+
+
+
+
+</dd>
+    <dt>
+    <a name = "nut.plugin.initialize"></a>
+    <strong>nut.plugin.initialize()</strong>
+    </dt>
+    <dd>
+    Loads all plugins from the plugins directory and initializes the schema folder.
+
+
+
+    <h3>Returns:</h3>
+    <ol>
+
+        nothing.
+    </ol>
+
+
+
+
+</dd>
+    <dt>
+    <a name = "nut.plugin.loadFromDir"></a>
+    <strong>nut.plugin.loadFromDir(directory)</strong>
+    </dt>
+    <dd>
+    Loads all plugins from the plugins directory.
+
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">directory</span>
+            <span class="types"><a class="type" href="https://www.lua.org/manual/5.2/manual.html#6.4">string</a></span>
+         directory to load the plugins from.
+        </li>
+    </ul>
+
+    <h3>Returns:</h3>
+    <ol>
+
+        nothing.
+    </ol>
+
+
+
+
+</dd>
+    <dt>
+    <a name = "nut.plugin.loadRepo"></a>
+    <strong>nut.plugin.loadRepo(url, name, callback, faultCallback)</strong>
+    </dt>
+    <dd>
+    Loads a repository with a specified name or URL.
+
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">url</span>
+            <span class="types"><a class="type" href="https://www.lua.org/manual/5.2/manual.html#6.4">string</a></span>
+         the repo's link.
+        </li>
+        <li><span class="parameter">name</span>
+            <span class="types"><a class="type" href="https://www.lua.org/manual/5.2/manual.html#6.4">string</a></span>
+         the repo's identifier.
+        </li>
+        <li><span class="parameter">callback</span>
+         a function.
+        </li>
+        <li><span class="parameter">faultCallback</span>
+         a function.
+        </li>
+    </ul>
+
+    <h3>Returns:</h3>
+    <ol>
+
+        Error if it fails.
+    </ol>
+
+
+
+
+</dd>
+    <dt>
+    <a name = "nut.plugin.download"></a>
+    <strong>nut.plugin.download(repo, plugin, callback)</strong>
+    </dt>
+    <dd>
+    Downloads plugins from a specified repository, already loaded.
+
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">repo</span>
+            <span class="types"><a class="type" href="https://www.lua.org/manual/5.2/manual.html#6.4">string</a></span>
+         the repo's identifier.
+        </li>
+        <li><span class="parameter">plugin</span>
+            <span class="types"><a class="type" href="https://www.lua.org/manual/5.2/manual.html#6.4">string</a></span>
+         the plugin's identifier.
+        </li>
+        <li><span class="parameter">callback</span>
+         a function.
+        </li>
+    </ul>
+
+    <h3>Returns:</h3>
+    <ol>
+
+        a boolean value if no success.
+    </ol>
+
+
+
+
+</dd>
+</dl>
+
+
+</div> <!-- id="content" -->
+</div> <!-- id="main" -->
+<div id="about">
+<i>generated by <a href="http://github.com/stevedonovan/LDoc">LDoc 1.4.6</a></i>
+<i style="float:right;">Last updated 2018-10-08 22:54:40 </i>
+</div> <!-- id="about" -->
+</div> <!-- id="container" -->
+</body>
+</html>

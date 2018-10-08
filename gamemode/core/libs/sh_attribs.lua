@@ -1,7 +1,21 @@
+--[[--
+This module contains all the functions that handle attributes.
+
+Character attributes are used in roleplay. You can create new attributes on your
+schema folder by creating a directory called 'attributes' and a file per attribute.
+]]
+-- @module nut.attribs
+
 if (!nut.char) then include("sh_character.lua") end
 
 nut.attribs = nut.attribs or {}
 nut.attribs.list = nut.attribs.list or {}
+
+
+--- Loads data from the attributes directory.
+-- Loads all attributes' data from the 'attributes' directory inside your schema folder.
+-- @string directory the path to the attributes directory.
+-- @return nothing.
 
 function nut.attribs.loadFromDir(directory)
 	for k, v in ipairs(file.Find(directory.."/*.lua", "LUA")) do
@@ -21,6 +35,11 @@ function nut.attribs.loadFromDir(directory)
 		ATTRIBUTE = nil
 	end
 end
+
+--- Sets up the attributes for the client's character.
+-- This function sets up the attributes for the client's character.
+-- @player client the player that holds the character.
+-- @return nothing.
 
 function nut.attribs.setup(client)
 	local character = client:getChar()
