@@ -98,3 +98,13 @@ function nut.inventory.loadAllFromCharID(charID)
 			return deferred.map(res.results, nut.inventory.loadByID)
 		end)
 end
+
+function nut.inventory.deleteByID(id)
+	nut.db.delete("invdata", "_invID = "..id)
+	nut.db.delete("inventories2", "_invID = "..id)
+	nut.db.delete("items", "_invID = "..id)
+	nut.inventory.instances[id] = nil
+	net.Start("nutInventoryDelete")
+		net.WriteType(id)
+	net.Broadcast()
+end
