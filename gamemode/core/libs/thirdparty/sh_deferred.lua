@@ -12,8 +12,19 @@ local REJECTING = 2
 local RESOLVED = 3
 local REJECTED = 4
 
+local REJECTION_START_DEPTH = 7
+
 local function finish(deferred, state)
     state = state or REJECTED
+    if state == REJECTED and not isfunction(deferred.failure) then
+        deferred.state = REJECTED
+        error(
+            debug.traceback(
+                "Unhandled Rejection: "..deferred.value,
+                REJECTION_START_DEPTH
+            )
+        )
+    end
     for i, f in ipairs(deferred.queue) do
         if state == RESOLVED then
             f:resolve(deferred.value)
@@ -331,5 +342,5 @@ end
 --- @return rejected future result
 
 do
-	_G.deferred = M
+    _G.deferred = M
 end
