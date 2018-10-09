@@ -1,7 +1,6 @@
 nut.char = nut.char or {}
 nut.char.loaded = nut.char.loaded or {}
 nut.char.vars = nut.char.vars or {}
-nut.char.cache = nut.char.cache or {}
 
 nut.util.include("nutscript/gamemode/core/meta/sh_character.lua")
 nut.util.include("character/cl_networking.lua")

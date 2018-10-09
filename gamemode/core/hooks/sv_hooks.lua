@@ -655,6 +655,9 @@ end
 function GM:CharacterPreSave(character)
 	local client = character:getPlayer()
 
+	if (not character:getInv()) then
+		return
+	end
 	for k, v in pairs(character:getInv():getItems()) do
 		if (v.onSave) then
 			v:call("onSave", client)

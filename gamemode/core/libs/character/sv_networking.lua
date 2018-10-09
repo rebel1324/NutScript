@@ -87,6 +87,7 @@ netstream.Hook("charCreate", function(client, data)
 		if (IsValid(client)) then
 			nut.char.loaded[id]:sync(client)
 
+			table.insert(client.nutCharList, id)
 			netstream.Start(client, "charAuthed", client.nutCharList)
 			MsgN("Created character '"..id.."' for "..client:steamName()..".")
 			hook.Run("OnCharCreated", client, nut.char.loaded[id])
