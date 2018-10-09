@@ -777,3 +777,23 @@ function GM:InitializedPlugins()
 		end
 	end
 end
+
+--- Called when a character loads with no inventory.
+-- Here is where a new inventory instance can be created and set for a character
+-- that loads with no inventory. The default implementation is to create an
+-- inventory instance whose type is the result of the GetDefaultInventoryType.
+-- If nothing is returned, no default inventory is created.
+-- hook. The "char" data is set for the instance to the ID of the character.
+-- @param character The character that loaded with no inventory
+function GM:CreateDefaultInventory(character)
+	local invType = hook.Run("GetDefaultInventoryType")
+	local charID = character:getID()
+
+	if (nut.inventory.types[invType]) then
+		local inventory = nut.inventory.instance(invType, {char = charID})
+		table.insert(character.vars.inv, inventory)
+		inventory:sync()
+
+		hook.Run("CreatedDefaultInventory", character, inventory)
+	end
+end
