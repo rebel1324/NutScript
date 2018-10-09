@@ -87,7 +87,7 @@ local PANEL = {}
 		self.icon:SetAlpha(150)
 
 		local x, y = ScrW() * 0.1, ScrH() * 0.3
-		local i = 1
+		local i = 0
 
 		self.buttons = {}
 		surface.SetFont("nutMenuButtonFont")
@@ -99,7 +99,7 @@ local PANEL = {}
 			label:SetPos(x, y)
 			label:setText(text, noTranslation)
 			label:SetAlpha(0)
-			label:AlphaTo(255, 0.3, (fadeSpeed * 6) + 0.15 * i, function()
+			label:AlphaTo(255, 0.3, (fadeSpeed * 2) + 0.05 * i, function()
 				if (isLast) then
 					fadeSpeed = 0
 				end
