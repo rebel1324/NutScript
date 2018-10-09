@@ -3,10 +3,12 @@ local Inventory = nut.Inventory
 -- Constants for inventory actions.
 INV_REPLICATE = "repl" -- Replicate data about the inventory to a player.
 
+local INV_TABLE_NAME = "inventories2"
 local INV_DATA_TABLE_NAME = "invdata"
 
 util.AddNetworkString("nutInventoryInit")
 util.AddNetworkString("nutInventoryData")
+util.AddNetworkString("nutInventoryDelete")
 
 -- Given an item type string, creates an instance of that item type
 -- and adds it to this inventory. A promise is returned containing
@@ -29,6 +31,10 @@ function Inventory:initializeStorage(initialData)
 	}, function(results, lastID)
 		local count = 0
 		local expected = table.Count(initialData)
+
+		if (expected == 0) then
+			return d:resolve(lastID)
+		end
 
 		for key, value in pairs(initialData) do
 			nut.db.insertTable({
@@ -201,4 +207,13 @@ function Inventory:sync(recipients)
 			writeItem(item)
 		end
 	net.Send(recipients or self:getRecipients())
+end
+
+function Inventory:delete()
+	nut.db.delete("invdata", "_invID = "..self.id)
+	nut.db.delete("inventories2", "_invID = "..self.id)
+	nut.inventory.instances[self.id] = nil
+	net.Start("nutInventoryDelete")
+		net.WriteType(self.id)
+	net.Broadcast()
 end
