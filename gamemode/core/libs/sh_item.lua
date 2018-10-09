@@ -692,7 +692,24 @@ do
 				end
 			end
 		end)
+
+		net.Receive("nutCharacterInvList", function()
+			local charID = net.ReadUInt(32)
+			local length = net.ReadUInt(32)
+			local inventories = {}
+
+			for i = 1, length do
+				inventories[i] = nut.inventory.instances[net.ReadType()]
+			end
+
+			local character = nut.char.loaded[charID]
+			if (character) then
+				character.vars.inv = inventories
+			end
+		end)
 	else
+		util.AddNetworkString("nutCharacterInvList")
+
 		function nut.item.loadItemByID(itemIndex, recipientFilter)
 			local range
 			if (type(itemIndex) == "table") then
@@ -970,5 +987,19 @@ nut.char.registerVar("inv", {
 		end
 
 		return character.vars.inv and character.vars.inv[index or 1]
+	end,
+	onSync = function(character, recipient)
+		net.Start("nutCharacterInvList")
+			net.WriteUInt(character:getID(), 32)
+			net.WriteUInt(#character.vars.inv, 32)
+			
+			for i = 1, #character.vars.inv do
+				net.WriteType(character.vars.inv[i].id)
+			end
+		if (recipient == nil) then
+			net.Broadcast()
+		else
+			net.Send(recipient)
+		end
 	end
 })

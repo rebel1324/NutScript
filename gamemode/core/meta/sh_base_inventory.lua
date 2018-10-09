@@ -89,6 +89,10 @@ function Inventory:onDataChanged(key, oldValue, newValue)
 	end
 end
 
+function Inventory:getItems()
+	return self.items
+end
+
 if (SERVER) then
 	include("inventory/sv_base_inventory.lua")
 	AddCSLuaFile("inventory/cl_base_inventory.lua")

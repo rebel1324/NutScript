@@ -71,6 +71,12 @@ if (SERVER) then
 			end
 
 			netstream.Start(self.player, "charInfo", data, self:getID())
+
+			for k, v in pairs(nut.char.vars) do
+				if (type(v.onSync) == "function") then
+					v.onSync(self, self.player)
+				end
+			end
 		-- Send public character information to the receiver.
 		else
 			local data = {}
@@ -82,6 +88,12 @@ if (SERVER) then
 			end
 
 			netstream.Start(receiver, "charInfo", data, self:getID(), self.player)
+
+			for k, v in pairs(nut.char.vars) do
+				if (type(v.onSync) == "function") then
+					v.onSync(self, receiver)
+				end
+			end
 		end
 	end
 
@@ -105,13 +117,12 @@ if (SERVER) then
 
 			-- Synchronize the character if we should.
 			if (!noNetworking) then
-				self:sync()
-
 				for k, v in ipairs(self:getInv(true)) do
 					if (type(v) == "table") then 
 						v:sync(client)	
 					end
 				end
+				self:sync()
 			end
 
 			hook.Run("CharacterLoaded", self:getID())

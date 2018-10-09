@@ -26,11 +26,13 @@ function nut.char.create(data, callback)
 		local character = nut.char.new(data, charID, client, data.steamID)
 		character.vars.inv = {}
 		hook.Run("CreateDefaultInventory", character)
-
-		nut.char.loaded[charID] = character
-		if (callback) then
-			callback(charID)
-		end
+			:next(function(inventory)
+				character.vars.inv[1] = inventory
+				nut.char.loaded[charID] = character
+				if (callback) then
+					callback(charID)
+				end
+			end)
 	end)
 end
 
@@ -48,8 +50,16 @@ function nut.char.restore(client, callback, noCache, id)
 	local query = "SELECT "..fields.." FROM nut_characters WHERE "..condition
 	nut.db.query(query, function(data)
 		local characters = {}
+		local results = data or {}
 
-		for k, v in ipairs(data or {}) do
+		if (#results == 0) then
+			if (callback) then
+				callback(characters)
+			end
+			return
+		end
+
+		for k, v in ipairs(results) do
 			local id = tonumber(v._id)
 
 			if (not id) then
@@ -82,22 +92,29 @@ function nut.char.restore(client, callback, noCache, id)
 			local character = nut.char.new(data, id, client)
 			hook.Run("CharacterRestored", character)
 			character.vars.inv = {}
-
+			
 			nut.inventory.loadAllFromCharID(id)
+				-- Try to get a default inventory if one does not exist.
 				:next(function(inventories)
+					print("inventories")
+					PrintTable(inventories)
 					if (#inventories == 0) then
-						hook.Run("CreateDefaultInventory", character)
-						return
+						return hook.Run("CreateDefaultInventory", character)
+							:next(function(inventory)
+								return {inventory}
+							end)
 					end
-					for _, inventory in ipairs(inventories) do
-						inventory:sync()
+					return inventories
+				end)
+				-- Then, store all the inventories.
+				:next(function(inventories)
+					character.vars.inv = inventories
+					nut.char.loaded[id] = character
+
+					if (k == #results and callback) then
+						callback(characters)
 					end
 				end)
-			nut.char.loaded[id] = character
-		end
-
-		if (callback) then
-			callback(characters)
 		end
 	end)
 end

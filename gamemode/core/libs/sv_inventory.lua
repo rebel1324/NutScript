@@ -33,7 +33,7 @@ function nut.inventory.loadByID(id, noCache)
 	-- the default database table.
 	assert(
 		type(id) == "number" and id >= 0,
-		"No inventories implement loadFromStorage for ID "..id
+		"No inventories implement loadFromStorage for ID "..tostring(id)
 	)
 	return nut.inventory.loadFromDefaultStorage(id)
 end
@@ -95,7 +95,9 @@ function nut.inventory.loadAllFromCharID(charID)
 		"_key = 'char' AND _value = '"..util.TableToJSON({charID}).."'"
 	return nut.db.select({"_invID"}, DATA_TABLE, sameCharCondition)
 		:next(function(res)
-			return deferred.map(res.results, nut.inventory.loadByID)
+			return deferred.map(res.results or {}, function(result)
+				return nut.inventory.loadByID(tonumber(result._invID))
+			end)
 		end)
 end
 

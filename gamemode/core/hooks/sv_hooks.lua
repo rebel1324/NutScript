@@ -12,12 +12,7 @@ function GM:PlayerInitialSpawn(client)
 			model = faction and table.Random(faction.models) or "models/gman.mdl"
 		}, botID, client, client:SteamID64())
 		character.isBot = true
-
-		local inventory = nut.item.createInv(nut.config.get("invW"), nut.config.get("invH"), botID)
-		inventory:setOwner(botID)
-		inventory.noSave = true
-
-		character.vars.inv = {inventory}
+		character.vars.inv = {}
 
 		nut.char.loaded[os.time()] = character
 
@@ -778,22 +773,21 @@ function GM:InitializedPlugins()
 	end
 end
 
---- Called when a character loads with no inventory.
+--- Called when a character loads with no inventory and one should be created.
 -- Here is where a new inventory instance can be created and set for a character
 -- that loads with no inventory. The default implementation is to create an
 -- inventory instance whose type is the result of the GetDefaultInventoryType.
 -- If nothing is returned, no default inventory is created.
 -- hook. The "char" data is set for the instance to the ID of the character.
 -- @param character The character that loaded with no inventory
+-- @return A promise that resolves to the new inventory
 function GM:CreateDefaultInventory(character)
-	local invType = hook.Run("GetDefaultInventoryType")
+	local invType = hook.Run("GetDefaultInventoryType", character)
 	local charID = character:getID()
 
 	if (nut.inventory.types[invType]) then
-		local inventory = nut.inventory.instance(invType, {char = charID})
-		table.insert(character.vars.inv, inventory)
-		inventory:sync()
-
-		hook.Run("CreatedDefaultInventory", character, inventory)
+		return nut.inventory.instance(invType, {char = charID})
+	elseif (invType ~= nil) then
+		error("Invalid default inventory type "..tostring(invType))
 	end
 end
