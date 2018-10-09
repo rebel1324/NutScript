@@ -210,10 +210,5 @@ function Inventory:sync(recipients)
 end
 
 function Inventory:delete()
-	nut.db.delete("invdata", "_invID = "..self.id)
-	nut.db.delete("inventories2", "_invID = "..self.id)
-	nut.inventory.instances[self.id] = nil
-	net.Start("nutInventoryDelete")
-		net.WriteType(self.id)
-	net.Broadcast()
+	nut.inventory.deleteByID(self.id)
 end

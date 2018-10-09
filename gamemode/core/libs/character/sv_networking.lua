@@ -101,6 +101,7 @@ netstream.Hook("charDel", function(client, id)
 	local steamID = client:SteamID64()
 	local isCurrentChar = client:getChar() and client:getChar():getID() == id
 
+	-- TODO: refactor this into a Character:delete() method.
 	if (character and character.steamID == steamID) then
 		for k, v in ipairs(client.nutCharList or {}) do
 			if (v == id) then
@@ -115,12 +116,9 @@ netstream.Hook("charDel", function(client, id)
 		nut.db.query("SELECT _invID FROM nut_inventories WHERE _charID = "..id, function(data)
 			if (data) then
 				for k, v in ipairs(data) do
-					nut.db.query("DELETE FROM nut_items WHERE _invID = "..v._invID)
-					nut.item.inventories[tonumber(v._invID)] = nil
+					nut.db.deleteByID(tonumber(v._invID))
 				end
 			end
-
-			nut.db.query("DELETE FROM nut_inventories WHERE _charID = "..id)
 		end)
 
 		-- other plugins might need to deal with deleted characters.
