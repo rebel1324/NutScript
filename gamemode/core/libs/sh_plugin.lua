@@ -79,7 +79,7 @@ function nut.plugin.load(uniqueID, path, isSingleFile, variable)
 		end
 
 		nut.plugin.list[uniqueID] = PLUGIN
-		_G[variable] = nil
+		_G[variable] = oldPlugin
 	else
 		-- no matter what you should be loaded.
 		function PLUGIN:IsValid()
