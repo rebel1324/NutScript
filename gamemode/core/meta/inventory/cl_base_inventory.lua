@@ -55,6 +55,17 @@ net.Receive("nutInventoryAdd", function()
 	end
 end)
 
+net.Receive("nutInventoryRemove", function()
+	local itemID = net.ReadUInt(32)
+	local invID = net.ReadType()
+	local item = nut.item.instances[itemID]
+	local inventory = nut.inventory.instances[invID]
+	if (item and inventory) then
+		inventory.items[itemID] = nil
+		hook.Run("InventoryItemRemoved", inventory, item)
+	end
+end)
+
 net.Receive("nutInventoryDelete", function()
 	local invID = net.Readtype()
 	local instance = nut.inventory.instances[invID]

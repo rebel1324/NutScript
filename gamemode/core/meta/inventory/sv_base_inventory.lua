@@ -10,11 +10,12 @@ util.AddNetworkString("nutInventoryInit")
 util.AddNetworkString("nutInventoryData")
 util.AddNetworkString("nutInventoryDelete")
 util.AddNetworkString("nutInventoryAdd")
+util.AddNetworkString("nutInventoryRemove")
 
 -- Given an item type string, creates an instance of that item type
 -- and adds it to this inventory. A promise is returned containing
 -- the newly created item after it has been added to the inventory.
-function Inventory:add(item)
+function Inventory:addItem(item)
 	self.items[item:getID()] = item
 	nut.db.updateTable({
 		_invID = self.id
@@ -24,6 +25,11 @@ function Inventory:add(item)
 	self:syncItemAdded(item)
 
 	return self
+end
+
+-- Sample implementation of Inventory:add - delegates to addItem
+function Inventory:add(item)
+	return self:addItem(item)
 end
 
 function Inventory:syncItemAdded(item)
@@ -82,18 +88,35 @@ end
 -- Removes an item corresponding to the given item ID if it is in this
 -- inventory. If the item belongs to this inventory, it is then deleted.
 -- A promise is returned which is resolved after removal from this.
-function Inventory:remove(itemID)
+function Inventory:removeItem(itemID, preserveItem)
 	assert(type(itemID) == "number", "itemID must be a number for remove")
-	self.items[itemID] = nil
-
-	local instance = nut.item.instances[itemID]
-	if (instance) then
-		return instance:delete()
-	end
 
 	local d = deferred.new()
-	d:resolve()
+	local instance = self.items[itemID]
+
+	if (instance) then
+		self.items[itemID] = nil
+		
+		net.Start("nutInventoryRemove")
+			net.WriteUInt(itemID, 32)
+			net.WriteType(self:getID())
+		net.Send(self:getRecipients())
+
+		if (not preserveItem) then
+			d:resolve(instance:delete())
+		else
+			d:resolve()
+		end
+	else
+		d:reject("Inventory does not contain item "..tostring(itemID))
+	end
+
 	return d
+end
+
+-- Sample implementation of Inventory:remove() - delegate to removeItem
+function Inventory:remove(itemID)
+	return self:removeItem(itemID)
 end
 
 -- Stores arbitrary data that can later be looked up using the given key.
