@@ -22,12 +22,7 @@ ITEM.functions.View = {
 			end
 
 			if (inventory and inventory.slots) then
-				panel = vgui.Create("nutInventory", parent)
-				panel:setInventory(inventory)
-				panel:ShowCloseButton(true)
-				panel:SetTitle(item.getName and item:getName() or L(item.name))
-
-				nut.gui["inv"..index] = panel
+				hook.Run("CreateInventoryPanel", inventory, panel)
 			else
 				ErrorNoHalt("[NutScript] Attempt to view an uninitialized inventory '"..index.."'\n")
 			end

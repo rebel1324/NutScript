@@ -54,3 +54,14 @@ function nut.inventory.new(typeID)
 
 	return setmetatable({}, class)
 end
+
+if (CLIENT) then
+	function nut.inventory.show(inventory, parent)
+		local globalName = "inv"..inventory.id
+		if (IsValid(nut.gui[globalName])) then
+			nut.gui[globalName]:Remove()
+		end
+		nut.gui[globalName] =
+			hook.Run("CreateInventoryPanel", inventory, parent)
+	end
+end
