@@ -242,13 +242,20 @@ function ITEM:postHook(name, func)
 end
 
 if (SERVER) then
-	-- Removes the item from the inventory it is in and then itself
-	function ITEM:remove()
+	function ITEM:removeFromInventory(preserveItem)
 		local inventory = nut.inventory.instances[self.invID]
 		if (inventory) then
-			return inventory:remove(self:getID())
+			return inventory:removeItem(self:getID(), preserveItem)
 		end
-		return self:delete()
+		local d = deferred.new()
+		d:resolve()
+		return d
+	end
+
+	-- Removes the item from the inventory it is in and then itself
+	function ITEM:remove()
+		return self:removeFromInventory()
+			:next(function() return self:delete() end)
 	end
 
 	-- Deletes the data for this item
@@ -297,107 +304,6 @@ if (SERVER) then
 
 			-- Return the newly created entity.
 			return entity
-		end
-	end
-
-	-- Transfers an item to a specific inventory.
-	function ITEM:transfer(invID, x, y, client, noReplication, isLogical)		
-		invID = invID or 0
-
-		if (self.invID == invID) then
-			return false, "same inv"
-		end
-
-		local inventory = nut.item.inventories[invID]
-		local curInv = nut.item.inventories[self.invID or 0]
-
-		if (hook.Run("CanItemBeTransfered", self, curInv, inventory) == false) then
-			return false, "notAllowed"
-		end
-
-		local authorized = false
-
-		if (curInv and !IsValid(client)) then
-			client = (curInv.getReceiver and curInv:getReceiver() or nil)
-		end
-
-		if (inventory and inventory.onAuthorizeTransfer and inventory:onAuthorizeTransfer(client, curInv, self)) then
-			authorized = true
-		end
-
-		if (!authorized and self.onCanBeTransfered and self:onCanBeTransfered(curInv, inventory) == false) then
-			return false, "notAllowed"
-		end
-
-		if (curInv) then
-			if (invID and invID > 0 and inventory) then
-				local targetInv = inventory
-				local bagInv
-
-				if (!x and !y) then
-					x, y, bagInv = inventory:findEmptySlot(self.width, self.height)
-				end
-
-				if (bagInv) then
-					targetInv = bagInv
-				end
-
-				if (!x or !y) then
-					return false, "noSpace"
-				end
-
-				local prevID = self.invID
-				local status, result = targetInv:add(self.id, nil, nil, x, y, noReplication)
-
-				if (status) then
-					if (self.invID > 0 and prevID != 0) then
-						curInv:remove(self.id, false, true)
-						self.invID = invID
-
-						if (self.onTransfered) then
-							self:onTransfered(curInv, inventory)
-						end
-						hook.Run("OnItemTransfered", self, curInv, inventory)
-
-						return true
-					elseif (self.invID > 0 and prevID == 0) then
-						local inventory = nut.item.inventories[0]
-						inventory[self.id] = nil
-
-						if (self.onTransfered) then
-							self:onTransfered(curInv, inventory)
-						end
-						hook.Run("OnItemTransfered", self, curInv, inventory)
-
-						return true
-					end
-				else
-					return false, result
-				end
-			elseif (IsValid(client)) then
-				self.invID = 0
-
-				curInv:remove(self.id, false, true)
-				nut.db.query("UPDATE nut_items SET _invID = 0 WHERE _itemID = "..self.id)
-
-				if (isLogical != true) then
-					return self:spawn(client)	
-				else
-					local inventory = nut.item.inventories[0]
-					inventory[self:getID()] = self
-
-					if (self.onTransfered) then
-						self:onTransfered(curInv, inventory)
-					end
-					hook.Run("OnItemTransfered", self, curInv, inventory)
-						
-					return true
-				end
-			else
-				return false, "noOwner"
-			end
-		else
-			return false, "invalidInventory"
 		end
 	end
 
