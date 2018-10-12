@@ -157,6 +157,10 @@ function Inventory:getID()
 	return self.id
 end
 
+function Inventory:__eq(other)
+	return self:getID() == other:getID()
+end
+
 if (SERVER) then
 	include("inventory/sv_base_inventory.lua")
 	AddCSLuaFile("inventory/cl_base_inventory.lua")
