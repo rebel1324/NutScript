@@ -126,7 +126,7 @@ function GM:CanPlayerInteractItem(client, action, item)
 		return false
 	end
 
-	return client:Alive()
+	return client:Alive() and not client:getLocalVar("ragdoll")
 end
 
 function GM:CanPlayerTakeItem(client, item)
