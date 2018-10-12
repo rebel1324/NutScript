@@ -1,3 +1,5 @@
+local Inventory = nut.Inventory
+
 net.Receive("nutInventoryData", function()
 	local id = net.ReadType()
 	local key = net.ReadString()
@@ -11,6 +13,8 @@ net.Receive("nutInventoryData", function()
 	local oldValue = instance.data[key]
 	instance.data[key] = value
 	instance:onDataChanged(key, oldValue, value)
+
+	hook.Run("InventoryDataChanged", instance, key, oldValue, value)
 end)
 
 net.Receive("nutInventoryInit", function()
@@ -31,9 +35,26 @@ net.Receive("nutInventoryInit", function()
 		local itemID, itemType, data = readItem()
 		local item = nut.item.new(itemType, itemID)
 		item.data = table.Merge(item.data, data)
-		item.invID = id
+		item.invID = instance.id
 		instance.items[itemID] = item
+		hook.Run("ItemInitialized", item)
 	end
 
 	nut.inventory.instances[instance.id] = instance
+	hook.Run("InventoryInitialized", instance)
 end)
+
+net.Receive("nutInventoryAdd", function()
+	local itemID = net.ReadUInt(32)
+	local invID = net.ReadType()
+	local item = nut.item.instances[itemID]
+	local inventory = nut.inventory.instances[invID]
+	if (item and inventory) then
+		inventory.items[itemID] = item
+		hook.Run("InventoryItemAdded", inventory, item)
+	end
+end)
+
+function Inventory:show(parent)
+	nut.inventory.show(self, parent)
+end

@@ -9,6 +9,7 @@ local INV_DATA_TABLE_NAME = "invdata"
 util.AddNetworkString("nutInventoryInit")
 util.AddNetworkString("nutInventoryData")
 util.AddNetworkString("nutInventoryDelete")
+util.AddNetworkString("nutInventoryAdd")
 
 -- Given an item type string, creates an instance of that item type
 -- and adds it to this inventory. A promise is returned containing
@@ -18,7 +19,25 @@ function Inventory:add(item)
 	nut.db.updateTable({
 		_invID = self.id
 	}, nil, "items", "_itemID = "..item:getID())
+
+	-- Replicate adding the item to this inventory client-side
+	self:syncItemAdded(item)
+
 	return self
+end
+
+function Inventory:syncItemAdded(item)
+	assert(type(item) == "table" and item.getID, "cannot sync non-item")
+	assert(
+		self.items[item:getID()],
+		"Item "..item:getID().." does not belong to "..self.id
+	)
+	local recipients = self:getRecipients()
+	item:sync(recipients)
+	net.Start("nutInventoryAdd")
+		net.WriteUInt(item:getID(), 32)
+		net.WriteType(self.id)
+	net.Send(recipients)
 end
 
 -- Called to handle the logic for creating the data storage for this.
@@ -65,9 +84,16 @@ end
 -- A promise is returned which is resolved after removal from this.
 function Inventory:remove(itemID)
 	assert(type(itemID) == "number", "itemID must be a number for remove")
-	nut.db.delete("items", "_itemID = "..itemID)
 	self.items[itemID] = nil
-	return self
+
+	local instance = nut.item.instances[itemID]
+	if (instance) then
+		return instance:delete()
+	end
+
+	local d = deferred.new()
+	d:resolve()
+	return d
 end
 
 -- Stores arbitrary data that can later be looked up using the given key.

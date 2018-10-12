@@ -153,6 +153,10 @@ function Inventory:hasItem(itemType)
 	return false
 end
 
+function Inventory:getID()
+	return self.id
+end
+
 if (SERVER) then
 	include("inventory/sv_base_inventory.lua")
 	AddCSLuaFile("inventory/cl_base_inventory.lua")

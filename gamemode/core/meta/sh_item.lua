@@ -157,7 +157,7 @@ function ITEM:getOwner()
 	for k, v in ipairs(player.GetAll()) do
 		local character = v:getChar()
 
-		if (character and character:getInv():getItemByID(id)) then
+		if (character and character:getInv().items[id]) then
 			return v
 		end
 	end
@@ -241,89 +241,25 @@ function ITEM:postHook(name, func)
 	end
 end
 
-function ITEM:remove()
-	local inv = nut.item.inventories[self.invID]
-	local x2, y2
-
-	if (self.invID > 0 and inv) then
-		local failed = false
-		for x = self.gridX, self.gridX + (self.width - 1) do
-			if (inv.slots[x]) then
-				for y = self.gridY, self.gridY + (self.height - 1) do
-					local item = inv.slots[x][y]
-
-					if (item and item.id == self.id) then
-						inv.slots[x][y] = nil
-					else
-						failed = true
-					end
-				end
-			end
-		end
-
-		if (failed) then
-			local items = inv:getItems()
-
-			inv.slots = {}
-			for k, v in pairs(items) do
-				if (v.invID == inv:getID()) then
-					for x = self.gridX, self.gridX + (self.width - 1) do
-						for y = self.gridY, self.gridY + (self.height - 1) do
-							if (inv.slots[x]) then
-								inv.slots[x][y] = v.id
-							end
-						end
-					end
-				end
-			end
-
-			if (IsValid(inv.owner) and inv.owner:IsPlayer()) then
-				inv:sync(inv.owner, true)
-			end
-
-			return false
-		end
-	else
-		local inv = nut.item.inventories[self.invID]
-
-		if (inv) then
-			nut.item.inventories[self.invID][self.id] = nil
-		end
-	end
-
-	if (SERVER and !noReplication) then
-		local entity = self:getEntity()
-
-		if (IsValid(entity)) then
-			entity:Remove()
-		end
-		
-		local receiver = inv.getReceiver and inv:getReceiver()
-
-		if (self.invID != 0) then
-			if (IsValid(receiver) and receiver:getChar() and inv.owner == receiver:getChar():getID()) then
-				netstream.Start(receiver, "invRm", self.id, inv:getID())
-			else
-				netstream.Start(receiver, "invRm", self.id, inv:getID(), inv.owner)
-			end
-		end
-
-		if (!noDelete) then
-			local item = nut.item.instances[self.id]
-
-			if (item and item.onRemoved) then
-				item:onRemoved()
-			end
-
-			nut.db.query("DELETE FROM nut_items WHERE _itemID = "..self.id)
-			nut.item.instances[self.id] = nil
-		end
-	end
-
-	return true
-end
-
 if (SERVER) then
+	-- Removes the item from the inventory it is in and then itself
+	function ITEM:remove()
+		local inventory = nut.inventory.instances[self.invID]
+		if (inventory) then
+			return inventory:remove(self:getID())
+		end
+		return self:delete()
+	end
+
+	-- Deletes the data for this item
+	function ITEM:delete()
+		net.Start("nutItemDelete")
+			net.WriteUInt(self:getID(), 32)
+		net.Broadcast()
+		nut.item.instances[self:getID()] = nil
+		return nut.db.delete("items", "_itemID = "..self:getID())
+	end
+
 	function ITEM:getEntity()
 		local id = self:getID()
 
@@ -462,6 +398,19 @@ if (SERVER) then
 			end
 		else
 			return false, "invalidInventory"
+		end
+	end
+
+	function ITEM:sync(recipient)
+		net.Start("nutItemInstance")
+			net.WriteUInt(self:getID(), 32)
+			net.WriteString(self.uniqueID)
+			net.WriteTable(self.data)
+			net.WriteType(self.invID)
+		if (recipient == nil) then
+			net.Broadcast()
+		else
+			net.Send(recipient)
 		end
 	end
 end

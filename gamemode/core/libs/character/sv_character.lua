@@ -96,8 +96,6 @@ function nut.char.restore(client, callback, noCache, id)
 			nut.inventory.loadAllFromCharID(id)
 				-- Try to get a default inventory if one does not exist.
 				:next(function(inventories)
-					print("inventories")
-					PrintTable(inventories)
 					if (#inventories == 0) then
 						return hook.Run("CreateDefaultInventory", character)
 							:next(function(inventory)
