@@ -133,13 +133,15 @@ function nut.item.load(path, baseID, isBaseItem)
 	end
 end
 
+-- TODO: figure out if default functions should be implemented in plugins
+-- instead of here.
 NUT_ITEM_DEFAULT_FUNCTIONS = {
 	drop = {
 		tip = "dropTip",
 		icon = "icon16/world.png",
 		onRun = function(item)
-			item:transfer()
-
+			item:removeFromInventory(true)
+				:next(function() item:spawn(item.player) end)
 			nut.log.add(item.player, "itemDrop", item.name, 1)
 
 			return false
@@ -152,84 +154,11 @@ NUT_ITEM_DEFAULT_FUNCTIONS = {
 		tip = "takeTip",
 		icon = "icon16/box.png",
 		onRun = function(item)
-			-- is inventory exists and not a logical inventory 
 			local inventory = item.player:getChar():getInv()
-			if (inventory) then
-				if (item.isStackable == true and item.canSplit == true) then
-					-- prevent data crashing
-					if (table.Count(item.data) == 0) then
-						local quantity = item:getQuantity()
-						local itemList = inventory:getItemsByUniqueID(item.uniqueID)
-						local fillTargets = {}
-						for _, invItem in pairs(itemList) do
-							local itemMaxQuantity = invItem:getMaxQuantity()
-							local itemQuantity = invItem:getQuantity()
-							local dataAmount = table.Count(invItem.data) -- i don't want it
+			if (not inventory) then return false end
 
-							if (data or dataAmount > 0) then
-								continue
-							end
-
-							if (itemQuantity >= itemMaxQuantity) then 
-								continue
-							end
-
-							local stockQuantity = itemMaxQuantity - itemQuantity
-							local leftOver = quantity - stockQuantity
-							
-							if (leftOver <= 0) then
-								fillTargets[invItem] = itemQuantity + quantity
-								quantity = 0
-
-								break
-							else
-								fillTargets[invItem] = itemMaxQuantity
-								quantity = quantity - stockQuantity
-							end
-						end
-
-						for fillItem, amount in pairs(fillTargets) do
-							fillItem:setQuantity(amount, nil, item.player)
-						end
-
-						if (quantity <= 0) then
-							return true
-						else
-							item:setQuantity(quantity, nil, item.player)
-
-							local status, result = item.player:getChar():getInv():add(item.id)
-
-							if (!status) then
-								item.player:notify(result)
-
-								return false
-							else
-								if (item.data) then -- I don't like it but, meh...
-									for k, v in pairs(item.data) do
-										item:setData(k, v)
-									end
-								end
-
-								nut.log.add(item.player, "itemTake", L(item.name, client), quantity)
-							end
-						end
-					end
-				else
-					local status, result = item.player:getChar():getInv():add(item.id)
-
-					if (!status) then
-						item.player:notify(result)
-
-						return false
-					else
-						if (item.data) then -- I don't like it but, meh...
-							for k, v in pairs(item.data) do
-								item:setData(k, v)
-							end
-						end
-					end
-				end
-			end
+			inventory:addItem(item)
+			nut.log.add(item.player, "itemTake", item.name, 1)
 		end,
 		onCanRun = function(item)
 			return (item.entity != nil and IsValid(item.entity)) -- lmao just in case.
@@ -558,7 +487,7 @@ do
 		net.Receive("nutItemDelete", function()
 			local id = net.ReadUInt(32)
 			local instance = nut.item.instances[id]
-
+			print("Delete item", id)
 			if (instance and instance.invID) then
 				local inventory = nut.inventory.instances[instance.invID]
 				if (not inventory) then return end
@@ -760,10 +689,11 @@ do
 				return
 			end
 
-			-- Permission check with inventory, if one exists
+			-- Permission check with inventory. Or, if no inventory exists,
+			-- the player has no way of accessing the item.
 			local inventory = nut.inventory.instances[item.invID]
 			if (
-				inventory and not inventory:canPlayerAccess(client, action)
+				not inventory or not inventory:canPlayerAccess(client, action)
 			) then
 				return
 			end
