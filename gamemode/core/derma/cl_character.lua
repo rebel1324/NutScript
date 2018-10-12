@@ -76,7 +76,7 @@ local PANEL = {}
 				</body>
 			</html>
 		]])
-		self.icon:SetToolTip(nut.config.get("logoURL", "http://nutscript.net"))
+		self.icon:SetTooltip(nut.config.get("logoURL", "http://nutscript.net"))
 	
 		self.icon.click = self.icon:Add("DButton")
 		self.icon.click:Dock(FILL)

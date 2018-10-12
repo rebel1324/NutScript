@@ -137,7 +137,7 @@ local PANEL = {}
 
 			RegisterDermaMenuForClose(menu)
 		end
-		slot.model:SetToolTip(L("sbOptions", client:steamName()))
+		slot.model:SetTooltip(L("sbOptions", client:steamName()))
 
 		timer.Simple(0, function()
 			if (!IsValid(slot)) then
@@ -235,7 +235,7 @@ local PANEL = {}
 
 			if (self.lastModel != model or self.lastSkin != skin) then
 				self.model:SetModel(client:GetModel(), client:GetSkin())
-				self.model:SetToolTip(L("sbOptions", client:steamName()))
+				self.model:SetTooltip(L("sbOptions", client:steamName()))
 				
 				self.lastModel = model
 				self.lastSkin = skin

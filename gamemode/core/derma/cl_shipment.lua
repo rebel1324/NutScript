@@ -30,7 +30,7 @@ local PANEL = {}
 				item.icon:SetPos(2, 2)
 				item.icon:SetSize(32, 32)
 				item.icon:SetModel(itemTable.model)
-				item.icon:SetToolTip(itemTable:getDesc())
+				item.icon:SetTooltip(itemTable:getDesc())
 
 				item.quantity = item.icon:Add("DLabel")
 				item.quantity:SetSize(32, 32)

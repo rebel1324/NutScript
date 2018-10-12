@@ -40,7 +40,7 @@ function PANEL:setItemType(itemTypeOrID)
 
 	self.itemTable = item
 	self:SetModel(item.model, item.skin)
-	self:SetToolTip(item:getDesc())
+	self:SetTooltip(item:getDesc())
 
 	if (item.exRender) then
 		self.Icon:SetVisible(false)
@@ -82,7 +82,7 @@ end
 
 -- Updates the parts of the UI that could be changed by data changes.
 function PANEL:ItemDataChanged(key, oldValue, newValue)
-	self:SetToolTip(self:getItem():getDesc())
+	self:SetTooltip(self:getItem():getDesc())
 end
 
 function PANEL:Init()
