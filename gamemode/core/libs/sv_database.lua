@@ -515,6 +515,8 @@ function nut.db.convertDataType(value, noEscape)
 		else
 			return "'"..nut.db.escape(util.TableToJSON(value)).."'"
 		end
+	elseif (value == NULL) then
+		return "NULL"
 	end
 
 	return value
