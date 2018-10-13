@@ -20,7 +20,7 @@ local function finish(deferred, state)
         deferred.state = REJECTED
         error(
             debug.traceback(
-                "Unhandled Rejection: "..deferred.value,
+                "Unhandled Rejection: "..tostring(deferred.value),
                 REJECTION_START_DEPTH
             )
         )

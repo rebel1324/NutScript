@@ -105,7 +105,9 @@ function Inventory:removeItem(itemID, preserveItem)
 		if (not preserveItem) then
 			d:resolve(instance:delete())
 		else
-			d:resolve()
+			nut.db.updateTable({_invID = NULL}, function()
+				d:resolve()
+			end, "items", "_itemID = "..itemID)
 		end
 	else
 		d:reject("Inventory does not contain item "..tostring(itemID))
@@ -145,18 +147,19 @@ function Inventory:setData(key, value)
 end
 
 -- Whether or not a client can interact with this inventory.
-function Inventory:canPlayerAccess(client, action)
+function Inventory:canAccess(action, context)
+	context = context or {}
 	local result
 	for _, rule in ipairs(self.config.accessRules) do
-		result = rule(self, client, action)
+		result, reason = rule(self, action, context)
 		if (result ~= nil) then
-			return result
+			return result, reason
 		end
 	end
 	return false
 end
 
--- Changes the canPlayerAccess method to also return the result of the rule
+-- Changes the canAccess method to also return the result of the rule
 -- where the rule of a function of (inventory, player, action) -> boolean.
 function Inventory:addAccessRule(rule)
 	self.config.accessRules[#self.config.accessRules + 1] = rule
@@ -167,7 +170,7 @@ end
 function Inventory:getRecipients()
 	local recipients = {}
 	for _, client in ipairs(player.GetAll()) do
-		if (self:canPlayerAccess(client, INV_REPLICATE)) then
+		if (self:canAccess(INV_REPLICATE, {client = client})) then
 			recipients[#recipients + 1] = client
 		end
 	end
@@ -197,7 +200,7 @@ function Inventory:loadItems()
 				local itemTable = nut.item.list[uniqueID]
 				if (not itemTable) then
 					ErrorNoHalt(
-						"Inventory "..self.id.." contains bad invalid item "
+						"Inventory "..self.id.." contains invalid item "
 						..uniqueID.." ("..itemID..")"
 					)
 					continue

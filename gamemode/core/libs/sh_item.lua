@@ -18,54 +18,53 @@ end
 
 function nut.item.instance(index, uniqueID, itemData, x, y, callback)
 	local itemTable = nut.item.list[uniqueID]
+	if (not itemTable) then
+		error("Attempt to instantiate invalid item "..tostring(uniqueID))
+	end
 
-	if (!uniqueID or itemTable) then
-		itemData = itemData or {}
+	itemData = itemData or {}
 
-		if (MYSQLOO_PREPARED) then
-			nut.db.preparedCall("itemInstance", function(data, itemID)
-				local item = nut.item.new(uniqueID, itemID)
+	if (MYSQLOO_PREPARED) then
+		nut.db.preparedCall("itemInstance", function(data, itemID)
+			local item = nut.item.new(uniqueID, itemID)
 
-				if (item) then
-					item.data = itemData
-					item.invID = index
+			if (item) then
+				item.data = itemData
+				item.invID = index
 
-					if (callback) then
-						callback(item)
-					end
-	
-					if (item.onInstanced) then
-						item:onInstanced(index, x, y, item)
-					end
+				if (callback) then
+					callback(item)
 				end
-			end, 1, index, uniqueID, itemData, x, y)
-		else
-			nut.db.insertTable({
-				_quantity = 1,
-				_invID = index,
-				_uniqueID = uniqueID,
-				_data = itemData,
-				_x = x,
-				_y = y
-			}, function(data, itemID)
-				local item = nut.item.new(uniqueID, itemID)
 
-				if (item) then
-					item.data = itemData
-					item.invID = index
-
-					if (callback) then
-						callback(item)
-					end
-
-					if (item.onInstanced) then
-						item:onInstanced(index, x, y, item)
-					end
+				if (item.onInstanced) then
+					item:onInstanced(index, x, y, item)
 				end
-			end, "items")
-		end
+			end
+		end, 1, index, uniqueID, itemData, x, y)
 	else
-		ErrorNoHalt("[NutScript] Attempt to give an invalid item! ("..(uniqueID or "nil")..")\n")
+		nut.db.insertTable({
+			_quantity = 1,
+			_invID = index,
+			_uniqueID = uniqueID,
+			_data = itemData,
+			_x = x,
+			_y = y
+		}, function(data, itemID)
+			local item = nut.item.new(uniqueID, itemID)
+
+			if (item) then
+				item.data = itemData
+				item.invID = index
+
+				if (callback) then
+					callback(item)
+				end
+
+				if (item.onInstanced) then
+					item:onInstanced(index, x, y, item)
+				end
+			end
+		end, "items")
 	end
 end
 
@@ -133,6 +132,10 @@ function nut.item.load(path, baseID, isBaseItem)
 	end
 end
 
+function nut.item.isItem(object)
+	return type(object) == "table" and object.isItem == true
+end
+
 -- TODO: figure out if default functions should be implemented in plugins
 -- instead of here.
 NUT_ITEM_DEFAULT_FUNCTIONS = {
@@ -154,11 +157,22 @@ NUT_ITEM_DEFAULT_FUNCTIONS = {
 		tip = "takeTip",
 		icon = "icon16/box.png",
 		onRun = function(item)
-			local inventory = item.player:getChar():getInv()
-			if (not inventory) then return false end
+			local client = item.player
+			local inventory = client:getChar():getInv()
+			local entity = item.entity
 
-			inventory:addItem(item)
-			nut.log.add(item.player, "itemTake", item.name, 1)
+			if (not inventory) then return false end
+			inventory:add(item)
+				:next(function(res)
+					if (res.error) then
+						return client:notifyLocalized(res.error)
+					end
+					if (IsValid(entity)) then entity:Remove() end
+					if (not IsValid(client)) then return end
+					nut.log.add(client, "itemTake", item.name, 1)
+				end)
+
+			return false
 		end,
 		onCanRun = function(item)
 			return (item.entity != nil and IsValid(item.entity)) -- lmao just in case.
@@ -338,7 +352,7 @@ function nut.item.new(uniqueID, id)
 
 		return item
 	else
-		ErrorNoHalt("[NutScript] Attempt to index unknown item '"..uniqueID.."'\n")
+		error("[NutScript] Attempt to create unknown item '"..tostring(uniqueID).."'\n")
 	end
 end
 
@@ -688,23 +702,21 @@ do
 			if (not item) then
 				return
 			end
-
 			-- Permission check with inventory. Or, if no inventory exists,
 			-- the player has no way of accessing the item.
 			local inventory = nut.inventory.instances[item.invID]
+			local context = {client = client, item = item, entity = entity}
 			if (
-				not inventory or not inventory:canPlayerAccess(client, action)
+				inventory and not inventory:canAccess(action, context)
 			) then
 				return
 			end
-
 			-- Allow other things to also add permission checks
 			local canInteract =
 				hook.Run("CanPlayerInteractItem", client, action, item, data)
 			if (canInteract == false) then
 				return
 			end
-
 			item.player = client
 			item.entity = entity
 

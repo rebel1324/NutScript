@@ -12,6 +12,7 @@ ITEM.defaultQuantity = 1
 ITEM.isStackable = false
 ITEM.uniqueID = "undefined"
 ITEM.canSplit = true
+ITEM.isItem = true
 
 function ITEM:__eq(other)
 	return self:getID() == other:getID()
