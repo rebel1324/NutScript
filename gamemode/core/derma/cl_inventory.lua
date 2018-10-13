@@ -100,10 +100,15 @@ function PANEL:PaintOver(w, h)
 	end
 end
 
+function PANEL:PaintBehind(w, h)
+end
+
 function PANEL:ExtraPaint(w, h)
 end
 
 function PANEL:Paint(w, h)
+	self:PaintBehind(w, h)
+
 	surface.SetDrawColor(0, 0, 0, 85)
 	surface.DrawRect(2, 2, w - 4, h - 4)
 
