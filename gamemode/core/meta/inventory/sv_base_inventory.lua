@@ -3,7 +3,7 @@ local Inventory = nut.Inventory
 -- Constants for inventory actions.
 INV_REPLICATE = "repl" -- Replicate data about the inventory to a player.
 
-local INV_TABLE_NAME = "inventories2"
+local INV_TABLE_NAME = "inventories"
 local INV_DATA_TABLE_NAME = "invdata"
 
 util.AddNetworkString("nutInventoryInit")

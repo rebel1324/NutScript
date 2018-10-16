@@ -3,9 +3,10 @@ if (not nut.inventory) then
 end
 
 local INV_FIELDS = {"_invID", "_invType"}
-local INV_TABLE = "inventories2"
+local INV_TABLE = "inventories"
 local DATA_FIELDS = {"_key", "_value"}
 local DATA_TABLE = "invdata"
+local ITEMS_TABLE = "items"
 
 function nut.inventory.loadByID(id, noCache)
 	local instance = nut.inventory.instances[invID]
@@ -102,9 +103,9 @@ function nut.inventory.loadAllFromCharID(charID)
 end
 
 function nut.inventory.deleteByID(id)
-	nut.db.delete("invdata", "_invID = "..id)
-	nut.db.delete("inventories2", "_invID = "..id)
-	nut.db.delete("items", "_invID = "..id)
+	nut.db.delete(DATA_TABLE, "_invID = "..id)
+	nut.db.delete(INV_TABLE, "_invID = "..id)
+	nut.db.delete(ITEMS_TABLE, "_invID = "..id)
 	local instance = nut.inventory.instances[id]
 	if (instance) then
 		instance:destroy()

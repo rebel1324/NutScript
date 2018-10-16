@@ -362,15 +362,8 @@ CREATE TABLE IF NOT EXISTS `nut_items` (
 	UNIQUE INDEX `_itemID` (`_itemID`)
 );
 
-CREATE TABLE IF NOT EXISTS `nut_inventories2` (
-	`_invID` INT(12) NOT NULL AUTO_INCREMENT,
-	`_invType` VARCHAR(24) NOT NULL COLLATE 'utf8mb4_general_ci',
-	PRIMARY KEY (`_invID`),
-	UNIQUE INDEX `_invID` (`_invID`)
-);
-
 CREATE TABLE IF NOT EXISTS `nut_invdata` (
-	`_invID` INT(12) FOREIGN KEY REFERENCES nut_inventories2(_invID),
+	`_invID` INT(12) FOREIGN KEY REFERENCES nut_inventories(_invID),
 	`_key` VARCHAR(32) NOT NULL COLLATE 'utf8mb4_general_ci',
 	`_value` VARCHAR(255) NOT NULL COLLATE 'utf8mb4_general_ci',
 	PRIMARY KEY (`_invID`, `_key`)
@@ -418,16 +411,11 @@ CREATE TABLE IF NOT EXISTS nut_items (
 	_quantity integer
 );
 
-CREATE TABLE IF NOT EXISTS nut_inventories2 (
-	_invID integer PRIMARY KEY AUTOINCREMENT,
-	_invType text
-);
-
 CREATE TABLE IF NOT EXISTS nut_invdata (
 	_invID integer,
 	_key text,
 	_value text,
-	FOREIGN KEY(_invID) REFERENCES nut_inventories2(_invID),
+	FOREIGN KEY(_invID) REFERENCES nut_inventories(_invID),
 	PRIMARY KEY (_invID, _key)
 )
 ]]
@@ -437,7 +425,7 @@ DROP TABLE IF EXISTS `nut_players`;
 DROP TABLE IF EXISTS `nut_characters`;
 DROP TABLE IF EXISTS `nut_inventories`;
 DROP TABLE IF EXISTS `nut_items`;
-DROP TABLE IF EXISTS `nut_inventories2`;
+DROP TABLE IF EXISTS `nut_inventories`;
 DROP TABLE IF EXISTS `nut_invdata`;
 ]]
 
@@ -446,7 +434,7 @@ DROP TABLE IF EXISTS nut_players;
 DROP TABLE IF EXISTS nut_characters;
 DROP TABLE IF EXISTS nut_inventories;
 DROP TABLE IF EXISTS nut_items;
-DROP TABLE IF EXISTS nut_inventories2;
+DROP TABLE IF EXISTS nut_inventories;
 DROP TABLE IF EXISTS nut_invdata;
 ]]
 

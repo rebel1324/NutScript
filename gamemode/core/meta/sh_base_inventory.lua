@@ -1,4 +1,4 @@
-local INV_TABLE_NAME = "inventories2"
+local INV_TABLE_NAME = "inventories"
 local INV_DATA_TABLE_NAME = "invdata"
 
 local Inventory = nut.Inventory or {}
