@@ -42,6 +42,14 @@ net.Receive("nutInventoryInit", function()
 
 	nut.inventory.instances[instance.id] = instance
 	hook.Run("InventoryInitialized", instance)
+
+	for _, character in pairs(nut.char.loaded) do
+		for index, inventory in pairs(character.vars.inv) do
+			if (inventory:getID() == id) then
+				character.vars.inv[index] = instance
+			end
+		end
+	end
 end)
 
 net.Receive("nutInventoryAdd", function()
