@@ -116,3 +116,16 @@ function nut.char.restore(client, callback, noCache, id)
 		end
 	end)
 end
+
+function nut.char.cleanUpForPlayer(client)
+	for _, charID in pairs(client.nutCharList or {}) do
+		local character = nut.char.loaded[charID]
+		if (not character) then return end
+
+		netstream.Start(nil, "charDel", character:getID())
+		nut.inventory.cleanUpForCharacter(character)
+		nut.char.loaded[charID] = nil
+
+		hook.Run("CharacterCleanUp", character)
+	end
+end

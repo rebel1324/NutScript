@@ -498,6 +498,8 @@ function GM:PlayerDisconnected(client)
 		hook.Run("OnCharDisconnect", client, character)
 		character:save()
 	end
+
+	nut.char.cleanUpForPlayer(client)
 end
 
 function GM:PlayerAuthed(client, steamID, uniqueID)

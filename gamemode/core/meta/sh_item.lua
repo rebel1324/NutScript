@@ -261,11 +261,16 @@ if (SERVER) then
 
 	-- Deletes the data for this item
 	function ITEM:delete()
+		self:destroy()
+		return nut.db.delete("items", "_itemID = "..self:getID())
+	end
+
+	-- Deletes the in-memory data for this item
+	function ITEM:destroy()
 		net.Start("nutItemDelete")
 			net.WriteUInt(self:getID(), 32)
 		net.Broadcast()
 		nut.item.instances[self:getID()] = nil
-		return nut.db.delete("items", "_itemID = "..self:getID())
 	end
 
 	function ITEM:getEntity()

@@ -247,7 +247,6 @@ function Inventory:sync(recipients)
 		net.WriteType(self.id)
 		net.WriteString(self.typeID)
 		net.WriteTable(self.data)
-
 		net.WriteUInt(table.Count(self.items), 32)		
 		local function writeItem(item)
 			net.WriteUInt(item:getID(), 32)
@@ -263,4 +262,14 @@ end
 
 function Inventory:delete()
 	nut.inventory.deleteByID(self.id)
+end
+
+function Inventory:destroy()
+	for _, item in pairs(self:getItems()) do
+		item:destroy()
+	end
+	nut.inventory.instances[self:getID()] = nil
+	net.Start("nutInventoryDelete")
+		net.WriteType(id)
+	net.Broadcast()
 end

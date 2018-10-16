@@ -167,7 +167,10 @@ NUT_ITEM_DEFAULT_FUNCTIONS = {
 					if (res.error) then
 						return client:notifyLocalized(res.error)
 					end
-					if (IsValid(entity)) then entity:Remove() end
+					if (IsValid(entity)) then
+						entity.nutIsSafe = true
+						entity:Remove()
+					end
 					if (not IsValid(client)) then return end
 					nut.log.add(client, "itemTake", item.name, 1)
 				end)
@@ -517,6 +520,14 @@ do
 		util.AddNetworkString("nutCharacterInvList")
 		util.AddNetworkString("nutItemDelete")
 		util.AddNetworkString("nutItemInstance")
+
+		function nut.item.deleteByID(id)
+			if (nut.item.instances[id]) then
+				nut.item.instances[id]:delete()
+			else
+				nut.db.delete("items", "_itemID = "..id)
+			end
+		end
 
 		function nut.item.loadItemByID(itemIndex, recipientFilter)
 			local range

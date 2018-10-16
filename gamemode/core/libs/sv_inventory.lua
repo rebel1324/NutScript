@@ -105,8 +105,14 @@ function nut.inventory.deleteByID(id)
 	nut.db.delete("invdata", "_invID = "..id)
 	nut.db.delete("inventories2", "_invID = "..id)
 	nut.db.delete("items", "_invID = "..id)
-	nut.inventory.instances[id] = nil
-	net.Start("nutInventoryDelete")
-		net.WriteType(id)
-	net.Broadcast()
+	local instance = nut.inventory.instances[id]
+	if (instance) then
+		instance:destroy()
+	end
+end
+
+function nut.inventory.cleanUpForCharacter(character)
+	for _, inventory in pairs(character:getInv(true)) do
+		inventory:destroy()
+	end
 end
