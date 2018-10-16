@@ -153,6 +153,16 @@ function Inventory:hasItem(itemType)
 	return false
 end
 
+function Inventory:getItemCount(itemType)
+	local count = 0
+	for _, item in pairs(self.items) do
+		if (item.uniqueID == itemType) then
+			count = count + 1
+		end
+	end
+	return count
+end
+
 function Inventory:getID()
 	return self.id
 end

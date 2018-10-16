@@ -504,7 +504,6 @@ do
 		net.Receive("nutItemDelete", function()
 			local id = net.ReadUInt(32)
 			local instance = nut.item.instances[id]
-			print("Delete item", id)
 			if (instance and instance.invID) then
 				local inventory = nut.inventory.instances[instance.invID]
 				if (not inventory) then return end
