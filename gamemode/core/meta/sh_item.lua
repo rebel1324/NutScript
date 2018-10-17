@@ -245,6 +245,7 @@ end
 if (SERVER) then
 	function ITEM:removeFromInventory(preserveItem)
 		local inventory = nut.inventory.instances[self.invID]
+		self.invID = 0
 		if (inventory) then
 			return inventory:removeItem(self:getID(), preserveItem)
 		end

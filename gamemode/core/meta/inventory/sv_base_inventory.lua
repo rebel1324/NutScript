@@ -17,6 +17,7 @@ util.AddNetworkString("nutInventoryRemove")
 -- the newly created item after it has been added to the inventory.
 function Inventory:addItem(item)
 	self.items[item:getID()] = item
+	item.invID = self:getID()
 	nut.db.updateTable({
 		_invID = self.id
 	}, nil, "items", "_itemID = "..item:getID())
@@ -110,7 +111,7 @@ function Inventory:removeItem(itemID, preserveItem)
 			end, "items", "_itemID = "..itemID)
 		end
 	else
-		d:reject("Inventory does not contain item "..tostring(itemID))
+		d:resolve()
 	end
 
 	return d
