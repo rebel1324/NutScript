@@ -18,9 +18,10 @@ function PANEL:nutListenForInventoryChanges(inventory)
 	local function listenForInventoryChange(name, panelHook)
 		panelHook = panelHook or name
 		hook.Add(name, hookID, function(inventory, ...)
-			if (not IsValid(self) or self.inventory ~= inventory) then
+			if (not IsValid(self)) then
 				return
 			end
+			print(panelHook)
 			if (not isfunction(self[panelHook])) then
 				return
 			end
@@ -59,7 +60,7 @@ function PANEL:nutDeleteInventoryHooks()
 	if (not self.nutHookID) then
 		return
 	end
-	for i = 1, #self.toRemoveHooks do
+	for i = 1, #self.nutToRemoveHooks do
 		hook.Remove(self.nutToRemoveHooks[i], self.nutHookID)
 	end
 	self.nutToRemoveHooks = {}
