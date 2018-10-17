@@ -640,11 +640,14 @@ function GM:AllowPlayerPickup(client, entity)
 end
 
 function GM:PreCleanupMap()
+	-- Pretend like we're shutting down so stuff gets saved properly.
+	nut.shuttingDown = true
 	hook.Run("SaveData")
 	hook.Run("PersistenceSave")
 end
 
 function GM:PostCleanupMap()
+	nut.shuttingDown = false
 	hook.Run("LoadData")
 	hook.Run("PostLoadData")
 end
