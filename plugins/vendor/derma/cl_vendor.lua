@@ -1,12 +1,3 @@
-netstream.Hook("vendorTradeDone", function()
-	if (IsValid(nut.gui.vendor)) then
-		if (nut.gui.vendor.toRemove) then
-            nut.gui.vendor.toRemove:Remove()
-            nut.gui.vendor.toRemove = nil
-		end
-	end
-end)
-
 local PANEL = {}
 	function PANEL:Init()
 		self:SetSize(ScrW() * 0.45, ScrH() * 0.65)
@@ -92,49 +83,57 @@ local PANEL = {}
 		self.buyingList = {}
 	end
 
-	function PANEL:addItem(uniqueID, listID)
+	function PANEL:addItem(uniqueID, parent)
 		local entity = self.entity
 		local items = entity.items
-		local data = istable(uniqueID) and items[uniqueID.uniqueID] or items[uniqueID]
-		local itemData = istable(uniqueID) and uniqueID or nut.item.list[uniqueID]
-		uniqueID = istable(uniqueID) and uniqueID.uniqueID or uniqueID
+		local data = items[uniqueID]
 
-		if ((!listID or listID == "selling") and !IsValid(self.sellingList[uniqueID])) then
-			if (data and data[VENDOR_MODE] and data[VENDOR_MODE] != VENDOR_BUYONLY) then
-				local item = self.sellingItems:Add("nutVendorItem")
-				item:setup(uniqueID)
-
-				self.sellingList[uniqueID] = item
-				self.sellingItems:InvalidateLayout()
-			end
+		if (not data) then
+			return
+		end
+		local vendorMode = data[VENDOR_MODE]
+		if (
+			(vendorMode == VENDOR_BUYONLY and parent == self.sellingItems) or
+			(vendorMode == VENDOR_SELLONLY and parent == self.buyingItems)
+		) then
+			return
+		end
+		local isSelling = parent == self.sellingItems
+		if (
+			(isSelling and IsValid(self.sellingList[uniqueID])) or
+			(not isSelling and IsValid(self.buyingList[uniqueID]))
+		) then
+			return
 		end
 
-		if ((!listID or listID == "buying") and !IsValid(self.buyingList[uniqueID])) then
-			if (data and data[VENDOR_MODE] and data[VENDOR_MODE] != VENDOR_SELLONLY) then
-				--  and LocalPlayer():getChar():getInv():hasItem(uniqueID)
-				local item = self.buyingItems:Add("nutVendorItem")
-				item:setup(itemData)
-				item.isLocal = true
+		local item = parent:Add("nutVendorItem")
+		item:setup(uniqueID)
+		parent:InvalidateLayout()
 
-				self.buyingList[itemData.isStackable and itemData.id or itemData.uniqueID] = item
-				self.buyingItems:InvalidateLayout()
-			end
+		if (isSelling) then
+			self.sellingList[uniqueID] = item
+		else
+			item.isLocal = true
+			item:setQuantity(self:getLocalInventoryQuantity(uniqueID))
+			self.buyingList[uniqueID] = item
 		end
 	end
 
-	function PANEL:removeItem(uniqueID, listID)
-		if (!listID or listID == "selling") then
-			if (IsValid(self.sellingList[uniqueID])) then
-				self.sellingList[uniqueID]:Remove()
-				self.sellingItems:InvalidateLayout()
-			end
-		end
+	function PANEL:getLocalInventoryQuantity(itemType)
+		local character = LocalPlayer():getChar()
+		if (not character) then return 0 end
+		local inventory = character:getInv()
+		if (not inventory) then return 0 end
+		return inventory:getItemCount(itemType)
+	end
 
-		if (!listID or listID == "buying") then
-			if (IsValid(self.buyingList[uniqueID])) then
-				self.buyingList[uniqueID]:Remove()
-				self.buyingItems:InvalidateLayout()
-			end
+	function PANEL:removeItem(uniqueID, parent)
+		local itemList = parent == self.buyingItems
+			and self.buyingList
+			or self.sellingList
+		if (IsValid(itemList[uniqueID])) then
+			itemList[uniqueID]:Remove()
+			parent:InvalidateLayout()
 		end
 	end
 
@@ -144,15 +143,41 @@ local PANEL = {}
 		self.vendorName:SetText(entity:getNetVar("name", "")..(entity.money and " ("..entity.money..")" or ""))
 
 		for k, v in SortedPairs(entity.items) do
-			self:addItem(k, "selling")
+			self:addItem(k, self.sellingItems)
 		end
 
-		for k, v in SortedPairs(LocalPlayer():getChar():getInv():getItems()) do
-			if (v.isStackable) then
-				self:addItem(v, "buying")
-			else
-				self:addItem(v.uniqueID, "buying")
-			end
+		local character = LocalPlayer():getChar()
+		if (not character) then
+			return self:Remove()
+		end
+		local inventory = character:getInv()
+		if (not inventory) then
+			return self:Remove()
+		end
+		local items = inventory:getItems()
+		for k, v in SortedPairsByMemberValue(items, "uniqueID") do
+			self:addItem(v.uniqueID, self.buyingItems)
+		end
+
+		self:nutListenForInventoryChanges(inventory)
+	end
+
+	function PANEL:InventoryItemAdded(item)
+		print(item)
+		local itemType = item.uniqueID
+		local panel = self.buyingList[itemType]
+		if (IsValid(panel)) then
+			panel:addQuantity(1)
+		else
+			self:addItem(itemType, self.buyingItems)
+		end
+	end
+
+	function PANEL:InventoryItemRemoved(item)
+		local itemType = item.uniqueID
+		local panel = self.buyingList[itemType]
+		if (IsValid(panel)) then
+			panel:removeQuantity(1)
 		end
 	end
 
@@ -162,6 +187,8 @@ local PANEL = {}
 		if (IsValid(nut.gui.vendorEditor)) then
 			nut.gui.vendorEditor:Remove()
 		end
+
+		self:nutDeleteInventoryHooks()
 	end
 
 	function PANEL:Think()
@@ -187,10 +214,6 @@ local PANEL = {}
 		local price = self.entity:getPrice(panel.item, panel.isLocal)
 
 		if (panel.isLocal) then
-			if (itemTable.isStackable) then
-				price = price / itemTable:getMaxQuantity() * itemTable:getQuantity()
-			end
-
 			self.vendorBuy:SetText(L"sell".." ("..nut.currency.get(price)..")")
 		else
 			self.vendorSell:SetText(L"purchase".." ("..nut.currency.get(price)..")")
@@ -203,7 +226,7 @@ PANEL = {}
 		self:SetTall(36)
 		self:DockMargin(4, 4, 4, 0)
 
-		self.icon = self:Add("SpawnIcon")
+		self.icon = self:Add("nutItemIcon")
 		self.icon:SetPos(2, 2)
 		self.icon:SetSize(32, 32)
 		self.icon:SetModel("models/error.mdl")
@@ -228,6 +251,8 @@ PANEL = {}
 
 			nut.gui.vendor:onItemSelected(self)
 		end
+
+		self.quantity = 1
 	end
 
 	function PANEL:setCallback(callback)
@@ -242,7 +267,7 @@ PANEL = {}
 
 		if (item) then
 			self.item = istable(uniqueID) and uniqueID.uniqueID or uniqueID
-			self.icon:SetModel(item.model, item.skin or 0)
+			self.icon:setItemType(uniqueID)
 			self.name:SetText(L(item.name))
 			self.itemName = L(item.name)
 
@@ -250,36 +275,6 @@ PANEL = {}
 				self.itemID = item.id
 				self.itemTable = item
 			end
-		end
-	end
-
-	function PANEL:Think()
-		if ((self.nextUpdate or 0) < CurTime()) then
-			local name = self.itemName
-			local entity = nut.gui.vendor.entity
-
-			if (entity) then
-				if (self.isLocal) then
-					local count = 0
-
-					if (self.itemTable) then
-						count = self.itemTable:getQuantity()
-					else
-						count = LocalPlayer():getChar():getInv():getItemCount(self.item)
-					end
-
-					if (count == 0) then
-						self:Remove()
-					end
-					
-					name = name.." ("..count..")"
-				elseif (entity.items[self.item] and entity.items[self.item][VENDOR_MAXSTOCK]) then
-					name = name.." ("..entity.items[self.item][VENDOR_STOCK].."/"..entity.items[self.item][VENDOR_MAXSTOCK]..")"
-				end
-			end
-
-			self.name:SetText(name)
-			self.nextUpdate = CurTime() + 0.1
 		end
 	end
 
@@ -291,5 +286,40 @@ PANEL = {}
 		end
 
 		surface.DrawRect(0, 0, w, h)
+	end
+
+	function PANEL:setQuantity(quantity)
+		self.quantity = quantity
+		if (quantity <= 0) then
+			return self:Remove()
+		end
+
+		if (self.isLocal) then
+			self.name:SetText(self.itemName.." ("..quantity..")")
+			return
+		end
+
+		local vendorItem = entity.items[self.item]
+		if (not vendorItem or not vendorItem[VENDOR_MAXSTOCK]) then
+			return
+		end
+
+		local stock = vendorItem[VENDOR_STOCK]
+		local maxStock = vendorItem[VENDOR_MAXSTOCK]
+		self.name:SetText(
+			string.format("%s (%d/%d)", self.itemName, stock, maxStock)
+		)
+	end
+
+	function PANEL:getQuantity()
+		return self.quantity
+	end
+
+	function PANEL:addQuantity(quantity)
+		self:setQuantity(self:getQuantity() + quantity)
+	end
+
+	function PANEL:removeQuantity(quantity)
+		self:setQuantity(self:getQuantity() - quantity)
 	end
 vgui.Register("nutVendorItem", PANEL, "DPanel")
