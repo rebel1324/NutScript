@@ -75,7 +75,7 @@ net.Receive("nutInventoryRemove", function()
 end)
 
 net.Receive("nutInventoryDelete", function()
-	local invID = net.Readtype()
+	local invID = net.ReadType()
 	local instance = nut.inventory.instances[invID]
 	if (instance) then
 		hook.Run("InventoryDeleted", instance)

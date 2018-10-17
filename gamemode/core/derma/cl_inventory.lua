@@ -1,5 +1,4 @@
 NS_ICON_SIZE = 64
-_NUT_INV_PANEL_ID = _NUT_INV_PANEL_ID or 0
 
 -- The queue for the rendered icons.
 renderedIcons = renderedIcons or {}
@@ -224,63 +223,12 @@ PANEL = {}
 		self:SetDraggable(true)
 		self:SetTitle(L"inv")
 		self.toRemoveHooks = {}
-		self.hookID = ""
 	end
 
 	-- Sets which inventory this panel is representing.
 	function PANEL:setInventory(inventory)
 		self.inventory = inventory
-		self:listenForInventoryChanges()
-	end
-
-	-- Make it so the panel hooks below run when the inventory hooks do.
-	function PANEL:listenForInventoryChanges()
-		assert(self.inventory, "No inventory has been set!")
-		local id = self.inventory:getID()
-
-		-- Clean up old hooks
-		self:deleteInventoryHooks()
-
-		_NUT_INV_PANEL_ID = _NUT_INV_PANEL_ID + 1
-		local hookID = "nutInventoryListener".._NUT_INV_PANEL_ID
-		self.hookID = hookID
-
-		-- For each relevant inventory/item hook, add a listener that will
-		-- trigger the associated panel hook.
-		local function listenForInventoryChange(name, panelHook)
-			panelHook = panelHook or name
-			hook.Add(name, hookID, function(inventory, ...)
-				if (not IsValid(self) or self.inventory ~= inventory) then
-					return
-				end
-				self[panelHook](self, ...)
-
-				if (name == "InventoryDeleted") then
-					self.inventory = nil
-					self:deleteInventoryHooks()
-				end
-			end)
-			self.toRemoveHooks[#self.toRemoveHooks + 1] = name
-		end
-
-		listenForInventoryChange("InventoryInitialized")
-		listenForInventoryChange("InventoryDeleted")
-		listenForInventoryChange("InventoryDataChanged")
-		listenForInventoryChange("InventoryItemAdded")
-		listenForInventoryChange("InventoryItemRemoved")
-
-		hook.Add(
-			"ItemDataChanged",
-			hookID,
-			function(item, key, oldValue, newValue)
-				if (not IsValid(self) or not self.inventory) then return end
-				if (not self.inventory.items[item:getID()]) then
-					return
-				end
-				self:InventoryItemDataChanged(item, key, oldValue, newValue)
-			end
-		)
-		self.toRemoveHooks[#self.toRemoveHooks + 1] = "ItemDataChanged"
+		self:nutListenForInventoryChanges(inventory)
 	end
 
 	-- Called when the data for the local inventory has been initialized.
@@ -310,17 +258,9 @@ PANEL = {}
 	function PANEL:InventoryItemDataChanged(item, key, oldValue, newValue)
 	end
 
-	-- Cleans up all the hooks created by listenForInventoryChanges()
-	function PANEL:deleteInventoryHooks()
-		for i = 1, #self.toRemoveHooks do
-			hook.Remove(self.toRemoveHooks[i], self.hookID)
-		end
-		self.toRemoveHooks = {}
-	end
-
 	-- Make sure to clean up hooks before removing the panel.
 	function PANEL:OnRemove()
-		self:deleteInventoryHooks()
+		self:nutDeleteInventoryHooks()
 	end
 vgui.Register("nutInventory", PANEL, "DFrame")
 
