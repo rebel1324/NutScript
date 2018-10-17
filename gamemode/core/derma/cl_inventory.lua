@@ -222,7 +222,6 @@ PANEL = {}
 		self:ShowCloseButton(false)
 		self:SetDraggable(true)
 		self:SetTitle(L"inv")
-		self.toRemoveHooks = {}
 	end
 
 	-- Sets which inventory this panel is representing.

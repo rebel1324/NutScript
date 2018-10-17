@@ -506,9 +506,10 @@ do
 			local instance = nut.item.instances[id]
 			if (instance and instance.invID) then
 				local inventory = nut.inventory.instances[instance.invID]
-				if (not inventory) then return end
+				if (not inventory or not inventory.items[id]) then return end
 
 				inventory.items[id] = nil
+				instance.invID = 0
 				hook.Run("InventoryItemRemoved", inventory, instance)
 			end
 

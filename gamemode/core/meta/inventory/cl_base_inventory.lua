@@ -68,8 +68,9 @@ net.Receive("nutInventoryRemove", function()
 	local invID = net.ReadType()
 	local item = nut.item.instances[itemID]
 	local inventory = nut.inventory.instances[invID]
-	if (item and inventory) then
+	if (item and inventory and inventory.items[itemID]) then
 		inventory.items[itemID] = nil
+		item.invID = 0
 		hook.Run("InventoryItemRemoved", inventory, item)
 	end
 end)
