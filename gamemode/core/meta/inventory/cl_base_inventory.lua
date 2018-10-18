@@ -81,7 +81,9 @@ net.Receive("nutInventoryDelete", function()
 	if (instance) then
 		hook.Run("InventoryDeleted", instance)
 	end
-	nut.inventory.instances[invID] = nil
+	if (invID) then
+		nut.inventory.instances[invID] = nil
+	end
 end)
 
 function Inventory:show(parent)
