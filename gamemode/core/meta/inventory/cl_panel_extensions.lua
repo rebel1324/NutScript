@@ -6,12 +6,14 @@ function PANEL:nutListenForInventoryChanges(inventory)
 	local id = inventory:getID()
 
 	-- Clean up old hooks
-	self:nutDeleteInventoryHooks()
+	self:nutDeleteInventoryHooks(id)
 
 	_NUT_INV_PANEL_ID = (_NUT_INV_PANEL_ID or 0) + 1
 	local hookID = "nutInventoryListener".._NUT_INV_PANEL_ID
-	self.nutHookID = hookID
-	self.nutToRemoveHooks = {}
+	self.nutHookID = self.nutHookID or {}
+	self.nutHookID[id] = hookID
+	self.nutToRemoveHooks = self.nutToRemoveHooks or {}
+	self.nutToRemoveHooks[id] = {}
 
 	-- For each relevant inventory/item hook, add a listener that will
 	-- trigger the associated panel hook.
@@ -21,18 +23,19 @@ function PANEL:nutListenForInventoryChanges(inventory)
 			if (not IsValid(self)) then
 				return
 			end
-			print(panelHook)
 			if (not isfunction(self[panelHook])) then
 				return
 			end
-			self[panelHook](self, ...)
+
+			local args = {...}
+			args[#args + 1] = inventory
+			self[panelHook](self, unpack(args))
 
 			if (name == "InventoryDeleted") then
-				self.inventory = nil
-				self:deleteInventoryHooks()
+				self:deleteInventoryHooks(id)
 			end
 		end)
-		self.nutToRemoveHooks[#self.nutToRemoveHooks + 1] = name
+		table.insert(self.nutToRemoveHooks[id], name)
 	end
 
 	listenForInventoryChange("InventoryInitialized")
@@ -45,23 +48,28 @@ function PANEL:nutListenForInventoryChanges(inventory)
 		"ItemDataChanged",
 		hookID,
 		function(item, key, oldValue, newValue)
-			if (not IsValid(self) or not self.inventory) then return end
-			if (not self.inventory.items[item:getID()]) then
+			if (not IsValid(self) or not inventory.items[item:getID()]) then
 				return
 			end
-			self:InventoryItemDataChanged(item, key, oldValue, newValue)
+			self:InventoryItemDataChanged(
+				item,
+				key,
+				oldValue,
+				newValue,
+				inventory
+			)
 		end
 	)
-	self.nutToRemoveHooks[#self.nutToRemoveHooks + 1] = "ItemDataChanged"
+	table.insert(self.nutToRemoveHooks[id], "ItemDataChanged")
 end
 
 -- Cleans up all the hooks created by listenForInventoryChanges()
-function PANEL:nutDeleteInventoryHooks()
-	if (not self.nutHookID) then
+function PANEL:nutDeleteInventoryHooks(id)
+	if (not self.nutHookID or not self.nutHookID[id]) then
 		return
 	end
-	for i = 1, #self.nutToRemoveHooks do
-		hook.Remove(self.nutToRemoveHooks[i], self.nutHookID)
+	for i = 1, #self.nutToRemoveHooks[id] do
+		hook.Remove(self.nutToRemoveHooks[id][i], self.nutHookID[id])
 	end
-	self.nutToRemoveHooks = {}
+	self.nutToRemoveHooks[id] = nil
 end
