@@ -16,20 +16,24 @@ local REJECTION_START_DEPTH = 7
 
 local function finish(deferred, state)
     state = state or REJECTED
-    if state == REJECTED and not isfunction(deferred.failure) then
-        deferred.state = REJECTED
-        error(
-            debug.traceback(
-                "Unhandled Rejection: "..tostring(deferred.value),
-                REJECTION_START_DEPTH
-            )
-        )
-    end
+	if (state == REJECTED) then
+		if (isfunction(deferred.failure)) then
+			deferred.failure(deferred.value)
+		else
+			deferred.state = REJECTED
+			error(
+				debug.traceback(
+					"Unhandled Rejection: "..tostring(deferred.value),
+					REJECTION_START_DEPTH
+				)
+			)
+		end
+	end
     for i, f in ipairs(deferred.queue) do
         if state == RESOLVED then
             f:resolve(deferred.value)
-        else
-            f:reject(deferred.value)
+		else
+			f:reject(deferred.value)
         end
     end
     deferred.state = state
@@ -54,9 +58,9 @@ local function promise(deferred, next, success, failure, nonpromisecb)
         end, function(v)
             if called then return end
             called = true
-            deferred.value = v
+			deferred.value = v
             failure()
-        end)
+		end)
         if not ok and not called then
             deferred.value = err
             failure()
@@ -87,8 +91,7 @@ local function fire(deferred)
             if ok then
                 deferred.state = RESOLVING
             end
-        end
-
+		end
         if ok ~= nil then
             if ok then
                 deferred.value = v
