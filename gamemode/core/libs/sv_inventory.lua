@@ -72,7 +72,10 @@ end
 
 function nut.inventory.instance(typeID, initialData)
 	local invType = nut.inventory.types[typeID]
-	assert(type(invType) == "table", "invalid inventory type "..typeID)
+	assert(
+		type(invType) == "table",
+		"invalid inventory type "..tostring(typeID)
+	)
 	assert(
 		not data or type(initialData) == "table",
 		"initialData must be a table for nut.inventory.instance"
