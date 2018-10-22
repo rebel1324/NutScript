@@ -11,3 +11,12 @@ nut.util.include("sv_access_rules.lua")
 nut.util.include("cl_networking.lua")
 
 nutStorageBase = PLUGIN
+
+if (CLIENT) then
+	function PLUGIN:transferItem(itemID)
+		if (not nut.item.instances[itemID]) then return end
+		net.Start("nutStorageTransfer")
+			net.WriteUInt(itemID, 32)
+		net.SendToServer()
+	end
+end
