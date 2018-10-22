@@ -96,6 +96,7 @@ function Inventory:removeItem(itemID, preserveItem)
 	local instance = self.items[itemID]
 
 	if (instance) then
+		instance.invID = 0
 		self.items[itemID] = nil
 		
 		net.Start("nutInventoryRemove")
@@ -157,7 +158,6 @@ function Inventory:canAccess(action, context)
 			return result, reason
 		end
 	end
-	return false
 end
 
 -- Changes the canAccess method to also return the result of the rule
