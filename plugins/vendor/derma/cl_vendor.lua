@@ -163,7 +163,6 @@ local PANEL = {}
 	end
 
 	function PANEL:InventoryItemAdded(item)
-		print(item)
 		local itemType = item.uniqueID
 		local panel = self.buyingList[itemType]
 		if (IsValid(panel)) then
