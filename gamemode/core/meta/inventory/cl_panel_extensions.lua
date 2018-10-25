@@ -65,7 +65,24 @@ end
 
 -- Cleans up all the hooks created by listenForInventoryChanges()
 function PANEL:nutDeleteInventoryHooks(id)
-	if (not self.nutHookID or not self.nutHookID[id]) then
+	-- If there are no hooks added, do nothing.
+	if (not self.nutHookID) then
+		return
+	end
+
+	-- If id is not set, delete all hooks.
+	if (id == nil) then
+		for invID, hookID do
+			for i = 1, #self.nutToRemoveHooks[invID] do
+				hook.Remove(self.nutToRemoveHooks[id][i], hookID)
+			end
+			self.nutToRemoveHooks[invID] = nil
+		end
+		return
+	end
+
+	-- If id is set, delete the hooks corresponding to that ID.
+	if (not self.nutHookID[id]) then
 		return
 	end
 	for i = 1, #self.nutToRemoveHooks[id] do
