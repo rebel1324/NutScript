@@ -221,8 +221,12 @@ function Inventory:loadItems()
 				end
 			end
 			self.items = items
+			self:onItemsLoaded(items)
 			return items
 		end)
+end
+
+function Inventory:onItemsLoaded(items)
 end
 
 function Inventory:instance(initialData)
