@@ -97,10 +97,19 @@ function nut.char.restore(client, callback, noCache, id)
 				-- Try to get a default inventory if one does not exist.
 				:next(function(inventories)
 					if (#inventories == 0) then
-						return hook.Run("CreateDefaultInventory", character)
-							:next(function(inventory)
-								return {inventory}
-							end)
+						local promise =
+							hook.Run("CreateDefaultInventory", character)
+						assert(
+							promise ~= nil,
+							"No default inventory available"
+						)
+						return promise:next(function(inventory)
+							assert(
+								inventory ~= nil,
+								"No default inventory available"
+							)
+							return {inventory}
+						end)
 					end
 					return inventories
 				end)
