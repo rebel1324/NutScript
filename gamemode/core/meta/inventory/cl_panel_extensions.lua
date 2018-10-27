@@ -72,9 +72,9 @@ function PANEL:nutDeleteInventoryHooks(id)
 
 	-- If id is not set, delete all hooks.
 	if (id == nil) then
-		for invID, hookID do
-			for i = 1, #self.nutToRemoveHooks[invID] do
-				hook.Remove(self.nutToRemoveHooks[id][i], hookID)
+		for invID, hookIDs in pairs(self.nutToRemoveHooks) do
+			for i = 1, #hookIDs do
+				hook.Remove(hookIDs[i], self.nutHookID)
 			end
 			self.nutToRemoveHooks[invID] = nil
 		end
