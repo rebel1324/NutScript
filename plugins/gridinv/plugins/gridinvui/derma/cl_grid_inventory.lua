@@ -10,22 +10,22 @@ local BORDER_FIX_H = 9 + PADDING
 local SHADOW_COLOR = Color(0, 0, 0, 100)
 
 function PANEL:Init()
-	self.gridW = nut.config.get("invW", 5)
-	self.gridH = nut.config.get("invH", 5)
+	self:MakePopup()
 
+	self.content = self:Add("nutGridInventoryPanel")
+	self.content:Dock(FILL)
+	self.content:setGridSize(1, 1)
+end
+
+function PANEL:setInventory(inventory)
+	self.gridW, self.gridH = inventory:getSize()
 	self:SetSize(
 		self.gridW * (NS_ICON_SIZE + PADDING*2) - PADDING*2,
 		self.gridH * (NS_ICON_SIZE + PADDING*2) + HEADER_FIX - PADDING
 	)
-	self:MakePopup()
 	self:InvalidateLayout(true)
 
-	self.content = self:Add("nutGridInventoryPanel")
-	self.content:Dock(FILL)
 	self.content:setGridSize(self.gridW, self.gridH)
-end
-
-function PANEL:setInventory(inventory)
 	self.content:setInventory(inventory)
 end
 

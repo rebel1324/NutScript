@@ -15,6 +15,30 @@ function PANEL:Init()
 
 	self.icons = {}
 	self:setGridSize(1, 1)
+
+	self.occupied = {}
+end
+
+function PANEL:computeOccupied()
+	if (not self.inventory) then return end
+
+	for y = 0, self.gridH do
+		self.occupied[y] = {}
+		for x = 0, self.gridW do
+			self.occupied[y][x] = false
+		end
+	end
+
+	for _, item in pairs(self.inventory:getItems()) do
+		local x, y = item:getData("x"), item:getData("y")
+		if (not x) then continue end
+
+		for offsetX = 0, (item.width or 1) - 1 do
+			for offsetY = 0, (item.height or 1) - 1 do
+				self.occupied[y + offsetY - 1][x + offsetX - 1] = true
+			end
+		end
+	end
 end
 
 function PANEL:setInventory(inventory)
@@ -40,7 +64,19 @@ end
 function PANEL:onItemPressed(itemIcon, keyCode)
 	if (keyCode == MOUSE_RIGHT) then
 		itemIcon:openActionMenu()
+	elseif (keyCode == MOUSE_LEFT) then
+		itemIcon:DragMousePress(keyCode)
+		itemIcon:MouseCapture(true)
+		nut.item.held = itemIcon
 	end
+end
+
+function PANEL:onItemReleased(itemIcon, keyCode)
+	if (nut.item.held ~= itemIcon) then return end
+
+	itemIcon:DragMouseRelease(keyCode)
+	itemIcon:MouseCapture(false)
+	nut.item.held = nil
 end
 
 function PANEL:populateItems()
@@ -53,6 +89,7 @@ function PANEL:populateItems()
 	for _, item in pairs(self.inventory:getItems()) do
 		self:addItem(item)
 	end
+	self:computeOccupied()
 end
 
 function PANEL:addItem(item)
@@ -75,7 +112,64 @@ function PANEL:addItem(item)
 	icon.OnMousePressed = function(icon, keyCode)
 		self:onItemPressed(icon, keyCode)
 	end
+	icon.OnMouseReleased = function(icon, keyCode)
+		print("Release", keyCode)
+		self:onItemReleased(icon, keyCode)
+	end
 	self.icons[id] = icon
+end
+
+local COLOR_OCCUPIED = Color(255, 0, 0, 25)
+local COLOR_UNOCCUPIED = Color(0, 255, 0, 25)
+
+function PANEL:drawHeldItemRectangle()
+	local heldItem = nut.item.held
+	if (not IsValid(heldItem) or not heldItem.itemTable) then return end
+	local item = heldItem.itemTable
+
+	local size = self.size + PADDING
+	local itemW = (item.width or 1) * size - PADDING
+	local itemH = (item.height or 1) * size - PADDING
+	local x, y = self:LocalCursorPos()
+	x = math.Round((x - (itemW * 0.5)) / size)
+	y = math.Round((y - (itemH * 0.5)) / size)
+
+	local trimX, trimY
+	local maxOffsetY = (item.height or 1) - 1
+	local maxOffsetX = (item.width or 1) - 1
+
+	for offsetY = 0, maxOffsetY do
+		trimY = 0
+		for offsetX = 0, maxOffsetX do
+			trimX = 0
+			if (offsetY == maxOffsetY) then
+				trimY = PADDING
+			end
+			if (offsetX == maxOffsetX) then
+				trimX = PADDING
+			end
+
+			local realX, realY = x + offsetX, y + offsetY
+			if (
+				realX >= self.gridW or realY >= self.gridH
+				or realX < 0 or realY < 0
+			) then
+				continue
+			end
+
+			surface.SetDrawColor(
+				self.occupied[y + offsetY][x + offsetX]
+				and COLOR_OCCUPIED
+				or COLOR_UNOCCUPIED
+			)
+			surface.DrawRect(
+				(x + offsetX) * size,
+				(y + offsetY) * size,
+				size - trimX,
+				size - trimY
+			)
+		end
+	end
 end
 
 function PANEL:Center()
@@ -117,5 +211,8 @@ function PANEL:Paint(w, h)
 			)
 		end
 	end
+
+	self:drawHeldItemRectangle()
 end
+
 vgui.Register("nutGridInventoryPanel", PANEL, "DPanel")
