@@ -76,7 +76,28 @@ function PANEL:onItemReleased(itemIcon, keyCode)
 
 	itemIcon:DragMouseRelease(keyCode)
 	itemIcon:MouseCapture(false)
+
+	if (nut.item.heldPanel == self) then
+		self:onItemDropped(itemIcon, nut.item.heldX, nut.item.heldY)
+	end
+
 	nut.item.held = nil
+	nut.item.heldX = nil
+	nut.item.heldY = nil
+end
+
+function PANEL:onItemDropped(itemIcon, x, y)
+	local item = itemIcon.itemTable
+	if (not item) then return end
+
+	local x, y = self:LocalCursorPos()
+	local size = self.size + PADDING
+	local itemW = (item.width or 1) * size - PADDING
+	local itemH = (item.height or 1) * size - PADDING
+	x = math.Round((x - (itemW * 0.5)) / size) + 1
+	y = math.Round((y - (itemH * 0.5)) / size) + 1
+
+	self.inventory:requestTransfer(item:getID(), self.inventory:getID(), x, y)
 end
 
 function PANEL:populateItems()
@@ -113,7 +134,6 @@ function PANEL:addItem(item)
 		self:onItemPressed(icon, keyCode)
 	end
 	icon.OnMouseReleased = function(icon, keyCode)
-		print("Release", keyCode)
 		self:onItemReleased(icon, keyCode)
 	end
 	self.icons[id] = icon
@@ -213,6 +233,12 @@ function PANEL:Paint(w, h)
 	end
 
 	self:drawHeldItemRectangle()
+end
+
+function PANEL:OnCursorMoved(x, y)
+	nut.item.heldPanel = self
+	nut.item.heldX = x
+	nut.item.heldY = y
 end
 
 vgui.Register("nutGridInventoryPanel", PANEL, "DPanel")

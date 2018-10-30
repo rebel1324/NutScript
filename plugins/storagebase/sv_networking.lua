@@ -3,7 +3,7 @@ util.AddNetworkString("nutStorageLock")
 util.AddNetworkString("nutStorageExit")
 util.AddNetworkString("nutStorageTransfer")
 
-local TRANSFER = "storageTransfer"
+local TRANSFER = "transfer"
 
 local function getValidStorage(client)
 	local storage = client.nutStorageEntity

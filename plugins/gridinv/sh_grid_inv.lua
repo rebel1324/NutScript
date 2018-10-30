@@ -18,7 +18,7 @@ local function CanNotAddItemIfNoSpace(inventory, action, context)
 	local x, y = context.x, context.y
 	if (not x or not y) then return false, "noFit" end
 
-	if (not inventory:canItemFitInInventory(context.item, x, y)) then
+	if (not inventory:doesItemFitAtPos(context.item, x, y)) then
 		return false, "noFit"
 	end
 	return true
@@ -48,7 +48,7 @@ end
 -- Whether or not the item can fit in the rectangle of this inventory.
 function GridInv:canItemFitInInventory(item, x, y)
 	local invW, invH = self:getSize()
-	local itemW, itemH = item.width or 1, item.height or 1
+	local itemW, itemH = (item.width or 1) - 1, (item.height or 1) - 1
 	return x >= 1 and y >= 1 and (x + itemW) <= invW and (y + itemH) <= invH
 end
 
@@ -58,7 +58,7 @@ function GridInv:doesItemOverlapWithOther(testItem, x, y, item)
 	local itemX, itemY = item:getData("x"), item:getData("y")
 	if (not itemX or not itemY) then return false end
 	local itemX2, itemY2 = itemX + (item.width or 1), itemY + (item.height or 1)
-	print(y < itemY2, itemY < testY2)
+
 	if (x >= itemX2 or itemX >= testX2) then return false end
 	if (y >= itemY2 or itemY >= testY2) then return false end
 	return true
@@ -108,7 +108,6 @@ if (SERVER) then
 		local item, justAddDirectly
 		if (nut.item.isItem(itemTypeOrItem)) then
 			item = itemTypeOrItem
-			quantity = 1
 			justAddDirectly = true
 		else
 			item = nut.item.list[itemTypeOrItem]
@@ -120,7 +119,6 @@ if (SERVER) then
 		if (not x or not y) then
 			x, y = self:findFreePosition(item)
 		end
-		print(x,y)
 
 		-- Permission check adding the item.
 		local context = {item = item, x = x, y = y}
@@ -168,6 +166,29 @@ if (SERVER) then
 
 		d:resolve()
 		return d
+	end
+else
+	function GridInv:requestTransfer(itemID, destinationID, x, y)
+		local inventory = nut.inventory.instances[destinationID]
+		if (not inventory) then return end
+		if (
+			x < 1 or x > inventory:getWidth() or
+			y < 1 or y > inventory:getHeight()
+		) then
+			return
+		end
+
+		local item = inventory.items[itemID]
+		if (item and item:getData("x") == x and item:getData("y") == y) then
+			return
+		end
+		
+		net.Start("nutTransferItem")
+			net.WriteUInt(itemID, 32)
+			net.WriteUInt(x, 32)
+			net.WriteUInt(y, 32)
+			net.WriteType(destinationID)
+		net.SendToServer()
 	end
 end
 
