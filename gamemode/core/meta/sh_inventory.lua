@@ -82,16 +82,12 @@ function META:getSize()
 end
 
 -- this is pretty good to debug/develop function to use.
-function META:print(printPos, noQuantity)
+function META:print(printPos)
 	for k, v in pairs(self:getItems()) do
 		local str = k .. ": " .. v.name
 
 		if (printPos) then
 			str = str .. " (" .. v.gridX .. ", " .. v.gridY .. ")"
-		end
-
-		if (!noQuantity) then
-			str = str .. " x" .. v:getQuantity()
 		end
 
 		print(str)

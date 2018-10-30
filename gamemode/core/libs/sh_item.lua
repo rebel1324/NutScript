@@ -24,23 +24,25 @@ function nut.item.instance(index, uniqueID, itemData, x, y, callback)
 
 	itemData = itemData or {}
 
-	if (MYSQLOO_PREPARED) then
-		nut.db.preparedCall("itemInstance", function(data, itemID)
-			local item = nut.item.new(uniqueID, itemID)
+	local function onItemCreated(data, itemID)
+		local item = nut.item.new(uniqueID, itemID)
 
-			if (item) then
-				item.data = itemData
-				item.invID = index
+		if (item) then
+			item.data = itemData
+			item.invID = index
 
-				if (callback) then
-					callback(item)
-				end
-
-				if (item.onInstanced) then
-					item:onInstanced(index, x, y, item)
-				end
+			if (callback) then
+				callback(item)
 			end
-		end, 1, index, uniqueID, itemData, x, y)
+
+			item:onInstanced(index, x, y, item)
+		end
+	end
+
+	if (MYSQLOO_PREPARED) then
+		nut.db.preparedCall(
+			"itemInstance", onItemCreated, 1, index, uniqueID, itemData, x, y
+		)
 	else
 		nut.db.insertTable({
 			_quantity = 1,
@@ -49,22 +51,7 @@ function nut.item.instance(index, uniqueID, itemData, x, y, callback)
 			_data = itemData,
 			_x = x,
 			_y = y
-		}, function(data, itemID)
-			local item = nut.item.new(uniqueID, itemID)
-
-			if (item) then
-				item.data = itemData
-				item.invID = index
-
-				if (callback) then
-					callback(item)
-				end
-
-				if (item.onInstanced) then
-					item:onInstanced(index, x, y, item)
-				end
-			end
-		end, "items")
+		}, onItemCreated, "items")
 	end
 end
 
@@ -178,83 +165,11 @@ NUT_ITEM_DEFAULT_FUNCTIONS = {
 			return false
 		end,
 		onCanRun = function(item)
-			return (item.entity != nil and IsValid(item.entity)) -- lmao just in case.
+			return IsValid(item.entity)
 		end
 	},
-	combine = {
-		-- combine is not accessible via Derma Menu.
-		onCanRun = function(item, data)
-			if (item.entity != nil and IsValid(item.entity)) then return false end
-			
-			if (item.isStackable == true and item.canSplit == true) then
-				local targetItem = nut.item.instances[data]
-
-				if (data and targetItem) then
-					if (targetItem.uniqueID == item.uniqueID) then
-						return true
-					end
-				end
-			end
-
-			return false
-		end,
-		onRun = function(item, data)
-			if (item.isStackable == true and item.canSplit == true) then
-				local targetItem = nut.item.instances[data]
-
-				if (data and targetItem) then
-					if (targetItem.uniqueID == item.uniqueID) then
-						local maxQuantity = item:getMaxQuantity()
-						local combinedQuantity = item:getQuantity() + targetItem:getQuantity()
-
-						if ((combinedQuantity / maxQuantity) > 1) then
-							targetItem:setQuantity(maxQuantity)
-							item:setQuantity(combinedQuantity - maxQuantity)
-
-							return false
-						else
-							targetItem:setQuantity(combinedQuantity)
-
-							return true
-						end
-					end
-				end
-			end
-
-			return false
-		end,
-	},
-	split = {
-		tip = "splitTip",
-		icon = "icon16/wrench.png",
-		onClick = function(item)
-			if (IsValid(item.entity)) then
-				return false
-			end
-			
-			if (nut.gui.split) then
-				nut.gui.split:Remove()
-			end
-
-			nut.gui.split = vgui.Create("nutItemSplit")
-			nut.gui.split:setItem(item)
-			nut.gui.split:noticeMe()
-
-			return false
-		end,
-		onCanRun = function(item)
-			if (item.entity != nil and IsValid(item.entity)) then
-				return false
-			end
-
-			if (item.isStackable == true and item.canSplit == true and item:getQuantity() > 1) then
-				return true
-			end
-
-			return false
-		end
-	}
 }
+
 function nut.item.register(uniqueID, baseID, isBaseItem, path, luaGenerated)
 	if (uniqueID) then
 		local meta = nut.meta.item
@@ -339,6 +254,9 @@ function nut.item.loadFromDir(directory)
 end
 
 function nut.item.new(uniqueID, id)
+	id = id and tonumber(id) or id
+	assert(type(id) == "number", "non-number ID given to nut.item.new")
+
 	if (nut.item.instances[id] and nut.item.instances[id].uniqueID == uniqueID) then
 		return nut.item.instances[id]
 	end
@@ -662,13 +580,6 @@ do
 				-- print << invalid request
 				return false
 			end 
-
-			local itemQuantity = item:getQuantity()
-
-			if (amount <= 0 or itemQuantity == amount or itemQuantity < amount or item:getMaxQuantity() < amount) then
-				-- print << cantsplit
-				return false
-			end
 
 			amount = math.Round(amount)
 			local leftOver = itemQuantity - amount

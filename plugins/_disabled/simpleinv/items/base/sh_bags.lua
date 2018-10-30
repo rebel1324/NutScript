@@ -6,9 +6,9 @@ ITEM.weight = -5
 
 function ITEM:onRegistered()
 	if (
-		type(self.width) == "number" and
-		type(self.height) == "number"
+		type(self.invWidth) == "number" and
+		type(self.invHeight) == "number"
 	) then
-		self.weight = -1 * self.width * self.height
+		self.weight = -1 * self.invWidth * self.invHeight
 	end
 end
