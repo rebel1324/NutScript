@@ -45,11 +45,7 @@ function ITEM:getPrice()
 		price = self:calcPrice(self.price)
 	end
 
-	if (self.isStackable) then
-		return price and (price * math.Clamp(self:getQuantity() / self:getMaxQuantity(), 0, 1)) or 0 -- yeah..
-	else
-		return price or 0
-	end
+	return price or 0
 end
 
 function ITEM:call(method, client, entity, ...)
