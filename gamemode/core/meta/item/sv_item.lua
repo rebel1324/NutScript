@@ -22,6 +22,7 @@ end
 function ITEM:remove()
 	return self:removeFromInventory()
 		:next(function() return self:delete() end)
+		:next(function() self:onRemoved() end)
 end
 
 -- Deletes the in-memory data for this item
