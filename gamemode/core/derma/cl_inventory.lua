@@ -239,8 +239,10 @@ PANEL = {}
 
 	-- Called when the inventory for this panel has been deleted. This may
 	-- be because the local player no longer has access to the inventory!
-	function PANEL:InventoryDeleted()
-		self:Remove()
+	function PANEL:InventoryDeleted(inventory)
+		if (self.inventory == inventory) then
+			self:Remove()
+		end
 	end
 
 	-- Called when the given item has been added to the inventory.

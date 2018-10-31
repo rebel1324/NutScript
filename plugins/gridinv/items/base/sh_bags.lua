@@ -84,3 +84,12 @@ function ITEM:onSync(recipient)
 		inventory:sync(recipient)
 	end
 end
+
+function ITEM.postHooks:drop()
+	local invID = self:getData("id")
+	if (invID) then
+		net.Start("nutInventoryDelete")
+			net.WriteType(invID)
+		net.Send(self.player)
+	end
+end
