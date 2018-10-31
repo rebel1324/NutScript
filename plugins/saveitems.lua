@@ -40,6 +40,8 @@ function PLUGIN:LoadData()
 								item.quantity = tonumber(v._quantity)
 								item:spawn(position).nutItemID = itemID
 
+								item:onRestored()
+
 								item.invID = 0
 								table.insert(loadedItems, item)
 							end
