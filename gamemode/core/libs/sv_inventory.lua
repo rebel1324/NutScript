@@ -57,7 +57,7 @@ function nut.inventory.loadFromDefaultStorage(id)
 			return
 		end
 
-		instance = invType:new()
+		local instance = invType:new()
 		instance.id = id
 		instance.data = {}
 		for _, row in ipairs(res[2].results or {}) do
