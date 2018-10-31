@@ -58,12 +58,10 @@ if (SERVER) then
 		local char = client:getChar()
 
 		if (!tradeData or !char) then
-			print("Not Valid Item or Client Char.")
 			return false
 		end
 
 		if (!char:hasMoney(tradeData[1] or 0)) then
-			print("Insufficient Fund.")
 			return false
 		end
 
