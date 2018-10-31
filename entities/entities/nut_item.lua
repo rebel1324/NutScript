@@ -60,8 +60,6 @@ if (SERVER) then
 				self:setNetVar("data", itemTable.data)
 			end
 
-			self:setNetVar("quantity", itemTable:getQuantity())
-
 			local physObj = self:GetPhysicsObject()
 
 			if (!IsValid(physObj)) then
