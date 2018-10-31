@@ -45,8 +45,15 @@ end
 
 -- Spawn an item entity based off the item table.
 function ITEM:spawn(position, angles)
+	local instance = nut.item.instances[self.id]
+
 	-- Check if the item has been created before.
-	if (nut.item.instances[self.id]) then
+	if (instance) then
+		if (IsValid(instance.entity)) then
+			instance.entity.nutIsSafe = true
+			instance.entity:Remove()
+		end
+
 		local client
 
 		-- If the first argument is a player, then we will find a position to drop
@@ -63,6 +70,7 @@ function ITEM:spawn(position, angles)
 		entity:SetAngles(angles or Angle(0, 0, 0))
 		-- Make the item represent this item.
 		entity:setItem(self.id)
+		instance.entity = entity
 
 		if (IsValid(client)) then
 			entity.nutSteamID = client:SteamID()
