@@ -52,7 +52,9 @@ function nut.inventory.new(typeID)
 	local class = nut.inventory.types[typeID]
 	assert(class ~= nil, "bad inventory type "..typeID)
 
-	return setmetatable({}, class)
+	return setmetatable({
+		config = table.Copy(class.config)
+	}, class)
 end
 
 if (CLIENT) then
