@@ -68,28 +68,13 @@ function PANEL:onItemPressed(itemIcon, keyCode)
 		itemIcon:DragMousePress(keyCode)
 		itemIcon:MouseCapture(true)
 		nut.item.held = itemIcon
+		nut.item.heldPanel = self
 	end
 end
 
 function PANEL:onItemReleased(itemIcon, keyCode)
-	if (nut.item.held ~= itemIcon) then return end
-
-	itemIcon:DragMouseRelease(keyCode)
-	itemIcon:MouseCapture(false)
-
-	if (nut.item.heldPanel == self) then
-		self:onItemDropped(itemIcon, nut.item.heldX, nut.item.heldY)
-	end
-
-	nut.item.held = nil
-	nut.item.heldX = nil
-	nut.item.heldY = nil
-end
-
-function PANEL:onItemDropped(itemIcon, x, y)
 	local item = itemIcon.itemTable
 	if (not item) then return end
-
 	local x, y = self:LocalCursorPos()
 	local size = self.size + PADDING
 	local itemW = (item.width or 1) * size - PADDING
@@ -134,7 +119,14 @@ function PANEL:addItem(item)
 		self:onItemPressed(icon, keyCode)
 	end
 	icon.OnMouseReleased = function(icon, keyCode)
-		self:onItemReleased(icon, keyCode)
+		local heldPanel = nut.item.heldPanel
+		if (IsValid(heldPanel)) then
+			heldPanel:onItemReleased(icon, keyCode)
+		end
+		icon:DragMouseRelease(keyCode)
+		icon:MouseCapture(false)
+		nut.item.held = nil
+		nut.item.heldPanel = nil
 	end
 	self.icons[id] = icon
 end
@@ -217,6 +209,19 @@ function PANEL:InventoryItemDataChanged(item, key, oldValue, newValue)
 	self:populateItems()
 end
 
+function PANEL:computeHeldPanel()
+	if (not nut.item.held or nut.item.held == self) then return end
+	local cursorX, cursorY = self:LocalCursorPos()
+	if (
+		cursorX < 0 or cursorY < 0 or
+		cursorX > self:GetWide() or cursorY > self:GetTall()
+	) then
+		return
+	end
+
+	nut.item.heldPanel = self
+end
+
 function PANEL:Paint(w, h)
 	surface.SetDrawColor(0, 0, 0, 100)
 
@@ -233,12 +238,17 @@ function PANEL:Paint(w, h)
 	end
 
 	self:drawHeldItemRectangle()
+	-- Hack to figure out which panel is being hovered while ignoring Z axis.
+	self:computeHeldPanel()
 end
 
 function PANEL:OnCursorMoved(x, y)
-	nut.item.heldPanel = self
-	nut.item.heldX = x
-	nut.item.heldY = y
+end
+
+function PANEL:OnCursorExited()
+	if (nut.item.heldPanel == self) then
+		nut.item.heldPanel = nil
+	end
 end
 
 vgui.Register("nutGridInventoryPanel", PANEL, "DPanel")
