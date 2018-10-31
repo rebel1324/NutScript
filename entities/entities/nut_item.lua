@@ -99,10 +99,7 @@ if (SERVER) then
 
 		if (!nut.shuttingDown and !self.nutIsSafe and self.nutItemID) then
 			if (itemTable) then
-				if (itemTable.onRemoved) then
-					itemTable:onRemoved()
-				end
-				nut.item.deleteByID(self.nutItemID)
+				itemTable:remove()
 			end
 		end
 	end
