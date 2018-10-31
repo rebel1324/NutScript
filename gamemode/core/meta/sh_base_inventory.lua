@@ -125,7 +125,7 @@ end
 -- @return A table containing items whose type matches
 function Inventory:getItemsByType(itemType)
 	local items = {}
-	for _, item in pairs(self.items) do
+	for _, item in pairs(self:getItems()) do
 		if (item.uniqueID == itemType) then
 			items[#items + 1] = item
 		end
@@ -145,7 +145,7 @@ end
 -- @param itemType A string containing the desired type of item
 -- @return True if there is such an item, false otherwise
 function Inventory:hasItem(itemType)
-	for _, item in pairs(self.items) do
+	for _, item in pairs(self:getItems()) do
 		if (item.uniqueID == itemType) then
 			return true
 		end
@@ -155,7 +155,7 @@ end
 
 function Inventory:getItemCount(itemType)
 	local count = 0
-	for _, item in pairs(self.items) do
+	for _, item in pairs(self:getItems()) do
 		if (item.uniqueID == itemType) then
 			count = count + 1
 		end
