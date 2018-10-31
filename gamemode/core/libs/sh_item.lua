@@ -471,6 +471,8 @@ do
 							item.data = data or {}
 							item.invID = 0
 							item.quantity = tonumber(v._quantity)
+
+							item:onRestored()
 						end
 					end
 				end
@@ -627,9 +629,11 @@ do
 			-- Permission check with inventory. Or, if no inventory exists,
 			-- the player has no way of accessing the item.
 			local inventory = nut.inventory.instances[item.invID]
-			local context = {client = client, item = item, entity = entity}
+			local context = {
+				client = client, item = item, entity = entity, action = action
+			}
 			if (
-				inventory and not inventory:canAccess(action, context)
+				inventory and not inventory:canAccess("item", context)
 			) then
 				return
 			end
