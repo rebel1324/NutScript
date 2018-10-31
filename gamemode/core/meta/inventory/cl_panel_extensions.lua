@@ -31,7 +31,7 @@ function PANEL:nutListenForInventoryChanges(inventory)
 			args[#args + 1] = inventory
 			self[panelHook](self, unpack(args))
 
-			if (name == "InventoryDeleted") then
+			if (name == "InventoryDeleted" and self.deleteInventoryHooks) then
 				self:deleteInventoryHooks(id)
 			end
 		end)
