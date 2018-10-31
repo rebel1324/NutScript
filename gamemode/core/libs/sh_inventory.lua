@@ -61,7 +61,8 @@ if (CLIENT) then
 		if (IsValid(nut.gui[globalName])) then
 			nut.gui[globalName]:Remove()
 		end
-		nut.gui[globalName] =
-			hook.Run("CreateInventoryPanel", inventory, parent)
+		local panel = hook.Run("CreateInventoryPanel", inventory, parent)
+		nut.gui[globalName] = panel
+		return panel
 	end
 end
