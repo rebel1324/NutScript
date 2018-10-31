@@ -408,31 +408,13 @@ function GM:Move(client, moveData)
 end
 
 function GM:CanItemBeTransfered(itemObject, curInv, inventory)
-	if (itemObject and itemObject.invType) then
-		if (inventory.id != 0 and curInv.id != inventory.id) then
-			if (inventory.vars and inventory.vars.invType) then
-				return false 
-			end
+	if (itemObject:getData("equip")) then
+		if (SERVER) then
+			owner:notifyLocalized("equippedBag")
 		end
-
-		local inventory = nut.item.inventories[itemObject:getData("id")]
-
-		if (inventory) then
-			for k, v in pairs(inventory:getItems()) do
-				if (v:getData("equip") == true) then
-					local owner = itemObject:getOwner()
-					
-					if (owner and IsValid(owner)) then
-						if (SERVER) then
-							owner:notifyLocalized("equippedBag")
-						end
-					end
-
-					return false
-				end
-			end
-		end
+		return false
 	end
+	return true
 end
 
 function GM:ShowHelp() end

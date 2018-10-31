@@ -24,16 +24,21 @@ net.Receive("nutTransferItem", function(_, client)
 	) then
 		return
 	end
+
 	local context = {
 		client = client,
 		item = item,
 		from = oldInventory,
 		to = inventory
 	}
-	if (
-		not oldInventory:canAccess(TRANSFER, context) or
-		not inventory:canAccess(TRANSFER, context)
-	) then
+	local canTransfer, reason = oldInventory:canAccess(TRANSFER, context)
+	if (not canTransfer) then
+		if (reason) then client:notifyLocalized(reason) end
+		return
+	end
+	canTransfer, reason = inventory:canAccess(TRANSFER, context)
+	if (not canTransfer) then
+		if (reason) then client:notifyLocalized(reason) end
 		return
 	end
 
@@ -41,18 +46,24 @@ net.Receive("nutTransferItem", function(_, client)
 	-- the other inventory. If something fails, just drop the item in the world.
 	local oldX, oldY = item:getData("x"), item:getData("y")
 	local failItemDropPos = client:getItemDropPos()
+
+	local function fail()
+		item:spawn(failItemDropPos)
+	end
+
 	oldInventory:removeItem(itemID, true)
 		:next(function()
 			return inventory:add(item, x, y)
-		end)
+		end, fail)
 		:next(function(res)
 			if (res and res.error) then
+				client:notifyLocalized(res.error)
 				return oldInventory:add(item, oldX, oldY)
 			end
-		end)
+		end, fail)
 		:next(function(res)
 			if (res and res.error) then
-				item:spawn(failItemDropPos)
+				fail()
 			end
-		end)
+		end, fail)
 end)

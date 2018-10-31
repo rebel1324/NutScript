@@ -6,6 +6,10 @@ ITEM.model = "models/props_c17/suitcase001a.mdl"
 ITEM.category = "Storage"
 ITEM.isBag = true
 
+-- The size of the inventory held by this item.
+ITEM.invWidth = 2
+ITEM.invHeight = 2
+
 ITEM.functions.View = {
 	icon = "icon16/briefcase.png",
 	onClick = function(item)
@@ -39,39 +43,16 @@ ITEM.functions.View = {
 	end
 }
 
--- The size of the inventory held by this item.
-ITEM.invWidth = 1
-ITEM.invHeight = 1
-
--- Inventories associated with a bag item can only be accessed if the
--- inventory of the bag item can be accessed.
-local function CanAccessIfPlayerHasAccessToBag(inventory, action, context)
-	-- Bag inventories without an item should not exist.
-	local bagItemID = inventory:getData("item")
-	if (not bagItemID) then return false end
-	local bagItem = nut.item.instances[bagItemID]
-	if (not bagItem) then return false end
-
-	-- If there is a parent inventory (inventory of the bag item), then defer
-	-- access decision to that.
-	local parentInv = nut.inventory.instances[bagItem.invID]
-	local contextWithBagInv = table.Copy(context)
-	contextWithBagInv.bagInv = inventory
-	return parentInv
-		and parentInv:canAccess(action, contextWithBagInv)
-		or false
-end
-
-function ITEM:onInstanced(id)
+function ITEM:onInstanced()
 	local data = {
-		item = id,
+		item = self:getID(),
 		w = self.invWidth,
 		h = self.invHeight
 	}
 	nut.inventory.instance(INVENTORY_TYPE_ID, data)
 		:next(function(inventory)
 			self:setData("id", inventory:getID())
-			inventory:addAccessRule(CanAccessIfPlayerHasAccessToBag)
+			hook.Run("SetupBagInventoryAccessRules", inventory)
 			inventory:sync()
 		end)
 end
@@ -81,7 +62,7 @@ function ITEM:onRestored()
 	if (invID) then
 		nut.inventory.loadByID(invID)
 			:next(function(inventory)
-				inventory:addAccessRule(CanAccessIfPlayerHasAccessToBag)
+				hook.Run("SetupBagInventoryAccessRules", inventory)
 			end)
 	end
 end
