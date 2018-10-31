@@ -6,8 +6,7 @@ local MAX_WEIGHT = 10
 local function CanAccessInventoryIfCharacterIsOwner(inventory, action, context)
 	local ownerID = inventory:getData("char")
 	local client = context.client
-	local character = IsValid(client) and client:getChar()
-	if (character and character:getID() == ownerID) then
+	if (table.HasValue(client.nutCharList, ownerID)) then
 		return true
 	end
 end
