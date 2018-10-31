@@ -259,10 +259,18 @@ function Inventory:sync(recipients)
 			net.WriteTable(item.data)
 		end
 
+		-- TODO:
+		-- Roughly 150 bytes per item * n items - 325 bytes < 64000 bytes
+		-- => n is roughly less than 428 items before net message limit reached.
+		-- Is this safe to assume inventories have at most 400 items?
 		for _, item in pairs(self.items) do
 			writeItem(item)
 		end
-	net.Send(recipients or self:getRecipients())
+	local res = net.Send(recipients or self:getRecipients())
+
+	for _, item in pairs(self.items) do
+		item:onSync(recipients)
+	end
 end
 
 function Inventory:delete()
