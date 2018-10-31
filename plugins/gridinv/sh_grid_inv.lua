@@ -70,7 +70,7 @@ function GridInv:doesItemFitAtPos(testItem, x, y)
 	end
 
 	-- Make sure no current items overlap if we were to put item at (x, y).
-	for _, item in pairs(self:getItems()) do
+	for _, item in pairs(self.items) do
 		if (self:doesItemOverlapWithOther(testItem, x, y, item)) then
 			return false
 		end
@@ -97,6 +97,21 @@ function GridInv:configure()
 		self:addAccessRule(CanNotAddItemIfNoSpace)
 		self:addAccessRule(CanAccessInventoryIfCharacterIsOwner)
 	end
+end
+
+function GridInv:getItems(noRecurse)
+	local items = self.BaseClass.getItems(self)
+	if (noRecurse) then return items end
+
+	-- If recursive, then add the items within bags to the items list.
+	local allItems = {}
+	for id, item in pairs(items) do
+		allItems[id] = item
+		if (item.getInv and item:getInv()) then
+			allItems = table.Merge(allItems, item:getInv():getItems())
+		end
+	end
+	return allItems
 end
 
 if (SERVER) then

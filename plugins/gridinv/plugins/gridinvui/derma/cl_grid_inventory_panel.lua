@@ -29,7 +29,7 @@ function PANEL:computeOccupied()
 		end
 	end
 
-	for _, item in pairs(self.inventory:getItems()) do
+	for _, item in pairs(self.inventory:getItems(true)) do
 		local x, y = item:getData("x"), item:getData("y")
 		if (not x) then continue end
 
@@ -92,7 +92,7 @@ function PANEL:populateItems()
 		end
 		self.icons[key] = nil
 	end
-	for _, item in pairs(self.inventory:getItems()) do
+	for _, item in pairs(self.inventory:getItems(true)) do
 		self:addItem(item)
 	end
 	self:computeOccupied()
