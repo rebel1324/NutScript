@@ -51,6 +51,7 @@ function PANEL:nutListenForInventoryChanges(inventory)
 			if (not IsValid(self) or not inventory.items[item:getID()]) then
 				return
 			end
+			if (not isfunction(self.InventoryDataChanged)) then return end
 			self:InventoryItemDataChanged(
 				item,
 				key,
