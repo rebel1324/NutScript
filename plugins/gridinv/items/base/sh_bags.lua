@@ -93,3 +93,33 @@ function ITEM.postHooks:drop()
 		net.Send(self.player)
 	end
 end
+
+function ITEM:onCombine(other)
+	local client = self.player
+	local invID = self:getInv() and self:getInv():getID() or nil
+	if (not invID) then return end
+
+	-- If other item was combined onto this item, put it in the bag.
+	local res = hook.Run(
+		"HandleItemTransferRequest",
+		client,
+		other:getID(),
+		nil,
+		nil,
+		invID
+	)
+	if (not res) then return end
+
+	-- If an attempt was made, either report the error or make a
+	-- "success" sound.
+	res:next(function(res)
+		if (not IsValid(client)) then return end
+		if (istable(res) and type(res.error) == "string") then
+			return client:notifyLocalized(res.error)
+		end
+		client:EmitSound(
+			"physics/cardboard/cardboard_box_impact_soft2.wav",
+			50
+		)
+	end)
+end

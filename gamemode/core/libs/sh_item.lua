@@ -657,51 +657,8 @@ do
 			) then
 				return
 			end
-			-- Allow other things to also add permission checks
-			local canInteract =
-				hook.Run("CanPlayerInteractItem", client, action, item, data)
-			if (canInteract == false) then
-				return
-			end
-			item.player = client
-			item.entity = entity
 
-			local callback = item.functions[action]
-			if (not callback) then return end
-
-			canInteract = callback.onCanRun
-				and callback.onCanRun(item, data) == false
-				or true
-			if (not canInteract) then
-				item.entity = nil
-				item.player = nil
-				return
-			end
-
-			local result
-			if (item.hooks[action]) then
-				result = item.hooks[action](item, data)
-			end
-			if (result == nil) then
-				result = callback.onRun(item, data)
-			end
-			if (item.postHooks[action]) then
-				-- Posthooks shouldn't override the result from onRun
-				item.postHooks[action](item, result, data)
-			end
-			hook.Run("OnPlayerInteractItem", client, action, item, result, data)
-
-			if (result ~= false) then
-				if (IsValid(entity)) then
-					entity.nutIsSafe = true
-					entity:Remove()
-				else
-					item:remove()
-				end
-			end
-
-			item.entity = nil
-			item.player = nil
+			item:interact(action, client, entity, data)
 		end)
 	end
 

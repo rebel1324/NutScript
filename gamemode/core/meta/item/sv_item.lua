@@ -160,3 +160,64 @@ function ITEM:setData(key, value, receivers, noSave, noCheckEntity)
 
 	self.data.x, self.data.y = x, y
 end
+
+function ITEM:interact(action, client, entity, data)
+	assert(
+		type(client) == "Player" and IsValid(client),
+		"Item action cannot be performed without a player"
+	)
+
+	local canInteract =
+		hook.Run("CanPlayerInteractItem", client, action, self, data)
+	if (canInteract == false) then
+		return false
+	end
+
+	local oldPlayer, oldEntity = self.player, self.entity
+
+	self.player = client
+	self.entity = entity
+
+	local callback = self.functions[action]
+	if (not callback) then
+		self.player = oldPlayer
+		self.entity = oldEntity
+		return false
+	end
+
+	canInteract = isfunction(callback.onCanRun)
+		and callback.onCanRun(self, data) == false
+		or true
+	if (not canInteract) then
+		self.player = oldPlayer
+		self.entity = oldEntity
+		return false
+	end
+
+	local result
+	-- TODO: better solution for hooking onto these - something like mixins?
+	if (isfunction(self.hooks[action])) then
+		result = self.hooks[action](self, data)
+	end
+	if (result == nil and isfunction(callback.onRun)) then
+		result = callback.onRun(self, data)
+	end
+	if (self.postHooks[action]) then
+		-- Posthooks shouldn't override the result from onRun
+		self.postHooks[action](self, result, data)
+	end
+	hook.Run("OnPlayerInteractItem", client, action, self, result, data)
+
+	if (result ~= false) then
+		if (IsValid(entity)) then
+			entity.nutIsSafe = true
+			entity:Remove()
+		else
+			self:remove()
+		end
+	end
+
+	self.player = oldPlayer
+	self.entity = oldEntity
+	return true
+end

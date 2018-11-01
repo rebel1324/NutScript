@@ -216,10 +216,8 @@ function Inventory:loadItems()
 				end
 
 				-- Legacy support for x, y data
-				print(1)
 				item.data.x = tonumber(result._x)
 				item.data.y = tonumber(result._y)
-				print(2)
 
 				items[itemID] = item
 				if (item.onRestored) then

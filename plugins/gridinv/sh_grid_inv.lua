@@ -17,8 +17,9 @@ local function CanNotAddItemIfNoSpace(inventory, action, context)
 	local x, y = context.x, context.y
 	if (not x or not y) then return false, "noFit" end
 
-	if (not inventory:doesItemFitAtPos(context.item, x, y)) then
-		return false, "noFit"
+	local doesFit, item = inventory:doesItemFitAtPos(context.item, x, y)
+	if (not doesFit) then
+		return false, {item = item}
 	end
 	return true
 end
@@ -72,7 +73,7 @@ function GridInv:doesItemFitAtPos(testItem, x, y)
 	-- Make sure no current items overlap if we were to put item at (x, y).
 	for _, item in pairs(self.items) do
 		if (self:doesItemOverlapWithOther(testItem, x, y, item)) then
-			return false
+			return false, item
 		end
 	end
 
@@ -204,16 +205,18 @@ else
 	function GridInv:requestTransfer(itemID, destinationID, x, y)
 		local inventory = nut.inventory.instances[destinationID]
 		if (not inventory) then return end
-		if (
-			x < 1 or x > inventory:getWidth() or
-			y < 1 or y > inventory:getHeight()
-		) then
-			return
-		end
 
 		local item = inventory.items[itemID]
 		if (item and item:getData("x") == x and item:getData("y") == y) then
 			return
+		end
+
+		if (
+			item and
+			(x > inventory:getWidth() or y > inventory:getHeight() or
+			(x + (item.width or 1) - 1) < 1 or (y + (item.height or 1) - 1) < 1)
+		) then
+			destinationID = nil
 		end
 		
 		net.Start("nutTransferItem")
