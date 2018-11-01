@@ -115,7 +115,26 @@ function GridInv:getItems(noRecurse)
 end
 
 if (SERVER) then
-	function GridInv:add(itemTypeOrItem, x, y)
+	function GridInv:add(itemTypeOrItem, xOrQuantity, yOrData)
+		local x, y, quantity, data
+
+		-- Overload of GridInv:add(itemTypeOrItem, quantity, data)
+		if (type(yOrData) == "table") then
+			quantity = tonumber(quantity) or 1
+			data = yOrData
+
+			if (quantity > 1) then
+				local items = {}
+				for i = 1, quantity do
+					items[i] = self:add(itemTypeOrItem, 1, data)
+				end
+				return deferred.all(items)
+			end
+		else
+			x = tonumber(xOrQuantity)
+			y = tonumber(yOrData)
+		end
+
 		local d = deferred.new()
 
 		-- Get the table for the item type.
@@ -150,7 +169,7 @@ if (SERVER) then
 		end
 
 		-- Otherwise, make quantity number of instances.
-		local data = {x = x, y = y}
+		data = table.Merge({x = x, y = y}, data or {})
 		local itemType = item.uniqueID
 		nut.item.instance(self:getID(), itemType, data, 0, 0, function(item)
 			self:addItem(item)
