@@ -53,6 +53,7 @@ function nut.inventory.new(typeID)
 	assert(class ~= nil, "bad inventory type "..typeID)
 
 	return setmetatable({
+		items = {},
 		config = table.Copy(class.config)
 	}, class)
 end
