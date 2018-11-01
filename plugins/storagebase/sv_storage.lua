@@ -16,7 +16,7 @@ function PLUGIN:PlayerSpawnedProp(client, model, entity)
 	storage:SetSolid(SOLID_VPHYSICS)
 	storage:PhysicsInit(SOLID_VPHYSICS)
 
-	nut.inventory.instance(data.invType)
+	nut.inventory.instance(data.invType, data.invData)
 		:next(function(inventory)
 			if (IsValid(storage)) then
 				storage:setInventory(inventory)
