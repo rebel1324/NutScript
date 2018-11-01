@@ -3,6 +3,7 @@ local PLUGIN = PLUGIN
 local PANEL = {}
 
 local PADDING = 2
+local BORDER = 4
 local WEIGHT_PANEL_HEIGHT = 32
 local HEADER_FIX = 22
 local BORDER_FIX_H = 9 + PADDING
@@ -20,8 +21,8 @@ end
 function PANEL:setInventory(inventory)
 	self.gridW, self.gridH = inventory:getSize()
 	self:SetSize(
-		self.gridW * (NS_ICON_SIZE + PADDING*2) - PADDING*2,
-		self.gridH * (NS_ICON_SIZE + PADDING*2) + HEADER_FIX - PADDING
+		self.gridW * (NS_ICON_SIZE + PADDING) + BORDER*2,
+		self.gridH * (NS_ICON_SIZE + PADDING) + HEADER_FIX + BORDER*2
 	)
 	self:InvalidateLayout(true)
 
