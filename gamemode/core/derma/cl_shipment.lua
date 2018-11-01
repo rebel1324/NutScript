@@ -26,11 +26,10 @@ local PANEL = {}
 				item:Dock(TOP)
 				item:DockMargin(4, 4, 4, 0)
 
-				item.icon = item:Add("SpawnIcon")
+				item.icon = item:Add("nutItemIcon")
 				item.icon:SetPos(2, 2)
 				item.icon:SetSize(32, 32)
-				item.icon:SetModel(itemTable.model)
-				item.icon:SetToolTip(itemTable:getDesc())
+				item.icon:setItemType(itemTable.uniqueID)
 
 				item.quantity = item.icon:Add("DLabel")
 				item.quantity:SetSize(32, 32)

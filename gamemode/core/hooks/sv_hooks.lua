@@ -12,12 +12,7 @@ function GM:PlayerInitialSpawn(client)
 			model = faction and table.Random(faction.models) or "models/gman.mdl"
 		}, botID, client, client:SteamID64())
 		character.isBot = true
-
-		local inventory = nut.item.createInv(nut.config.get("invW"), nut.config.get("invH"), botID)
-		inventory:setOwner(botID)
-		inventory.noSave = true
-
-		character.vars.inv = {inventory}
+		character.vars.inv = {}
 
 		nut.char.loaded[os.time()] = character
 
@@ -131,7 +126,7 @@ function GM:CanPlayerInteractItem(client, action, item)
 		return false
 	end
 
-	return client:Alive()
+	return client:Alive() and not client:getLocalVar("ragdoll")
 end
 
 function GM:CanPlayerTakeItem(client, item)
@@ -503,6 +498,8 @@ function GM:PlayerDisconnected(client)
 		hook.Run("OnCharDisconnect", client, character)
 		character:save()
 	end
+
+	nut.char.cleanUpForPlayer(client)
 end
 
 function GM:PlayerAuthed(client, steamID, uniqueID)
@@ -643,11 +640,14 @@ function GM:AllowPlayerPickup(client, entity)
 end
 
 function GM:PreCleanupMap()
+	-- Pretend like we're shutting down so stuff gets saved properly.
+	nut.shuttingDown = true
 	hook.Run("SaveData")
 	hook.Run("PersistenceSave")
 end
 
 function GM:PostCleanupMap()
+	nut.shuttingDown = false
 	hook.Run("LoadData")
 	hook.Run("PostLoadData")
 end
@@ -655,6 +655,9 @@ end
 function GM:CharacterPreSave(character)
 	local client = character:getPlayer()
 
+	if (not character:getInv()) then
+		return
+	end
 	for k, v in pairs(character:getInv():getItems()) do
 		if (v.onSave) then
 			v:call("onSave", client)
@@ -772,5 +775,24 @@ function GM:InitializedPlugins()
 		for k, v in ipairs(psaTable) do
 			MsgC(Color(255, 0, 0), v .. "\n")
 		end
+	end
+end
+
+--- Called when a character loads with no inventory and one should be created.
+-- Here is where a new inventory instance can be created and set for a character
+-- that loads with no inventory. The default implementation is to create an
+-- inventory instance whose type is the result of the GetDefaultInventoryType.
+-- If nothing is returned, no default inventory is created.
+-- hook. The "char" data is set for the instance to the ID of the character.
+-- @param character The character that loaded with no inventory
+-- @return A promise that resolves to the new inventory
+function GM:CreateDefaultInventory(character)
+	local invType = hook.Run("GetDefaultInventoryType", character)
+	local charID = character:getID()
+
+	if (nut.inventory.types[invType]) then
+		return nut.inventory.instance(invType, {char = charID})
+	elseif (invType ~= nil) then
+		error("Invalid default inventory type "..tostring(invType))
 	end
 end

@@ -5,9 +5,16 @@ nut.plugin.unloaded = nut.plugin.unloaded or {}
 HOOKS_CACHE = {}
 
 function nut.plugin.load(uniqueID, path, isSingleFile, variable)
+	variable = uniqueID == "schema" and "SCHEMA" or variable or "PLUGIN"
 	if (hook.Run("PluginShouldLoad", uniqueID) == false) then return end
 
-	variable = variable or "PLUGIN"
+	-- Don't load folders that happen to be in the plugins folder.
+	if (
+		not isSingleFile and
+		not file.Exists(path.."/sh_"..variable:lower()..".lua", "LUA")
+	) then
+		return
+	end
 
 	-- Plugins within plugins situation?
 	local oldPlugin = PLUGIN
@@ -79,7 +86,7 @@ function nut.plugin.load(uniqueID, path, isSingleFile, variable)
 		end
 
 		nut.plugin.list[uniqueID] = PLUGIN
-		_G[variable] = nil
+		_G[variable] = oldPlugin
 	else
 		-- no matter what you should be loaded.
 		function PLUGIN:IsValid()
@@ -179,10 +186,10 @@ end
 
 DATA_INIT = DATA_INIT or false
 function nut.plugin.initialize()
+	nut.plugin.loadFromDir("nutscript/plugins")
 	nut.plugin.load("schema", engine.ActiveGamemode().."/schema")
 	hook.Run("InitializedSchema")
 
-	nut.plugin.loadFromDir("nutscript/plugins")
 	nut.plugin.loadFromDir(engine.ActiveGamemode().."/plugins")
 	hook.Run("InitializedPlugins")
 end

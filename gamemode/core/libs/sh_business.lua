@@ -74,24 +74,31 @@ if (SERVER) then
 					entity.items[uniqueID] = nil
 				end
 
-				if (drop) then
-					nut.item.spawn(uniqueID, entity:GetPos() + Vector(0, 0, 16))
-				else
-					local amount = (itemTable.isStackable == true and itemTable:getMaxQuantity() or 1)
-					local status, fault = client:getChar():getInv():add(uniqueID, amount)
+				local function itemTaken()
+					if (IsValid(client)) then
+						hook.Run("OnTakeShipmentItem", client, uniqueID, amount)
+					end
+					
+					entity.items[uniqueID] = entity.items[uniqueID] - 1
 
-					if (!status) then
-						return client:notifyLocalized("noFit")
+					if (entity:getItemCount() < 1) then
+						entity:GibBreakServer(Vector(0, 0, 0.5))
+						entity:Remove()
 					end
 				end
 
-				hook.Run("OnTakeShipmentItem", client, uniqueID, amount)
-
-				entity.items[uniqueID] = entity.items[uniqueID] - 1
-
-				if (entity:getItemCount() < 1) then
-					entity:GibBreakServer(Vector(0, 0, 0.5))
-					entity:Remove()
+				if (drop) then
+					nut.item.spawn(uniqueID, entity:GetPos() + Vector(0, 0, 16))
+					itemTaken()
+				else
+					client:getChar():getInv():add(uniqueID, amount)
+						:next(function(res)
+							if (IsValid(client) and res.error) then
+								client:notifyLocalized(res.error)
+							elseif (not res.error) then
+								itemTaken()
+							end
+						end)
 				end
 			end
 		end

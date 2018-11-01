@@ -22,7 +22,7 @@ function PLUGIN:LoadData()
 				print("Server Deleted Server Items (does not includes Logical Items)")
 				print(range)
 			else
-				nut.db.query("SELECT _itemID, _uniqueID, _data, _quantity FROM nut_items WHERE _itemID IN "..range, function(data)
+				nut.db.query("SELECT _itemID, _uniqueID, _data FROM nut_items WHERE _itemID IN "..range, function(data)
 					if (data) then
 						local loadedItems = {}
 
@@ -37,8 +37,9 @@ function PLUGIN:LoadData()
 								local position = positions[itemID]
 								local item = nut.item.new(uniqueID, itemID)
 								item.data = data or {}
-								item.quantity = tonumber(v._quantity)
 								item:spawn(position).nutItemID = itemID
+
+								item:onRestored()
 
 								item.invID = 0
 								table.insert(loadedItems, item)

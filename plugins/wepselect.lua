@@ -17,7 +17,6 @@ if (CLIENT) then
 
 	function PLUGIN:HUDPaint()
 		local frameTime = FrameTime()
-
 		self.alphaDelta = Lerp(frameTime * 10, self.alphaDelta, self.alpha)
 
 		local fraction = self.alphaDelta
@@ -118,17 +117,14 @@ if (CLIENT) then
 	function PLUGIN:PlayerBindPress(client, bind, pressed)
 		local weapon = client:GetActiveWeapon()
 		local lPly = LocalPlayer()
-
-		if (!client:InVehicle() and (!IsValid(weapon) or weapon:GetClass() != "weapon_physgun" or !client:KeyDown(IN_ATTACK)) and hook.Run("CanPlayerChooseWeapon")) then
+		if (!client:InVehicle() and (!IsValid(weapon) or weapon:GetClass() != "weapon_physgun" or !client:KeyDown(IN_ATTACK)) and hook.Run("CanPlayerChooseWeapon") ~= false) then
 			bind = bind:lower()
-
 			if (bind:find("invprev") and pressed) then
 				self.index = self.index - 1
 
 				if (self.index < 1) then
 					self.index = #client:GetWeapons()
 				end
-
 				self:onIndexChanged()
 				return true
 			elseif (bind:find("invnext") and pressed) then

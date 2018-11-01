@@ -6,7 +6,7 @@ function nut.util.include(fileName, state)
 
 	-- Only include server-side if we're on the server.
 	if ((state == "server" or fileName:find("sv_")) and SERVER) then
-		include(fileName)
+		return include(fileName)
 	-- Shared is included by both server and client.
 	elseif (state == "shared" or fileName:find("sh_")) then
 		if (SERVER) then
@@ -14,13 +14,13 @@ function nut.util.include(fileName, state)
 			AddCSLuaFile(fileName)
 		end
 
-		include(fileName)
+		return include(fileName)
 	-- File is sent to client, included on client.
 	elseif (state == "client" or fileName:find("cl_")) then
 		if (SERVER) then
 			AddCSLuaFile(fileName)
 		else
-			include(fileName)
+			return include(fileName)
 		end
 	end
 end

@@ -84,9 +84,9 @@ local PANEL = {}
 		self.sellScale:SetText(L"vendorSellScale")
 		self.sellScale.Label:SetTextColor(color_white)
 		self.sellScale.TextArea:SetTextColor(color_white)
-		self.sellScale:SetDecimals(1)
+		self.sellScale:SetDecimals(2)
 		self.sellScale.noSend = true
-		self.sellScale:SetValue(entity.scale)
+		self.sellScale:SetValue(entity:getNetVar("scale", 0.5))
 		self.sellScale.OnValueChanged = function(this, value)
 			if (this.noSend) then
 				this.noSend = nil
@@ -95,7 +95,7 @@ local PANEL = {}
 					if (IsValid(self) and IsValid(self.sellScale)) then
 						value = self.sellScale:GetValue()
 
-						if (value != entity.scale) then
+						if (value != entity:getNetVar("scale")) then
 							self:updateVendor("scale", value)
 						end
 					end

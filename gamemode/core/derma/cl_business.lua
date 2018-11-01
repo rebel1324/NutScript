@@ -42,7 +42,7 @@ function PANEL:setItem(itemTable)
 	self.icon:DockMargin(5, 5, 5, 10)
 	self.icon:InvalidateLayout(true)
 	self.icon:SetModel(itemTable.model, itemTable.skin or 0)
-	self.icon:SetToolTip(
+	self.icon:SetTooltip(
 		Format(nut.config.itemFormat,
 		itemTable.getName and itemTable:getName() or L(itemTable.name), itemTable:getDesc() or "")
 	)
@@ -398,11 +398,10 @@ PANEL = {}
 				slot:Dock(TOP)
 				slot:DockMargin(5, 5, 5, 0)
 
-				slot.icon = slot:Add("SpawnIcon")
+				slot.icon = slot:Add("nutItemIcon")
 				slot.icon:SetPos(2, 2)
 				slot.icon:SetSize(32, 32)
-				slot.icon:SetModel(itemTable.model)
-				slot.icon:SetToolTip("")
+				slot.icon:setItemType(k)
 
 				slot.name = slot:Add("DLabel")
 				slot.name:SetPos(40, 2)

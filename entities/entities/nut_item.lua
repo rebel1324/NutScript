@@ -60,8 +60,6 @@ if (SERVER) then
 				self:setNetVar("data", itemTable.data)
 			end
 
-			self:setNetVar("quantity", itemTable:getQuantity())
-
 			local physObj = self:GetPhysicsObject()
 
 			if (!IsValid(physObj)) then
@@ -83,30 +81,25 @@ if (SERVER) then
 	end
 
 	function ENT:OnRemove()
-		if (!nut.shuttingDown and !self.nutIsSafe and self.nutItemID) then
-			local itemTable = nut.item.instances[self.nutItemID]
+		local itemTable = nut.item.instances[self.nutItemID]
+		if (self.onbreak) then
+			self:EmitSound("physics/cardboard/cardboard_box_break"..math.random(1, 3)..".wav")
+			local position = self:LocalToWorld(self:OBBCenter())
 
-			if (self.onbreak) then
-				self:EmitSound("physics/cardboard/cardboard_box_break"..math.random(1, 3)..".wav")
-				local position = self:LocalToWorld(self:OBBCenter())
+			local effect = EffectData()
+				effect:SetStart(position)
+				effect:SetOrigin(position)
+				effect:SetScale(3)
+			util.Effect("GlassImpact", effect)
 
-				local effect = EffectData()
-					effect:SetStart(position)
-					effect:SetOrigin(position)
-					effect:SetScale(3)
-				util.Effect("GlassImpact", effect)
-
-				if (itemTable.onDestoryed) then
-					itemTable:onDestoryed(self)
-				end
+			if (itemTable and itemTable.onDestroyed) then
+				itemTable:onDestroyed(self)
 			end
+		end
 
+		if (!nut.shuttingDown and !self.nutIsSafe and self.nutItemID) then
 			if (itemTable) then
-				if (itemTable.onRemoved) then
-					itemTable:onRemoved()
-				end
-
-				nut.db.query("DELETE FROM nut_items WHERE _itemID = "..self.nutItemID)
+				itemTable:remove()
 			end
 		end
 	end

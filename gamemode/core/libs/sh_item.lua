@@ -9,60 +9,70 @@ nut.item.inventoryTypes = nut.item.inventoryTypes or {}
 
 nut.util.include("nutscript/gamemode/core/meta/sh_item.lua")
 
+local function DEPRECATED()
+	local warning = debug.getinfo(2, "n").name.." is deprecated"
+	local output = debug.traceback(warning, 3)
+	local lines = string.Explode("\n", output)
+	ErrorNoHalt("\n"..lines[1].."\n"..lines[3].."\n\n")
+end
+
 function nut.item.instance(index, uniqueID, itemData, x, y, callback)
 	local itemTable = nut.item.list[uniqueID]
+	if (not itemTable) then
+		error("Attempt to instantiate invalid item "..tostring(uniqueID))
+	end
 
-	if (!uniqueID or itemTable) then
-		itemData = itemData or {}
+	if (not istable(itemData)) then
+		itemData = {}
+	end
 
-		if (MYSQLOO_PREPARED) then
-			nut.db.preparedCall("itemInstance", function(data, itemID)
-				local item = nut.item.new(uniqueID, itemID)
+	-- Legacy support for x, y data: have the x, y data save to the correct
+	-- x, y column instead of the data column
+	if (isnumber(itemData.x)) then
+		x = itemData.x
+		itemData.x = nil
+	end
+	if (isnumber(itemData.y)) then
+		y = itemData.y
+		itemData.y = nil
+	end
 
-				if (item) then
-					item.data = itemData
-					item.invID = index
+	local function onItemCreated(data, itemID)
+		local item = nut.item.new(uniqueID, itemID)
 
-					if (callback) then
-						callback(item)
-					end
-	
-					if (item.onInstanced) then
-						item:onInstanced(index, x, y, item)
-					end
-				end
-			end, 1, index, uniqueID, itemData, x, y)
-		else
-			nut.db.insertTable({
-				_quantity = 1,
-				_invID = index,
-				_uniqueID = uniqueID,
-				_data = itemData,
-				_x = x,
-				_y = y
-			}, function(data, itemID)
-				local item = nut.item.new(uniqueID, itemID)
+		if (item) then
+			item.data = itemData
+			item.invID = index
 
-				if (item) then
-					item.data = itemData
-					item.invID = index
+			-- Legacy support for x, y data: add it back to the data for use
+			item.data.x = x
+			item.data.y = y
 
-					if (callback) then
-						callback(item)
-					end
+			if (callback) then
+				callback(item)
+			end
 
-					if (item.onInstanced) then
-						item:onInstanced(index, x, y, item)
-					end
-				end
-			end, "items")
+			item:onInstanced(index, x, y, item)
 		end
+	end
+
+	if (MYSQLOO_PREPARED) then
+		nut.db.preparedCall(
+			"itemInstance", onItemCreated, index, uniqueID, itemData, x, y
+		)
 	else
-		ErrorNoHalt("[NutScript] Attempt to give an invalid item! ("..(uniqueID or "nil")..")\n")
+		nut.db.insertTable({
+			_invID = index,
+			_uniqueID = uniqueID,
+			_data = itemData,
+			_x = x,
+			_y = y
+		}, onItemCreated, "items")
 	end
 end
 
 function nut.item.registerInv(invType, w, h, isBag)
+	DEPRECATED()
 	nut.item.inventoryTypes[invType] = {w = w, h = h}
 
 	if (isBag) then
@@ -73,6 +83,7 @@ function nut.item.registerInv(invType, w, h, isBag)
 end
 
 function nut.item.newInv(owner, invType, callback)
+	DEPRECATED()
 	local invData = nut.item.inventoryTypes[invType] or {w = 1, h = 1}
 
 	nut.db.insertTable({
@@ -107,6 +118,7 @@ function nut.item.get(identifier)
 end
 
 function nut.item.getInv(invID)
+	DEPRECATED()
 	return nut.item.inventories[invID]
 end
 
@@ -123,13 +135,19 @@ function nut.item.load(path, baseID, isBaseItem)
 	end
 end
 
+function nut.item.isItem(object)
+	return type(object) == "table" and object.isItem == true
+end
+
+-- TODO: figure out if default functions should be implemented in plugins
+-- instead of here.
 NUT_ITEM_DEFAULT_FUNCTIONS = {
 	drop = {
 		tip = "dropTip",
 		icon = "icon16/world.png",
 		onRun = function(item)
-			item:transfer()
-
+			item:removeFromInventory(true)
+				:next(function() item:spawn(item.player) end)
 			nut.log.add(item.player, "itemDrop", item.name, 1)
 
 			return false
@@ -142,163 +160,32 @@ NUT_ITEM_DEFAULT_FUNCTIONS = {
 		tip = "takeTip",
 		icon = "icon16/box.png",
 		onRun = function(item)
-			-- is inventory exists and not a logical inventory 
-			local inventory = item.player:getChar():getInv()
-			if (inventory) then
-				if (item.isStackable == true and item.canSplit == true) then
-					-- prevent data crashing
-					if (table.Count(item.data) == 0) then
-						local quantity = item:getQuantity()
-						local itemList = inventory:getItemsByUniqueID(item.uniqueID)
-						local fillTargets = {}
-						for _, invItem in pairs(itemList) do
-							local itemMaxQuantity = invItem:getMaxQuantity()
-							local itemQuantity = invItem:getQuantity()
-							local dataAmount = table.Count(invItem.data) -- i don't want it
+			local client = item.player
+			local inventory = client:getChar():getInv()
+			local entity = item.entity
 
-							if (data or dataAmount > 0) then
-								continue
-							end
-
-							if (itemQuantity >= itemMaxQuantity) then 
-								continue
-							end
-
-							local stockQuantity = itemMaxQuantity - itemQuantity
-							local leftOver = quantity - stockQuantity
-							
-							if (leftOver <= 0) then
-								fillTargets[invItem] = itemQuantity + quantity
-								quantity = 0
-
-								break
-							else
-								fillTargets[invItem] = itemMaxQuantity
-								quantity = quantity - stockQuantity
-							end
-						end
-
-						for fillItem, amount in pairs(fillTargets) do
-							fillItem:setQuantity(amount, nil, item.player)
-						end
-
-						if (quantity <= 0) then
-							return true
-						else
-							item:setQuantity(quantity, nil, item.player)
-
-							local status, result = item.player:getChar():getInv():add(item.id)
-
-							if (!status) then
-								item.player:notify(result)
-
-								return false
-							else
-								if (item.data) then -- I don't like it but, meh...
-									for k, v in pairs(item.data) do
-										item:setData(k, v)
-									end
-								end
-
-								nut.log.add(item.player, "itemTake", L(item.name, client), quantity)
-							end
-						end
+			if (not inventory) then return false end
+			inventory:add(item)
+				:next(function(res)
+					if (res.error) then
+						return client:notifyLocalized(res.error)
 					end
-				else
-					local status, result = item.player:getChar():getInv():add(item.id)
-
-					if (!status) then
-						item.player:notify(result)
-
-						return false
-					else
-						if (item.data) then -- I don't like it but, meh...
-							for k, v in pairs(item.data) do
-								item:setData(k, v)
-							end
-						end
+					if (IsValid(entity)) then
+						entity.nutIsSafe = true
+						entity:Remove()
 					end
-				end
-			end
-		end,
-		onCanRun = function(item)
-			return (item.entity != nil and IsValid(item.entity)) -- lmao just in case.
-		end
-	},
-	combine = {
-		-- combine is not accessible via Derma Menu.
-		onCanRun = function(item, data)
-			if (item.entity != nil and IsValid(item.entity)) then return false end
-			
-			if (item.isStackable == true and item.canSplit == true) then
-				local targetItem = nut.item.instances[data]
-
-				if (data and targetItem) then
-					if (targetItem.uniqueID == item.uniqueID) then
-						return true
-					end
-				end
-			end
-
-			return false
-		end,
-		onRun = function(item, data)
-			if (item.isStackable == true and item.canSplit == true) then
-				local targetItem = nut.item.instances[data]
-
-				if (data and targetItem) then
-					if (targetItem.uniqueID == item.uniqueID) then
-						local maxQuantity = item:getMaxQuantity()
-						local combinedQuantity = item:getQuantity() + targetItem:getQuantity()
-
-						if ((combinedQuantity / maxQuantity) > 1) then
-							targetItem:setQuantity(maxQuantity)
-							item:setQuantity(combinedQuantity - maxQuantity)
-
-							return false
-						else
-							targetItem:setQuantity(combinedQuantity)
-
-							return true
-						end
-					end
-				end
-			end
-
-			return false
-		end,
-	},
-	split = {
-		tip = "splitTip",
-		icon = "icon16/wrench.png",
-		onClick = function(item)
-			if (IsValid(item.entity)) then
-				return false
-			end
-			
-			if (nut.gui.split) then
-				nut.gui.split:Remove()
-			end
-
-			nut.gui.split = vgui.Create("nutItemSplit")
-			nut.gui.split:setItem(item)
-			nut.gui.split:noticeMe()
+					if (not IsValid(client)) then return end
+					nut.log.add(client, "itemTake", item.name, 1)
+				end)
 
 			return false
 		end,
 		onCanRun = function(item)
-			if (item.entity != nil and IsValid(item.entity)) then
-				return false
-			end
-
-			if (item.isStackable == true and item.canSplit == true and item:getQuantity() > 1) then
-				return true
-			end
-
-			return false
+			return IsValid(item.entity)
 		end
-	}
+	},
 }
+
 function nut.item.register(uniqueID, baseID, isBaseItem, path, luaGenerated)
 	if (uniqueID) then
 		local meta = nut.meta.item
@@ -383,6 +270,9 @@ function nut.item.loadFromDir(directory)
 end
 
 function nut.item.new(uniqueID, id)
+	id = id and tonumber(id) or id
+	assert(type(id) == "number", "non-number ID given to nut.item.new")
+
 	if (nut.item.instances[id] and nut.item.instances[id].uniqueID == uniqueID) then
 		return nut.item.instances[id]
 	end
@@ -399,7 +289,7 @@ function nut.item.new(uniqueID, id)
 
 		return item
 	else
-		ErrorNoHalt("[NutScript] Attempt to index unknown item '"..uniqueID.."'\n")
+		error("[NutScript] Attempt to create unknown item '"..tostring(uniqueID).."'\n")
 	end
 end
 
@@ -407,20 +297,22 @@ do
 	nut.util.include("nutscript/gamemode/core/meta/sh_inventory.lua")
 
 	function nut.item.createInv(w, h, id)
+		DEPRECATED()
 		local inventory = setmetatable({w = w, h = h, id = id, slots = {}, vars = {}}, nut.meta.inventory)
-			nut.item.inventories[id] = inventory
+		nut.item.inventories[id] = inventory
 
 		return inventory
 	end
 
 	function nut.item.restoreInv(invID, w, h, callback)
+		DEPRECATED()
 		if (type(invID) != "number" or invID < 0) then
 			error("Attempt to restore inventory with an invalid ID!")
 		end
 
 		local inventory = nut.item.createInv(w, h, invID)
 
-		nut.db.query("SELECT _itemID, _uniqueID, _data, _x, _y, _quantity FROM nut_items WHERE _invID = "..invID, function(data)
+		nut.db.query("SELECT _itemID, _uniqueID, _data, _x, _y FROM nut_items WHERE _invID = "..invID, function(data)
 			local badItemsUniqueID = {}
 
 			if (data) then
@@ -447,10 +339,11 @@ do
 										item2.data = data
 									end
 
-									item2.gridX = x
-									item2.gridY = y
+									-- legacy support for x, y data
+									item2.data.x = tonumber(x)
+									item2.data.y = tonumber(y)
+
 									item2.invID = invID
-									item2.quantity = tonumber(item._quantity)
 
 									for x2 = 0, item2.width - 1 do
 										for y2 = 0, item2.height - 1 do
@@ -500,75 +393,7 @@ do
 			end
 
 			item.invID = invID or 0
-		end)
-
-		netstream.Hook("inv", function(slots, id, w, h, owner, vars)
-			local character
-
-			if (owner) then
-				character = nut.char.loaded[owner]
-			else
-				character = LocalPlayer():getChar()
-			end
-
-			if (character) then
-				local inventory = nut.item.createInv(w, h, id)
-				inventory:setOwner(character:getID())
-				inventory.slots = {}
-				inventory.vars = vars
-
-				local x, y
-
-				for k, v in ipairs(slots) do
-					x, y = v[1], v[2]
-
-					inventory.slots[x] = inventory.slots[x] or {}
-
-					local item = nut.item.new(v[3], v[4])
-
-					item.data = {}
-					if (v[5]) then
-						item.data = v[5]
-					end
-					item.quantity = v[6]
-
-					item.invID = item.invID or id
-					inventory.slots[x][y] = item
-				end
-
-				character.vars.inv = character.vars.inv or {}
-
-				for k, v in ipairs(character:getInv(true)) do
-					if (v:getID() == id) then
-						character:getInv(true)[k] = inventory
-
-						return
-					end
-				end
-
-				table.insert(character.vars.inv, inventory)
-			end
-		end)
-
-		netstream.Hook("invQuantity", function(id, quantity)
-			local item = nut.item.instances[id]
-
-			if (item) then
-				item:setQuantity(quantity)
-
-				local panel = item.invID and nut.gui["inv"..item.invID] or nut.gui.inv1
-
-				if (panel and panel.panels) then
-					local icon = panel.panels[id]
-
-					if (icon) then
-						icon:SetToolTip(
-							Format(nut.config.itemFormat,
-							item.getName and item:getName() or L(item.name), item:getDesc() or "")
-						)
-					end
-				end
-			end
+			hook.Run("ItemInitialized", item)
 		end)
 
 		netstream.Hook("invData", function(id, key, value)
@@ -576,111 +401,69 @@ do
 
 			if (item) then
 				item.data = item.data or {}
+				local oldValue = item.data[key]
 				item.data[key] = value
-
-				local panel = item.invID and nut.gui["inv"..item.invID] or nut.gui.inv1
-
-				if (panel and panel.panels) then
-					local icon = panel.panels[id]
-
-					if (icon) then
-						icon:SetToolTip(
-							Format(nut.config.itemFormat,
-							item.getName and item:getName() or L(item.name), item:getDesc() or "")
-						)
-					end
-				end
+				hook.Run("ItemDataChanged", item, key, oldValue, value)
 			end
 		end)
 
-		netstream.Hook("invSet", function(invID, x, y, uniqueID, id, owner, data, quantity)
-			local character = LocalPlayer():getChar()
+		net.Receive("nutItemInstance", function()
+			local itemID = net.ReadUInt(32)
+			local itemType = net.ReadString()
+			local data = net.ReadTable()
+			local item = nut.item.new(itemType, itemID)
+			local invID = net.ReadType()
 
-			if (owner) then
-				character = nut.char.loaded[owner]
+			item.data = table.Merge(item.data or {}, data)
+			item.invID = invID
+
+			nut.item.instances[itemID] = item
+			hook.Run("ItemInitialized", item)
+		end)
+
+		net.Receive("nutCharacterInvList", function()
+			local charID = net.ReadUInt(32)
+			local length = net.ReadUInt(32)
+			local inventories = {}
+
+			for i = 1, length do
+				inventories[i] = nut.inventory.instances[net.ReadType()]
 			end
 
+			local character = nut.char.loaded[charID]
 			if (character) then
-				local inventory = nut.item.inventories[invID]
-
-				if (inventory) then
-					local item = uniqueID and id and nut.item.new(uniqueID, id) or nil
-					item.invID = invID
-					item:setQuantity(quantity)
-
-					item.data = {}
-					-- Let's just be sure about it kk?
-					if (data) then
-						item.data = data
-					end
-
-					inventory.slots[x] = inventory.slots[x] or {}
-					inventory.slots[x][y] = item
-
-					local panel = nut.gui["inv"..invID] or nut.gui.inv1
-
-					if (IsValid(panel)) then
-						local icon = panel:addIcon(item.model or "models/props_junk/popcan01a.mdl", x, y, item.width, item.height)
-
-						if (IsValid(icon)) then
-							icon:SetToolTip(
-								Format(nut.config.itemFormat,
-								item.getName and item:getName() or L(item.name), item:getDesc() or "")
-							)
-							icon.itemID = item.id
-
-							panel.panels[item.id] = icon
-						end
-					end
-				end
+				character.vars.inv = inventories
 			end
 		end)
 
-		netstream.Hook("invMv", function(invID, itemID, x, y)
-			local inventory = nut.item.inventories[invID]
-			local panel = nut.gui["inv"..invID]
+		net.Receive("nutItemDelete", function()
+			local id = net.ReadUInt(32)
+			local instance = nut.item.instances[id]
+			if (instance and instance.invID) then
+				local inventory = nut.inventory.instances[instance.invID]
+				if (not inventory or not inventory.items[id]) then return end
 
-			if (inventory and IsValid(panel)) then
-				local icon = panel.panels[itemID]
-
-				if (IsValid(icon)) then
-					icon:move({x2 = x, y2 = y}, panel, true)
-				end
-			end
-		end)
-
-		netstream.Hook("invRm", function(id, invID, owner)
-			local character = LocalPlayer():getChar()
-
-			if (owner) then
-				character = nut.char.loaded[owner]
+				inventory.items[id] = nil
+				instance.invID = 0
+				hook.Run("InventoryItemRemoved", inventory, instance)
 			end
 
-			if (character) then
-				local inventory = nut.item.inventories[invID]
-
-				if (inventory) then
-					inventory:remove(id)
-
-					local panel = nut.gui["inv"..invID] or nut.gui.inv1
-
-					if (IsValid(panel)) then
-						local icon = panel.panels[id]
-
-						if (IsValid(icon)) then
-							for k, v in ipairs(icon.slots or {}) do
-								if (v.item == icon) then
-									v.item = nil
-								end
-							end
-
-							icon:Remove()
-						end
-					end
-				end
-			end
+			nut.item.instances[id] = nil
+			hook.Run("ItemDeleted", instance)
 		end)
 	else
+		util.AddNetworkString("nutCharacterInvList")
+		util.AddNetworkString("nutItemDelete")
+		util.AddNetworkString("nutItemInstance")
+
+		function nut.item.deleteByID(id)
+			if (nut.item.instances[id]) then
+				nut.item.instances[id]:delete()
+			else
+				nut.db.delete("items", "_itemID = "..id)
+			end
+		end
+
 		function nut.item.loadItemByID(itemIndex, recipientFilter)
 			local range
 			if (type(itemIndex) == "table") then
@@ -691,7 +474,7 @@ do
 				return
 			end
 
-			nut.db.query("SELECT _itemID, _uniqueID, _data, _quantity FROM nut_items WHERE _itemID IN "..range, function(data)
+			nut.db.query("SELECT _itemID, _uniqueID, _data, _x, _y FROM nut_items WHERE _itemID IN "..range, function(data)
 				if (data) then
 					for k, v in ipairs(data) do
 						local itemID = tonumber(v._itemID)
@@ -702,9 +485,14 @@ do
 						if (itemTable and itemID) then
 							local item = nut.item.new(uniqueID, itemID)
 
-							item.data = data or {}
 							item.invID = 0
-							item.quantity = tonumber(v._quantity)
+							item.data = data or {}
+
+							-- Legacy support for x, y data
+							item.data.x = tonumber(v._x)
+							item.data.y = tonumber(v._y)
+
+							item:onRestored()
 						end
 					end
 				end
@@ -815,13 +603,6 @@ do
 				return false
 			end 
 
-			local itemQuantity = item:getQuantity()
-
-			if (amount <= 0 or itemQuantity == amount or itemQuantity < amount or item:getMaxQuantity() < amount) then
-				-- print << cantsplit
-				return false
-			end
-
 			amount = math.Round(amount)
 			local leftOver = itemQuantity - amount
 
@@ -841,95 +622,43 @@ do
 
 		netstream.Hook("invAct", function(client, action, item, invID, data)
 			local character = client:getChar()
-
 			if (!character) then
 				return
 			end
 
-			local inventory = nut.item.inventories[invID]
-
-			if (type(item) != "Entity") then
-				if (!inventory or !inventory.owner or inventory.owner != character:getID()) then
-					return
-				end
-			end
-
-			if (hook.Run("CanPlayerInteractItem", client, action, item, data) == false) then
-				return
-			end
-
+			-- Refine item into an instance
+			local entity
 			if (type(item) == "Entity") then
-				if (IsValid(item)) then
-					local entity = item
-					local itemID = item.nutItemID
-					item = nut.item.instances[itemID]
-
-					if (!item) then
-						return
-					end
-
-					item.entity = entity
-					item.player = client
-				else
+				if (not IsValid(item)) then
 					return
 				end
-			elseif (type(item) == "number") then
+				if (item:GetPos():Distance(client:GetPos()) > 96) then
+					return
+				end
+				if (not item.nutItemID) then
+					return
+				end
+				entity = item
+				item = nut.item.instances[item.nutItemID]
+			else
 				item = nut.item.instances[item]
-
-				if (!item) then
-					return
-				end
-
-				item.player = client
 			end
-
-			if (item.entity) then
-				if (item.entity:GetPos():Distance(client:GetPos()) > 96) then
-					return
-				end
-			elseif (!inventory:getItemByID(item.id)) then
+			if (not item) then
+				return
+			end
+			-- Permission check with inventory. Or, if no inventory exists,
+			-- the player has no way of accessing the item.
+			local inventory = nut.inventory.instances[item.invID]
+			local context = {
+				client = client, item = item, entity = entity, action = action
+			}
+			if (
+				inventory and not inventory:canAccess("item", context)
+			) then
 				return
 			end
 
-			local callback = item.functions[action]
-			if (callback) then
-				if (callback.onCanRun and callback.onCanRun(item, data) == false) then
-					item.entity = nil
-					item.player = nil
-
-					return
-				end
-
-				local entity = item.entity
-				local result
-
-				if (item.hooks[action]) then
-					result = item.hooks[action](item, data)
-				end
-
-				if (result == nil) then
-					result = callback.onRun(item, data)
-				end
-
-				if (item.postHooks[action]) then
-					-- Posthooks shouldn't override the result from onRun
-					item.postHooks[action](item, result, data)
-				end
-
-				hook.Run("OnPlayerInteractItem", client, action, item, result, data)
-
-				if (result != false) then
-					if (IsValid(entity)) then
-						entity.nutIsSafe = true
-						entity:Remove()
-					else
-						item:remove()
-					end
-				end
-
-				item.entity = nil
-				item.player = nil
-			end
+			item:interact(action, client, entity, data)
 		end)
 	end
 
@@ -958,5 +687,19 @@ nut.char.registerVar("inv", {
 		end
 
 		return character.vars.inv and character.vars.inv[index or 1]
+	end,
+	onSync = function(character, recipient)
+		net.Start("nutCharacterInvList")
+			net.WriteUInt(character:getID(), 32)
+			net.WriteUInt(#character.vars.inv, 32)
+			
+			for i = 1, #character.vars.inv do
+				net.WriteType(character.vars.inv[i].id)
+			end
+		if (recipient == nil) then
+			net.Broadcast()
+		else
+			net.Send(recipient)
+		end
 	end
 })

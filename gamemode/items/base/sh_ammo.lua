@@ -12,7 +12,19 @@ function ITEM:getDesc()
 	return Format(self.desc, self:getQuantity())
 end
 
-if (CLIENT) then
+function ITEM:getQuantity()
+	return self:getData("quantity", self.maxQuantity)
+end
+
+if (SERVER) then
+	function ITEM:addQuantity(amount)
+		self:setData("quantity", self:getQuantity() + amount)
+	end
+
+	function ITEM:onInstanced()
+		self:setData("quantity", self.maxQuantity or 1)
+	end
+else
 	function ITEM:paintOver(item, w, h)
 		local quantity = item:getQuantity()
 
@@ -68,17 +80,15 @@ ITEM.functions.use = { -- sorry, for name order.
 
 		if (data > 0) then
 			local num = tonumber(data)
-			local subResult = item:addQuantity(-num)
+			item:addQuantity(-num)
 
 			item.player:GiveAmmo(num, item.ammo)
 			item.player:EmitSound("items/ammo_pickup.wav", 110)
-
-			return subResult
-		else
-			if (data == 0) then
-				item.player:GiveAmmo(item:getQuantity(), item.ammo)
-				item.player:EmitSound("items/ammo_pickup.wav", 110)
-			end
+		elseif (data == 0) then
+			item.player:GiveAmmo(item:getQuantity(), item.ammo)
+			item.player:EmitSound("items/ammo_pickup.wav", 110)
+			return true
 		end
+		return item:getQuantity() <= 0
 	end,
 }
