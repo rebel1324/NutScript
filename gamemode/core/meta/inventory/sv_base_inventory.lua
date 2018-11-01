@@ -190,7 +190,7 @@ end
 -- Loads the items contained in this inventory.
 function Inventory:loadItems()
 	local ITEM_TABLE = "items"
-	local ITEM_FIELDS = {"_itemID", "_uniqueID", "_data"}
+	local ITEM_FIELDS = {"_itemID", "_uniqueID", "_data", "_x", "_y"}
 
 	return nut.db.select(ITEM_FIELDS, ITEM_TABLE, "_invID = "..self.id)
 		:next(function(res)
@@ -214,6 +214,12 @@ function Inventory:loadItems()
 					item.data =
 						table.Merge(item.data, util.JSONToTable(result._data))
 				end
+
+				-- Legacy support for x, y data
+				print(1)
+				item.data.x = tonumber(result._x)
+				item.data.y = tonumber(result._y)
+				print(2)
 
 				items[itemID] = item
 				if (item.onRestored) then

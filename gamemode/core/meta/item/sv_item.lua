@@ -131,6 +131,25 @@ function ITEM:setData(key, value, receivers, noSave, noCheckEntity)
 	end
 
 	if (noSave or not nut.db) then return end
+
+	-- Legacy support for x, y data
+	if (key == "x" or key == "y") then
+		value = tonumber(value)
+		if (MYSQLOO_PREPARED) then
+			nut.db.preparedCall("item"..key, nil, value, self:getID())
+		else
+			nut.db.updateTable({
+				["_"..key] = value
+			}, nil, "items", "_itemID = "..self:getID())
+		end
+		return
+	end
+
+	-- Weird workaround, but essentially xy data should not be saved in the
+	-- data column.
+	local x, y = self.data.x, self.data.y
+	self.data.x, self.data.y = nil, nil
+
 	if (MYSQLOO_PREPARED) then
 		nut.db.preparedCall("itemData", nil, self.data, self:getID())
 	else
@@ -138,4 +157,6 @@ function ITEM:setData(key, value, receivers, noSave, noCheckEntity)
 			_data = self.data
 		}, nil, "items", "_itemID = "..self:getID())
 	end
+
+	self.data.x, self.data.y = x, y
 end

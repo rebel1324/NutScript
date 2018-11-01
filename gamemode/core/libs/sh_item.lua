@@ -22,7 +22,20 @@ function nut.item.instance(index, uniqueID, itemData, x, y, callback)
 		error("Attempt to instantiate invalid item "..tostring(uniqueID))
 	end
 
-	itemData = itemData or {}
+	if (not istable(itemData)) then
+		itemData = {}
+	end
+
+	-- Legacy support for x, y data: have the x, y data save to the correct
+	-- x, y column instead of the data column
+	if (isnumber(itemData.x)) then
+		x = itemData.x
+		itemData.x = nil
+	end
+	if (isnumber(itemData.y)) then
+		y = itemData.y
+		itemData.y = nil
+	end
 
 	local function onItemCreated(data, itemID)
 		local item = nut.item.new(uniqueID, itemID)
@@ -30,6 +43,10 @@ function nut.item.instance(index, uniqueID, itemData, x, y, callback)
 		if (item) then
 			item.data = itemData
 			item.invID = index
+
+			-- Legacy support for x, y data: add it back to the data for use
+			item.data.x = x
+			item.data.y = y
 
 			if (callback) then
 				callback(item)
@@ -41,11 +58,10 @@ function nut.item.instance(index, uniqueID, itemData, x, y, callback)
 
 	if (MYSQLOO_PREPARED) then
 		nut.db.preparedCall(
-			"itemInstance", onItemCreated, 1, index, uniqueID, itemData, x, y
+			"itemInstance", onItemCreated, index, uniqueID, itemData, x, y
 		)
 	else
 		nut.db.insertTable({
-			_quantity = 1,
 			_invID = index,
 			_uniqueID = uniqueID,
 			_data = itemData,
@@ -296,7 +312,7 @@ do
 
 		local inventory = nut.item.createInv(w, h, invID)
 
-		nut.db.query("SELECT _itemID, _uniqueID, _data, _x, _y, _quantity FROM nut_items WHERE _invID = "..invID, function(data)
+		nut.db.query("SELECT _itemID, _uniqueID, _data, _x, _y FROM nut_items WHERE _invID = "..invID, function(data)
 			local badItemsUniqueID = {}
 
 			if (data) then
@@ -323,10 +339,11 @@ do
 										item2.data = data
 									end
 
-									item2.gridX = x
-									item2.gridY = y
+									-- legacy support for x, y data
+									item2.data.x = tonumber(x)
+									item2.data.y = tonumber(y)
+
 									item2.invID = invID
-									item2.quantity = tonumber(item._quantity)
 
 									for x2 = 0, item2.width - 1 do
 										for y2 = 0, item2.height - 1 do
@@ -457,7 +474,7 @@ do
 				return
 			end
 
-			nut.db.query("SELECT _itemID, _uniqueID, _data, _quantity FROM nut_items WHERE _itemID IN "..range, function(data)
+			nut.db.query("SELECT _itemID, _uniqueID, _data, _x, _y FROM nut_items WHERE _itemID IN "..range, function(data)
 				if (data) then
 					for k, v in ipairs(data) do
 						local itemID = tonumber(v._itemID)
@@ -468,9 +485,12 @@ do
 						if (itemTable and itemID) then
 							local item = nut.item.new(uniqueID, itemID)
 
-							item.data = data or {}
 							item.invID = 0
-							item.quantity = tonumber(v._quantity)
+							item.data = data or {}
+
+							-- Legacy support for x, y data
+							item.data.x = tonumber(v._x)
+							item.data.y = tonumber(v._y)
 
 							item:onRestored()
 						end
