@@ -87,5 +87,5 @@ net.Receive("nutInventoryDelete", function()
 end)
 
 function Inventory:show(parent)
-	nut.inventory.show(self, parent)
+	return nut.inventory.show(self, parent)
 end
