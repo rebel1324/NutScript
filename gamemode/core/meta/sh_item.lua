@@ -71,7 +71,7 @@ function ITEM:getOwner()
 	local inventory = nut.inventory.instances[self.invID]
 
 	if (inventory) then
-		return inventory:getRecipients()
+		return inventory:getRecipients()[1]
 	end
 
 	local id = self:getID()
