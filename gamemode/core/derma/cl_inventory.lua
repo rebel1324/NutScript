@@ -39,7 +39,7 @@ function PANEL:setItemType(itemTypeOrID)
 
 	self.itemTable = item
 	self:SetModel(item.model, item.skin)
-	self:SetTooltip(item:getDesc())
+	self:updateTooltip()
 
 	if (item.exRender) then
 		self.Icon:SetVisible(false)
@@ -75,13 +75,20 @@ function PANEL:setItemType(itemTypeOrID)
 	end
 end
 
+function PANEL:updateTooltip()
+	self:SetTooltip(
+		"<font=nutItemBoldFont>"..self.itemTable:getName().."</font>\n"..
+		self.itemTable:getDesc()
+	)
+end
+
 function PANEL:getItem()
 	return self.itemTable
 end
 
 -- Updates the parts of the UI that could be changed by data changes.
 function PANEL:ItemDataChanged(key, oldValue, newValue)
-	self:SetTooltip(self:getItem():getDesc())
+	self:updateTooltip()
 end
 
 function PANEL:Init()
