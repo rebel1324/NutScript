@@ -123,7 +123,7 @@ end
 --- Returns a list of items in this inventory with matching item type.
 -- @param itemType A string containing the desired type of item
 -- @return A table containing items whose type matches
-function Inventory:getItemsByType(itemType)
+function Inventory:getItemsOfType(itemType)
 	local items = {}
 	for _, item in pairs(self:getItems()) do
 		if (item.uniqueID == itemType) then
@@ -133,12 +133,23 @@ function Inventory:getItemsByType(itemType)
 	return items
 end
 
+--- Returns an item in this inventory of a specific type, or nil if not found.
+-- @param itemType A string containing the desired type of item
+-- @return An item instance if one was found, nil otherwise.
+function Inventory:getFirstItemOfType(itemType)
+	for _, item in pairs(self:getItems()) do
+		if (item.uniqueID == itemType) then
+			return item
+		end
+	end
+end
+
 function Inventory:getItemsByUniqueID(itemType)
 	ErrorNoHalt(
 		"Inventory:getItemsByUniqueID is deprecated.\n"..
 		"Use Inventory:getItemsByType instead.\n"
 	)
-	return self:getItemsByType(itemType)
+	return self:getItemsOfType(itemType)
 end
 
 --- Returns whether or not this inventory contains at least one item of the given type.
