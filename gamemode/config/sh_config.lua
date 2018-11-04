@@ -128,10 +128,6 @@ nut.config.add("vignette", true, "Whether or not the vignette is shown.", nil, {
 	category = "appearance"
 })
 
-nut.config.add("sbRecog", false, "Whether or not recognition is used in the scoreboard.", nil, {
-	category = "characters"
-})
-
 nut.config.add("defMoney", 0, "The amount of money that players start with.", nil, {
 	category = "characters",
 	data = {min = 0, max = 10000}
@@ -147,34 +143,6 @@ end, {
 	form = "Float",
 	category = "server",
 	data = {min = 0, max = 5000}
-})
-
-nut.config.add("sbWidth", 0.325, "Scoreboard's width within percent of screen width.", function(oldValue, newValue)
-	if (CLIENT and IsValid(nut.gui.score)) then
-		nut.gui.score:Remove()
-	end
-end, {
-	form = "Float",
-	category = "visual",
-	data = {min = 0.2, max = 1}
-})
-
-nut.config.add("sbHeight", 0.825, "Scoreboard's height within percent of screen height.", function(oldValue, newValue)
-	if (CLIENT and IsValid(nut.gui.score)) then
-		nut.gui.score:Remove()
-	end
-end, {
-	form = "Float",
-	category = "visual",
-	data = {min = 0.3, max = 1}
-})
-
-nut.config.add("sbTitle", GetHostName(), "The title of the scoreboard.", function(oldValue, newValue)
-	if (CLIENT and IsValid(nut.gui.score)) then
-		nut.gui.score:Remove()
-	end
-end, {
-	category = "visual"
 })
 
 nut.config.add("wepAlwaysRaised", false, "Whether or not weapons are always raised.", nil, {
