@@ -73,11 +73,6 @@ function GM:OnReloaded()
 	-- Reload the default fonts.
 	if (CLIENT) then
 		hook.Run("LoadFonts", nut.config.get("font"), nut.config.get("genericFont"))
-
-		-- Reload the scoreboard.
-		if (IsValid(nut.gui.score)) then
-			nut.gui.score:Remove()
-		end
 	else
 		-- Auto-reload support for faction pay timers.
 		for index, faction in ipairs(nut.faction.indices) do
