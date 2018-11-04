@@ -1,28 +1,5 @@
 local NUT_CVAR_LOWER2 = CreateClientConVar("nut_usealtlower", "0", true)
 
-function GM:ForceDermaSkin()
-	return "nutscript"
-end
-
-function GM:ScoreboardShow()
-	if (IsValid(nut.gui.score)) then
-		nut.gui.score:SetVisible(true)
-	else
-		vgui.Create("nutScoreboard")
-	end
-
-	gui.EnableScreenClicker(true)
-end
-
-function GM:ScoreboardHide()
-	if (IsValid(nut.gui.score)) then
-		nut.gui.score:SetVisible(false)
-		CloseDermaMenus()
-	end
-
-	gui.EnableScreenClicker(false)
-end
-
 function GM:LoadFonts(font, genericFont)
 	surface.CreateFont("nut3D2DFont", {
 		font = font,

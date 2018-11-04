@@ -48,7 +48,6 @@ do
 end
 
 -- Include core framework files.
-nut.util.include("core/cl_skin.lua")
 nut.util.includeDir("core/libs/thirdparty")
 nut.util.include("core/sh_config.lua")
 nut.util.includeDir("core/libs")
