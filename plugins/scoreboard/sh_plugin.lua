@@ -12,11 +12,7 @@ if (CLIENT) then
 		gui.EnableScreenClicker(false)
 	end
 
-<<<<<<< HEAD
-	function PLUGIN:ScoreboardShow()
-=======
 	function GM:ScoreboardShow()
->>>>>>> 6c3f1e4... Move NutScript skin to a plugin
 		if (IsValid(nut.gui.score)) then
 			nut.gui.score:SetVisible(true)
 		else

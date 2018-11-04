@@ -364,31 +364,6 @@ function GM:InitPostEntity()
 	nut.joinTime = RealTime() - 0.9716
 end
 
-local vignette = nut.util.getMaterial("nutscript/gui/vignette.png")
-local vignetteAlphaGoal = 0
-local vignetteAlphaDelta = 0
-local blurGoal = 0
-local blurDelta = 0
-local hasVignetteMaterial = vignette != "___error"
-
-timer.Create("nutVignetteChecker", 1, 0, function()
-	local client = LocalPlayer()
-
-	if (IsValid(client)) then
-		local data = {}
-			data.start = client:GetPos()
-			data.endpos = data.start + Vector(0, 0, 768)
-			data.filter = client
-		local trace = util.TraceLine(data)
-
-		if (trace.Hit) then
-			vignetteAlphaGoal = 80
-		else
-			vignetteAlphaGoal = 0
-		end
-	end
-end)
-
 local OFFSET_NORMAL = Vector(0, 0, 80)
 local OFFSET_CROUCHING = Vector(0, 0, 48)
 
@@ -426,6 +401,8 @@ local mathApproach = math.Approach
 local surface = surface
 local hookRun = hook.Run
 local toScreen = FindMetaTable("Vector").ToScreen
+local blurGoal = 0
+local blurDelta = 0
 
 function GM:HUDPaintBackground()
 	local localPlayer = LocalPlayer()
@@ -437,14 +414,6 @@ function GM:HUDPaintBackground()
 	local realTime = RealTime()
 	local frameTime = FrameTime()
 	local scrW, scrH = surface.ScreenWidth(), surface.ScreenHeight()
-
-	if (hasVignetteMaterial and nut.config.get("vignette")) then
-		vignetteAlphaDelta = mathApproach(vignetteAlphaDelta, vignetteAlphaGoal, frameTime * 30)
-
-		surface.SetDrawColor(0, 0, 0, 175 + vignetteAlphaDelta)
-		surface.SetMaterial(vignette)
-		surface.DrawTexturedRect(0, 0, scrW, scrH)
-	end
 
 	if (localPlayer.getChar(localPlayer) and nextUpdate < realTime) then
 		nextUpdate = realTime + 0.5

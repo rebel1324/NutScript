@@ -124,10 +124,6 @@ nut.config.add("logoURL", "http://nutscript.net/", "The URL opened when the icon
 	category = "appearance"
 })
 
-nut.config.add("vignette", true, "Whether or not the vignette is shown.", nil, {
-	category = "appearance"
-})
-
 nut.config.add("defMoney", 0, "The amount of money that players start with.", nil, {
 	category = "characters",
 	data = {min = 0, max = 10000}
