@@ -571,13 +571,6 @@ function GM:GetGameDescription()
 	return "NS - "..(SCHEMA and SCHEMA.name or "Unknown")
 end
 
-function GM:OnPlayerUseBusiness(client, item)
-	-- You can manipulate purchased items with this hook.
-	-- does not requires any kind of return.
-	-- ex) item:setData("businessItem", true)
-	-- then every purchased item will be marked as Business Item.
-end
-
 function GM:PlayerDeathSound()
 	return true
 end

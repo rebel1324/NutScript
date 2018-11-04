@@ -436,6 +436,13 @@ PANEL = {}
 		self:onQuantityChanged()
 	end
 
+	function PANEL:Center()
+		self:SetPos(
+			(ScrW() - self:GetWide()) * 0.5,
+			(ScrH() - self:GetTall()) * 0.5
+		)
+	end
+
 	function PANEL:Think()
 		if (!self:HasFocus()) then
 			self:MakePopup()

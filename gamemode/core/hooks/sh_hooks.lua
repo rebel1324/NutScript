@@ -139,66 +139,6 @@ function GM:TranslateActivity(client, act)
 	end
 end
 
-function GM:CanPlayerUseBusiness(client, uniqueID)
-	local itemTable = nut.item.list[uniqueID]
-
-	if (!client:getChar()) then
-		return false
-	end
-
-	if (itemTable.noBusiness) then
-		return false
-	end
-	
-	if (itemTable.factions) then
-		local allowed = false
-
-		if (type(itemTable.factions) == "table") then
-			for k, v in pairs(itemTable.factions) do
-				if (client:Team() == v) then
-					allowed = true
-
-					break
-				end
-			end
-		elseif (client:Team() != itemTable.factions) then
-			allowed = false
-		end
-
-		if (!allowed) then
-			return false
-		end
-	end
-
-	if (itemTable.classes) then
-		local allowed = false
-
-		if (type(itemTable.classes) == "table") then
-			for k, v in pairs(itemTable.classes) do
-				if (client:getChar():getClass() == v) then
-					allowed = true
-
-					break
-				end
-			end
-		elseif (client:getChar():getClass() == itemTable.classes) then
-			allowed = true
-		end
-
-		if (!allowed) then
-			return false
-		end
-	end
-
-	if (itemTable.flag) then
-		if (!client:getChar():hasFlags(itemTable.flag)) then
-			return false
-		end
-	end
-
-	return true
-end
-
 function GM:DoAnimationEvent(client, event, data)
 	local model = client:GetModel():lower()
 	local class = nut.anim.getModelClass(model)
