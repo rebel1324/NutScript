@@ -112,16 +112,6 @@ function nut.char.restore(client, callback, noCache, id)
 						end)
 					end
 					return inventories
-				end, function(err)
-					print("Failed to load inventories for "..tostring(id))
-					print(err)
-					
-					if (IsValid(client)) then
-						client:ChatPrint(
-							"A server error occured while loading your"..
-							" inventories. Check server log for details."
-						)
-					end
 				end)
 				-- Then, store all the inventories.
 				:next(function(inventories)

@@ -35,12 +35,7 @@ function PLUGIN:HandleItemTransferRequest(client, itemID, x, y, invID)
 	end
 
 	canTransfer, reason = inventory:canAccess(TRANSFER, context)
-	if (not canTransfer) then
-		if (reason) then
-			client:notifyLocalized(reason)
-		end
-		return
-	end
+	if (not canTransfer) then return end
 
 	-- If valid, remove the item from its current inventory and put it in
 	-- the other inventory. If something fails, just drop the item in the world.

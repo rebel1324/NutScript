@@ -13,8 +13,8 @@ do
 					_lastJoin = timeStamp,
 				}, nil, "players", "_steamID = "..steamID64)
 
-				self.firstJoin = data[1]._firstJoin or timeStamp
-				self.lastJoin = data[1]._lastJoin or timeStamp
+				self.firstJoin = data[1]._firstJoin
+				self.lastJoin = data[1]._lastJoin
 				 
 				self.nutData = util.JSONToTable(data[1]._data)
 
