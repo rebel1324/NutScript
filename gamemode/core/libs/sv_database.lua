@@ -2,6 +2,9 @@ nut.db = nut.db or {}
 nut.util.include("nutscript/gamemode/config/sv_database.lua")
 
 local function ThrowQueryFault(query, fault)
+	if (isfunction(nut.db.onQueryError)) then
+		return nut.db.onQueryError(query, fault)
+	end
 	MsgC(Color(255, 0, 0), "* "..query.."\n")
 	MsgC(Color(255, 0, 0), fault.."\n")
 end
@@ -317,8 +320,8 @@ local MYSQL_CREATE_TABLES = [[
 CREATE TABLE IF NOT EXISTS `nut_players` (
 	`_steamID` VARCHAR(20) NOT NULL COLLATE 'utf8mb4_general_ci',
 	`_steamName` VARCHAR(32) NOT NULL COLLATE 'utf8mb4_general_ci',
-	`_firstJoin` DATETIME NOT NULL,
-	`_lastJoin` DATETIME NOT NULL,
+	`_firstJoin` DATETIME,
+	`_lastJoin` DATETIME,
 	`_data` VARCHAR(255) NOT NULL COLLATE 'utf8mb4_general_ci',
 	`_intro` BINARY(1) NOT NULL,
 	PRIMARY KEY (`_steamID`),
