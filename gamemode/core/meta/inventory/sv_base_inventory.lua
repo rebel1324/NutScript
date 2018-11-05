@@ -167,8 +167,12 @@ end
 
 -- Changes the canAccess method to also return the result of the rule
 -- where the rule of a function of (inventory, player, action) -> boolean.
-function Inventory:addAccessRule(rule)
-	self.config.accessRules[#self.config.accessRules + 1] = rule
+function Inventory:addAccessRule(rule, priority)
+	if (isnumber(priority)) then
+		table.insert(self.config.accessRules, priority, rule)
+	else
+		self.config.accessRules[#self.config.accessRules + 1] = rule
+	end
 	return self
 end
 
