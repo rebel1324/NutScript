@@ -12,7 +12,7 @@ if (CLIENT) then
 		gui.EnableScreenClicker(false)
 	end
 
-	function GM:ScoreboardShow()
+	function PLUGIN:ScoreboardShow()
 		if (IsValid(nut.gui.score)) then
 			nut.gui.score:SetVisible(true)
 		else
