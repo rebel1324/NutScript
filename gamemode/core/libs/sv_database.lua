@@ -479,10 +479,15 @@ function nut.db.loadTables()
 		local queries = string.Explode(";", MYSQL_CREATE_TABLES)
 
 		for i = 1, #queries do
-			nut.db.query(queries[i])
+			nut.db.query(queries[i], function()
+				if (i < #queries) then return end
+				hook.Run("NutScriptTablesLoaded")
+			end)
 		end
 	else
-		nut.db.query(SQLITE_CREATE_TABLES)
+		nut.db.query(SQLITE_CREATE_TABLES, function()
+			hook.Run("NutScriptTablesLoaded")
+		end)
 	end
 
 	hook.Run("OnLoadTables")
