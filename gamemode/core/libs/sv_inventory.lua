@@ -36,15 +36,19 @@ function nut.inventory.loadByID(id, noCache)
 		type(id) == "number" and id >= 0,
 		"No inventories implement loadFromStorage for ID "..tostring(id)
 	)
-	return nut.inventory.loadFromDefaultStorage(id)
+	return nut.inventory.loadFromDefaultStorage(id, noCache)
 end
 
-function nut.inventory.loadFromDefaultStorage(id)
+function nut.inventory.loadFromDefaultStorage(id, noCache)
 	return deferred.all({
 		nut.db.select(INV_FIELDS, INV_TABLE, "_invID = "..id, 1),
 		nut.db.select(DATA_FIELDS, DATA_TABLE, "_invID = "..id)
 	})
 	:next(function(res)
+		if (nut.inventory.instances[id] and not noCache) then
+			return nut.inventory.instances[id]
+		end
+
 		local results = res[1].results and res[1].results[1] or nil
 		if (not results) then
 			return
