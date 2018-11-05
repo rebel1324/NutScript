@@ -79,7 +79,6 @@ function PLUGIN:migrateBagSize(res)
 	local ITEM_FIELDS = {"_itemID", "_uniqueID"}
 	local ID_MATCH = nut.db.escape(util.TableToJSON({id = invID}):sub(2, -2))
 	local CONDITION = "_data LIKE '%"..ID_MATCH.."%'"
-	print(CONDITION)
 	return nut.db.select(ITEM_FIELDS, ITEMS_TABLE, CONDITION, 1)
 		:next(function(queryResults)
 			if (not queryResults or not queryResults.results) then
