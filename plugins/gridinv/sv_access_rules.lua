@@ -52,7 +52,7 @@ local function CanNotTransferBagIfNestedItemCanNotBe(inventory, action, context)
 end
 
 function PLUGIN:SetupBagInventoryAccessRules(inventory)
-	inventory:addAccessRule(CanNotTransferBagIntoBag)
-	inventory:addAccessRule(CanNotTransferBagIfNestedItemCanNotBe)
+	inventory:addAccessRule(CanNotTransferBagIntoBag, 1)
+	inventory:addAccessRule(CanNotTransferBagIfNestedItemCanNotBe, 1)
 	inventory:addAccessRule(CanAccessIfPlayerHasAccessToBag)
 end
