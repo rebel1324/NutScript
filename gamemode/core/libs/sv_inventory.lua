@@ -2,7 +2,7 @@ if (not nut.inventory) then
 	include("sh_inventory.lua")
 end
 
-local INV_FIELDS = {"_invID", "_invType"}
+local INV_FIELDS = {"_invID", "_invType", "_charID"}
 local INV_TABLE = "inventories"
 local DATA_FIELDS = {"_key", "_value"}
 local DATA_TABLE = "invdata"
@@ -61,13 +61,20 @@ function nut.inventory.loadFromDefaultStorage(id)
 		instance.id = id
 		instance.data = {}
 		for _, row in ipairs(res[2].results or {}) do
-			instance.data[row._key] = util.JSONToTable(row._value)[1]
+			local decoded = util.JSONToTable(row._value)
+			instance.data[row._key] = decoded and decoded[1] or nil
 		end
+
+		-- Compatibility of NS1.1 inventory
+		instance.data.char = tonumber(results._charID) or instance.data.char
 
 		nut.inventory.instances[id] = instance
 		instance:onLoaded()
-		return instance:loadItems():next(function() return instance end, error)
-	end, error)
+		return instance:loadItems():next(function() return instance end)
+	end, function(err)
+		print("Failed to load inventory "..tostring(id))
+		print(err)
+	end)
 end
 
 function nut.inventory.instance(typeID, initialData)
@@ -95,9 +102,8 @@ function nut.inventory.instance(typeID, initialData)
 end
 
 function nut.inventory.loadAllFromCharID(charID)
-	local sameCharCondition =
-		"_key = 'char' AND _value = '"..util.TableToJSON({charID}).."'"
-	return nut.db.select({"_invID"}, DATA_TABLE, sameCharCondition)
+	assert(type(charID) == "number", "charID must be a number")
+	return nut.db.select({"_invID"}, INV_TABLE, "_charID = "..charID)
 		:next(function(res)
 			return deferred.map(res.results or {}, function(result)
 				return nut.inventory.loadByID(tonumber(result._invID))

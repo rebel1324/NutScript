@@ -22,6 +22,7 @@ function PLUGIN:getMigrationFilter()
 		escapedTypeIDs[i] = "'"..nut.db.escape(typeID).."'"
 	end
 	return "_invType NOT IN ("..table.concat(escapedTypeIDs, ",")..")"
+		.." or _invType IS NULL"
 end
 
 function PLUGIN:addInventoryData(res, key, value)

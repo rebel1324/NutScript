@@ -129,7 +129,12 @@ function Inventory:setData(key, value)
 	self.data[key] = value
 
 	local keyData = self.config.data[key]
-	if (not keyData or not keyData.notPersistent) then
+	if (key == "char") then
+		-- Compatibility with NS1.1 inventory
+		nut.db.updateTable({
+			_charID = value
+		}, nil, INV_TABLE_NAME, "_invID = "..self:getID())
+	elseif (not keyData or not keyData.notPersistent) then
 		if (value == nil) then
 			nut.db.delete(
 				INV_DATA_TABLE_NAME,
@@ -211,8 +216,10 @@ function Inventory:loadItems()
 				item.invID = self.id
 
 				if (result._data) then
-					item.data =
-						table.Merge(item.data, util.JSONToTable(result._data))
+					item.data = table.Merge(
+						item.data,
+						util.JSONToTable(result._data) or {}
+					)
 				end
 
 				-- Legacy support for x, y data
