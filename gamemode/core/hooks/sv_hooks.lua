@@ -536,6 +536,8 @@ function GM:InitPostEntity()
 end
 
 function GM:ShutDown()
+	if (hook.Run("ShouldDataBeSaved") == false) then return end
+
 	nut.shuttingDown = true
 	nut.config.save()
 
