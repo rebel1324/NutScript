@@ -7,10 +7,6 @@ function PLUGIN:print(message)
 	MsgC(COLOR, "[1.1 INV MIGRATION] "..message.."\n")
 end
 
-function PLUGIN:NutScriptTablesLoaded()
-	print(CurTime())
-end
-
 function PLUGIN:whereSameID(res)
 	return "_invID = "..nut.db.escape(res._invID)
 end
@@ -26,16 +22,17 @@ function PLUGIN:getMigrationFilter()
 end
 
 function PLUGIN:addInventoryData(res, key, value)
+	local d = deferred.new()
 	if (value == nil) then
-		local d = deferred.new()
 		d:resolve()
 		return d
 	end
-	return nut.db.insertTable({
+	nut.db.insertTable({
 		_invID = res._invID,
 		_key = key,
 		_value = {value}
-	}, nil, INV_DATA_TABLE)
+	}, function() d:resolve() end, INV_DATA_TABLE)
+	return d
 end
 
 function PLUGIN:migrateStorageSize(res)
@@ -43,7 +40,10 @@ function PLUGIN:migrateStorageSize(res)
 
 	local storage
 	for _, storageInfo in pairs(STORAGE_DEFINITIONS) do
-		if (storageInfo.invType == res._invType) then
+		if (
+			storageInfo.invType == res._invType or
+			storageInfo.legacyInvType == res._invType
+		) then
 			storage = storageInfo
 			break
 		end
@@ -63,34 +63,48 @@ function PLUGIN:migrateStorageSize(res)
 	end
 end
 
+function PLUGIN:deleteCharID(res)
+	-- TODO: add promise support for nut.db.*Table
+	local d = deferred.new()
+	nut.db.updateTable({
+		_charID = NULL
+	}, function() d:resolve() end, INV_TABLE, "_invID = "..res._invID)
+	return d
+end
+
 function PLUGIN:migrateBagSize(res)
-	local invID = res._invID
+	local invID = tonumber(res._invID)
+	if (not invID) then return end
 	local ITEMS_TABLE = "items"
 	local ITEM_FIELDS = {"_itemID", "_uniqueID"}
-	local ID_MATCH = "%\""..util.TableToJSON({id = invID}):sub(2, -2).."\"%"
-	local CONDITION = "_data LIKE '"..ID_MATCH.."'"
-
+	local ID_MATCH = nut.db.escape(util.TableToJSON({id = invID}):sub(2, -2))
+	local CONDITION = "_data LIKE '%"..ID_MATCH.."%'"
+	print(CONDITION)
 	return nut.db.select(ITEM_FIELDS, ITEMS_TABLE, CONDITION, 1)
 		:next(function(queryResults)
 			if (not queryResults or not queryResults.results) then
 				return
 			end
 
-			local uniqueID = queryResults.results._uniqueID
+			local uniqueID = queryResults.results[1]._uniqueID
 			local itemTable = nut.item.list[uniqueID]
-			if (not itemTable) then return end
-			local itemID = tonumber(queryResults.results._itemID)
-			if (not itemID) then return end
+			if (not itemTable) then return print("no itemtable") end
+			local itemID = tonumber(queryResults.results[1]._itemID)
+			if (not itemID) then return print("bad item id") end
 
 			local w, h = itemTable.invWidth, itemTable.invHeight
-			self:addInventoryData(res, "item", itemID)
-			self:addInventoryData(res, "w", w)
-			self:addInventoryData(res, "h", h)
 
-			self:print(
-				"\tMigrated bag inventory for item "..itemID..
-				" with (w,h) = ("..tostring(w)..","..tostring(h)..")"
-			)
+			return deferred.all({
+				self:addInventoryData(res, "item", itemID),
+				self:addInventoryData(res, "w", w),
+				self:addInventoryData(res, "h", h),
+				self:deleteCharID(res)
+			}):next(function()
+				self:print(
+					"\tMigrated bag inventory for item "..itemID..
+					" with (w,h) = ("..tostring(w)..","..tostring(h)..")"
+				)
+			end)
 		end)
 end
 
@@ -121,6 +135,8 @@ function PLUGIN:migrateInventory(res)
 end
 
 function PLUGIN:migrateInventories()
+	nut.shuttingDown = true
+	self:setData({}, true, true)
     self:print("STARTING MIGRATIONS")
 	local FIELDS = {"_invID", "_invType"}
 	nut.db.select(FIELDS, INV_TABLE, self:getMigrationFilter())
@@ -133,7 +149,17 @@ function PLUGIN:migrateInventories()
 			return deferred.all(migrations)
 		end)
 		:next(function()
+			-- Store last migration time.
+			self:setData({
+				lastMigration = os.time()
+			}, true, true)
+
+			hook.Add("ShouldDataBeSaved", "nutTemporarySession", function()
+				return false
+			end)
+
 			self:print("FINISHED MIGRATIONS")
+			RunConsoleCommand("changelevel", game.GetMap())
 		end)
 end
 
