@@ -69,8 +69,6 @@ function nut.item.createInv(w, h, id)
 	return instance
 end
 
-nut.item.registerInv("stCrate", 3, 4)
-
 if (CLIENT) then return end
 
 function nut.item.restoreInv(invID, w, h, callback)
