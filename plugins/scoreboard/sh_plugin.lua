@@ -10,6 +10,7 @@ if (CLIENT) then
 		end
 
 		gui.EnableScreenClicker(false)
+		return true
 	end
 
 	function PLUGIN:ScoreboardShow()
@@ -20,6 +21,7 @@ if (CLIENT) then
 		end
 
 		gui.EnableScreenClicker(true)
+		return true
 	end
 
 	function PLUGIN:OnReloaded()
