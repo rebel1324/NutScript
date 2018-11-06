@@ -115,4 +115,6 @@ function PLUGIN:LoadData()
 			physObject:EnableMotion()
 		end
 	end
+
+	self.loadedData = true
 end

@@ -536,6 +536,8 @@ function GM:InitPostEntity()
 end
 
 function GM:ShutDown()
+	if (hook.Run("ShouldDataBeSaved") == false) then return end
+
 	nut.shuttingDown = true
 	nut.config.save()
 
@@ -788,4 +790,21 @@ function GM:CreateDefaultInventory(character)
 	elseif (invType ~= nil) then
 		error("Invalid default inventory type "..tostring(invType))
 	end
+end
+
+function GM:NutScriptTablesLoaded()
+	local oldErrorHandler = nut.db.onQueryError
+	nut.db.onQueryError = function() end
+	-- Add missing NS1.2 columns for nut_player table.
+	nut.db.query(
+		"ALTER TABLE nut_players ADD COLUMN _firstJoin DATETIME",
+		function()
+			nut.db.query(
+				"ALTER TABLE nut_players ADD COLUMN _lastJoin DATETIME",
+				function()
+					nut.db.onQueryError = oldErrorHandler
+				end
+			)
+		end
+	)
 end
