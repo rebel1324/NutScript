@@ -2,6 +2,10 @@ PLUGIN.name = "NutScript Intro"
 PLUGIN.author = "Cheesenut"
 PLUGIN.desc = "NutScript and schema introduction shown when players first join."
 
+nut.config.add("introEnabled", true, "Whether or not intro is enabled.", nil, {
+	category = PLUGIN.name
+})
+
 if (CLIENT) then
 	function PLUGIN:LoadFonts()
 		-- Introduction fancy font.
@@ -37,6 +41,8 @@ if (CLIENT) then
 	end
 
 	function PLUGIN:CreateIntroduction()
-		return vgui.Create("nutIntro")
+		if (nut.config.get("introEnabled")) then
+			return vgui.Create("nutIntro")
+		end
 	end
 end
