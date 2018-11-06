@@ -26,8 +26,13 @@ netstream.Hook("charVar", function(key, value, id)
 end)
 
 netstream.Hook("charMenu", function(data, openNext)
+	local oldCharList = nut.characters
 	if (data) then
 		nut.characters = data
+		if (not oldCharList) then
+			return hook.Run("CharacterListLoaded", data)
+		end
+		hook.Run("CharacterListUpdated", oldCharList, data)
 	end
 
 	OPENNEXT = openNext

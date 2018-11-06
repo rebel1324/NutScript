@@ -13,8 +13,10 @@ if (CLIENT) then
 
 	function PLUGIN:CalcView(client, origin, angles, fov)
 		local scenes = self.scenes
-
-		if (IsValid(nut.gui.char) and table.Count(scenes) > 0) then
+		local shouldShow = IsValid(nut.gui.char)
+			or not IsValid(LocalPlayer())
+			or not LocalPlayer():getChar()
+		if (shouldShow and table.Count(scenes) > 0) then
 			local key = self.index
 			local value = scenes[self.index]
 
