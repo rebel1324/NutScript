@@ -404,67 +404,26 @@ function GM:PostPlayerLoadout(client)
 	end
 end
 
-local deathSounds = {
-	Sound("vo/npc/male01/pain07.wav"),
-	Sound("vo/npc/male01/pain08.wav"),
-	Sound("vo/npc/male01/pain09.wav")
-}
-
 function GM:PlayerDeath(client, inflictor, attacker)
-	if (client:getChar()) then
-		if (IsValid(client.nutRagdoll)) then
-			client.nutRagdoll.nutIgnoreDelete = true
-			client.nutRagdoll:Remove()
-			client:setLocalVar("blur", nil)
-		end
-
-		client:setNetVar("deathStartTime", CurTime())
-		client:setNetVar("deathTime", CurTime() + nut.config.get("spawnTime", 5))
-
-		local deathSound = hook.Run("GetPlayerDeathSound", client) or table.Random(deathSounds)
-
-		if (client:isFemale() and !deathSound:find("female")) then
-			deathSound = deathSound:gsub("male", "female")
-		end
-
-		client:EmitSound(deathSound)
+	if (not client:getChar()) then return end
+	if (IsValid(client.nutRagdoll)) then
+		client.nutRagdoll.nutIgnoreDelete = true
+		client.nutRagdoll:Remove()
+		client:setLocalVar("blur", nil)
 	end
-end
 
-local painSounds = {
-	Sound("vo/npc/male01/pain01.wav"),
-	Sound("vo/npc/male01/pain02.wav"),
-	Sound("vo/npc/male01/pain03.wav"),
-	Sound("vo/npc/male01/pain04.wav"),
-	Sound("vo/npc/male01/pain05.wav"),
-	Sound("vo/npc/male01/pain06.wav")
-}
-
-local drownSounds = {
-	Sound("player/pl_drown1.wav"),
-	Sound("player/pl_drown2.wav"),
-	Sound("player/pl_drown3.wav"),
-}
-
-function GM:GetPlayerPainSound(client)
-	if (client:WaterLevel() >= 3) then
-		return table.Random(drownSounds)
-	end
+	client:setNetVar("deathStartTime", CurTime())
+	client:setNetVar("deathTime", CurTime() + nut.config.get("spawnTime", 5))
 end
 
 function GM:PlayerHurt(client, attacker, health, damage)
-	if ((client.nutNextPain or 0) < CurTime()) then
-		local painSound = hook.Run("GetPlayerPainSound", client) or table.Random(painSounds)
-
-		if (client:isFemale() and !painSound:find("female")) then
-			painSound = painSound:gsub("male", "female")
-		end
-
-		client:EmitSound(painSound)
-		client.nutNextPain = CurTime() + 0.33
-
-		nut.log.add(client, "playerHurt", attacker:IsPlayer() and attacker:Name() or attacker:GetClass(), damage, health)
-	end
+	nut.log.add(
+		client,
+		"playerHurt",
+		attacker:IsPlayer() and attacker:Name() or attacker:GetClass(),
+		damage,
+		health
+	)
 end
 
 function GM:PlayerDeathThink(client)
@@ -549,23 +508,6 @@ function GM:ShutDown()
 		if (v:getChar()) then
 			v:getChar():save()
 		end
-	end
-end
-
-LIMB_GROUPS = {}
-LIMB_GROUPS[HITGROUP_LEFTARM] = true
-LIMB_GROUPS[HITGROUP_RIGHTARM] = true
-LIMB_GROUPS[HITGROUP_LEFTLEG] = true
-LIMB_GROUPS[HITGROUP_RIGHTLEG] = true
-LIMB_GROUPS[HITGROUP_GEAR] = true
-
-function GM:ScalePlayerDamage(client, hitGroup, dmgInfo)
-	dmgInfo:ScaleDamage(1.5)
-
-	if (hitGroup == HITGROUP_HEAD) then
-		dmgInfo:ScaleDamage(7)
-	elseif (LIMB_GROUPS[hitGroup]) then
-		dmgInfo:ScaleDamage(0.5)
 	end
 end
 
@@ -667,41 +609,6 @@ function GM:OnServerLog(client, logType, ...)
 		end
 	end
 end
-
-timer.Create("nutLifeGuard", 1, 0, function()
-	for k, v in ipairs(player.GetAll()) do
-		if (v:getChar() and v:Alive() and hook.Run("ShouldPlayerDrowned", v) != false) then
-			if (v:WaterLevel() >= 3) then
-				if (!v.drowningTime) then
-					v.drowningTime = CurTime() + 30
-					v.nextDrowning = CurTime()
-					v.drownDamage = v.drownDamage or 0
-				end
-
-				if (v.drowningTime < CurTime()) then
-					if (v.nextDrowning < CurTime()) then
-						v:ScreenFade(1, Color(0, 0, 255, 100), 1, 0)
-						v:TakeDamage(10)
-						v.drownDamage = v.drownDamage + 10
-						v.nextDrowning = CurTime() + 1
-					end
-				end
-			else
-				if (v.drowningTime) then
-					v.drowningTime = nil
-					v.nextDrowning = nil
-					v.nextRecover = CurTime() + 2
-				end
-
-				if (v.nextRecover and v.nextRecover < CurTime() and v.drownDamage > 0) then
-					v.drownDamage = v.drownDamage - 10
-					v:SetHealth(math.Clamp(v:Health() + 10, 0, v:GetMaxHealth()))
-					v.nextRecover = CurTime() + 1
-				end
-			end
-		end
-	end
-end)
 
 netstream.Hook("strReq", function(client, time, text)
 	if (client.nutStrReqs and client.nutStrReqs[time]) then
