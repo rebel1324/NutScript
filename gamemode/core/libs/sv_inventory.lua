@@ -2,7 +2,7 @@ if (not nut.inventory) then
 	include("sh_inventory.lua")
 end
 
-local INV_FIELDS = {"_invID", "_invType"}
+local INV_FIELDS = {"_invID", "_invType", "_charID"}
 local INV_TABLE = "inventories"
 local DATA_FIELDS = {"_key", "_value"}
 local DATA_TABLE = "invdata"
@@ -36,15 +36,19 @@ function nut.inventory.loadByID(id, noCache)
 		type(id) == "number" and id >= 0,
 		"No inventories implement loadFromStorage for ID "..tostring(id)
 	)
-	return nut.inventory.loadFromDefaultStorage(id)
+	return nut.inventory.loadFromDefaultStorage(id, noCache)
 end
 
-function nut.inventory.loadFromDefaultStorage(id)
+function nut.inventory.loadFromDefaultStorage(id, noCache)
 	return deferred.all({
 		nut.db.select(INV_FIELDS, INV_TABLE, "_invID = "..id, 1),
 		nut.db.select(DATA_FIELDS, DATA_TABLE, "_invID = "..id)
 	})
 	:next(function(res)
+		if (nut.inventory.instances[id] and not noCache) then
+			return nut.inventory.instances[id]
+		end
+
 		local results = res[1].results and res[1].results[1] or nil
 		if (not results) then
 			return
@@ -61,13 +65,20 @@ function nut.inventory.loadFromDefaultStorage(id)
 		instance.id = id
 		instance.data = {}
 		for _, row in ipairs(res[2].results or {}) do
-			instance.data[row._key] = util.JSONToTable(row._value)[1]
+			local decoded = util.JSONToTable(row._value)
+			instance.data[row._key] = decoded and decoded[1] or nil
 		end
+
+		-- Compatibility of NS1.1 inventory
+		instance.data.char = tonumber(results._charID) or instance.data.char
 
 		nut.inventory.instances[id] = instance
 		instance:onLoaded()
-		return instance:loadItems():next(function() return instance end, error)
-	end, error)
+		return instance:loadItems():next(function() return instance end)
+	end, function(err)
+		print("Failed to load inventory "..tostring(id))
+		print(err)
+	end)
 end
 
 function nut.inventory.instance(typeID, initialData)
@@ -95,9 +106,8 @@ function nut.inventory.instance(typeID, initialData)
 end
 
 function nut.inventory.loadAllFromCharID(charID)
-	local sameCharCondition =
-		"_key = 'char' AND _value = '"..util.TableToJSON({charID}).."'"
-	return nut.db.select({"_invID"}, DATA_TABLE, sameCharCondition)
+	assert(type(charID) == "number", "charID must be a number")
+	return nut.db.select({"_invID"}, INV_TABLE, "_charID = "..charID)
 		:next(function(res)
 			return deferred.map(res.results or {}, function(result)
 				return nut.inventory.loadByID(tonumber(result._invID))
