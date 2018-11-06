@@ -168,37 +168,6 @@ function GM:LoadFonts(font, genericFont)
 		weight = 800
 	})
 
-	-- Introduction fancy font.
-	font = "Cambria"
-
-	surface.CreateFont("nutIntroTitleFont", {
-		font = font,
-		size = 200,
-		extended = true,
-		weight = 1000
-	})
-
-	surface.CreateFont("nutIntroBigFont", {
-		font = font,
-		size = 48,
-		extended = true,
-		weight = 1000
-	})
-
-	surface.CreateFont("nutIntroMediumFont", {
-		font = font,
-		size = 28,
-		extended = true,
-		weight = 1000
-	})
-
-	surface.CreateFont("nutIntroSmallFont", {
-		font = font,
-		size = 22,
-		extended = true,
-		weight = 1000
-	})
-
 	surface.CreateFont("nutIconsSmall", {
 		font = "fontello",
 		size = 22,
@@ -304,17 +273,6 @@ function GM:CalcViewModelView(weapon, viewModel, oldEyePos, oldEyeAngles, eyePos
 	return vm_origin, vm_angles
 end
 
-function GM:LoadIntro()
-	-- If skip intro is on
-	if (true) then 
-		if (IsValid(nut.gui.char)) then
-			vgui.Create("nutCharMenu")
-		end
-	else
-
-	end
-end
-
 function GM:InitializedConfig()
 	hook.Run("LoadFonts", nut.config.get("font"), nut.config.get("genericFont"))
 
@@ -355,9 +313,34 @@ function GM:InitializedConfig()
 
 		nut.gui.loading = loader
 		nut.config.loaded = true
-
-		hook.Run("LoadIntro")
 	end
+end
+
+function GM:CharacterListLoaded()
+	local hasNotSeenIntro = not nut.localData.intro
+	timer.Create("nutWaitUntilPlayerValid", 0.5, 0, function()
+		if (not IsValid(LocalPlayer())) then return end
+		timer.Remove("nutWaitUntilPlayerValid")
+
+		-- Remove the loading indicator.
+		if (IsValid(nut.gui.loading)) then
+			nut.gui.loading:Remove()
+		end
+
+		-- Show the intro if needed, then show the character menu.
+		local intro =
+			hasNotSeenIntro and hook.Run("CreateIntroduction") or nil
+		if (IsValid(intro)) then
+			intro.nutLoadOldRemove = intro.OnRemove
+			intro.OnRemove = function(panel)
+				panel:nutLoadOldRemove()
+				hook.Run("NutScriptLoaded")
+			end
+			nut.gui.intro = intro
+		else
+			hook.Run("NutScriptLoaded")
+		end
+	end)
 end
 
 function GM:InitPostEntity()

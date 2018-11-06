@@ -5,17 +5,7 @@ local PANEL = {}
 	function PANEL:Init()
 		local fadeSpeed = 1
 
-		if (IsValid(nut.gui.loading)) then
-			nut.gui.loading:Remove()
-		end
-
-		if (!nut.localData.intro) then
-			timer.Simple(0.1, function()
-				vgui.Create("nutIntro", self)
-			end)
-		else
-			self:playMusic()
-		end
+		self:playMusic()
 
 		if (IsValid(nut.gui.char) or (LocalPlayer().getChar and LocalPlayer():getChar())) then
 			nut.gui.char:Remove()
@@ -35,7 +25,8 @@ local PANEL = {}
 			surface.SetDrawColor(0, 0, 0)
 			surface.DrawRect(0, 0, w, h)
 		end
-		self.darkness:SetZPos(99)
+		self.darkness:SetZPos(-99)
+		self.darkness:SetAlpha(0)
 
 		self.title = self:Add("DLabel")
 		self.title:SetContentAlignment(5)
@@ -47,11 +38,7 @@ local PANEL = {}
 		self.title:SetTextColor(color_white)
 		self.title:SetZPos(100)
 		self.title:SetAlpha(0)
-		self.title:AlphaTo(255, fadeSpeed, 3 * fadeSpeed, function()
-			self.darkness:AlphaTo(0, 2 * fadeSpeed, 0, function()
-				self.darkness:SetZPos(-99)
-			end)
-		end)
+		self.title:AlphaTo(255, fadeSpeed, fadeSpeed)
 		self.title:SetExpensiveShadow(2, Color(0, 0, 0, 200))
 
 		self.subTitle = self:Add("DLabel")
@@ -63,7 +50,7 @@ local PANEL = {}
 		self.subTitle:SizeToContentsY()
 		self.subTitle:SetTextColor(color_white)
 		self.subTitle:SetAlpha(0)
-		self.subTitle:AlphaTo(255, 4 * fadeSpeed, 3 * fadeSpeed)
+		self.subTitle:AlphaTo(255, fadeSpeed, fadeSpeed * 1.25)
 		self.subTitle:SetExpensiveShadow(2, Color(0, 0, 0, 200))
 
 		self.icon = self:Add("DHTML")
@@ -99,7 +86,7 @@ local PANEL = {}
 			label:SetPos(x, y)
 			label:setText(text, noTranslation)
 			label:SetAlpha(0)
-			label:AlphaTo(255, 0.3, (fadeSpeed * 2) + 0.05 * i, function()
+			label:AlphaTo(255, fadeSpeed, (fadeSpeed * 2) + (0.1 * i), function()
 				if (isLast) then
 					fadeSpeed = 0
 				end
@@ -122,6 +109,7 @@ local PANEL = {}
 
 		local function ClearAllButtons(callback)
 			x, y = ScrW() * 0.1, ScrH() * 0.3
+			i = 0
 
 			local i = 1
 			local max = table.Count(self.buttons)
@@ -171,6 +159,7 @@ local PANEL = {}
 
 		function CreateMainButtons()
 			local count = 0
+			i = 0
 
 			for k, v in pairs(nut.faction.teams) do
 				if (nut.faction.hasWhitelist(v.index)) then
@@ -411,7 +400,7 @@ local PANEL = {}
 							local first = true
 
 							self.charList:Clear()
-							self.charList:AlphaTo(255, 0.5, 0.5)
+							self.charList:AlphaTo(255, 0.3)
 
 							for k, v in ipairs(nut.characters) do
 								local character = nut.char.loaded[v]
@@ -585,9 +574,17 @@ local PANEL = {}
 	end
 vgui.Register("nutCharMenu", PANEL, "EditablePanel")
 
+if (IsValid(nut.gui.char)) then
+	vgui.Create("nutCharMenu")
+end
+
 hook.Add("CreateMenuButtons", "nutCharButton", function(tabs)
 	tabs["Characters"] = function(panel)
 		nut.gui.menu:Remove()
 		vgui.Create("nutCharMenu")
 	end
+end)
+
+hook.Add("NutScriptLoaded", "nutCharMenu", function()
+	vgui.Create("nutCharMenu")
 end)

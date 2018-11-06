@@ -121,7 +121,7 @@ local PANEL = {}
 
 	function PANEL:OnRemove()
 		if (self.sound) then
-			self.sound:Stop()
+			self.sound:FadeOut(1)
 			self.sound = nil
 
 			if (IsValid(nut.gui.char)) then
