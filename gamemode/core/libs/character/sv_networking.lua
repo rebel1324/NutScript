@@ -116,7 +116,7 @@ netstream.Hook("charDel", function(client, id)
 		nut.db.query("SELECT _invID FROM nut_inventories WHERE _charID = "..id, function(data)
 			if (data) then
 				for k, v in ipairs(data) do
-					nut.db.deleteByID(tonumber(v._invID))
+					nut.inventory.deleteByID(tonumber(v._invID))
 				end
 			end
 		end)
