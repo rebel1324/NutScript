@@ -1,6 +1,9 @@
 -- This file contains implementation for the old inventory library functions.
 -- But, these really should not be used.
 
+-- Alias to new inventory instance list.
+nut.item.inventories = nut.inventory.instances
+
 local function DEPRECATED()
 	local warning = debug.getinfo(2, "n").name.." is deprecated"
 	local output = debug.traceback(warning, 3)
@@ -41,10 +44,9 @@ function nut.item.newInv(owner, invType, callback)
 						break
 					end
 				end
-
-				if (callback) then
-					callback(inventory)
-				end
+			end
+			if (callback) then
+				callback(inventory)
 			end
 		end)
 end
