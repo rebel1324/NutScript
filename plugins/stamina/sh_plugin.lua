@@ -71,7 +71,7 @@ if (SERVER) then
 
 		self:setLocalVar("stm", value)
 	end
-else
+elseif (nut.bar) then
 	nut.bar.add(function()
 		return LocalPlayer():getLocalVar("stm", 0) / 100
 	end, Color(200, 200, 40), nil, "stm")

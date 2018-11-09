@@ -500,7 +500,6 @@ function GM:HUDPaintBackground()
 	end
 
 	nut.menu.drawAll()
-	nut.bar.drawAll()
 end
 
 function GM:ShouldDrawEntityInfo(entity)
