@@ -46,7 +46,12 @@ function nut.item.register(uniqueID, baseID, isBaseItem, path, luaGenerated)
 		postHooks = {},
 		BaseClass = baseTable,
 		__tostring = baseTable.__tostring,
-	}, {__tostring = baseTable.__tostring, __index = baseTable})
+	}, {
+		__eq = baseTable.__eq,
+		__tostring = baseTable.__tostring,
+		__index = baseTable
+	})
+
 	ITEM.__tostring = baseTable.__tostring
 	ITEM.desc = "noDesc"
 	ITEM.uniqueID = uniqueID
@@ -113,7 +118,11 @@ function nut.item.new(uniqueID, id)
 		local item = setmetatable({
 			id = id,
 			data = {}
-		}, {__tostring = stockItem.__tostring, __index = stockItem})
+		}, {
+			__eq = stockItem.__eq,
+			__tostring = stockItem.__tostring,
+			__index = stockItem
+		})
 
 		nut.item.instances[id] = item
 
