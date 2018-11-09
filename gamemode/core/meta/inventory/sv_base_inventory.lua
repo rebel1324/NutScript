@@ -231,9 +231,7 @@ function Inventory:loadItems()
 				item.data.y = tonumber(result._y)
 
 				items[itemID] = item
-				if (item.onRestored) then
-					item:onRestored(self)
-				end
+				item:onRestored(self)
 			end
 			self.items = items
 			self:onItemsLoaded(items)

@@ -91,6 +91,11 @@ end
 function ITEM:onSync(recipient)
 end
 
+--- Called when this item has been loaded from the database.
+-- @param inventory The optional inventory an item was loaded with.
+function ITEM:onRestored(inventory)
+end
+
 function ITEM:sync(recipient)
 	net.Start("nutItemInstance")
 		net.WriteUInt(self:getID(), 32)
