@@ -1,10 +1,12 @@
-nut.hud = {}
+PLUGIN.name = "Death Screen"
+PLUGIN.author = "Black Tea"
+PLUGIN.desc = "'You have died' message."
 
 local owner, w, h, ceil, ft, clmp
 ceil = math.ceil
 clmp = math.Clamp
 local aprg, aprg2 = 0, 0
-function nut.hud.drawDeath()
+function PLUGIN:HUDPaint()
 	owner = LocalPlayer()
 	ft = FrameTime()
 	w, h = ScrW(), ScrH()
@@ -34,14 +36,4 @@ function nut.hud.drawDeath()
 	surface.SetDrawColor(0, 0, 0, ceil((aprg^.5) * 255))
 	surface.DrawRect(-1, -1, w+2, h+2)
 	local tx, ty = nut.util.drawText(L"youreDead", w/2, h/2, ColorAlpha(color_white, aprg2 * 255), 1, 1, "nutDynFontMedium", aprg2 * 255)
-end
-
-hook.Add("GetCrosshairAlpha", "nutCrosshair", function(alpha)
-	return alpha * (1 - aprg)
-end)
-
-function nut.hud.drawAll(postHook)
-	if (postHook) then
-		nut.hud.drawDeath()
-	end
 end
