@@ -9,7 +9,7 @@ ITEM.desc = "A Box that contains %s of Pistol Ammo"
 ITEM.category = "Ammunition"
 
 function ITEM:getDesc()
-	return Format(self.desc, self:getQuantity())
+	return Format(self.ammoDesc or self.desc, self:getQuantity())
 end
 
 function ITEM:getQuantity()

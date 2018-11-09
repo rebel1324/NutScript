@@ -1,4 +1,4 @@
-local ITEM = {}
+local ITEM = nut.meta.item or {}
 debug.getregistry().Item = nut.meta.item -- for FindMetaTable.
 
 ITEM.__index = ITEM
@@ -116,6 +116,10 @@ function ITEM:postHook(name, func)
 	if (name) then
 		self.postHooks[name] = func
 	end
+end
+
+-- Called after NutScript has stored this item into the list of valid items.
+function ITEM:onRegistered()
 end
 
 nut.meta.item = ITEM
