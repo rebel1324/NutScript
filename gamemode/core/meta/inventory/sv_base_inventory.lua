@@ -60,6 +60,11 @@ function Inventory:initializeStorage(initialData)
 		local count = 0
 		local expected = table.Count(initialData)
 
+		-- Ignore the char data since it is stored in the old charID column.
+		if (initialData.char) then
+			expected = expected - 1
+		end
+
 		if (expected == 0) then
 			return d:resolve(lastID)
 		end
