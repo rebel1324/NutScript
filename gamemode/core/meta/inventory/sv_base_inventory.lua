@@ -51,9 +51,11 @@ end
 -- Returns a promise that is resolved after the storing is done.
 function Inventory:initializeStorage(initialData)
 	local d = deferred.new()
+	local charID = initialData.char
 
 	nut.db.insertTable({
 		_invType = self.typeID,
+		_charID = charID
 	}, function(results, lastID)
 		local count = 0
 		local expected = table.Count(initialData)
@@ -63,6 +65,7 @@ function Inventory:initializeStorage(initialData)
 		end
 
 		for key, value in pairs(initialData) do
+			if (key == "char") then continue end
 			nut.db.insertTable({
 				_invID = lastID,
 				_key = key,
