@@ -84,7 +84,7 @@ function nut.char.restore(client, callback, noCache, id)
 					if (type(v2.default) == "number") then
 						value = tonumber(value) or v2.default
 					elseif (type(v2.default) == "boolean") then
-						value = tobool(vlaue)
+						value = tobool(value)
 					elseif (type(v2.default) == "table") then
 						value = util.JSONToTable(value)
 					end
