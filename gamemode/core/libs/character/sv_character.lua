@@ -38,8 +38,14 @@ end
 
 function nut.char.restore(client, callback, noCache, id)
 	local steamID64 = client:SteamID64()
-	local fields =
-		"_id, _name, _desc, _model, _attribs, _data, _money, _faction"
+	local fields = {"_id"}
+	for _, var in pairs(nut.char.vars) do
+		if (var.field) then
+			fields[#fields + 1] = var.field
+		end
+	end
+	fields = table.concat(fields, ", ")
+
 	local condition = "_schema = '"..nut.db.escape(SCHEMA.folder)
 		.."' AND _steamID = "..steamID64
 
