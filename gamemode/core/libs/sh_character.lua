@@ -4,7 +4,6 @@ nut.char.vars = nut.char.vars or {}
 
 nut.util.include("nutscript/gamemode/core/meta/sh_character.lua")
 nut.util.include("character/cl_networking.lua")
-nut.util.include("character/sv_networking.lua")
 nut.util.include("character/sv_character.lua")
 
 function nut.char.new(data, id, client, steamID)
