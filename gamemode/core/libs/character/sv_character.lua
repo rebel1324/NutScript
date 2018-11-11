@@ -154,3 +154,39 @@ function nut.char.cleanUpForPlayer(client)
 		hook.Run("CharacterCleanUp", character)
 	end
 end
+
+function nut.char.delete(id)
+	assert(type(id) == "number", "id must be a number")
+
+	local owners = {}
+	for _, client in ipairs(player.GetAll()) do
+		if (table.HasValue(client.nutCharList, id)) then
+			owners[#owners + 1] = client
+		end
+	end
+
+	hook.Run("PreCharacterDelete", id)
+
+	nut.char.loaded[id] = nil
+	netstream.Start(nil, "charDel", id)
+	nut.db.query("DELETE FROM nut_characters WHERE _id = "..id)
+	nut.db.query(
+		"SELECT _invID FROM nut_inventories WHERE _charID = "..id,
+		function(data)
+			if (data) then
+				for _, inventory in ipairs(data) do
+					nut.inventory.deleteByID(tonumber(inventory._invID))
+				end
+			end
+		end
+	)
+
+	hook.Run("OnCharacterDelete", id)
+
+	for _, owner in ipairs(owner) do
+		if (owner:getChar() and owner:getChar():getID() == id) then
+			client:setNetVar("char", nil)
+			client:Spawn()
+		end
+	end
+end

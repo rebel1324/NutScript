@@ -56,7 +56,7 @@ if (CLIENT) then
 			return
 		end
 
-		if (hook.Run("ShouldDrawCrosshair") == false or g_ContextMenu:IsVisible() or nut.gui.char:IsVisible()) then
+		if (hook.Run("ShouldDrawCrosshair") == false or g_ContextMenu:IsVisible() or IsValid(nut.gui.char) and nut.gui.char:IsVisible()) then
 			return
 		end
 

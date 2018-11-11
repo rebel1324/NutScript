@@ -167,6 +167,11 @@ if (SERVER) then
 		self:setData("banned", time or true)
 		self:kick()
 	end
+
+	-- Deletes this character from existence along with its associated data.
+	function CHAR:delete()
+		nut.char.delete(self:getID())
+	end
 end
 
 -- Returns which player owns this character.
