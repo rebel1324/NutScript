@@ -160,7 +160,7 @@ function nut.char.delete(id)
 
 	local owners = {}
 	for _, client in ipairs(player.GetAll()) do
-		if (table.HasValue(client.nutCharList, id)) then
+		if (table.HasValue(client.nutCharList or {}, id)) then
 			owners[#owners + 1] = client
 		end
 	end
@@ -183,7 +183,8 @@ function nut.char.delete(id)
 
 	hook.Run("OnCharacterDelete", id)
 
-	for _, owner in ipairs(owner) do
+	for _, owner in ipairs(owners) do
+		table.RemoveByValue(client.nutCharList, id)
 		if (owner:getChar() and owner:getChar():getID() == id) then
 			client:setNetVar("char", nil)
 			client:Spawn()
