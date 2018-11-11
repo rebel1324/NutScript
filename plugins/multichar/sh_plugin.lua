@@ -82,7 +82,7 @@ else
 	--- Requests for a character to be deleted
 	-- @param id The numeric ID of the desired character
 	function PLUGIN:deleteCharacter(id)
-		assert(isnumber(d), "id must be a number")
+		assert(isnumber(id), "id must be a number")
 		net.Start("nutCharDelete")
 			net.WriteUInt(id, 32)
 		net.SendToServer()
