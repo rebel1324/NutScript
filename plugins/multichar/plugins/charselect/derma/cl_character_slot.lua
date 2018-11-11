@@ -11,14 +11,15 @@ function PANEL:confirmDelete()
 	local id = self.character:getID()
 	vgui.Create("nutCharacterConfirm")
 		:setMessage(L("Deleting a character cannot be undone."))
-		:onConfirm(function() print("Delete "..id) end)
+		:onConfirm(function()
+			nutMultiChar:deleteCharacter(id)
+		end)
 end
 
 function PANEL:Init()
 	local WIDTH = 240
 
 	self:SetWide(WIDTH)
-	self:Dock(LEFT)
 	self:SetDrawBackground(false)
 
 	self.faction = self:Add("DPanel")
@@ -26,6 +27,10 @@ function PANEL:Init()
 	self.faction:SetTall(STRIP_HEIGHT)
 	self.faction:SetSkin("Default")
 	self.faction:SetAlpha(100)
+	self.faction.Paint = function(faction, w, h)
+		surface.SetDrawColor(faction:GetBackgroundColor())
+		surface.DrawRect(0, 0, w, h)
+	end
 
 	self.name = self:Add("DLabel")
 	self.name:Dock(TOP)
@@ -36,7 +41,7 @@ function PANEL:Init()
 
 	self.model = self:Add("nutModelPanel")
 	self.model:Dock(FILL)
-	self.model:SetFOV(40)
+	self.model:SetFOV(37)
 
 	self.button = self:Add("DButton")
 	self.button:SetSize(WIDTH, ScrH())
@@ -44,6 +49,7 @@ function PANEL:Init()
 	self.button:SetText("")
 	self.button.OnCursorEntered = function(button) self:OnCursorEntered() end
 	self.button.DoClick = function(button)
+		nut.gui.character:clickSound()
 		self:onSelected()
 	end
 
@@ -57,6 +63,7 @@ function PANEL:Init()
 		surface.DrawRect(0, 0, w, h)
 	end
 	self.delete.DoClick = function(delete)
+		nut.gui.character:clickSound()
 		self:confirmDelete()
 	end
 	self.delete.y = ScrH()
@@ -98,16 +105,17 @@ function PANEL:onHoverChanged(isHovered)
 	if (isHovered) then
 		self.delete.y = tall
 		self.delete:MoveTo(0, tall - self.delete:GetTall(), ANIM_SPEED)
+		nut.gui.character:hoverSound()
 	else
 		self.delete:MoveTo(0, tall, ANIM_SPEED)
 	end
 
-	self.faction:AlphaTo(isHovered and 200 or 100, ANIM_SPEED)
+	self.faction:AlphaTo(isHovered and 250 or 100, ANIM_SPEED)
 end
 
 function PANEL:Paint(w, h)
 	nut.util.drawBlur(self)
-	surface.SetDrawColor(0, 0, 0, 100)
+	surface.SetDrawColor(0, 0, 0, 50)
 	surface.DrawRect(0, STRIP_HEIGHT, w, h)
 
 	if (not self:isCursorWithinBounds() and self.isHovered) then

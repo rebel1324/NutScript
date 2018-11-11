@@ -54,4 +54,13 @@ function PANEL:Paint(w, h)
 	end
 end
 
+function PANEL:OnCursorEntered()
+	nut.gui.character:hoverSound()
+end
+
+function PANEL:OnMousePressed()
+	nut.gui.character:clickSound()
+	self.BaseClass.OnMousePressed(self)
+end
+
 vgui.Register("nutCharacterTabButton", PANEL, "DButton")

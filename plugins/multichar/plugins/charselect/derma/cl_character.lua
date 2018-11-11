@@ -152,6 +152,14 @@ function PANEL:Paint(w, h)
 	nut.util.drawBlur(self)
 end
 
+function PANEL:hoverSound()
+	LocalPlayer():EmitSound("buttons/button15.wav", 30, 250)
+end
+
+function PANEL:clickSound()
+	LocalPlayer():EmitSound("buttons/button14.wav", 35, 255)
+end
+
 vgui.Register("nutCharacter", PANEL, "EditablePanel")
 
 if (IsValid(nut.gui.character)) then

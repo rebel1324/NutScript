@@ -41,11 +41,17 @@ function PANEL:Init()
 	self.confirm:SetText(L("yes"):upper())
 	self.confirm:SetDrawBackground(false)
 	self.confirm:SetSize(64, 32)
+	self.confirm.OnCursorEntered = function() nut.gui.character:hoverSound() end
+	self.confirm.OnCursorEntered = function(cancel)
+		cancel.BaseClass.OnCursorEntered(cancel)
+		nut.gui.character:hoverSound()
+	end
 	self.confirm:SetPos(
 		ScrW() * 0.5 - (self.confirm:GetWide() + SPACING),
 		self.message.y + 64
 	)
 	self.confirm.DoClick = function(cancel)
+		nut.gui.character:clickSound()
 		if (isfunction(self.onConfirmCallback)) then
 			self.onConfirmCallback()
 		end
@@ -57,16 +63,25 @@ function PANEL:Init()
 	self.cancel:SetText(L("no"):upper())
 	self.cancel:SetDrawBackground(false)
 	self.cancel:SetSize(64, 32)
+	self.cancel.OnCursorEntered = function(cancel)
+		cancel.BaseClass.OnCursorEntered(cancel)
+		nut.gui.character:hoverSound()
+	end
 	self.cancel:SetPos(
 		ScrW() * 0.5 + SPACING,
 		self.message.y + 64
 	)
 	self.cancel.DoClick = function(cancel)
+		nut.gui.character:clickSound()
 		if (isfunction(self.onCancelCallback)) then
 			self.onCancelCallback()
 		end
 		self:Remove()
 	end
+
+	timer.Simple(nut.gui.character.ANIM_SPEED, function()
+		LocalPlayer():EmitSound("friends/friend_join.wav", 30, 255)
+	end)
 end
 
 function PANEL:OnMousePressed()

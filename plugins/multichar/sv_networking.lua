@@ -98,7 +98,7 @@ net.Receive("nutCharCreate", function(_, client)
 	end)
 end)
 
-net.Receive("nutCharDelete", function(client)
+net.Receive("nutCharDelete", function(_, client)
 	local id = net.ReadUInt(32)
 	local character = nut.char.loaded[id]
 	local steamID = client:SteamID64()
