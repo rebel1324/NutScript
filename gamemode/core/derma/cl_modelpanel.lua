@@ -77,12 +77,32 @@ local PANEL = {}
 
 		render.SetModelLighting(5, fraction, fraction, fraction)
 
+		local curparent = self
+		local rightx = self:GetWide()
+		local leftx = 0
+		local topy = 0
+		local bottomy = self:GetTall()
+		local previous = curparent
+		while( curparent:GetParent() != nil ) do
+			curparent = curparent:GetParent()
+			local x, y = previous:GetPos()
+			topy = math.Max( y, topy + y )
+			leftx = math.Max( x, leftx + x )
+			bottomy = math.Min( y + previous:GetTall(), bottomy + y )
+			rightx = math.Min( x + previous:GetWide(), rightx + x )
+			previous = curparent
+		end
+
+		render.SetScissorRect(leftx, topy, rightx, bottomy, true)
+
 		-- Excecute Some stuffs
 		if (self.enableHook) then
 			hook.Run("DrawNutModelView", self, self.Entity)
 		end
-		
+	
 		self.Entity:DrawModel()
+
+		render.SetScissorRect(0, 0, 0, 0, false)
 	end
 
 	function PANEL:OnMousePressed()
