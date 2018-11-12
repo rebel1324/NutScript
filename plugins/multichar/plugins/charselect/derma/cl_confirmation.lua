@@ -79,7 +79,7 @@ function PANEL:Init()
 		self:Remove()
 	end
 
-	timer.Simple(nut.gui.character.ANIM_SPEED, function()
+	timer.Simple(nut.gui.character.ANIM_SPEED * 0.5, function()
 		LocalPlayer():EmitSound("friends/friend_join.wav", 30, 255)
 	end)
 end
@@ -92,6 +92,13 @@ function PANEL:Paint(w, h)
 	nut.util.drawBlur(self)
 	surface.SetDrawColor(0, 0, 0, 150)
 	surface.DrawRect(0, 0, w, h)
+end
+
+function PANEL:setTitle(title)
+	self.title:SetText(title)
+	self.title:SizeToContentsX()
+	self.title:CenterHorizontal()
+	return self
 end
 
 function PANEL:setMessage(message)

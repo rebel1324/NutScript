@@ -54,9 +54,17 @@ function PANEL:createTitle()
 	self.desc:SetTextColor(WHITE)
 end
 
-function PANEL:addTab(name, callback)
+function PANEL:addTab(name, callback, justClick)
 	local button = self.tabs:Add("nutCharacterTabButton")
 	button:setText(L(name):upper())
+
+	if (justClick) then
+		if (isfunction(callback)) then
+			button.DoClick = function(button) callback(self) end
+		end
+		return
+	end
+
 	button.DoClick = function(button)
 		button:setSelected(true)
 	end
@@ -65,6 +73,7 @@ function PANEL:addTab(name, callback)
 			callback(self)
 		end)
 	end
+
 	return button
 end
 
@@ -115,8 +124,11 @@ function PANEL:Init()
 
 	local create = self:addTab("create", self.createCharacterCreation)
 	self:addTab("leave", function()
-		LocalPlayer():ConCommand("disconnect")
-	end)
+		vgui.Create("nutCharacterConfirm")
+			:setTitle(L("disconnect"):upper().."?")
+			:setMessage(L("You will disconnect from the server."):upper())
+			:onConfirm(function() LocalPlayer():ConCommand("disconnect") end)
+	end, true)
 
 	if (IsValid(load)) then
 		load:setSelected()
