@@ -1,4 +1,4 @@
-local syncCharList = PLUGIN.syncCharList
+local PLUGIN = PLUGIN
 
 util.AddNetworkString("nutCharChoose")
 util.AddNetworkString("nutCharCreate")
@@ -36,9 +36,10 @@ end)
 
 net.Receive("nutCharCreate", function(_, client)
 	local function response(id, message, ...)
+		print(id, message, ...)
 		net.Start("nutCharCreate")
 			net.WriteUInt(id or 0, 32)
-			net.WriteString(L(message, client, ...))
+			net.WriteString(L(message or "", client, ...))
 		net.Send(client)
 	end
 
@@ -58,25 +59,28 @@ net.Receive("nutCharCreate", function(_, client)
 			data[key] = nil
 		end
 	end
+
 	for key, charVar in pairs(nut.char.vars) do
+		local value = data[key]
+
 		-- Ignore keys that should not be set.
-		if (not info.onValidate and info.noDisplay) then
+		if (not isfunction(charVar.onValidate) and charVar.noDisplay) then
 			data[key] = nil
 			continue
 		end
 
+		-- Allow for the value to be validated.
 		if (isfunction(charVar.onValidate)) then
 			local result = {charVar.onValidate(value, data, client)}
 			if (result[1] == false) then
 				result[2] = result[2] or "Validation error"
 				return response(nil, unpack(result, 2))
 			end
-			if (result[1] ~= nil) then
-				data[key] = result[1]
-			end
-			if (isfunction(charVar.onAdjust)) then
-				charVar.onAdjust(client, data, value, newData)
-			end
+		end
+
+		-- Then allow for adjustments to the validated value to be made.
+		if (isfunction(charVar.onAdjust)) then
+			charVar.onAdjust(client, data, value, newData)
 		end
 	end
 
@@ -87,12 +91,15 @@ net.Receive("nutCharCreate", function(_, client)
 
 	-- After all the validation, create the character.
 	nut.char.create(data, function(id)
+		print("New id", id, client)
 		if (IsValid(client)) then
 			nut.char.loaded[id]:sync(client)
 			table.insert(client.nutCharList, id)
-			syncCharList(client)
-
+			print("Syncd")
+			PLUGIN:syncCharList(client)
+			print("Okay")
 			hook.Run("OnCharCreated", client, nut.char.loaded[id])
+			print(id)
 			response(id)
 		end
 	end)
@@ -105,6 +112,6 @@ net.Receive("nutCharDelete", function(_, client)
 
 	if (character and character.steamID == steamID) then
 		character:delete()
-		syncCharList(client)
+		PLUGIN:syncCharList(client)
 	end
 end)

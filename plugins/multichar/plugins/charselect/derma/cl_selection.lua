@@ -53,6 +53,10 @@ function PANEL:createCharacterSlots()
 end
 
 function PANEL:onCharacterSelected(character)
+	if (character == LocalPlayer():getChar()) then
+		return nut.gui.character:Remove()
+	end
+
 	nut.gui.character:setFadeToBlack(true)
 		:next(function()
 			return nutMultiChar:chooseCharacter(character:getID())

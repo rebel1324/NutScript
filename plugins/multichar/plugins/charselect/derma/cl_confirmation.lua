@@ -80,7 +80,7 @@ function PANEL:Init()
 	end
 
 	timer.Simple(nut.gui.character.ANIM_SPEED * 0.5, function()
-		LocalPlayer():EmitSound("friends/friend_join.wav", 30, 255)
+		nut.gui.character:warningSound()
 	end)
 end
 

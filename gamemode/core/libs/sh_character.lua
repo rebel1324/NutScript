@@ -170,7 +170,7 @@ do
 					newData.model = model[1]
 					newData.data = newData.data or {}
 					newData.data.skin = model[2] or 0
-					newData.data.bodyGroups = model[3]
+					newData.data.groups = model[3]
 				end
 			end
 		end
@@ -207,8 +207,11 @@ do
 
 			return faction and faction.index or 0
 		end,
-		noDisplay = true,
 		onValidate = function(value, data, client)
+			if (not nut.faction.indices[value]) then
+				return false, "invalid", "faction"
+			end
+
 			local limit = nut.faction.indices[value].limit
 			if (value) then
 				if (client:hasWhitelist(value)) then

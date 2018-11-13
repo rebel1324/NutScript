@@ -33,6 +33,7 @@ function nut.plugin.load(uniqueID, path, isSingleFile, variable)
 
 	_G[variable] = PLUGIN
 	PLUGIN.loading = true
+	PLUGIN.path = path
 
 	if (!isSingleFile) then
 		nut.util.includeDir(path.."/libs", true, true)

@@ -123,18 +123,27 @@ function PANEL:Init()
 	end
 
 	local create = self:addTab("create", self.createCharacterCreation)
+	if (IsValid(load)) then
+		load:setSelected()
+	elseif (IsValid(create)) then
+		create:setSelected()
+	end
+
+	if (LocalPlayer():getChar()) then
+		self:addTab("return", function()
+			if (IsValid(self)) then
+				self:Remove()
+			end
+		end, true)
+		return
+	end
+
 	self:addTab("leave", function()
 		vgui.Create("nutCharacterConfirm")
 			:setTitle(L("disconnect"):upper().."?")
 			:setMessage(L("You will disconnect from the server."):upper())
 			:onConfirm(function() LocalPlayer():ConCommand("disconnect") end)
 	end, true)
-
-	if (IsValid(load)) then
-		load:setSelected()
-	elseif (IsValid(create)) then
-		create:setSelected()
-	end
 end
 
 function PANEL:setFadeToBlack(fade)
@@ -169,7 +178,11 @@ function PANEL:hoverSound()
 end
 
 function PANEL:clickSound()
-	LocalPlayer():EmitSound("buttons/button14.wav", 35, 255)
+	LocalPlayer():EmitSound("buttons/button14.wav", 30, 255)
+end
+
+function PANEL:warningSound()
+	LocalPlayer():EmitSound("friends/friend_join.wav", 30, 255)
 end
 
 vgui.Register("nutCharacter", PANEL, "EditablePanel")

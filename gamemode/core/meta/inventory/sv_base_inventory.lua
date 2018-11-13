@@ -59,6 +59,9 @@ function Inventory:initializeStorage(initialData)
 	}, function(results, lastID)
 		local count = 0
 		local expected = table.Count(initialData)
+		if (initialData.char) then
+			expected = expected - 1
+		end
 
 		if (expected == 0) then
 			return d:resolve(lastID)

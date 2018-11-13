@@ -74,4 +74,14 @@ local PANEL = {}
 
 	function PANEL:OnMousePressed()
 	end
+
+	function PANEL:fitFOV()
+		local entity = self:GetEntity()
+		if (not IsValid(entity)) then return end
+
+		local mins, maxs = entity:GetRenderBounds()
+		local height = math.abs(maxs.z) + math.abs(mins.z) + 8
+		local distance = self:GetCamPos():Length()
+		self:SetFOV(math.deg(2 * math.atan(height / (2 * distance))))
+	end
 vgui.Register("nutModelPanel", PANEL, "DModelPanel")

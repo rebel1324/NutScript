@@ -29,6 +29,7 @@ function nut.char.create(data, callback)
 			:next(function(inventory)
 				character.vars.inv[1] = inventory
 				nut.char.loaded[charID] = character
+				print("Created", character)
 				if (callback) then
 					callback(charID)
 				end
@@ -184,10 +185,10 @@ function nut.char.delete(id)
 	hook.Run("OnCharacterDelete", id)
 
 	for _, owner in ipairs(owners) do
-		table.RemoveByValue(client.nutCharList, id)
+		table.RemoveByValue(owner.nutCharList, id)
 		if (owner:getChar() and owner:getChar():getID() == id) then
-			client:setNetVar("char", nil)
-			client:Spawn()
+			owner:setNetVar("char", nil)
+			owner:Spawn()
 		end
 	end
 end

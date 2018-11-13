@@ -3,10 +3,7 @@ local PANEL = {}
 function PANEL:Init()
 	self:Dock(LEFT)
 	self:DockMargin(0, 0, 32, 0)
-	self:SetFont("nutCharButtonFont")
 	self:SetContentAlignment(4)
-	self:SetTextColor(nut.gui.character.WHITE)
-	self:SetDrawBackground(false)
 end
 
 function PANEL:setText(name)
@@ -54,13 +51,4 @@ function PANEL:Paint(w, h)
 	end
 end
 
-function PANEL:OnCursorEntered()
-	nut.gui.character:hoverSound()
-end
-
-function PANEL:OnMousePressed()
-	nut.gui.character:clickSound()
-	self.BaseClass.OnMousePressed(self)
-end
-
-vgui.Register("nutCharacterTabButton", PANEL, "DButton")
+vgui.Register("nutCharacterTabButton", PANEL, "nutCharButton")

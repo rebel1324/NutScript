@@ -49,5 +49,6 @@ function PLUGIN:PlayerLoadedChar(client, character, oldCharacter)
 end
 
 function PLUGIN:OnCharCreated(client, character)
+	local id = character:getID()
 	MsgN("Created character '"..id.."' for "..client:steamName()..".")
 end

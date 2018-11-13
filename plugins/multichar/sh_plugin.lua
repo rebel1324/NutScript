@@ -13,6 +13,7 @@ if (SERVER) then
 				net.WriteUInt(client.nutCharList[i], 32)
 			end
 		net.Send(client)
+		print("Done")
 	end
 else
 	--- Requests to change to the character corresponding to the ID.
@@ -61,6 +62,7 @@ else
 		net.Receive("nutCharCreate", function()
 			local id = net.ReadUInt(32)
 			local reason = net.ReadString()
+			print(id, reason)
 			if (id > 0) then
 				d:resolve(id)
 			else
