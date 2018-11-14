@@ -79,12 +79,13 @@ function PANEL:onModelSelected(icon, noSound)
 	self:updateModelPanel()
 end
 
-function PANEL:onHandleSkip()
+function PANEL:shouldSkip()
 	local faction = nut.faction.indices[self:getContext("faction")]
-	if (faction and #faction.models == 1) then
-		self:setContext("model", 1)
-		return true
-	end
+	return faction and #faction.models == 1 or false
+end
+
+function PANEL:onSkip()
+	self:setContext("model", 1)
 end
 
 vgui.Register("nutCharacterModel", PANEL, "nutCharacterCreateStep")

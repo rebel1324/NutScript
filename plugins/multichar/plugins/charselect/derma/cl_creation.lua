@@ -59,10 +59,12 @@ end
 function PANEL:onFinish()
 	if (self.creating) then return end
 
+	-- Indicate that the character is being created.
 	self.content:SetVisible(false)
 	self.buttons:SetVisible(false)
 	self:showMessage("creating")
 
+	-- Reset the UI once the server responds.
 	local function onResponse()
 		if (not IsValid(self)) then return end
 		self.creating = false
@@ -70,13 +72,12 @@ function PANEL:onFinish()
 		self.buttons:SetVisible(true)
 		self:showMessage()
 	end
-
 	local function onFail(err)
 		onResponse()
 		self:showError(err)
 	end
-	print("FINISH")
-	PrintTable(self.context)
+
+	-- Send the character data and request that a character be made.
 	nutMultiChar:createCharacter(self.context)
 		:next(function()
 			onResponse()
@@ -85,6 +86,7 @@ function PANEL:onFinish()
 			end
 		end, onFail)
 
+	-- Show an error if this is taking too long.
 	timer.Create("nutFailedToCreate", 60, 1, function()
 		if (not IsValid(self) or not self.creating) then return end
 		onFail("unknownError")
@@ -149,56 +151,46 @@ function PANEL:addStep(step, priority)
 	step:SetParent(self.content)
 end
 
-function PANEL:nextStep(originalStep)
-	originalStep = originalStep or self.curStep
-	self:showError()
+function PANEL:nextStep()
+	local curStep = self.steps[self.curStep]
 
-	local nextStep = self.steps[self.curStep + 1]
-
-	if (IsValid(self.steps[self.curStep])) then
-		local res = {self.steps[self.curStep]:validate()}
-		if (res[1] == false) then
-			return self:showError(unpack(res, 2))
-		end
-	end
-
-	if (IsValid(nextStep)) then
+	-- Move to the next step. Call onFinish if none exists.
+	self.curStep = self.curStep + 1
+	local nextStep = self.steps[self.curStep]
+	while (IsValid(nextStep) and nextStep:shouldSkip()) do
 		self.curStep = self.curStep + 1
-		if (nextStep:onHandleSkip()) then
-			return self:nextStep(originalStep)
-		end
-
-		local curStep = self.steps[originalStep]
-		self:onStepChanged(curStep, nextStep)
-	else
-		self:onFinish()
+		nextStep:onSkip()
+		nextStep = self.steps[self.curStep]
 	end
+	if (not IsValid(nextStep)) then return self:onFinish() end
+
+	-- Transition the view to the next step's view.
+	self:onStepChanged(curStep, nextStep)
 end
 
-function PANEL:onCannotProceed(reason)
-	self:showError(reason)
-end
+function PANEL:previousStep()
+	local curStep = self.steps[self.curStep]
 
-function PANEL:previousStep(originalStep)
-	originalStep = originalStep or self.curStep
-	local prevStep = self.steps[self:getPreviousStep()]
-	if (not IsValid(prevStep)) then return end
-
-	if (prevStep:onHandleSkip()) then
-		self.curStep = self.curStep - 1
-		return self:previousStep(originalStep)
-	end
-
-	local curStep = self.steps[originalStep]
 	self.curStep = self.curStep - 1
+	local prevStep = self.steps[self.curStep]
+	while (IsValid(prevStep) and prevStep:shouldSkip()) do
+		prevStep:onSkip()
+		self.curStep = self.curStep - 1
+		prevStep = self.steps[self.curStep]
+	end
+
+	if (not IsValid(prevStep)) then return end
 	self:onStepChanged(curStep, prevStep)
 end
 
 function PANEL:reset()
 	self.context = {}
-	if (IsValid(self.steps[self.curStep])) then
-		self.steps[self.curStep]:SetVisible(false)
+
+	local curStep = self.steps[self.curStep]
+	if (IsValid(curStep)) then
+		curStep:SetVisible(false)
 	end
+
 	self.curStep = 0
 	if (#self.steps == 0) then
 		return self:showError("No character creation steps have been set up")
@@ -209,13 +201,13 @@ end
 function PANEL:getPreviousStep()
 	local step = self.curStep - 1
 	while (IsValid(self.steps[step])) do
-		if (not self.steps[step]:onHandleSkip()) then
+		if (not self.steps[step]:shouldSkip()) then
 			hasPrevStep = true
 			break
 		end
 		step = step - 1
 	end
-	return step
+	return self.steps[step]
 end
 
 function PANEL:onStepChanged(oldStep, newStep)
@@ -224,12 +216,22 @@ function PANEL:onStepChanged(oldStep, newStep)
 	local nextStepText = L(shouldFinish and "finish" or "next"):upper()
 	local shouldSwitchNextText = nextStepText ~= self.next:GetText()
 
+	-- Change visibility for prev/next if they should not be shown.
+	if (IsValid(self:getPreviousStep())) then
+		self.prev:AlphaTo(255, ANIM_SPEED)
+	else
+		self.prev:AlphaTo(0, ANIM_SPEED)
+	end
+	if (shouldSwitchNextText) then
+		self.next:AlphaTo(0, ANIM_SPEED)
+	end
+
+	-- Transition the view to the new step view.
 	local function showNewStep()
 		newStep:SetAlpha(0)
 		newStep:SetVisible(true)
 		newStep:InvalidateLayout(true)
 		newStep:onDisplay()
-		print(newStep)
 		newStep:AlphaTo(255, ANIM_SPEED)
 
 		if (shouldSwitchNextText) then
@@ -239,17 +241,6 @@ function PANEL:onStepChanged(oldStep, newStep)
 		end
 		self.next:AlphaTo(255, ANIM_SPEED)
 	end
-
-	if (IsValid(self.steps[self:getPreviousStep()])) then
-		self.prev:AlphaTo(255, ANIM_SPEED)
-	else
-		self.prev:AlphaTo(0, ANIM_SPEED)
-	end
-
-	if (shouldSwitchNextText) then
-		self.next:AlphaTo(0, ANIM_SPEED)
-	end
-
 	if (IsValid(oldStep)) then
 		oldStep:AlphaTo(0, ANIM_SPEED, 0, function()
 			self:showError()
@@ -295,6 +286,7 @@ function PANEL:Init()
 	self.prev:Dock(LEFT)
 	self.prev:SetWide(96)
 	self.prev.DoClick = function(prev) self:previousStep() end
+	self.prev:SetAlpha(0)
 
 	self.next = self.buttons:Add("nutCharButton")
 	self.next:SetText(L("next"):upper())
@@ -310,7 +302,6 @@ function PANEL:Init()
 
 	self.steps = {}
 	self.curStep = 0
-	self.defaultContext = {}
 	self.context = {}
 	self:configureSteps()
 

@@ -13,7 +13,15 @@ if (SERVER) then
 				net.WriteUInt(client.nutCharList[i], 32)
 			end
 		net.Send(client)
-		print("Done")
+	end
+
+	function PLUGIN:CanPlayerCreateCharacter(client)
+		local count = #client.nutCharList
+		local maxChars = hook.Run("GetMaxPlayerCharacter", client)
+			or nut.config.get("maxChars", 5)
+		if (count >= maxChars) then
+			return false
+		end
 	end
 else
 	--- Requests to change to the character corresponding to the ID.
@@ -62,7 +70,6 @@ else
 		net.Receive("nutCharCreate", function()
 			local id = net.ReadUInt(32)
 			local reason = net.ReadString()
-			print(id, reason)
 			if (id > 0) then
 				d:resolve(id)
 			else

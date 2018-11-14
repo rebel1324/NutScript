@@ -29,7 +29,6 @@ function nut.char.create(data, callback)
 			:next(function(inventory)
 				character.vars.inv[1] = inventory
 				nut.char.loaded[charID] = character
-				print("Created", character)
 				if (callback) then
 					callback(charID)
 				end

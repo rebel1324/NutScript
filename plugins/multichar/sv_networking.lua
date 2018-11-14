@@ -35,8 +35,9 @@ net.Receive("nutCharChoose", function(_, client)
 end)
 
 net.Receive("nutCharCreate", function(_, client)
+	if (hook.Run("CanPlayerCreateCharacter", client) == false) then return end
+
 	local function response(id, message, ...)
-		print(id, message, ...)
 		net.Start("nutCharCreate")
 			net.WriteUInt(id or 0, 32)
 			net.WriteString(L(message or "", client, ...))
@@ -91,15 +92,11 @@ net.Receive("nutCharCreate", function(_, client)
 
 	-- After all the validation, create the character.
 	nut.char.create(data, function(id)
-		print("New id", id, client)
 		if (IsValid(client)) then
 			nut.char.loaded[id]:sync(client)
 			table.insert(client.nutCharList, id)
-			print("Syncd")
 			PLUGIN:syncCharList(client)
-			print("Okay")
 			hook.Run("OnCharCreated", client, nut.char.loaded[id])
-			print(id)
 			response(id)
 		end
 	end)

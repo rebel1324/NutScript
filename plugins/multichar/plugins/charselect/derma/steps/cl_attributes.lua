@@ -22,7 +22,6 @@ function PANEL:Init()
 		end
 		self.attribs[k] = self:addAttribute(k, v)
 	end
-
 end
 
 function PANEL:onDisplay()

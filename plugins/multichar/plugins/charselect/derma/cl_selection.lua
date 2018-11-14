@@ -54,7 +54,7 @@ end
 
 function PANEL:onCharacterSelected(character)
 	if (character == LocalPlayer():getChar()) then
-		return nut.gui.character:Remove()
+		return nut.gui.character:fadeOut()
 	end
 
 	nut.gui.character:setFadeToBlack(true)
@@ -64,7 +64,7 @@ function PANEL:onCharacterSelected(character)
 		:next(function()
 			if (IsValid(nut.gui.character)) then
 				nut.gui.character:setFadeToBlack(false)
-				nut.gui.character:Remove()
+				nut.gui.character:fadeOut()
 			end
 		end, function(err)
 			nut.util.notify(err)

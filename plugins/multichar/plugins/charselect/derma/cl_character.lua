@@ -89,6 +89,12 @@ function PANEL:createCharacterCreation()
 	self.content:Add("nutCharacterCreation")
 end
 
+function PANEL:fadeOut()
+	self:AlphaTo(0, self.ANIM_SPEED, 0, function()
+		self:Remove()
+	end)
+end
+
 function PANEL:Init()
 	if (IsValid(nut.gui.loading)) then
 		nut.gui.loading:Remove()
@@ -102,6 +108,8 @@ function PANEL:Init()
 	self:ParentToHUD()
 	self:Dock(FILL)
 	self:MakePopup()
+	self:SetAlpha(0)
+	self:AlphaTo(255, self.ANIM_SPEED * 2)
 
 	self:createTitle()
 
@@ -122,7 +130,10 @@ function PANEL:Init()
 		load = self:addTab("continue", self.createCharacterSelection)
 	end
 
-	local create = self:addTab("create", self.createCharacterCreation)
+	if (hook.Run("CanPlayerCreateCharacter", LocalPlayer()) ~= false) then
+		create = self:addTab("create", self.createCharacterCreation)
+	end
+
 	if (IsValid(load)) then
 		load:setSelected()
 	elseif (IsValid(create)) then
@@ -132,7 +143,7 @@ function PANEL:Init()
 	if (LocalPlayer():getChar()) then
 		self:addTab("return", function()
 			if (IsValid(self)) then
-				self:Remove()
+				self:fadeOut()
 			end
 		end, true)
 		return

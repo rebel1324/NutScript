@@ -66,14 +66,15 @@ function PANEL:onFactionSelected(faction)
 	nut.gui.character:clickSound()
 end
 
-function PANEL:onHandleSkip()
-	if (#self.faction.Choices == 1) then
-		local _, id = self.faction:GetSelected()
-		local faction = nut.faction.teams[id]
-		self:setContext("faction", faction and faction.index or nil)
-		self:setContext("model", self:getContext("model", 1))
-		return true
-	end
+function PANEL:shouldSkip()
+	return #self.faction.Choices == 1
+end
+
+function PANEL:onSkip()
+	local _, id = self.faction:GetSelected()
+	local faction = nut.faction.teams[id]
+	self:setContext("faction", faction and faction.index or nil)
+	self:setContext("model", self:getContext("model", 1))
 end
 
 vgui.Register("nutCharacterFaction", PANEL, "nutCharacterCreateStep")
