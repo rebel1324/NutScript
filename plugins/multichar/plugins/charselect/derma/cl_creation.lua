@@ -153,6 +153,13 @@ end
 
 function PANEL:nextStep()
 	local curStep = self.steps[self.curStep]
+	if (IsValid(curStep)) then
+		local res = {curStep:validate()}
+		if (res[1] == false) then return self:showError(unpack(res, 2)) end
+	end
+
+	-- Clear any error messages.
+	self:showError()
 
 	-- Move to the next step. Call onFinish if none exists.
 	self.curStep = self.curStep + 1
@@ -170,16 +177,16 @@ end
 
 function PANEL:previousStep()
 	local curStep = self.steps[self.curStep]
-
-	self.curStep = self.curStep - 1
-	local prevStep = self.steps[self.curStep]
+	local newStep = self.curStep - 1
+	local prevStep = self.steps[newStep]
 	while (IsValid(prevStep) and prevStep:shouldSkip()) do
 		prevStep:onSkip()
-		self.curStep = self.curStep - 1
-		prevStep = self.steps[self.curStep]
+		newStep = newStep - 1
+		prevStep = self.steps[newStep]
 	end
 
 	if (not IsValid(prevStep)) then return end
+	self.curStep = newStep
 	self:onStepChanged(curStep, prevStep)
 end
 
