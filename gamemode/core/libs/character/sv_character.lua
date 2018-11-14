@@ -158,10 +158,13 @@ end
 function nut.char.delete(id)
 	assert(type(id) == "number", "id must be a number")
 
-	local owners = {}
 	for _, client in ipairs(player.GetAll()) do
-		if (table.HasValue(client.nutCharList or {}, id)) then
-			owners[#owners + 1] = client
+		if (not table.HasValue(client.nutCharList or {}, id)) then continue end
+		table.RemoveByValue(client.nutCharList, id)
+		if (client:getChar() and client:getChar():getID() == id) then
+			client:KillSilent()
+			client:setNetVar("char", nil)
+			client:Spawn()
 		end
 	end
 
@@ -182,12 +185,4 @@ function nut.char.delete(id)
 	)
 
 	hook.Run("OnCharacterDelete", id)
-
-	for _, owner in ipairs(owners) do
-		table.RemoveByValue(owner.nutCharList, id)
-		if (owner:getChar() and owner:getChar():getID() == id) then
-			owner:setNetVar("char", nil)
-			owner:Spawn()
-		end
-	end
 end
