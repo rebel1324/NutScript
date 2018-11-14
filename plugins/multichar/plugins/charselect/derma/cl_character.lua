@@ -169,6 +169,7 @@ function PANEL:setFadeToBlack(fade)
 		fade:SetBackgroundColor(color_black)
 		fade:SetAlpha(0)
 		fade:AlphaTo(255, self.FADE_SPEED, 0, function() d:resolve() end)
+		fade:SetZPos(999)
 		self.fade = fade
 	elseif (IsValid(self.fade)) then
 		local fadePanel = self.fade
