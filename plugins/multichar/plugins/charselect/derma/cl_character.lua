@@ -1,30 +1,5 @@
 local PANEL = {}
 
-surface.CreateFont("nutTitle2Font", {
-	font = "Raleway Light",
-	weight = 200,
-	size = 96,
-	additive = true
-})
-surface.CreateFont("nutTitle3Font", {
-	font = "Raleway Light",
-	weight = 200,
-	size = 24,
-	additive = true
-})
-surface.CreateFont("nutCharButtonFont", {
-	font = "Raleway Light",
-	weight = 200,
-	size = 36,
-	additive = true
-})
-surface.CreateFont("nutCharSmallButtonFont", {
-	font = "Raleway Light",
-	weight = 200,
-	size = 22,
-	additive = true
-})
-
 local WHITE = Color(255, 255, 255, 150)
 local SELECTED = Color(255, 255, 255, 230)
 
@@ -33,6 +8,47 @@ PANEL.SELECTED = SELECTED
 PANEL.HOVERED = Color(255, 255, 255, 50)
 PANEL.ANIM_SPEED = 0.1
 PANEL.FADE_SPEED = 0.5
+
+-- Called when the tabs for the character menu should be created.
+function PANEL:createTabs()
+	local load, create
+
+	-- Only show the load tab if playable characters exist.
+	if (nut.characters and #nut.characters > 0) then
+		load = self:addTab("continue", self.createCharacterSelection)
+	end
+
+	-- Only show the create tab if the local player can create characters.
+	if (hook.Run("CanPlayerCreateCharacter", LocalPlayer()) ~= false) then
+		create = self:addTab("create", self.createCharacterCreation)
+	end
+
+	-- By default, select the continue tab, or the create tab.
+	if (IsValid(load)) then
+		load:setSelected()
+	elseif (IsValid(create)) then
+		create:setSelected()
+	end
+
+	-- If the player has a character (i.e. opened this menu from F1 menu), then
+	-- don't add a disconnect button. Just add a close button.
+	if (LocalPlayer():getChar()) then
+		self:addTab("return", function()
+			if (IsValid(self) and LocalPlayer():getChar()) then
+				self:fadeOut()
+			end
+		end, true)
+		return
+	end
+
+	-- Otherwise, add a disconnect button.
+	self:addTab("leave", function()
+		vgui.Create("nutCharacterConfirm")
+			:setTitle(L("disconnect"):upper().."?")
+			:setMessage(L("You will disconnect from the server."):upper())
+			:onConfirm(function() LocalPlayer():ConCommand("disconnect") end)
+	end, true)
+end
 
 function PANEL:createTitle()
 	self.title = self:Add("DLabel")
@@ -124,37 +140,7 @@ function PANEL:Init()
 	self.content:DockMargin(64, 0, 64, 64)
 	self.content:SetDrawBackground(false)
 
-	local load, create
-
-	if (nut.characters and #nut.characters > 0) then
-		load = self:addTab("continue", self.createCharacterSelection)
-	end
-
-	if (hook.Run("CanPlayerCreateCharacter", LocalPlayer()) ~= false) then
-		create = self:addTab("create", self.createCharacterCreation)
-	end
-
-	if (IsValid(load)) then
-		load:setSelected()
-	elseif (IsValid(create)) then
-		create:setSelected()
-	end
-
-	if (LocalPlayer():getChar()) then
-		self:addTab("return", function()
-			if (IsValid(self)) then
-				self:fadeOut()
-			end
-		end, true)
-		return
-	end
-
-	self:addTab("leave", function()
-		vgui.Create("nutCharacterConfirm")
-			:setTitle(L("disconnect"):upper().."?")
-			:setMessage(L("You will disconnect from the server."):upper())
-			:onConfirm(function() LocalPlayer():ConCommand("disconnect") end)
-	end, true)
+	self:createTabs()
 end
 
 function PANEL:setFadeToBlack(fade)

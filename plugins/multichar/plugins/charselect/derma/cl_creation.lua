@@ -1,12 +1,17 @@
 local PANEL = {}
 
+-- Sets up the steps to show in the character creation menu.
 function PANEL:configureSteps()
 	self:addStep(vgui.Create("nutCharacterFaction"))
 	self:addStep(vgui.Create("nutCharacterModel"))
 	self:addStep(vgui.Create("nutCharacterBiography"))
 	self:addStep(vgui.Create("nutCharacterAttribs"))
+	hook.Run("ConfigureCharacterCreationSteps", self)
 end
 
+-- If the faction and model character data has been set, updates the
+-- model panel on the left of the creation menu to reflect how the
+-- character will look.
 function PANEL:updateModel()
 	local faction = nut.faction.indices[self.context.faction]
 	assert(faction, "invalid faction when updating model")
@@ -29,6 +34,8 @@ function PANEL:updateModel()
 	end
 end
 
+-- Returns true if the local player can create a character, otherwise
+-- returns false and a string reason for why.
 function PANEL:canCreateCharacter()
 	local validFactions = {}
 	for k, v in pairs(nut.faction.teams) do
@@ -56,6 +63,8 @@ function PANEL:canCreateCharacter()
 	return true
 end
 
+-- Called after the player has pressed "next" on the last step. This
+-- requests for a character to be made using the set character data.
 function PANEL:onFinish()
 	if (self.creating) then return end
 
@@ -96,12 +105,15 @@ function PANEL:onFinish()
 	end)
 end
 
+-- Shows a message with a red background in the current step.
 function PANEL:showError(message, ...)
 	if (IsValid(self.error)) then
 		self.error:Remove()
 	end
 	if (not message or message == "") then return end
 	message = L(message, ...)
+
+	assert(IsValid(self.content), "no step is available")
 
 	self.error = self.content:Add("DLabel")
 	self.error:SetFont("nutTitle3Font")
@@ -122,6 +134,7 @@ function PANEL:showError(message, ...)
 	nut.gui.character:warningSound()
 end
 
+-- Shows a normal message in the middle of this menu.
 function PANEL:showMessage(message, ...)
 	if (not message or message == "") then
 		if (IsValid(self.message)) then self.message:Remove() end
@@ -134,13 +147,15 @@ function PANEL:showMessage(message, ...)
 	end
 
 	self.message = self:Add("DLabel")
+	self.message:SetFont("nutCharButtonFont")
+	self.message:SetTextColor(nut.gui.character.WHITE)
 	self.message:Dock(FILL)
 	self.message:SetContentAlignment(5)
-	self.message:SetFont("nutCharButtonFont")
 	self.message:SetText(message)
-	self.message:SetTextColor(nut.gui.character.WHITE)
 end
 
+-- Adds a step to the list of steps to be shown in the character creation menu.
+-- Priority is a number (lower is higher priority) that can change order.
 function PANEL:addStep(step, priority)
 	assert(IsValid(step), "Invalid panel for step")
 	assert(step.isCharCreateStep, "Panel must inherit nutCharacterCreateStep")
@@ -152,6 +167,8 @@ function PANEL:addStep(step, priority)
 	step:SetParent(self.content)
 end
 
+-- Moves to the next available step. If none are, onFinish is called.
+-- If there is a validation error, that is shown first.
 function PANEL:nextStep()
 	local lastStep = self.curStep
 	local curStep = self.steps[lastStep]
@@ -180,6 +197,7 @@ function PANEL:nextStep()
 	self:onStepChanged(curStep, nextStep)
 end
 
+-- Moves to the previous available step if one exists.
 function PANEL:previousStep()
 	local curStep = self.steps[self.curStep]
 	local newStep = self.curStep - 1
@@ -195,6 +213,7 @@ function PANEL:previousStep()
 	self:onStepChanged(curStep, prevStep)
 end
 
+-- Resets the character creation menu to the first step and clears form data.
 function PANEL:reset()
 	self.context = {}
 
@@ -210,6 +229,7 @@ function PANEL:reset()
 	self:nextStep()
 end
 
+-- Returns the panel for the step shown prior to this step.
 function PANEL:getPreviousStep()
 	local step = self.curStep - 1
 	while (IsValid(self.steps[step])) do
@@ -222,6 +242,8 @@ function PANEL:getPreviousStep()
 	return self.steps[step]
 end
 
+-- Called when the step has been changed via nextStep or previousStep.
+-- This is where transitions are handled.
 function PANEL:onStepChanged(oldStep, newStep)
 	local ANIM_SPEED = nut.gui.character.ANIM_SPEED
 	local shouldFinish = self.curStep == #self.steps

@@ -33,6 +33,7 @@ function PANEL:Init()
 	end)
 end
 
+-- Creates a nutCharacterSlot for each of the local player's characters.
 function PANEL:createCharacterSlots()
 	self.scroll:Clear()
 	if (#nut.characters == 0) then
@@ -52,6 +53,8 @@ function PANEL:createCharacterSlots()
 	end
 end
 
+-- Called when a character slot has been selected. This actually loads the
+-- character.
 function PANEL:onCharacterSelected(character)
 	if (self.choosing) then return end
 	if (character == LocalPlayer():getChar()) then

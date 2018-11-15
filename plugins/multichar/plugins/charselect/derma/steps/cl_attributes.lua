@@ -1,8 +1,7 @@
 local PANEL = {}
 
+-- How many clicks should be simulated if the add/subtract button is held down.
 local AUTO_CLICK_TIME = 0.1
-
-PANEL.charVar = "attribs"
 
 function PANEL:Init()
 	self.title = self:addLabel("attributes")
@@ -24,6 +23,10 @@ function PANEL:Init()
 	end
 end
 
+function PANEL:updatePointsLeft()
+	self.leftLabel:SetText(L("points left"):upper()..": "..self.left)
+end
+
 function PANEL:onDisplay()
 	local attribs = self:getContext("attribs", {})
 	local sum = 0
@@ -37,10 +40,6 @@ function PANEL:onDisplay()
 		row.points = attribs[key] or 0
 		row:updateQuantity()
 	end
-end
-
-function PANEL:updatePointsLeft()
-	self.leftLabel:SetText(L("points left"):upper()..": "..self.left)
 end
 
 function PANEL:addAttribute(key, attribute)
@@ -73,6 +72,7 @@ end
 
 vgui.Register("nutCharacterAttribs", PANEL, "nutCharacterCreateStep")
 
+-- Child attribute "slider" component.
 PANEL = {}
 
 function PANEL:Init()
