@@ -34,10 +34,11 @@ function PANEL:Init()
 
 	self.name = self:Add("DLabel")
 	self.name:Dock(TOP)
-	self.name:SetTall(48)
+	self.name:DockMargin(0, 16, 0, 0)
 	self.name:SetContentAlignment(5)
-	self.name:SetFont("nutTitle3Font")
+	self.name:SetFont("nutCharSmallButtonFont")
 	self.name:SetTextColor(nut.gui.character.WHITE)
+	self.name:SizeToContentsY()
 
 	self.model = self:Add("nutModelPanel")
 	self.model:Dock(FILL)
@@ -50,7 +51,7 @@ function PANEL:Init()
 
 			draw.SimpleText(
 				L("banned"):upper(),
-				"nutCharSmallButtonFont",
+				"nutCharSubTitleFont",
 				centerX,
 				centerY,
 				color_white, 1, 1
@@ -72,7 +73,7 @@ function PANEL:Init()
 
 	self.delete = self:Add("DButton")
 	self.delete:SetTall(30)
-	self.delete:SetFont("nutCharSmallButtonFont")
+	self.delete:SetFont("nutCharSubTitleFont")
 	self.delete:SetText("✕ "..L("delete"):upper())
 	self.delete:SetWide(self:GetWide())
 	self.delete.Paint = function(delete, w, h)

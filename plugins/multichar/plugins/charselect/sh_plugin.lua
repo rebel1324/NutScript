@@ -4,31 +4,58 @@ PLUGIN.desc = "The NutScript character selection screen."
 
 nut.util.includeDir(PLUGIN.path.."/derma/steps", true)
 
+nut.config.add(
+	"music",
+	"music/hl2_song2.mp3",
+	"The default music played in the character menu.",
+	nil,
+	{category = "appearance"}
+)
+
+nut.config.add(
+	"backgroundURL",
+	"",
+	"The URL or HTML for the background of the character menu.",
+	nil,
+	{category = "appearance"}
+)
+
 if (SERVER) then return end
 
+local function ScreenScale(size)
+	return size * (ScrH() / 900) + 10
+end
+
 function PLUGIN:LoadFonts(font)
-	surface.CreateFont("nutTitle2Font", {
+	print(ScreenScale(70))
+	surface.CreateFont("nutCharTitleFont", {
 		font = font,
 		weight = 200,
-		size = 96,
+		size = ScreenScale(70),
 		additive = true
 	})
-	surface.CreateFont("nutTitle3Font", {
+	surface.CreateFont("nutCharDescFont", {
 		font = font,
 		weight = 200,
-		size = 24,
+		size = ScreenScale(24),
+		additive = true
+	})
+	surface.CreateFont("nutCharSubTitleFont", {
+		font = font,
+		weight = 200,
+		size = ScreenScale(12),
 		additive = true
 	})
 	surface.CreateFont("nutCharButtonFont", {
 		font = font,
 		weight = 200,
-		size = 36,
+		size = ScreenScale(24),
 		additive = true
 	})
 	surface.CreateFont("nutCharSmallButtonFont", {
 		font = font,
 		weight = 200,
-		size = 22,
+		size = ScreenScale(22),
 		additive = true
 	})
 end

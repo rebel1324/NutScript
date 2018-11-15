@@ -56,7 +56,7 @@ function PANEL:createTitle()
 	self.title:DockMargin(64, 48, 0, 0)
 	self.title:SetContentAlignment(1)
 	self.title:SetTall(96)
-	self.title:SetFont("nutTitle2Font")
+	self.title:SetFont("nutCharTitleFont")
 	self.title:SetText(L(SCHEMA and SCHEMA.name or "Unknown"):upper())
 	self.title:SetTextColor(WHITE)
 
@@ -66,8 +66,58 @@ function PANEL:createTitle()
 	self.desc:SetTall(32)
 	self.desc:SetContentAlignment(7)
 	self.desc:SetText(L(SCHEMA and SCHEMA.desc or ""):upper())
-	self.desc:SetFont("nutTitle3Font")
+	self.desc:SetFont("nutCharDescFont")
 	self.desc:SetTextColor(WHITE)
+end
+
+function PANEL:loadBackground()
+	-- Map scene integration.
+	local mapScene = nut.plugin.list.mapscene
+	if (not mapScene or table.Count(mapScene.scenes) == 0) then
+		self.blank = true
+	end
+
+	local url = nut.config.get("backgroundURL")
+	if (url and url:find("%S")) then
+		self.background = self:Add("DHTML")
+		self.background:SetSize(ScrW(), ScrH())
+		if (url:find("http")) then
+			self.background:OpenURL(url)
+		else
+			self.background:SetHTML(url)
+		end
+		self.background.OnDocumentReady = function(background)
+			self.bgLoader:AlphaTo(0, 2, 1, function()
+				self.bgLoader:Remove()
+			end)
+		end
+		self.background:MoveToBack()
+		self.background:SetZPos(-999)
+
+		self.bgLoader = self:Add("DPanel")
+		self.bgLoader:SetSize(ScrW(), ScrH())
+		self.bgLoader:SetZPos(-998)
+		self.bgLoader.Paint = function(loader, w, h)
+			surface.SetDrawColor(20, 20, 20)
+			surface.DrawRect(0, 0, w, h)
+		end
+		print(self.bgLoader)
+	end
+end
+
+local gradient = nut.util.getMaterial("vgui/gradient-u")
+
+function PANEL:paintBackground(w, h)
+	if (IsValid(self.background)) then return end
+
+	if (self.blank) then
+		surface.SetDrawColor(30, 30, 30)
+		surface.DrawRect(0, 0, w, h)
+	end
+
+	surface.SetMaterial(gradient)
+	surface.SetDrawColor(0, 0, 0, 250)
+	surface.DrawTexturedRect(0, 0, w, h * 1.5)
 end
 
 function PANEL:addTab(name, callback, justClick)
@@ -141,6 +191,7 @@ function PANEL:Init()
 	self.content:SetDrawBackground(false)
 
 	self:createTabs()
+	self:loadBackground()
 end
 
 function PANEL:setFadeToBlack(fade)
@@ -169,6 +220,7 @@ end
 
 function PANEL:Paint(w, h)
 	nut.util.drawBlur(self)
+	self:paintBackground(w, h)
 end
 
 function PANEL:hoverSound()

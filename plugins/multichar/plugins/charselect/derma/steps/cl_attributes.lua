@@ -6,7 +6,7 @@ local AUTO_CLICK_TIME = 0.1
 function PANEL:Init()
 	self.title = self:addLabel("attributes")
 	self.leftLabel = self:addLabel("points left")
-	self.leftLabel:SetFont("nutTitle3Font")
+	self.leftLabel:SetFont("nutCharSubTitleFont")
 
 	self.total = hook.Run(
 		"GetStartAttribPoints",
@@ -93,14 +93,14 @@ function PANEL:Init()
 	self.sub:Dock(LEFT)
 
 	self.quantity = self.buttons:Add("DLabel")
-	self.quantity:SetFont("nutTitle3Font")
+	self.quantity:SetFont("nutCharSubTitleFont")
 	self.quantity:SetTextColor(color_white)
 	self.quantity:Dock(FILL)
 	self.quantity:SetText("0")
 	self.quantity:SetContentAlignment(5)
 	
 	self.name = self:Add("DLabel")
-	self.name:SetFont("nutTitle3Font")
+	self.name:SetFont("nutCharSubTitleFont")
 	self.name:SetContentAlignment(4)
 	self.name:SetTextColor(nut.gui.character.WHITE)
 	self.name:Dock(FILL)
@@ -119,14 +119,14 @@ function PANEL:delta(delta)
 		self.points = self.parent:onPointChange(self.key, delta)
 		self:updateQuantity()
 		if (oldPoints ~= self.points) then
-			LocalPlayer():EmitSound("buttons/button16.wav", 20, 255)
+			LocalPlayer():EmitSound("buttons/button16.wav", 30, 255)
 		end
 	end
 end
 
 function PANEL:addButton(symbol, delta)
 	local button = self.buttons:Add("nutCharButton")
-	button:SetFont("nutTitle3Font")
+	button:SetFont("nutCharSubTitleFont")
 	button:SetWide(32)
 	button:SetText(symbol)
 	button:SetContentAlignment(5)
@@ -155,6 +155,7 @@ function PANEL:updateQuantity()
 end
 
 function PANEL:Paint(w, h)
+	nut.util.drawBlur(self)
 	surface.SetDrawColor(0, 0, 0, 100)
 	surface.DrawRect(0, 0, w, h)
 end

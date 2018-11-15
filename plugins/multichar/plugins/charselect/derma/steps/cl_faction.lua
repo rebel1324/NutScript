@@ -20,7 +20,7 @@ function PANEL:Init()
 
 	self.desc = self:addLabel("desc")
 	self.desc:DockMargin(0, 8, 0, 0)
-	self.desc:SetFont("nutTitle3Font")
+	self.desc:SetFont("nutCharSubTitleFont")
 	self.desc:SetWrap(true)
 	self.desc:SetAutoStretchVertical(true)
 

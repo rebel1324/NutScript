@@ -2,6 +2,7 @@ local PANEL = {}
 
 function PANEL:Init()
 	self:SetFont("nutCharButtonFont")
+	self:SizeToContentsY()
 	self:SetTextColor(nut.gui.character.WHITE)
 	self:SetDrawBackground(false)
 end

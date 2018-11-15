@@ -7,7 +7,6 @@ PANEL.isCharCreateStep = true
 
 function PANEL:Init()
 	self:Dock(FILL)
-	self:DockMargin(0, 0, 0, 0)
 	self:SetDrawBackground(false)
 	self:SetVisible(false)
 end

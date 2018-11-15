@@ -116,7 +116,7 @@ function PANEL:showError(message, ...)
 	assert(IsValid(self.content), "no step is available")
 
 	self.error = self.content:Add("DLabel")
-	self.error:SetFont("nutTitle3Font")
+	self.error:SetFont("nutCharSubTitleFont")
 	self.error:SetText(message)
 	self.error:SetTextColor(color_white)
 	self.error:Dock(TOP)
@@ -295,9 +295,16 @@ function PANEL:Init()
 
 	nut.gui.charCreate = self
 
+	local sideMargin = 0
+	if (ScrW() > 1280) then
+		sideMargin = ScrW() * 0.15
+	elseif (ScrW() > 720) then
+		sideMargin = ScrW() * 0.075
+	end
+
 	self.content = self:Add("DPanel")
 	self.content:Dock(FILL)
-	self.content:DockMargin(ScrW() * 0.15, 64, ScrW() * 0.15, 0)
+	self.content:DockMargin(sideMargin, 64, sideMargin, 0)
 	self.content:SetDrawBackground(false)
 
 	self.model = self.content:Add("nutModelPanel")
@@ -312,7 +319,7 @@ function PANEL:Init()
 
 	self.buttons = self:Add("DPanel")
 	self.buttons:Dock(BOTTOM)
-	self.buttons:SetTall(36)
+	self.buttons:SetTall(48)
 	self.buttons:SetDrawBackground(false)
 
 	self.prev = self.buttons:Add("nutCharButton")
@@ -333,6 +340,7 @@ function PANEL:Init()
 	self.cancel:SizeToContentsX()
 	self.cancel.DoClick = function(cancel) self:reset() end
 	self.cancel.x = (ScrW() - self.cancel:GetWide()) * 0.5 - 64
+	self.cancel.y = (self.buttons:GetTall() - self.cancel:GetTall()) * 0.5
 
 	self.steps = {}
 	self.curStep = 0
