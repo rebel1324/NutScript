@@ -100,7 +100,6 @@ function nut.inventory.instance(typeID, initialData)
 
 			nut.inventory.instances[id] = instance
 			instance:onInstanced()
-			print(instance)
 			return instance
 		end)
 end

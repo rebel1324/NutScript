@@ -45,11 +45,24 @@ do
 		default = "John Doe",
 		index = 1,
 		onValidate = function(value, data, client)
-			if (!value or !value:find("%S")) then
+			local name, override =
+				hook.Run("GetDefaultCharName", client, data.faction, data)
+			if (isstring(name) and override) then
+				return true
+			end
+			if (not isstring(value) or not value:find("%S")) then
 				return false, "invalid", "name"
 			end
-
-			return hook.Run("GetDefaultCharName", client, data.faction) or value:sub(1, 70)
+			return true
+		end,
+		onAdjust = function(client, data, value, newData)
+			local name, override =
+				hook.Run("GetDefaultCharName", client, data.faction, data)
+			if (isstring(name) and override) then
+				newData.name = name
+			else
+				newData.name = string.Trim(value):sub(1, 70)
+			end
 		end,
 		onPostSetup = function(panel, faction, payload)
 			local name, disabled = hook.Run("GetDefaultCharName", LocalPlayer(), faction)

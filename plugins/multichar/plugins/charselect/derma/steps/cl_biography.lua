@@ -4,14 +4,17 @@ local HIGHLIGHT = Color(255, 255, 255, 50)
 
 function PANEL:Init()
 	self.nameLabel = self:addLabel("name")
+	self.nameLabel:SetZPos(0)
 
 	self.name = self:addTextEntry("name")
 	self.name:SetTall(48)
 	self.name.onTabPressed = function()
 		self.desc:RequestFocus()
 	end
+	self.name:SetZPos(1)
 
 	self.descLabel = self:addLabel("description")
+	self.descLabel:SetZPos(2)
 
 	self.desc = self:addTextEntry("desc")
 	self.desc:SetTall(self.name:GetTall() * 3)
@@ -19,6 +22,7 @@ function PANEL:Init()
 		self.name:RequestFocus()
 	end
 	self.desc:SetMultiline(true)
+	self.desc:SetZPos(3)
 end
 
 function PANEL:addTextEntry(contextName)
@@ -44,12 +48,16 @@ end
 function PANEL:onDisplay()
 	local faction = self:getContext("faction")
 	assert(faction, "faction not set before showing name input")
-	local defaultName = hook.Run("GetDefaultCharName", LocalPlayer(), faction)
+	local default, override =
+		hook.Run("GetDefaultCharName", LocalPlayer(), faction)
 
-	if (defaultName) then
+	if (override) then
 		self.nameLabel:SetVisible(false)
 		self.name:SetVisible(false)
 	else
+		if (default and not self:getContext("name")) then
+			self:setContext("name", default)
+		end
 		self.nameLabel:SetVisible(true)
 		self.name:SetVisible(true)
 		self.name:SetText(self:getContext("name", ""))
@@ -58,12 +66,7 @@ function PANEL:onDisplay()
 	self.desc:SetText(self:getContext("desc", ""))
 
 	-- Requesting focus same frame causes issues with docking.
-	if (self.name:IsVisible()) then
-		timer.Simple(0.25, function()
-			self.name:RequestFocus()
-		end)
-	end
-	self:InvalidateLayout()
+	self.name:RequestFocus()
 end
 
 function PANEL:validate()

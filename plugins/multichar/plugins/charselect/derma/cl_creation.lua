@@ -63,14 +63,17 @@ function PANEL:onFinish()
 	self.content:SetVisible(false)
 	self.buttons:SetVisible(false)
 	self:showMessage("creating")
+	self.creating = true
 
 	-- Reset the UI once the server responds.
 	local function onResponse()
+		timer.Remove("nutFailedToCreate")
 		if (not IsValid(self)) then return end
 		self.creating = false
 		self.content:SetVisible(true)
 		self.buttons:SetVisible(true)
 		self:showMessage()
+		print("self.creating = ", self.creating, self == nut.gui.charCreate)
 	end
 	local function onFail(err)
 		onResponse()
@@ -91,8 +94,6 @@ function PANEL:onFinish()
 		if (not IsValid(self) or not self.creating) then return end
 		onFail("unknownError")
 	end)
-
-	self.creating = true
 end
 
 function PANEL:showError(message, ...)
@@ -152,7 +153,8 @@ function PANEL:addStep(step, priority)
 end
 
 function PANEL:nextStep()
-	local curStep = self.steps[self.curStep]
+	local lastStep = self.curStep
+	local curStep = self.steps[lastStep]
 	if (IsValid(curStep)) then
 		local res = {curStep:validate()}
 		if (res[1] == false) then return self:showError(unpack(res, 2)) end
@@ -169,7 +171,10 @@ function PANEL:nextStep()
 		nextStep:onSkip()
 		nextStep = self.steps[self.curStep]
 	end
-	if (not IsValid(nextStep)) then return self:onFinish() end
+	if (not IsValid(nextStep)) then
+		self.curStep = lastStep
+		return self:onFinish() 
+	end
 
 	-- Transition the view to the next step's view.
 	self:onStepChanged(curStep, nextStep)
@@ -237,8 +242,8 @@ function PANEL:onStepChanged(oldStep, newStep)
 	local function showNewStep()
 		newStep:SetAlpha(0)
 		newStep:SetVisible(true)
-		newStep:InvalidateLayout(true)
 		newStep:onDisplay()
+		newStep:InvalidateChildren(true)
 		newStep:AlphaTo(255, ANIM_SPEED)
 
 		if (shouldSwitchNextText) then
@@ -263,7 +268,7 @@ function PANEL:Init()
 	self:Dock(FILL)
 	local canCreate, reason = self:canCreateCharacter()
 	if (not canCreate) then
-		return self:showError(reason)
+		return self:showMessage(reason)
 	end
 
 	nut.gui.charCreate = self
