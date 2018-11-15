@@ -11,6 +11,7 @@ net.Receive("nutCharChoose", function(_, client)
 		net.Start("nutCharChoose")
 			net.WriteString(L(message or "", client))
 		net.Send(client)
+		print(client)
 	end
 
 	local id = net.ReadUInt(32)
@@ -21,7 +22,11 @@ net.Receive("nutCharChoose", function(_, client)
 
 	local status, result = hook.Run("CanPlayerUseChar", client, character)
 	if (status == false) then
-		return response(false, result)
+		-- Weird old translation stuff that should not exist.
+		if (result[1] == "@") then
+			result = result:sub(2)
+		end
+		return response(result)
 	end
 
 	local currentChar = client:getChar()

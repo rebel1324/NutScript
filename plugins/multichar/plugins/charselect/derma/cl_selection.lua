@@ -53,20 +53,26 @@ function PANEL:createCharacterSlots()
 end
 
 function PANEL:onCharacterSelected(character)
+	if (self.choosing) then return end
 	if (character == LocalPlayer():getChar()) then
 		return nut.gui.character:fadeOut()
 	end
 
+	self.choosing = true
 	nut.gui.character:setFadeToBlack(true)
 		:next(function()
 			return nutMultiChar:chooseCharacter(character:getID())
 		end)
-		:next(function()
+		:next(function(err)
+			self.choosing = false
+			print(err)
 			if (IsValid(nut.gui.character)) then
 				nut.gui.character:setFadeToBlack(false)
 				nut.gui.character:fadeOut()
 			end
 		end, function(err)
+			self.choosing = false
+			nut.gui.character:setFadeToBlack(false)
 			nut.util.notify(err)
 		end)
 end

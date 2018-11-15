@@ -30,8 +30,10 @@ else
 	function PLUGIN:chooseCharacter(id)
 		assert(isnumber(id), "id must be a number")
 		local d = deferred.new()
+		print("hey!")
 		net.Receive("nutCharChoose", function()
 			local message = net.ReadString()
+			print("message", message)
 			if (message == "") then
 				d:resolve()
 			else

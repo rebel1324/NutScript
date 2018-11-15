@@ -9,6 +9,12 @@ if (CLIENT) then
 		vgui.Create("nutCharacter")
 	end
 
+	function PLUGIN:KickedFromCharacter(id, isCurrentChar)
+		if (isCurrentChar) then
+			vgui.Create("nutCharacter")
+		end
+	end
+
 	hook.Add("CreateMenuButtons", "nutCharacters", function(tabs)
 		tabs["characters"] = function(panel)
 			if (IsValid(nut.gui.menu)) then

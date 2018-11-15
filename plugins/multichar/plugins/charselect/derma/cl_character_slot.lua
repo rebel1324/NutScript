@@ -42,6 +42,21 @@ function PANEL:Init()
 	self.model = self:Add("nutModelPanel")
 	self.model:Dock(FILL)
 	self.model:SetFOV(37)
+	self.model.PaintOver = function(model, w, h)
+		if (self.banned) then
+			local centerX, centerY = w * 0.5, h * 0.5 - 24
+			surface.SetDrawColor(250, 0, 0, 40)
+			surface.DrawRect(0, centerY - 24, w, 48)
+
+			draw.SimpleText(
+				L("banned"):upper(),
+				"nutCharSmallButtonFont",
+				centerX,
+				centerY,
+				color_white, 1, 1
+			)
+		end
+	end
 
 	self.button = self:Add("DButton")
 	self.button:SetSize(WIDTH, ScrH())
@@ -50,7 +65,9 @@ function PANEL:Init()
 	self.button.OnCursorEntered = function(button) self:OnCursorEntered() end
 	self.button.DoClick = function(button)
 		nut.gui.character:clickSound()
-		self:onSelected()
+		if (not self.banned) then
+			self:onSelected()
+		end
 	end
 
 	self.delete = self:Add("DButton")
@@ -79,6 +96,7 @@ function PANEL:setCharacter(character)
 	self.name:SetText(character:getName():upper())
 	self.model:SetModel(character:getModel())
 	self.faction:SetBackgroundColor(team.GetColor(character:getFaction()))
+	self:setBanned(character:getData("banned"))
 
 	local entity = self.model.Entity
 	if (IsValid(entity)) then
@@ -94,6 +112,10 @@ function PANEL:setCharacter(character)
 		local scale = math.max((960 / ScrH()) * 0.5, 0.5)
 		self.model:SetLookAt(entity:GetPos() + Vector(0, 0, height * scale))
 	end
+end
+
+function PANEL:setBanned(banned)
+	self.banned = banned
 end
 
 function PANEL:onHoverChanged(isHovered)
