@@ -82,7 +82,6 @@ function PANEL:onFinish()
 		self.content:SetVisible(true)
 		self.buttons:SetVisible(true)
 		self:showMessage()
-		print("self.creating = ", self.creating, self == nut.gui.charCreate)
 	end
 	local function onFail(err)
 		onResponse()
@@ -94,7 +93,7 @@ function PANEL:onFinish()
 		:next(function()
 			onResponse()
 			if (IsValid(nut.gui.character)) then
-				vgui.Create("nutCharacter")
+				nut.gui.character:showContent()
 			end
 		end, onFail)
 

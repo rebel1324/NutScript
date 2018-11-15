@@ -101,7 +101,6 @@ function PANEL:loadBackground()
 			surface.SetDrawColor(20, 20, 20)
 			surface.DrawRect(0, 0, w, h)
 		end
-		print(self.bgLoader)
 	end
 end
 
@@ -190,8 +189,15 @@ function PANEL:Init()
 	self.content:DockMargin(64, 0, 64, 64)
 	self.content:SetDrawBackground(false)
 
-	self:createTabs()
+	self.music = self:Add("nutCharBGMusic")
 	self:loadBackground()
+	self:showContent()
+end
+
+function PANEL:showContent()
+	self.tabs:Clear()
+	self.content:Clear()
+	self:createTabs()
 end
 
 function PANEL:setFadeToBlack(fade)
@@ -207,6 +213,7 @@ function PANEL:setFadeToBlack(fade)
 		fade:SetAlpha(0)
 		fade:AlphaTo(255, self.FADE_SPEED, 0, function() d:resolve() end)
 		fade:SetZPos(999)
+		fade:MakePopup()
 		self.fade = fade
 	elseif (IsValid(self.fade)) then
 		local fadePanel = self.fade
@@ -224,19 +231,15 @@ function PANEL:Paint(w, h)
 end
 
 function PANEL:hoverSound()
-	LocalPlayer():EmitSound("buttons/button15.wav", 30, 250)
+	LocalPlayer():EmitSound("buttons/button15.wav", 35, 250)
 end
 
 function PANEL:clickSound()
-	LocalPlayer():EmitSound("buttons/button14.wav", 30, 255)
+	LocalPlayer():EmitSound("buttons/button14.wav", 35, 255)
 end
 
 function PANEL:warningSound()
-	LocalPlayer():EmitSound("friends/friend_join.wav", 30, 255)
+	LocalPlayer():EmitSound("friends/friend_join.wav", 40, 255)
 end
 
 vgui.Register("nutCharacter", PANEL, "EditablePanel")
-
-if (IsValid(nut.gui.character)) then
-	vgui.Create("nutCharacter")
-end

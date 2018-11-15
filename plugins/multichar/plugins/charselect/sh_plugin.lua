@@ -27,7 +27,6 @@ local function ScreenScale(size)
 end
 
 function PLUGIN:LoadFonts(font)
-	print(ScreenScale(70))
 	surface.CreateFont("nutCharTitleFont", {
 		font = font,
 		weight = 200,

@@ -37,7 +37,7 @@ end
 function PANEL:createCharacterSlots()
 	self.scroll:Clear()
 	if (#nut.characters == 0) then
-		return vgui.Create("nutCharacter")
+		return nut.gui.character:showContent()
 	end
 	for _, id in ipairs(nut.characters) do
 		local character = nut.char.loaded[id]
@@ -68,10 +68,12 @@ function PANEL:onCharacterSelected(character)
 		end)
 		:next(function(err)
 			self.choosing = false
-			print(err)
 			if (IsValid(nut.gui.character)) then
-				nut.gui.character:setFadeToBlack(false)
-				nut.gui.character:fadeOut()
+				timer.Simple(0.25, function()
+					if (not IsValid(nut.gui.character)) then return end
+					nut.gui.character:setFadeToBlack(false)
+					nut.gui.character:Remove()
+				end)
 			end
 		end, function(err)
 			self.choosing = false

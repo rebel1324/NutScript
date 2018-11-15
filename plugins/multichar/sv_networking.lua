@@ -11,7 +11,6 @@ net.Receive("nutCharChoose", function(_, client)
 		net.Start("nutCharChoose")
 			net.WriteString(L(message or "", client))
 		net.Send(client)
-		print(client)
 	end
 
 	local id = net.ReadUInt(32)

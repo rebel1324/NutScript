@@ -28,7 +28,7 @@ function PANEL:Init()
 	self.title.y = 64
 
 	self.message = self.content:Add("DLabel")
-	self.message:SetFont("nutCharSmallButtonFont")
+	self.message:SetFont("nutCharSubTitleFont")
 	self.message:SetTextColor(color_white)
 	self.message:SetSize(ScrW(), 32)
 	self.message:CenterVertical()
