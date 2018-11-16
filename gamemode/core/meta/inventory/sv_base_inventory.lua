@@ -59,6 +59,9 @@ function Inventory:initializeStorage(initialData)
 	}, function(results, lastID)
 		local count = 0
 		local expected = table.Count(initialData)
+		if (initialData.char) then
+			expected = expected - 1
+		end
 
 		-- Ignore the char data since it is stored in the old charID column.
 		if (initialData.char) then

@@ -4,7 +4,6 @@ nut.char.vars = nut.char.vars or {}
 
 nut.util.include("nutscript/gamemode/core/meta/sh_character.lua")
 nut.util.include("character/cl_networking.lua")
-nut.util.include("character/sv_networking.lua")
 nut.util.include("character/sv_character.lua")
 
 function nut.char.new(data, id, client, steamID)
@@ -46,11 +45,24 @@ do
 		default = "John Doe",
 		index = 1,
 		onValidate = function(value, data, client)
-			if (!value or !value:find("%S")) then
+			local name, override =
+				hook.Run("GetDefaultCharName", client, data.faction, data)
+			if (isstring(name) and override) then
+				return true
+			end
+			if (not isstring(value) or not value:find("%S")) then
 				return false, "invalid", "name"
 			end
-
-			return hook.Run("GetDefaultCharName", client, data.faction) or value:sub(1, 70)
+			return true
+		end,
+		onAdjust = function(client, data, value, newData)
+			local name, override =
+				hook.Run("GetDefaultCharName", client, data.faction, data)
+			if (isstring(name) and override) then
+				newData.name = name
+			else
+				newData.name = string.Trim(value):sub(1, 70)
+			end
 		end,
 		onPostSetup = function(panel, faction, payload)
 			local name, disabled = hook.Run("GetDefaultCharName", LocalPlayer(), faction)
@@ -171,7 +183,7 @@ do
 					newData.model = model[1]
 					newData.data = newData.data or {}
 					newData.data.skin = model[2] or 0
-					newData.data.bodyGroups = model[3]
+					newData.data.groups = model[3]
 				end
 			end
 		end
@@ -208,8 +220,11 @@ do
 
 			return faction and faction.index or 0
 		end,
-		noDisplay = true,
 		onValidate = function(value, data, client)
+			if (not nut.faction.indices[value]) then
+				return false, "invalid", "faction"
+			end
+
 			local limit = nut.faction.indices[value].limit
 			if (value) then
 				if (client:hasWhitelist(value)) then

@@ -16,19 +16,6 @@ local REJECTION_START_DEPTH = 7
 
 local function finish(deferred, state)
     state = state or REJECTED
-	if (state == REJECTED) then
-		if (isfunction(deferred.failure)) then
-			deferred.failure(deferred.value)
-		else
-			deferred.state = REJECTED
-			error(
-				debug.traceback(
-					"Unhandled Rejection: "..tostring(deferred.value),
-					REJECTION_START_DEPTH
-				)
-			)
-		end
-	end
     for i, f in ipairs(deferred.queue) do
         if state == RESOLVED then
             f:resolve(deferred.value)

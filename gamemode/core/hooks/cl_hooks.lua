@@ -273,45 +273,55 @@ function GM:CalcViewModelView(weapon, viewModel, oldEyePos, oldEyeAngles, eyePos
 	return vm_origin, vm_angles
 end
 
+function GM:CreateLoadingScreen()
+	if (IsValid(nut.gui.loading)) then
+		nut.gui.loading:Remove()
+	end
+
+	local loader = vgui.Create("EditablePanel")
+	loader:ParentToHUD()
+	loader:Dock(FILL)
+	loader.Paint = function(this, w, h)
+		surface.SetDrawColor(0, 0, 0)
+		surface.DrawRect(0, 0, w, h)
+	end
+
+	local label = loader:Add("DLabel")
+	label:Dock(FILL)
+	label:SetText(L"loading")
+	label:SetFont("nutNoticeFont")
+	label:SetContentAlignment(5)
+	label:SetTextColor(color_white)
+	label:InvalidateLayout(true)
+	label:SizeToContents()
+
+	timer.Simple(5, function()
+		if (IsValid(nut.gui.loading)) then
+			local fault = getNetVar("dbError")
+
+			if (fault) then
+				label:SetText(fault and L"dbError" or L"loading")
+
+				local label = loader:Add("DLabel")
+				label:DockMargin(0, 64, 0, 0)
+				label:Dock(TOP)
+				label:SetFont("nutSubTitleFont")
+				label:SetText(fault)
+				label:SetContentAlignment(5)
+				label:SizeToContentsY()
+				label:SetTextColor(Color(255, 50, 50))
+			end
+		end
+	end)
+
+	nut.gui.loading = loader
+end
+
 function GM:InitializedConfig()
 	hook.Run("LoadFonts", nut.config.get("font"), nut.config.get("genericFont"))
 
 	if (!nut.config.loaded and !IsValid(nut.gui.loading)) then
-		local loader = vgui.Create("EditablePanel")
-		loader:ParentToHUD()
-		loader:Dock(FILL)
-		loader.Paint = function(this, w, h)
-			surface.SetDrawColor(0, 0, 0)
-			surface.DrawRect(0, 0, w, h)
-		end
-
-		local label = loader:Add("DLabel")
-		label:Dock(FILL)
-		label:SetText(L"loading")
-		label:SetFont("nutTitleFont")
-		label:SetContentAlignment(5)
-		label:SetTextColor(color_white)
-
-		timer.Simple(5, function()
-			if (IsValid(nut.gui.loading)) then
-				local fault = getNetVar("dbError")
-
-				if (fault) then
-					label:SetText(fault and L"dbError" or L"loading")
-
-					local label = loader:Add("DLabel")
-					label:DockMargin(0, 64, 0, 0)
-					label:Dock(TOP)
-					label:SetFont("nutSubTitleFont")
-					label:SetText(fault)
-					label:SetContentAlignment(5)
-					label:SizeToContentsY()
-					label:SetTextColor(Color(255, 50, 50))
-				end
-			end
-		end)
-
-		nut.gui.loading = loader
+		hook.Run("CreateLoadingScreen")
 		nut.config.loaded = true
 	end
 end
