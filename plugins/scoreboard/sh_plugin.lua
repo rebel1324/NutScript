@@ -30,6 +30,19 @@ if (CLIENT) then
 			nut.gui.score:Remove()
 		end
 	end
+
+	function PLUGIN:ShowPlayerOptions(client, options)
+		options["viewProfile"] = {"icon16/user.png", function()
+			if (IsValid(client)) then
+				client:ShowProfile()
+			end
+		end}
+		options["Copy Steam ID"] = {"icon16/user.png", function()
+			if (IsValid(client)) then
+				SetClipboardText(client:SteamID())
+			end
+		end}
+	end
 end
 
 nut.config.add(
