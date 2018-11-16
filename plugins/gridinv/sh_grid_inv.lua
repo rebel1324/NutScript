@@ -101,7 +101,7 @@ function GridInv:configure()
 end
 
 function GridInv:getItems(noRecurse)
-	local items = self.BaseClass.getItems(self)
+	local items = self.items
 	if (noRecurse) then return items end
 
 	-- If recursive, then add the items within bags to the items list.
@@ -116,6 +116,33 @@ function GridInv:getItems(noRecurse)
 end
 
 if (SERVER) then
+	function GridInv:setSize(w, h)
+		self:setData("w", w)
+		self:setData("h", h)
+	end
+
+	function GridInv:setOwner(owner, fullUpdate)
+		if (type(owner) == "Player" and owner:getChar()) then
+			owner = owner:getChar():getID()
+		elseif (type(owner) ~= "number") then
+			return
+		end
+
+		if (SERVER) then
+			if (fullUpdate) then
+				for _, client in ipairs(player.GetAll()) do
+					if (client:getChar():getID() == owner) then
+						self:sync(client)
+						break
+					end
+				end
+			end
+			self:setData("char", owner)
+		end
+
+		self.owner = owner
+	end
+
 	function GridInv:add(itemTypeOrItem, xOrQuantity, yOrData)
 		local x, y, quantity, data
 

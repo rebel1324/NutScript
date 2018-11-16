@@ -112,17 +112,6 @@ nut.config.add("punchStamina", 10, "How much stamina punches use up.", nil, {
 	data = {min = 0, max = 100},
 	category = "characters"
 })
-nut.config.add("music", "music/hl2_song2.mp3", "The default music played in the character menu.", nil, {
-	category = "appearance"
-})
-
-nut.config.add("logo", "https://static.miraheze.org/nutscriptwiki/2/26/Nutscript.png", "The icon shown on the character menu. Max size is 86x86.", nil, {
-	category = "appearance"
-})
-
-nut.config.add("logoURL", "http://nutscript.net/", "The URL opened when the icon is clicked.", nil, {
-	category = "appearance"
-})
 
 nut.config.add("defMoney", 0, "The amount of money that players start with.", nil, {
 	category = "characters",

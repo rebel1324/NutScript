@@ -63,28 +63,25 @@ local PANEL = {}
 		self:RunAnimation()
 	end
 
-	function PANEL:DrawModel()
-		local brightness = self.brightness * 0.4
-		local brightness2 = self.brightness * 1.5
-
-		render.SetModelLighting(0, brightness2, brightness2, brightness2)
-
-		for i = 1, 4 do
-			render.SetModelLighting(i, brightness, brightness, brightness)
-		end
-
-		local fraction = (brightness / 1) * 0.1
-
-		render.SetModelLighting(5, fraction, fraction, fraction)
-
+	function PANEL:PreDrawModel(entity)
 		-- Excecute Some stuffs
 		if (self.enableHook) then
-			hook.Run("DrawNutModelView", self, self.Entity)
+			hook.Run("DrawNutModelView", self, entity)
 		end
-		
-		self.Entity:DrawModel()
+
+		return true
 	end
 
 	function PANEL:OnMousePressed()
+	end
+
+	function PANEL:fitFOV()
+		local entity = self:GetEntity()
+		if (not IsValid(entity)) then return end
+
+		local mins, maxs = entity:GetRenderBounds()
+		local height = math.abs(maxs.z) + math.abs(mins.z) + 8
+		local distance = self:GetCamPos():Length()
+		self:SetFOV(math.deg(2 * math.atan(height / (2 * distance))))
 	end
 vgui.Register("nutModelPanel", PANEL, "DModelPanel")

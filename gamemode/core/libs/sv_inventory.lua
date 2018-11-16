@@ -88,11 +88,10 @@ function nut.inventory.instance(typeID, initialData)
 		"invalid inventory type "..tostring(typeID)
 	)
 	assert(
-		not data or type(initialData) == "table",
+		initialData == nil or type(initialData) == "table",
 		"initialData must be a table for nut.inventory.instance"
 	)
 	initialData = initialData or {}
-
 	return invType:initializeStorage(initialData)
 		:next(function(id)
 			local instance = invType:new()

@@ -1,72 +1,51 @@
+function GM:SetupBotCharacter(client)
+	local botID = os.time()
+	local index = math.random(1, table.Count(nut.faction.indices))
+	local faction = nut.faction.indices[index]
+
+	local character = nut.char.new({
+		name = client:Name(),
+		faction = faction and faction.uniqueID or "unknown",
+		model = faction and table.Random(faction.models) or "models/gman.mdl"
+	}, botID, client, client:SteamID64())
+	character.isBot = true
+	character.vars.inv = {}
+
+	nut.char.loaded[os.time()] = character
+
+	character:setup()
+	client:Spawn()
+end
+
+-- When the player first joins, send all important NutScript data.
 function GM:PlayerInitialSpawn(client)
 	client.nutJoinTime = RealTime()
 
 	if (client:IsBot()) then
-		local botID = os.time()
-		local index = math.random(1, table.Count(nut.faction.indices))
-		local faction = nut.faction.indices[index]
-
-		local character = nut.char.new({
-			name = client:Name(),
-			faction = faction and faction.uniqueID or "unknown",
-			model = faction and table.Random(faction.models) or "models/gman.mdl"
-		}, botID, client, client:SteamID64())
-		character.isBot = true
-		character.vars.inv = {}
-
-		nut.char.loaded[os.time()] = character
-
-		character:setup()
-		client:Spawn()
-
-		return
+		return hook.Run("SetupBotCharacter", client)
 	end
 
+	-- Send server related data.
 	nut.config.send(client)
 	nut.date.send(client)
 
+	-- Load and send the NutScript data for the player.
 	client:loadNutData(function(data)
 		if (!IsValid(client)) then return end
 
 		local address = nut.util.getAddress()			
-		local noCache = true -- return false when player data is actually exists.
 		client:setNutData("lastIP", address)
 
-		netstream.Start(client, "nutDataSync", data, client.firstJoin, client.lastJoin)
-
-		nut.char.restore(client, function(charList)
-			if (!IsValid(client)) then return end
-
-			MsgN("Loaded ("..table.concat(charList, ", ")..") for "..client:Name())
-
-			for k, v in ipairs(charList) do
-				nut.char.loaded[v]:sync(client)
-			end
-
-			for k, v in ipairs(player.GetAll()) do
-				if (v:getChar()) then
-					v:getChar():sync(client)
-				end
-			end
-
-			client.nutCharList = charList
-				netstream.Start(client, "charMenu", charList)
-			client.nutLoaded = true
-
-			client:setNutData("intro", true)
-		end, noCache)
+		netstream.Start(
+			client,
+			"nutDataSync",
+			data, client.firstJoin, client.lastJoin
+		)
+		hook.Run("PlayerNutDataLoaded", client)
 	end)
 
-	client:SetNoDraw(true)
-	client:SetNotSolid(true)
-	client:Lock()
-
-	timer.Simple(1, function()
-		if (!IsValid(client)) then return end
-
-		client:KillSilent()
-		client:StripAmmo()
-	end)
+	-- Allow other things to use PlayerInitialSpawn via a hook that runs later.
+	hook.Run("PostPlayerInitialSpawn", client)
 end
 
 function GM:PlayerUse(client, entity)
