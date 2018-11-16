@@ -132,8 +132,12 @@ local PANEL = {}
 			and self.buyingList
 			or self.sellingList
 		if (IsValid(itemList[uniqueID])) then
+			local listParent = itemList[uniqueID]:GetParent()
 			itemList[uniqueID]:Remove()
-			parent:InvalidateLayout()
+
+			if (IsValid(listParent)) then
+				listParent:InvalidateLayout()
+			end
 		end
 	end
 
