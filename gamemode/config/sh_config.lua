@@ -130,10 +130,6 @@ end, {
 	data = {min = 0, max = 5000}
 })
 
-nut.config.add("wepAlwaysRaised", false, "Whether or not weapons are always raised.", nil, {
-	category = "server"
-})
-
 nut.config.add("contentURL", "http://nutscript.net/", "Your server's collection pack.", nil, {
 	category = "server"
 })

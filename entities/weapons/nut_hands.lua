@@ -338,8 +338,7 @@ function SWEP:PrimaryAttack()
 	end
 
 	if (IsValid(self.holdingEntity)) then
-		self:doPickup(self:GetOwner():isWepRaised())
-
+		self:doPickup(not self.isWepRaised or self:GetOwner():isWepRaised())
 		return
 	end
 

@@ -45,7 +45,12 @@ function GM:TranslateActivity(client, act)
 	local class = getModelClass(model) or "player"
 	local weapon = client.GetActiveWeapon(client)
 	if (class == "player") then
-		if (!nut.config.get("wepAlwaysRaised") and IsValid(weapon) and !client.isWepRaised(client) and client.OnGround(client)) then
+		if (
+			!nut.config.get("wepAlwaysRaised") and
+			IsValid(weapon) and
+			(not client.isWepRaised or not client.isWepRaised(client)) and
+			client:OnGround()
+		) then
 			if (string.find(model, "zombie")) then
 				local tree = nut.anim.zombie
 
@@ -58,18 +63,16 @@ function GM:TranslateActivity(client, act)
 				end
 			end
 
-			local holdType = IsValid(weapon) and (weapon.HoldType or weapon.GetHoldType(weapon)) or "normal"
-
-			if (!nut.config.get("wepAlwaysRaised") and IsValid(weapon) and !client.isWepRaised(client) and client:OnGround()) then
-				holdType = PLAYER_HOLDTYPE_TRANSLATOR[holdType] or "passive"
-			end
+			local holdType = IsValid(weapon)
+				and (weapon.HoldType or weapon.GetHoldType(weapon))
+				or "normal"
+			holdType = PLAYER_HOLDTYPE_TRANSLATOR[holdType] or "passive"
 
 			local tree = nut.anim.player[holdType]
 
 			if (tree and tree[act]) then
 				if (type(tree[act]) == "string") then
-					client.CalcSeqOverride = client.LookupSequence(client, tree[act])
-
+					client.CalcSeqOverride = client.LookupSequence(tree[act])
 					return
 				else
 					return tree[act]
@@ -123,7 +126,10 @@ function GM:TranslateActivity(client, act)
 			end
 
 			if (tree[subClass] and tree[subClass][act]) then
-				local act2 = tree[subClass][act][client.isWepRaised(client) and 2 or 1]
+				local index = (not client.isWepRaised or client:isWepRaised())
+					and 2
+					or 1
+				local act2 = tree[subClass][act][index]
 
 				if (type(act2) == "string") then
 					client.CalcSeqOverride = client.LookupSequence(client, act2)
@@ -208,34 +214,12 @@ function GM:CalcMainActivity(client, velocity)
 	return seqIdeal, client.nutForceSeq or oldSeqOverride or client.CalcSeqOverride
 end
 
-local KEY_BLACKLIST = IN_ATTACK + IN_ATTACK2
-
-function GM:StartCommand(client, command)
-	local weapon = client:GetActiveWeapon()
-
-	if (!client:isWepRaised()) then
-		if (IsValid(weapon) and weapon.FireWhenLowered) then
-			return
-		end
-
-		command:RemoveKey(KEY_BLACKLIST)
-	end
-end
-
 function GM:OnCharVarChanged(char, varName, oldVar, newVar)
 	if (nut.char.varHooks[varName]) then
 		for k, v in pairs(nut.char.varHooks[varName]) do
 			v(char, oldVar, newVar)
 		end
 	end
-end
-
-function GM:CanPlayerThrowPunch(client)
-	if (!client:isWepRaised()) then
-		return false
-	end
-
-	return true
 end
 
 function GM:GetDefaultCharName(client, faction)

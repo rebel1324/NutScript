@@ -146,7 +146,7 @@ if (CLIENT) then
 				traceData2.endpos = aimOrigin + curAng:Forward() * 65535
 				traceData2.filter = client
 
-			if ((NUT_CVAR_TP_CLASSIC:GetBool() or owner:isWepRaised() or 
+			if ((NUT_CVAR_TP_CLASSIC:GetBool() or (owner.isWepRaised and owner:isWepRaised()) or 
 				(owner:KeyDown(bit.bor(IN_FORWARD, IN_BACK, IN_MOVELEFT, IN_MOVERIGHT)) and owner:GetVelocity():Length() >= 10)) ) then
 				client:SetEyeAngles((util.TraceLine(traceData2).HitPos - client:GetShootPos()):Angle())
 			end

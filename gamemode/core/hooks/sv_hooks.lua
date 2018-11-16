@@ -67,13 +67,7 @@ function GM:PlayerUse(client, entity)
 end
 
 function GM:KeyPress(client, key)
-	if (key == IN_RELOAD) then
-		timer.Create("nutToggleRaise"..client:SteamID(), 1, 1, function()
-			if (IsValid(client)) then
-				client:toggleWepRaised()
-			end
-		end)
-	elseif (key == IN_USE) then
+	if (key == IN_USE) then
 		local data = {}
 			data.start = client:GetShootPos()
 			data.endpos = data.start + client:GetAimVector()*96
@@ -118,10 +112,6 @@ function GM:CanPlayerTakeItem(client, item)
 			return false
 		end
 	end
-end
-
-function GM:PlayerSwitchWeapon(client, oldWeapon, newWeapon)
-	client:setWepRaised(false)
 end
 
 function GM:PlayerShouldTakeDamage(client, attacker)

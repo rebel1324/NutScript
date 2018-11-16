@@ -83,7 +83,7 @@ if (CLIENT) then
 		scaleFraction = 1 - math.Clamp(distance / maxDistance, 0, .5)
 		screen = trace.HitPos:ToScreen()
 		crossSize = 4
-		crossGap = 20 * (scaleFraction*(client:isWepRaised() and 1 or 3))
+		crossGap = 16
 
 		curGap = Lerp(ft * 5, curGap, crossGap)
 		colors[2] = Color(255, 255, 255, curAlpha, distance)
@@ -103,8 +103,9 @@ if (CLIENT) then
 			curIconAlpha = Lerp(ft * 10, curIconAlpha, 255)
 			curAlpha = Lerp(ft * 30, curAlpha, 0)
 		else
+			local showCross = not client.isWepRaised or client:isWepRaised()
 			curIconAlpha = Lerp(ft * 30, curIconAlpha, 0)
-			curAlpha = Lerp(ft * 10, curAlpha, (!client:isWepRaised() and 0 or 150))
+			curAlpha = Lerp(ft * 10, curAlpha, (showCross and 150 or 0))
 		end
 
 		curAlpha = hook.Run("GetCrosshairAlpha", curAlpha, entity) or curAlpha
