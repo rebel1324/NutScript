@@ -135,8 +135,6 @@ function nut.item.new(uniqueID, id)
 	end
 end
 
-nut.util.include("nutscript/gamemode/core/meta/sh_inventory.lua")
-
 nut.char.registerVar("inv", {
 	noNetworking = true,
 	noDisplay = true,
