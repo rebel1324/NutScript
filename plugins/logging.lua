@@ -6,13 +6,11 @@ PLUGIN.desc = "You can modfiy the logging text/lists on this plugin."
 if (SERVER) then
 	local L, type, IsValid = Format, type, IsValid
 	
-	nut.log.addType("playerHurt", function(client, ...)
-		local data = {...}
-		local attacker = data[1] or "unknown"
-		local damage = data[2] or 0
-		local remainingHealth = data[3] or 0
-
-		return string.format("%s has taken %d damage from %s, leaving them at %d health.", client:Name(), damage, attacker, remaingingHealth)
+	nut.log.addType("playerHurt", function(client, attacker, damage, health)
+		attacker = tostring(attacker)
+		damage = damage or 0
+		health = health or 0
+		return string.format("%s has taken %d damage from %s, leaving them at %d health.", client:Name(), damage, attacker, health)
 	end)
 
 	nut.log.addType("playerDeath", function(client, ...)
@@ -68,7 +66,7 @@ if (SERVER) then
 
 	nut.log.addType("charLoad", function(client, ...)
 		local arg = {...}
-		return (L("%s loaded the character #%s(%s)", client:Name(), arg[1], arg[2]))
+		return (L("%s loaded the character #%s(%s)", client:steamName(), arg[1], arg[2]))
 	end)
 
 	nut.log.addType("charDelete", function(client, ...)

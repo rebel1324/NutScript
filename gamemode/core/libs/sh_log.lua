@@ -16,11 +16,8 @@ nut.log.color = {
 }
 local consoleColor = Color(50, 200, 50)
 
--- TODO: Creating MYSQL/SQLLite Query for the logging.
--- SUGG: Do I have to get Seperated Database? For ChatLog, For EventLog.
-
 if (SERVER) then
-	if (!nut.db) then
+	if (not nut.db) then
 		include("sv_database.lua")
 	end
 
@@ -39,16 +36,12 @@ if (SERVER) then
 
 	function nut.log.getString(client, logType, ...)
 		local text = nut.log.types[logType]
-
-		if (text) then
-			if (isfunction(text)) then
-				text = text(client, ...)
+		if (isfunction(text)) then
+			local success, result = pcall(text, client, ...)
+			if (success) then
+				return result
 			end
-		else
-			text = -1
 		end
-
-		return text
 	end
 
 	function nut.log.addRaw(logString, shouldNotify)		
@@ -57,7 +50,6 @@ if (SERVER) then
 		end
 
 		Msg("[LOG] ", logString.."\n")
-
 		if (!noSave) then
 			file.Append("nutscript/logs/"..os.date("%x"):gsub("/", "-")..".txt", "["..os.date("%X").."]\t"..logString.."\r\n")
 		end
@@ -65,20 +57,17 @@ if (SERVER) then
 
 	function nut.log.add(client, logType, ...)
 		local logString = nut.log.getString(client, logType, ...)
-		if (logString == -1) then return end
+		if (not isstring(logString)) then return end
 
 		hook.Run("OnServerLog", client, logType, ...)
-
 		Msg("[LOG] ", logString.."\n")
 
-		if (!noSave) then
-			file.Append("nutscript/logs/"..os.date("%x"):gsub("/", "-")..".txt", "["..os.date("%X").."]\t"..logString.."\r\n")
-		end
+		if (noSave) then return end
+		file.Append("nutscript/logs/"..os.date("%x"):gsub("/", "-")..".txt", "["..os.date("%X").."]\t"..logString.."\r\n")
 	end
 
 	function nut.log.open(client)
 		local logData = {}
-
 		netstream.Hook(client, "nutLogView", logData)
 	end
 
@@ -87,6 +76,6 @@ if (SERVER) then
 	end
 else
 	netstream.Hook("nutLogStream", function(logString, flag)
-		MsgC(consoleColor, "[SERVER] ", color_white, logString.."\n")
+		MsgC(consoleColor, "[SERVER] ", color_white, tostring(logString).."\n")
 	end)
 end
