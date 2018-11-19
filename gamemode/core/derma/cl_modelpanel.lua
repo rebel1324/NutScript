@@ -64,6 +64,21 @@ local PANEL = {}
 	end
 
 	function PANEL:PreDrawModel(entity)
+		if (self.brightness) then
+			local brightness = self.brightness * 0.4
+			local brightness2 = self.brightness * 1.5
+
+			render.SetModelLighting(0, brightness2, brightness2, brightness2)
+
+			for i = 1, 4 do
+				render.SetModelLighting(i, brightness, brightness, brightness)
+			end
+
+			local fraction = (brightness / 1) * 0.1
+
+			render.SetModelLighting(5, fraction, fraction, fraction)
+		end
+
 		-- Excecute Some stuffs
 		if (self.enableHook) then
 			hook.Run("DrawNutModelView", self, entity)
