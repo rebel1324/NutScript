@@ -48,7 +48,7 @@ local PANEL = {}
 						end
 					end
 
-					self:SizeTo(self:GetWide(), 36 + height, 0.15)
+					self:SizeTo(self:GetWide(), height, 0.15)
 				end)
 
 				self.expanded = true
