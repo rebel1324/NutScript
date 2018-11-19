@@ -4,7 +4,7 @@ local GridInv = nut.Inventory:extend("GridInv")
 local function CanAccessInventoryIfCharacterIsOwner(inventory, action, context)
 	local ownerID = inventory:getData("char")
 	local client = context.client
-	if (table.HasValue(client.nutCharList, ownerID)) then
+	if (table.HasValue(client.nutCharList or {}, ownerID)) then
 		return true
 	end
 end
