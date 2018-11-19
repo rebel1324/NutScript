@@ -12,6 +12,7 @@ if (SERVER) then
 		self:SetModel("models/props_junk/watermelon01.mdl")
 		self:SetSolid(SOLID_VPHYSICS)
 		self:PhysicsInit(SOLID_VPHYSICS)
+		self:SetCollisionGroup(COLLISION_GROUP_WEAPON)
 		self.health = 50
 
 		local physObj = self:GetPhysicsObject()
