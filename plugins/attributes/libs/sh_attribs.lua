@@ -1,5 +1,3 @@
-if (!nut.char) then include("sh_character.lua") end
-
 nut.attribs = nut.attribs or {}
 nut.attribs.list = nut.attribs.list or {}
 
@@ -135,3 +133,7 @@ do
 		return att
 	end
 end
+
+hook.Add("DoPluginIncludes", "nutAttribsLib", function(path)
+	nut.attribs.loadFromDir(path.."/attributes")
+end)

@@ -4,9 +4,12 @@ PLUGIN.desc = "Adds a strength attribute."
 
 if (SERVER) then
 	function PLUGIN:PlayerGetFistDamage(client, damage, context)
-		if (client:getChar()) then
-			-- Add to the total fist damage.
-			context.damage = context.damage + (client:getChar():getAttrib("str", 0) * nut.config.get("strMultiplier"))
+		local character = client:getChar()
+		-- Add to the total fist damage.
+		if (character and character.getAttrib) then
+			local multiplier = nut.config.get("strMultiplier", 0.1)
+			local bonus = character:getAttrib("str", 0) * multiplier
+			context.damage = context.damage + bonus
 		end
 	end
 

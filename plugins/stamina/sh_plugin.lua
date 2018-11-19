@@ -19,14 +19,21 @@ if (SERVER) then
 				if (client:GetMoveType() != MOVETYPE_NOCLIP and character) then
 					velocity = client:GetVelocity()
 					length2D = velocity:Length2D()
-					runSpeed = nut.config.get("runSpeed") + character:getAttrib("stm", 0)
+
+					local bonus = character.getAttrib 
+						and character:getAttrib("stm", 0)
+						or 0
+					runSpeed = nut.config.get("runSpeed") + bonus
 
 					if (client:WaterLevel() > 1) then
 						runSpeed = runSpeed * 0.775
 					end
 
 					if (client:KeyDown(IN_SPEED) and length2D >= (runSpeed - 10)) then
-						offset = -2 + (character:getAttrib("end", 0) / 60)
+						local bonus = character.getAttrib
+							and character:getAttrib("end", 0)
+							or 0
+						offset = -2 + (bonus / 60)
 					elseif (offset > 0.5) then
 						offset = 1
 					else

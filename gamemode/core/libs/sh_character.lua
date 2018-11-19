@@ -241,69 +241,6 @@ do
 		end
 	})
 
-	nut.char.registerVar("attribs", {
-		field = "_attribs",
-		default = {},
-		isLocal = true,
-		index = 4,
-		onDisplay = function(panel, y)
-			local container = panel:Add("DPanel")
-			container:SetPos(0, y)
-			container:SetWide(panel:GetWide() - 16)
-
-			local y2 = 0
-			local total = 0
-			local maximum = hook.Run("GetStartAttribPoints", LocalPlayer(), panel.payload) or nut.config.get("maxAttribs", 30)
-
-			panel.payload.attribs = {}
-
-			for k, v in SortedPairsByMemberValue(nut.attribs.list, "name") do
-				if (v.noStartBonus) then
-					continue
-				end
-
-				panel.payload.attribs[k] = 0
-
-				local bar = container:Add("nutAttribBar")
-				bar:setMax(maximum)
-				bar:Dock(TOP)
-				bar:DockMargin(2, 2, 2, 2)
-				bar:setText(L(v.name))
-				bar.onChanged = function(this, difference)
-					if ((total + difference) > maximum) then
-						return false
-					end
-
-					total = total + difference
-					panel.payload.attribs[k] = panel.payload.attribs[k] + difference
-				end
-
-				y2 = y2 + bar:GetTall() + 4
-			end
-
-			container:SetTall(y2)
-			return container
-		end,
-		onValidate = function(value, data, client)
-			if (value != nil) then
-				if (type(value) == "table") then
-					local count = 0
-
-					for k, v in pairs(value) do
-						count = count + v
-					end
-
-					if (count > (hook.Run("GetStartAttribPoints", client, count) or nut.config.get("maxAttribs", 30))) then
-						return false, "unknownError"
-					end
-				else
-					return false, "unknownError"
-				end
-			end
-		end,
-		shouldDisplay = function(panel) return table.Count(nut.attribs.list) > 0 end
-	})
-
 	nut.char.registerVar("money", {
 		field = "_money",
 		default = 0,

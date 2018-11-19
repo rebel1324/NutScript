@@ -1,3 +1,5 @@
+-- Compatibility with the multichar charmenu plugin.
+
 local PANEL = {}
 
 -- How many clicks should be simulated if the add/subtract button is held down.

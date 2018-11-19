@@ -93,7 +93,6 @@ end
 
 function nut.plugin.loadExtras(path)
 	nut.util.includeDir(path.."/libs", true, true)
-	nut.attribs.loadFromDir(path.."/attributes")
 	nut.faction.loadFromDir(path.."/factions")
 	nut.class.loadFromDir(path.."/classes")
 	nut.item.loadFromDir(path.."/items")

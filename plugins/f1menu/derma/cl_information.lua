@@ -85,21 +85,7 @@ local PANEL = {}
 				end
 			end
 
-			hook.Run("CreateCharInfoText", self)
-
-			if (!suppress or !suppress.attrib) then
-				self.attribName = self.info:Add("DLabel")
-				self.attribName:Dock(TOP)
-				self.attribName:SetFont("nutMediumFont")
-				self.attribName:SetTextColor(color_white)
-				self.attribName:SetExpensiveShadow(1, Color(0, 0, 0, 150))
-				self.attribName:DockMargin(0, 10, 0, 0)
-				self.attribName:SetText(L"attribs")
-
-				self.attribs = self.info:Add("DScrollPanel")
-				self.attribs:Dock(FILL)
-				self.attribs:DockMargin(0, 10, 0, 0)
-			end
+			hook.Run("CreateCharInfoText", self, suppress)
 		end
 
 		hook.Run("CreateCharInfo", self)
@@ -161,39 +147,6 @@ local PANEL = {}
 				local mats = LocalPlayer():GetMaterials()
 				for k, v in pairs(mats) do
 					ent:SetSubMaterial(k - 1, LocalPlayer():GetSubMaterial(k - 1))
-				end
-			end
-		end
-
-		if (self.attribs) then
-			local boost = char:getBoosts()
-
-			for k, v in SortedPairsByMemberValue(nut.attribs.list, "name") do
-				local attribBoost = 0
-				if (boost[k]) then
-					for _, bValue in pairs(boost[k]) do
-						attribBoost = attribBoost + bValue
-					end
-				end
-
-				local bar = self.attribs:Add("nutAttribBar")
-				bar:Dock(TOP)
-				bar:DockMargin(0, 0, 0, 3)
-
-				local attribValue = char:getAttrib(k, 0)
-				if (attribBoost) then
-					bar:setValue(attribValue - attribBoost or 0)
-				else
-					bar:setValue(attribValue)
-				end
-
-				local maximum = v.maxValue or nut.config.get("maxAttribs", 30)
-				bar:setMax(maximum)
-				bar:setReadOnly()
-				bar:setText(Format("%s [%.1f/%.1f] (%.1f", L(v.name), attribValue, maximum, attribValue/maximum*100).."%)")
-
-				if (attribBoost) then
-					bar:setBoost(attribBoost)
 				end
 			end
 		end

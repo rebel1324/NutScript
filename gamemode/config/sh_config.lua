@@ -30,11 +30,6 @@ nut.config.add("genericFont", "Segoe UI", "The font used to display generic text
 	end
 end, {category = "appearance"})
 
-nut.config.add("maxAttribs", 30, "The total maximum amount of attribute points allowed.", nil, {
-	data = {min = 1, max = 250},
-	category = "characters"
-})
-
 nut.config.add("chatRange", 280, "The maximum distance a person's IC chat message goes to.", nil, {
 	form = "Float",
 	data = {min = 10, max = 5000},

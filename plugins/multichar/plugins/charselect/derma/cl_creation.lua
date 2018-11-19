@@ -5,8 +5,8 @@ function PANEL:configureSteps()
 	self:addStep(vgui.Create("nutCharacterFaction"))
 	self:addStep(vgui.Create("nutCharacterModel"))
 	self:addStep(vgui.Create("nutCharacterBiography"))
-	self:addStep(vgui.Create("nutCharacterAttribs"))
 	hook.Run("ConfigureCharacterCreationSteps", self)
+	PrintTable(self.steps)
 end
 
 -- If the faction and model character data has been set, updates the
@@ -159,7 +159,7 @@ function PANEL:addStep(step, priority)
 	assert(IsValid(step), "Invalid panel for step")
 	assert(step.isCharCreateStep, "Panel must inherit nutCharacterCreateStep")
 	if (isnumber(priority)) then
-		table.insert(self.steps, priority, step)
+		table.insert(self.steps, math.min(priority, #self.steps + 1), step)
 	else
 		self.steps[#self.steps + 1] = step
 	end
