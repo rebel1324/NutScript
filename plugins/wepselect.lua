@@ -110,7 +110,7 @@ if (CLIENT) then
 			end
 
 			local source, pitch = hook.Run("WeaponCycleSound") or "common/talk.wav"
-			client:EmitSound(source or "common/talk.wav", 50, pitch or 180)
+			client:EmitSound(source or "common/talk.wav", 45, pitch or 180)
 		end
 	end
 
@@ -141,7 +141,10 @@ if (CLIENT) then
 				self:onIndexChanged()
 				return true
 			elseif (bind:find("attack") and pressed and self.alpha > 0) then
-				lPly:EmitSound(hook.Run("WeaponSelectSound", lPly:GetWeapons()[self.index]) or "buttons/button16.wav")
+				local weapon = lPly:GetWeapons()[self.index]
+				local source, pitch = hook.Run("WeaponSelectSound", weapon)
+					or "common/talk.wav"
+				lPly:EmitSound(source, 45, pitch or 200)
 
 				local weapon = lPly:GetWeapons()[self.index]
 				if (IsValid(weapon)) then
