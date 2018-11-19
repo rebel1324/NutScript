@@ -683,3 +683,7 @@ function GM:NutScriptTablesLoaded()
 		end
 	)
 end
+
+function GM:PluginShouldLoad(plugin)
+	return not nut.plugin.isDisabled(plugin)
+end

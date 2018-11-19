@@ -185,6 +185,8 @@ if (CLIENT) then
 				local scroll = panel:Add("DScrollPanel")
 				scroll:Dock(FILL)
 				
+				hook.Run("CreateConfigPanel", panel)
+
 				local properties = scroll:Add("DProperties")
 				properties:SetSize(panel:GetSize())
 
