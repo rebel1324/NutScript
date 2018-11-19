@@ -1,7 +1,16 @@
 function nut.item.instance(index, uniqueID, itemData, x, y, callback)
+	-- New overload: nut.item.instance(itemType, itemData = {})
+	-- which returns a promise that resolves to the item instance
+	if (isstring(index) and (istable(itemData) or itemData == nil)) then
+		itemData = uniqueID
+		uniqueID = index
+	end
+
+	local d = deferred.new()
 	local itemTable = nut.item.list[uniqueID]
 	if (not itemTable) then
-		error("Attempt to instantiate invalid item "..tostring(uniqueID))
+		d:reject("Attempt to instantiate invalid item "..tostring(uniqueID))
+		return d
 	end
 
 	if (not istable(itemData)) then
@@ -33,7 +42,7 @@ function nut.item.instance(index, uniqueID, itemData, x, y, callback)
 			if (callback) then
 				callback(item)
 			end
-
+			d:resolve(item)
 			item:onInstanced(index, x, y, item)
 		end
 	end
@@ -51,6 +60,8 @@ function nut.item.instance(index, uniqueID, itemData, x, y, callback)
 			_y = y
 		}, onItemCreated, "items")
 	end
+
+	return d
 end
 
 function nut.item.deleteByID(id)
