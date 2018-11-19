@@ -107,7 +107,7 @@ if (SERVER) then
 	function ENT:Think()
 		local itemTable = self:getItemTable()
 
-		if (itemTable.think) then
+		if (itemTable and itemTable.think) then
 			itemTable:think(self)
 		end
 

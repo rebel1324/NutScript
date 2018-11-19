@@ -3,8 +3,9 @@ NUT_ITEM_DEFAULT_FUNCTIONS = {
 		tip = "dropTip",
 		icon = "icon16/world.png",
 		onRun = function(item)
+			local client = item.player
 			item:removeFromInventory(true)
-				:next(function() item:spawn(item.player) end)
+				:next(function() item:spawn(client) end)
 			nut.log.add(item.player, "itemDrop", item.name, 1)
 
 			return false

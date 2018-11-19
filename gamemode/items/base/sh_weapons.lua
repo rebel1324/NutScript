@@ -186,7 +186,9 @@ end
 hook.Add("PlayerDeath", "nutStripClip", function(client)
 	client.carryWeapons = {}
 
-	for k, v in pairs(client:getChar():getInv():getItems()) do
+	local inventory = client:getChar() and client:getChar():getInv()
+	if (not inventory) then return end
+	for k, v in pairs(inventory:getItems()) do
 		if (v.isWeapon and v:getData("equip")) then
 			v:setData("ammo", nil)
 		end
