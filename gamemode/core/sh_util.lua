@@ -556,9 +556,7 @@ do
 	local vectorLength2D = FindMetaTable("Vector").Length2D
 
 	-- Checks if the player is running by seeing if the speed is faster than walking.
-	function playerMeta:isRunning()
-		return vectorLength2D(self.GetVelocity(self)) > (self.GetWalkSpeed(self) + 10)
-	end
+	playerMeta.isRunning = playerMeta.IsSprinting
 
 	-- Checks if the player has a female model.
 	function playerMeta:isFemale()
