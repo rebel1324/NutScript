@@ -33,7 +33,7 @@ function GM:PlayerInitialSpawn(client)
 	client:loadNutData(function(data)
 		if (!IsValid(client)) then return end
 
-		local address = nut.util.getAddress()			
+		local address = game.GetIPAddress()
 		client:setNutData("lastIP", address)
 
 		netstream.Start(
