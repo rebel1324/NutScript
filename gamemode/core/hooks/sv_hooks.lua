@@ -59,7 +59,10 @@ function GM:PlayerUse(client, entity)
 		if (result == false) then
 			return false
 		else
-			hook.Run("PlayerUseDoor", client, entity)
+			local result = hook.Run("PlayerUseDoor", client, entity)
+			if (result ~= nil) then
+				return result
+			end
 		end
 	end
 
