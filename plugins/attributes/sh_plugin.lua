@@ -29,8 +29,8 @@ nut.char.registerVar("attribs", {
 					count = count + v
 				end
 
-				local points = hook.Run("GetStartAttribPoints", client, count
-					or nut.config.get("maxAttribs", 30))
+				local points = hook.Run("GetStartAttribPoints", client, count)
+					or nut.config.get("maxAttribs", 30)
 				if (count > points) then
 					return false, "unknownError"
 				end
