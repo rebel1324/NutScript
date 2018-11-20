@@ -126,9 +126,6 @@ if (SERVER) then
 			end
 
 			hook.Run("CharacterLoaded", self:getID())
-
-			-- Close the character menu.
-			netstream.Start(client, "charLoaded")
 			self.firstTimeLoaded = true
 		end
 	end

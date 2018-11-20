@@ -34,6 +34,7 @@ else
 			local message = net.ReadString()
 			if (message == "") then
 				d:resolve()
+				hook.Run("CharacterLoaded", nut.char.loaded[id])
 			else
 				d:reject(message)
 			end
