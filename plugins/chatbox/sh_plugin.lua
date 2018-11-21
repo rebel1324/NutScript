@@ -47,7 +47,6 @@ if (CLIENT) then
 
 		if (show) then
 			chat.nutAddText(...)
-			chat.PlaySound()
 		end
 	end
 

@@ -178,6 +178,7 @@ else
 			if (class) then
 				CHAT_CLASS = class
 					class.onChatAdd(client, text, anonymous)
+					chat.PlaySound()
 				CHAT_CLASS = nil
 			end
 		end
