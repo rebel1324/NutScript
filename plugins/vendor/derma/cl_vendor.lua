@@ -219,13 +219,12 @@ PANEL = {}
 
 	function PANEL:setup(uniqueID)
 		local item = nut.item.list[uniqueID]
+		assert(item, tostring(uniqueID).." is not a valid item!")
 
-		if (item) then
-			self.item = uniqueID
-			self.icon:SetModel(item.model, item.skin or 0)
-			self.name:SetText(L(item.name))
-			self.itemName = L(item.name)
-		end
+		self.item = uniqueID
+		self.icon:SetModel(item.model, item.skin or 0)
+		self.name:SetText(L(item.name))
+		self.itemName = L(item.name)
 	end
 
 	function PANEL:Think()
