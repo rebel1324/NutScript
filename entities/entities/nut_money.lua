@@ -7,7 +7,9 @@ ENT.Spawnable = false
 
 if (SERVER) then
 	function ENT:Initialize()
-		self:SetModel("models/props/cs_assault/Money.mdl")
+		self:SetModel(
+			nut.config.get("moneyModel", "models/props_lab/box01a.mdl")
+		)
 		self:SetSolid(SOLID_VPHYSICS)
 		self:PhysicsInit(SOLID_VPHYSICS)
 		self:SetUseType(SIMPLE_USE)
@@ -26,19 +28,13 @@ if (SERVER) then
 	end
 
 	function ENT:Use(activator)
-		if (self.client and self.charID) then
-			local char = activator:getChar()
-			
-			if (char) then
-				if (self.charID != char:getID() and self.client == activator) then
-					activator:notifyLocalized("logged")
-
-					return false
-				end
-			end
+		local character = activator:getChar()
+		if (not character) then return end
+		if (self.client == activator and character:getID() ~= self.charID) then
+			activator:notifyLocalized("logged")
+			return
 		end
-
-		if (hook.Run("OnPickupMoney", activator, self) != false) then
+		if (hook.Run("OnPickupMoney", activator, self) ~= false) then
 			self:Remove()
 		end
 	end
@@ -51,10 +47,17 @@ else
 	local configGet = nut.config.get
 
 	function ENT:onDrawEntityInfo(alpha)
-		local position = toScreen(self.LocalToWorld(self, self.OBBCenter(self)))
+		local position = toScreen(self:LocalToWorld(self:OBBCenter()))
 		local x, y = position.x, position.y
 
-		drawText(nut.currency.get(self.getAmount(self)), x, y, colorAlpha(configGet("color"), alpha), 1, 1, nil, alpha * 0.65)
+		drawText(
+			nut.currency.get(self:getAmount()),
+			x, y,
+			colorAlpha(configGet("color"), alpha),
+			1, 1,
+			nil,
+			alpha * 0.65
+		)
 	end
 end
 

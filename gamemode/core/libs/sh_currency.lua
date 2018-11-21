@@ -26,7 +26,7 @@ function nut.currency.spawn(pos, amount, angle)
 
 	local money = ents.Create("nut_money")
 	money:SetPos(pos)
-	money:setNetVar("amount", math.Round(math.abs(amount)))
+	money:setAmount(math.Round(math.abs(amount)))
 	money:SetAngles(angle or Angle(0, 0, 0))
 	money:Spawn()
 	money:Activate()
