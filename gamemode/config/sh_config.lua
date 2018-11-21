@@ -129,5 +129,13 @@ nut.config.add("contentURL", "http://nutscript.net/", "Your server's collection 
 	category = "server"
 })
 
+nut.config.add(
+	"moneyModel",
+	"models/props_lab/box01a.mdl",
+	"The model for money entities.",
+	nil,
+	{category = "server"}
+)
+
 local dist = nut.config.get("voiceDistance")
 nut.config.squaredVoiceDistance = dist * dist
