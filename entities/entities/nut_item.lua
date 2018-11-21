@@ -33,75 +33,81 @@ if (SERVER) then
 		local damage = dmginfo:GetDamage()
 		self:setHealth(self.health - damage)
 
-		if (self.health < 0 and !self.onbreak) then
-			self.onbreak = true
+		if (self.health <= 0 and not self.breaking) then
+			self.breaking = true
 			self:Remove()
 		end
 	end
 
 	function ENT:setItem(itemID)
 		local itemTable = nut.item.instances[itemID]
+		if (not itemTable) then return self:Remove() end
 
-		if (itemTable) then
-			local model = itemTable.onGetDropModel and itemTable:onGetDropModel(self) or itemTable.model
+		local model = itemTable.onGetDropModel
+			and itemTable:onGetDropModel(self)
+			or itemTable.model
+		if (itemTable.worldModel) then
+			model = itemTable.worldModel == true
+				and "models/props_junk/cardboard_box004a.mdl"
+				or itemTable.worldModel
+		end
 
-			self:SetSkin(itemTable.skin or 0)
-			if (itemTable.worldModel) then
-				self:SetModel(itemTable.worldModel == true and "models/props_junk/cardboard_box004a.mdl" or itemTable.worldModel)
-			else
-				self:SetModel(model)
-			end
-			self:SetModel(model)
-			self:PhysicsInit(SOLID_VPHYSICS)
-			self:SetSolid(SOLID_VPHYSICS)
-			self:setNetVar("id", itemTable.uniqueID)
-			self.nutItemID = itemID
+		self:SetSkin(itemTable.skin or 0)
+		self:SetModel(model)
+		self:PhysicsInit(SOLID_VPHYSICS)
+		self:SetSolid(SOLID_VPHYSICS)
+		self:setNetVar("id", itemTable.uniqueID)
+		self.nutItemID = itemID
 
-			if (table.Count(itemTable.data) > 0) then
-				self:setNetVar("data", itemTable.data)
-			end
+		if (table.Count(itemTable.data) > 0) then
+			self:setNetVar("data", itemTable.data)
+		end
 
-			local physObj = self:GetPhysicsObject()
+		local physObj = self:GetPhysicsObject()
+		if (not IsValid(physObj)) then
+			local min, max = Vector(-8, -8, -8), Vector(8, 8, 8)
 
-			if (!IsValid(physObj)) then
-				local min, max = Vector(-8, -8, -8), Vector(8, 8, 8)
+			self:PhysicsInitBox(min, max)
+			self:SetCollisionBounds(min, max)
+		end
+		if (IsValid(physObj)) then
+			physObj:EnableMotion(true)
+			physObj:Wake()
+		end
 
-				self:PhysicsInitBox(min, max)
-				self:SetCollisionBounds(min, max)
-			end
-
-			if (IsValid(physObj)) then
-				physObj:EnableMotion(true)
-				physObj:Wake()
-			end
-
-			if (itemTable.onEntityCreated) then
-				itemTable:onEntityCreated(self)
-			end
+		if (itemTable.onEntityCreated) then
+			itemTable:onEntityCreated(self)
 		end
 	end
 
+	function ENT:breakEffects()
+		self:EmitSound(
+			"physics/cardboard/cardboard_box_break"..
+			math.random(1, 3)..
+			".wav"
+		)
+
+		local position = self:LocalToWorld(self:OBBCenter())
+		local effect = EffectData()
+			effect:SetStart(position)
+			effect:SetOrigin(position)
+			effect:SetScale(3)
+		util.Effect("GlassImpact", effect)
+	end
+
 	function ENT:OnRemove()
-		local itemTable = nut.item.instances[self.nutItemID]
-		if (self.onbreak) then
-			self:EmitSound("physics/cardboard/cardboard_box_break"..math.random(1, 3)..".wav")
-			local position = self:LocalToWorld(self:OBBCenter())
+		local itemTable = self:getItemTable()
 
-			local effect = EffectData()
-				effect:SetStart(position)
-				effect:SetOrigin(position)
-				effect:SetScale(3)
-			util.Effect("GlassImpact", effect)
-
+		if (self.breaking) then
+			self:breakEffects()
 			if (itemTable and itemTable.onDestroyed) then
 				itemTable:onDestroyed(self)
 			end
+			self.breaking = false
 		end
 
-		if (!nut.shuttingDown and !self.nutIsSafe and self.nutItemID) then
-			if (itemTable) then
-				itemTable:remove()
-			end
+		if (not nut.shuttingDown and not self.nutIsSafe and self.nutItemID) then
+			nut.item.removeByID(self.nutItemID)
 		end
 	end
 
@@ -109,9 +115,10 @@ if (SERVER) then
 		local itemTable = self:getItemTable()
 
 		if (itemTable and itemTable.think) then
-			itemTable:think(self)
+			return itemTable:think(self)
 		end
 
+		self:NextThink(CurTime() + 1)
 		return true
 	end
 else
@@ -120,35 +127,53 @@ else
 	local toScreen = FindMetaTable("Vector").ToScreen
 	local colorAlpha = ColorAlpha
 
-	function ENT:onDrawEntityInfo(alpha)
-		local itemTable = self.getItemTable(self)
-
-		if (itemTable) then
-			local oldData = itemTable.data
-			itemTable.data = self.getNetVar(self, "data", {})
-			itemTable.entity = self
-
-			local position = toScreen(self.LocalToWorld(self, self.OBBCenter(self)))
-			local x, y = position.x, position.y
-			local description = itemTable.getDesc(itemTable)
-
-			if (description != self.desc) then
-				self.desc = description
-				self.markup = nut.markup.parse("<font=nutItemDescFont>"..description.."</font>", ScrW() * 0.7)
-			end
-
-			nut.util.drawText(itemTable.getName and itemTable:getName() or L(itemTable.name), x, y, colorAlpha(nut.config.get("color"), alpha), 1, 1, nil, alpha * 0.65)
-
-			y = y + 12
-			if (self.markup) then
-				self.markup:draw(x, y, TEXT_ALIGN_CENTER, TEXT_ALIGN_TOP)
-			end
-
-			x, y = hook.Run("DrawItemDescription", self, x, y, colorAlpha(color_white, alpha), alpha * 0.65)
-
-			itemTable.entity = nil
-			itemTable.data = oldData
+	function ENT:computeDescMarkup(description)
+		if (self.desc ~= description) then
+			self.desc = description
+			self.markup = nut.markup.parse(
+				"<font=nutItemDescFont>"..description.."</font>",
+				ScrW() * 0.7
+			)
 		end
+		return self.markup
+	end
+
+	function ENT:onDrawEntityInfo(alpha)
+		local itemTable = self:getItemTable()
+		if (not itemTable) then return end
+
+		local oldEntity = itemTable.entity
+		itemTable.entity = self
+
+		local position = toScreen(self:LocalToWorld(self:OBBCenter()))
+		local x, y = position.x, position.y
+
+		local description = itemTable:getDesc()
+		self:computeDescMarkup(description)
+
+		nut.util.drawText(
+			L(itemTable.getName and itemTable:getName() or itemTable.name),
+			x, y,
+			colorAlpha(nut.config.get("color"), alpha),
+			1, 1,
+			nil,
+			alpha * 0.65
+		)
+		y = y + 12
+
+		if (self.markup) then
+			self.markup:draw(x, y, TEXT_ALIGN_CENTER, TEXT_ALIGN_TOP, alpha)
+		end
+
+		hook.Run(
+			"DrawItemDescription",
+			self,
+			x, y,
+			colorAlpha(color_white, alpha),
+			alpha * 0.65
+		)
+
+		itemTable.entity = oldEntity
 	end
 
 	function ENT:DrawTranslucent()
@@ -172,6 +197,8 @@ end
 
 function ENT:getData(key, default)
 	local data = self:getNetVar("data", {})
-
-	return data[key] or default
+	if (data[key] == nil) then
+		return default
+	end
+	return data[key]
 end
