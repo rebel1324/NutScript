@@ -310,17 +310,17 @@ local stringFind = string.find
 function nut.anim.getModelClass(model)
 	model = stringLower(model)
 	local class = translations[model]
+	if (class) then return class end
 
-	if (not class) then
-		return "player"
-	end
-
-	class = class or "citizen_male"
-
-	if (class == "citizen_male" and (stringFind(model, "female") or stringFind(model, "alyx") or stringFind(model, "mossman"))) then
+	if (model:find("/player")) then
+		class = "player"
+	elseif (stringFind(model, "female")) then
 		class = "citizen_female"
+	else
+		class = "citizen_male"
 	end
-	
+
+	nut.anim.setModelClass(model, class)
 	return class
 end
 
@@ -332,6 +332,9 @@ nut.anim.setModelClass("models/vortigaunt.mdl", "vort")
 nut.anim.setModelClass("models/vortigaunt_blue.mdl", "vort")
 nut.anim.setModelClass("models/vortigaunt_doctor.mdl", "vort")
 nut.anim.setModelClass("models/vortigaunt_slave.mdl", "vort")
+nut.anim.setModelClass("models/vortigaunt_slave.mdl", "vort")
+nut.anim.setModelClass("models/alyx.mdl", "citizen_female")
+nut.anim.setModelClass("models/mossman.mdl", "citizen_female")
 
 do
 	local playerMeta = FindMetaTable("Player")
