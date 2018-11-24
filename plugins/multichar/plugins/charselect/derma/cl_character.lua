@@ -94,6 +94,11 @@ function PANEL:loadBackground()
 		self.background:MoveToBack()
 		self.background:SetZPos(-999)
 
+		if (nut.config.get("charMenuBGInputDisabled")) then
+			self.background:SetMouseInputEnabled(false)
+			self.background:SetKeyboardInputEnabled(false)
+		end
+
 		self.bgLoader = self:Add("DPanel")
 		self.bgLoader:SetSize(ScrW(), ScrH())
 		self.bgLoader:SetZPos(-998)

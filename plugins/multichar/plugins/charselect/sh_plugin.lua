@@ -9,7 +9,7 @@ nut.config.add(
 	"music/hl2_song2.mp3",
 	"The default music played in the character menu.",
 	nil,
-	{category = "appearance"}
+	{category = PLUGIN.name}
 )
 
 nut.config.add(
@@ -17,7 +17,15 @@ nut.config.add(
 	"",
 	"The URL or HTML for the background of the character menu.",
 	nil,
-	{category = "appearance"}
+	{category = PLUGIN.name}
+)
+
+nut.config.add(
+	"charMenuBGInputDisabled",
+	true,
+	"Whether or not KB/mouse input is disabled in the character background.",
+	nil,
+	{category = PLUGIN.name}
 )
 
 if (SERVER) then return end
