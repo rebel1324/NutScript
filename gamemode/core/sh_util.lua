@@ -981,3 +981,5 @@ if (SERVER) then
 		return actualItem
 	end
 end
+
+nut.util.includeDir("nutscript/gamemode/core/util", true)

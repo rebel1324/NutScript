@@ -1,6 +1,5 @@
 PLUGIN.name = "Notices"
 PLUGIN.author = "Cheesenut"
-PLUGIN.desc = "Adds functions to send notices to players."
+PLUGIN.desc = "Adds a panel for notifications."
 
-nut.util.include("sv_notice.lua")
 nut.util.include("cl_notice.lua")
