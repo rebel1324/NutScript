@@ -311,7 +311,7 @@ function nut.anim.getModelClass(model)
 	model = stringLower(model)
 	local class = translations[model]
 
-	if (!class and stringFind(model, "/player")) then
+	if (not class) then
 		return "player"
 	end
 
