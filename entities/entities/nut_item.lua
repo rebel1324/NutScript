@@ -107,7 +107,7 @@ if (SERVER) then
 		end
 
 		if (not nut.shuttingDown and not self.nutIsSafe and self.nutItemID) then
-			nut.item.removeByID(self.nutItemID)
+			nut.item.deleteByID(self.nutItemID)
 		end
 	end
 
