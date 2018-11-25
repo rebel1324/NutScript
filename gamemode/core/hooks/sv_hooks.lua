@@ -580,13 +580,6 @@ function GM:OnServerLog(client, logType, ...)
 	end
 end
 
-netstream.Hook("strReq", function(client, time, text)
-	if (client.nutStrReqs and client.nutStrReqs[time]) then
-		client.nutStrReqs[time](text)
-		client.nutStrReqs[time] = nil
-	end
-end)
-
 -- this table is based on mdl's prop keyvalue data. FIX IT WILLOX!
 local defaultAngleData = {
 	["models/items/car_battery01.mdl"] = Angle(-15, 180, 0),

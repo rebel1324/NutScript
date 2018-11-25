@@ -657,16 +657,6 @@ do
 			end
 		end
 
-		-- Sends a Derma string request to the client.
-		function playerMeta:requestString(title, subTitle, callback, default)
-			local time = math.floor(os.time())
-
-			self.nutStrReqs = self.nutStrReqs or {}
-			self.nutStrReqs[time] = callback
-
-			netstream.Start(self, "strReq", time, title, subTitle, default)
-		end
-
 		-- Removes a player's weapon and restricts interactivity.
 		function playerMeta:setRestricted(state, noMessage)
 			if (state) then
