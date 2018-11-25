@@ -2,6 +2,13 @@ nut.anim = nut.anim or {}
 
 nut.anim.citizen_male = {
 	normal = {
+		[ACT_MP_STAND_IDLE] = {ACT_IDLE, ACT_IDLE},
+		[ACT_MP_CROUCH_IDLE] = {ACT_COVER_LOW, ACT_COVER_LOW},
+		[ACT_MP_WALK] = {ACT_WALK, ACT_WALK},
+		[ACT_MP_CROUCHWALK] = {ACT_WALK_CROUCH, ACT_WALK_CROUCH},
+		[ACT_MP_RUN] = {ACT_RUN, ACT_RUN}
+	},
+	fist = {
 		[ACT_MP_STAND_IDLE] = {ACT_IDLE, ACT_IDLE_ANGRY_SMG1},
 		[ACT_MP_CROUCH_IDLE] = {ACT_COVER_LOW, ACT_COVER_LOW},
 		[ACT_MP_WALK] = {ACT_WALK, ACT_WALK_AIM_RIFLE_STIMULATED},
@@ -61,6 +68,13 @@ nut.anim.citizen_male = {
 
 nut.anim.citizen_female = {
 	normal = {
+		[ACT_MP_STAND_IDLE] = {ACT_IDLE, ACT_IDLE},
+		[ACT_MP_CROUCH_IDLE] = {ACT_COVER_LOW, ACT_COVER_LOW},
+		[ACT_MP_WALK] = {ACT_WALK, ACT_WALK},
+		[ACT_MP_CROUCHWALK] = {ACT_WALK_CROUCH, ACT_WALK_CROUCH},
+		[ACT_MP_RUN] = {ACT_RUN, ACT_RUN}
+	},
+	fist = {
 		[ACT_MP_STAND_IDLE] = {ACT_IDLE, ACT_IDLE_MANNEDGUN},
 		[ACT_MP_CROUCH_IDLE] = {ACT_COVER_LOW, ACT_COVER_LOW},
 		[ACT_MP_WALK] = {ACT_WALK, ACT_RANGE_AIM_SMG1_LOW},
@@ -115,6 +129,13 @@ nut.anim.citizen_female = {
 
 nut.anim.metrocop = {
 	normal = {
+		[ACT_MP_STAND_IDLE] = {ACT_IDLE, ACT_IDLE},
+		[ACT_MP_CROUCH_IDLE] = {ACT_COVER_PISTOL_LOW, ACT_COVER_PISTOL_LOW},
+		[ACT_MP_WALK] = {ACT_WALK, ACT_WALK},
+		[ACT_MP_CROUCHWALK] = {ACT_WALK_CROUCH, ACT_WALK_CROUCH},
+		[ACT_MP_RUN] = {ACT_RUN, ACT_RUN}
+	},
+	fist = {
 		[ACT_MP_STAND_IDLE] = {ACT_IDLE, ACT_IDLE_ANGRY_SMG1},
 		[ACT_MP_CROUCH_IDLE] = {ACT_COVER_PISTOL_LOW, ACT_COVER_SMG1_LOW},
 		[ACT_MP_WALK] = {ACT_WALK, ACT_WALK_AIM_RIFLE},
@@ -171,6 +192,13 @@ nut.anim.metrocop = {
 
 nut.anim.overwatch = {
 	normal = {
+		[ACT_MP_STAND_IDLE] = {"idle_unarmed", "idle_unarmed"},
+		[ACT_MP_CROUCH_IDLE] = {ACT_CROUCHIDLE, ACT_CROUCHIDLE},
+		[ACT_MP_WALK] = {"walkunarmed_all", "walkunarmed_all"},
+		[ACT_MP_CROUCHWALK] = {ACT_WALK_CROUCH_RIFLE, ACT_WALK_CROUCH_RIFLE},
+		[ACT_MP_RUN] = {ACT_RUN_AIM_RIFLE, ACT_RUN_AIM_RIFLE}
+	},
+	fist = {
 		[ACT_MP_STAND_IDLE] = {"idle_unarmed", ACT_IDLE_ANGRY},
 		[ACT_MP_CROUCH_IDLE] = {ACT_CROUCHIDLE, ACT_CROUCHIDLE},
 		[ACT_MP_WALK] = {"walkunarmed_all", ACT_WALK_RIFLE},
@@ -218,6 +246,13 @@ nut.anim.overwatch = {
 
 nut.anim.vort = {
 	normal = {
+		[ACT_MP_STAND_IDLE] = {ACT_IDLE, ACT_IDLE},
+		[ACT_MP_CROUCH_IDLE] = {"crouchidle", "crouchidle"},
+		[ACT_MP_WALK] = {ACT_WALK, ACT_WALK},
+		[ACT_MP_CROUCHWALK] = {ACT_WALK, ACT_WALK},
+		[ACT_MP_RUN] = {ACT_RUN, ACT_RUN}
+	},
+	fist = {
 		[ACT_MP_STAND_IDLE] = {ACT_IDLE, "actionidle"},
 		[ACT_MP_CROUCH_IDLE] = {"crouchidle", "crouchidle"},
 		[ACT_MP_WALK] = {ACT_WALK, "walk_all_holdgun"},
@@ -263,12 +298,12 @@ nut.anim.vort = {
 }
 
 nut.anim.player = {
-	--[[normal = {
+	normal = {
 		[ACT_MP_STAND_IDLE] = ACT_HL2MP_IDLE,
 		[ACT_MP_CROUCH_IDLE] = ACT_HL2MP_IDLE_CROUCH,
 		[ACT_MP_WALK] = ACT_HL2MP_WALK,
 		[ACT_MP_RUN] = ACT_HL2MP_RUN
-	},]]--
+	},
 	passive = {
 		[ACT_MP_STAND_IDLE] = ACT_HL2MP_IDLE_PASSIVE,
 		[ACT_MP_WALK] = ACT_HL2MP_WALK_PASSIVE,

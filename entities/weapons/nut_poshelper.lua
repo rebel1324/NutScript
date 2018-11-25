@@ -7,7 +7,7 @@ if (CLIENT) then
 	SWEP.CLMode 			= 0
 end
 
-SWEP.HoldType 				= "fists"
+SWEP.HoldType 				= "fist"
 
 SWEP.Category 				= "Nutscript"
 SWEP.Spawnable				= true

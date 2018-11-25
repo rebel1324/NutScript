@@ -10,7 +10,6 @@ HOLDTYPE_TRANSLATOR["crossbow"] = "shotgun"
 HOLDTYPE_TRANSLATOR["rpg"] = "shotgun"
 HOLDTYPE_TRANSLATOR["slam"] = "normal"
 HOLDTYPE_TRANSLATOR["grenade"] = "grenade"
-HOLDTYPE_TRANSLATOR["fist"] = "normal"
 HOLDTYPE_TRANSLATOR["melee2"] = "melee"
 HOLDTYPE_TRANSLATOR["passive"] = "normal"
 HOLDTYPE_TRANSLATOR["knife"] = "melee"
@@ -21,6 +20,7 @@ HOLDTYPE_TRANSLATOR["revolver"] = "pistol"
 
 PLAYER_HOLDTYPE_TRANSLATOR = {}
 PLAYER_HOLDTYPE_TRANSLATOR[""] = "normal"
+PLAYER_HOLDTYPE_TRANSLATOR["normal"] = "normal"
 PLAYER_HOLDTYPE_TRANSLATOR["fist"] = "normal"
 PLAYER_HOLDTYPE_TRANSLATOR["pistol"] = "normal"
 PLAYER_HOLDTYPE_TRANSLATOR["grenade"] = "normal"
@@ -46,9 +46,9 @@ function GM:TranslateActivity(client, act)
 	local weapon = client.GetActiveWeapon(client)
 	if (class == "player") then
 		if (
-			!nut.config.get("wepAlwaysRaised") and
+			not nut.config.get("wepAlwaysRaised") and
 			IsValid(weapon) and
-			(not client.isWepRaised or not client.isWepRaised(client)) and
+			(client.isWepRaised and not client.isWepRaised(client)) and
 			client:OnGround()
 		) then
 			if (string.find(model, "zombie")) then
