@@ -174,7 +174,7 @@ function ITEM:onSave()
 	end
 end
 
-HOLSTER_DRAWINFO = {}
+HOLSTER_DRAWINFO = HOLSTER_DRAWINFO or {}
 
 -- Called after the item is registered into the item tables.
 function ITEM:onRegistered()
