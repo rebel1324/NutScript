@@ -99,20 +99,21 @@ if (CLIENT) then
 	local playerMeta = FindMetaTable("Player")
 
 	function playerMeta:CanOverrideView()
-		local entity = Entity(self:getLocalVar("ragdoll", 0))
-		local ragdoll = self:GetRagdollEntity()
-		if ((nut.gui.char and !nut.gui.char:IsVisible()) and
-			NUT_CVAR_THIRDPERSON:GetBool() and
-			!IsValid(self:GetVehicle()) and
+		local ragdoll = Entity(self:getLocalVar("ragdoll", 0))
+		
+		-- Do not use third person when the character menu is open.
+		if (IsValid(nut.gui.char) and nut.gui.char:IsVisible()) then
+			return false
+		end
+
+		return NUT_CVAR_THIRDPERSON:GetBool() and
+			not IsValid(self:GetVehicle()) and
 			isAllowed() and 
 			IsValid(self) and
 			self:getChar() and
-			!self:getNetVar("actAng") and
-			!IsValid(entity) and
+			not self:getNetVar("actAng") and
+			not IsValid(ragdoll) and
 			LocalPlayer():Alive()
-			) then
-			return true
-		end
 	end
 
 	local view, traceData, traceData2, aimOrigin, crouchFactor, ft, trace, curAng
