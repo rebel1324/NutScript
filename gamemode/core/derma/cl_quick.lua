@@ -48,6 +48,7 @@ local PANEL = {}
 						end
 					end
 
+					height = math.min(height, ScrH() * 0.5)
 					self:SizeTo(self:GetWide(), height, 0.15)
 				end)
 
