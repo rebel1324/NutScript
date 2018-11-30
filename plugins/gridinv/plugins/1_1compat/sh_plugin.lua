@@ -6,6 +6,9 @@ nut.util.include("sv_migrations.lua")
 
 if (SERVER) then
 	function PLUGIN:NutScriptTablesLoaded()
+		-- Only migrate data on dedicated servers.
+		if (not game.IsDedicated()) then return end
+		
 		-- If the migration has not started before, start it.
 		local data = self:getData(nil, true, true)
 		if (data and data.lastMigration) then return end
