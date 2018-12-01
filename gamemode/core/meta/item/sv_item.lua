@@ -91,6 +91,10 @@ end
 function ITEM:onSync(recipient)
 end
 
+-- Called when this item has been deleted permanently.
+function ITEM:onRemoved()
+end
+
 --- Called when this item has been loaded from the database.
 -- @param inventory The optional inventory an item was loaded with.
 function ITEM:onRestored(inventory)
