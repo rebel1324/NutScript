@@ -136,7 +136,6 @@ function PANEL:openActionMenu()
 
 	for k, v in SortedPairs(itemTable.functions) do
 		if (isfunction(v.onCanRun) and v.onCanRun(itemTable) == false) then
-			itemTable.player = nil
 			continue
 		end
 
