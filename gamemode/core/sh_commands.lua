@@ -190,7 +190,7 @@ nut.command.add("charsetname", {
 		local targetName = table.concat(arguments, " ")
 
 		if (IsValid(target) and target:getChar()) then
-			nut.util.notifyLocalized("cChangeName", client:Name(), target:Name(), targetName)
+			nut.util.notifyLocalized("cChangeName", nil, client:Name(), target:Name(), targetName)
 
 			target:getChar():setName(targetName:gsub("#", "#​"))
 		end
