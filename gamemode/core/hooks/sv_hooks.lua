@@ -121,10 +121,6 @@ function GM:PlayerShouldTakeDamage(client, attacker)
 	return client:getChar() != nil
 end
 
-function GM:GetFallDamage(client, speed)
-	return (speed - 580) * (100 / 444)
-end
-
 function GM:EntityTakeDamage(entity, dmgInfo)
 	if (IsValid(entity.nutPlayer)) then
 		if (dmgInfo:IsDamageType(DMG_CRUSH)) then
