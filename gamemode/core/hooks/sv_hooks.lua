@@ -477,10 +477,6 @@ function GM:ShutDown()
 	end
 end
 
-function GM:GetGameDescription()
-	return "NS - "..(SCHEMA and SCHEMA.name or "Unknown")
-end
-
 function GM:PlayerDeathSound()
 	return true
 end
