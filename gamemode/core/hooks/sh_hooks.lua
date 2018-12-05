@@ -341,5 +341,3 @@ function GM:CanItemBeTransfered(itemObject, curInv, inventory)
 	end
 	return true
 end
-
-function GM:ShowHelp() end
