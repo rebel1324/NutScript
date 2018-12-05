@@ -52,17 +52,37 @@ if (SERVER) then
 		return plugins
 	end
 
-	net.Receive("nutPluginDisable", function(_, client)
-		if (not client:IsSuperAdmin()) then return end
-		local name = net.ReadString()
-		local disabled = net.ReadBit() == 1
+	function PLUGIN:setPluginDisabled(name, disabled)
 		nut.plugin.setDisabled(name, disabled)
-		PLUGIN.overwrite[name] = disabled
+		self.overwrite[name] = disabled
 
 		net.Start("nutPluginDisable")
 			net.WriteString(name)
 			net.WriteBit(disabled)
 		net.Send(nut.util.getAdmins(true))
+	end
+
+	concommand.Add("nut_disableplugin", function(client, _, arguments)
+		if (IsValid(client) and not client:IsSuperAdmin()) then
+			return
+		end
+
+		local name = arguments[1]
+		local disabled = tobool(arguments[2])
+		PLUGIN:setPluginDisabled(name, disabled)
+
+		local message = name.." is now "..(disabled and "disabled" or "enabled")
+		if (IsValid(client)) then
+			client:ChatPrint(message)
+		end
+		print(message)
+	end)
+
+	net.Receive("nutPluginDisable", function(_, client)
+		if (not client:IsSuperAdmin()) then return end
+		local name = net.ReadString()
+		local disabled = net.ReadBit() == 1
+		PLUGIN:setPluginDisabled(name, disabled)
 	end)
 
 	net.Receive("nutPluginList", function(_, client)
