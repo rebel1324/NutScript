@@ -137,5 +137,13 @@ nut.config.add(
 	{category = "server"}
 )
 
+nut.config.add(
+	"salaryInterval",
+	300,
+	"How often a player gets paid in seconds.",
+	nil,
+	{category = "characters"}
+)
+
 local dist = nut.config.get("voiceDistance")
 nut.config.squaredVoiceDistance = dist * dist

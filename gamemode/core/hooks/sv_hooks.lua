@@ -179,18 +179,7 @@ function GM:PlayerLoadedChar(client, character, lastChar)
 		client.nutRagdoll:Remove()
 	end
 
-	local faction = nut.faction.indices[character:getFaction()]
-
-	if (faction and faction.pay and faction.pay > 0) then
-		timer.Create("nutSalary"..client:UniqueID(), faction.payTime or 300, 0, function()
-			local pay = hook.Run("GetSalaryAmount", client, faction) or faction.pay
-
-			character:giveMoney(pay)
-			client:notifyLocalized("salary", nut.currency.get(pay))
-		end)
-	end
-
-
+	hook.Run("CreateSalaryTimer", client)
 	hook.Run("PlayerLoadout", client)
 end
 
@@ -673,4 +662,40 @@ end
 
 function GM:PluginShouldLoad(plugin)
 	return not nut.plugin.isDisabled(plugin)
+end
+
+-- Called to get how often a player should be paid in seconds.
+function GM:GetSalaryInterval(client, faction)
+	if (isnumber(faction.payTime)) then
+		return faction.payTime
+	end
+
+	return nut.config.get("salaryInterval", 300)
+end
+
+-- Called to create a timer that pays the player's character.
+function GM:CreateSalaryTimer(client)
+	local character = client:getChar()
+	if (not character) then return end
+
+	local faction = nut.faction.indices[character:getFaction()]
+	if (not faction or not isnumber(faction.pay) or faction.pay <= 0) then
+		return
+	end
+
+	local timerID = "nutSalary"..client:SteamID()
+	local timerFunc = timer.Exists(timerID) and timer.Adjust or timer.Create
+	local delay = hook.Run("GetSalaryInterval", client, faction) or 300
+
+	timerFunc(timerID, delay, 0, function()
+		if (not IsValid(client) or client:getChar() ~= character) then
+			timer.Remove(timerID)
+			return
+		end
+
+
+		local pay = hook.Run("GetSalaryAmount", client, faction) or faction.pay
+		character:giveMoney(pay)
+		client:notifyLocalized("salary", nut.currency.get(pay))
+	end)
 end
