@@ -335,7 +335,10 @@ end
 function GM:CanItemBeTransfered(itemObject, curInv, inventory)
 	if (itemObject:getData("equip")) then
 		if (SERVER) then
-			owner:notifyLocalized("equippedBag")
+			local owner = itemObject:getOwner()
+			if (IsValid(owner)) then
+				owner:notifyLocalized("equippedBag")
+			end
 		end
 		return false
 	end
