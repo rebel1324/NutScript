@@ -203,7 +203,6 @@ function PLUGIN:HUDShouldDraw(element)
 	if (hidden[element]) then
 		return false
 	end
-	return true
 end
 
 function PLUGIN:DrawDeathNotice()
