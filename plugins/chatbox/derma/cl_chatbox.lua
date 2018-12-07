@@ -20,10 +20,13 @@ local PANEL = {}
 
 		self.tabs = self:Add("DPanel")
 		self.tabs:Dock(TOP)
-		self.tabs:SetTall(24)
-		self.tabs:DockPadding(3, 3, 3, 3)
-		self.tabs:DockMargin(4, 4, 4, 4)
+		self.tabs:SetTall(28)
+		self.tabs:DockPadding(4, 4, 4, 4)
 		self.tabs:SetVisible(false)
+		self.tabs.Paint = function(tabs, w, h)
+			surface.SetDrawColor(0, 0, 0, 100)
+			surface.DrawRect(0, 0, w, h)
+		end
 
 		self.arguments = {}
 
