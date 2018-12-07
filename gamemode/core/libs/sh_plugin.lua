@@ -223,5 +223,9 @@ function nut.plugin.setDisabled(uniqueID, disabled)
 end
 
 function nut.plugin.isDisabled(uniqueID)
+	if (istable(DISABLED_PLUGINS) and DISABLED_PLUGINS[uniqueID]) then
+		return true
+	end
+
 	return nut.data.get("unloaded", {}, false, true)[uniqueID] == true
 end
