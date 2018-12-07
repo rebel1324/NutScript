@@ -699,3 +699,11 @@ function GM:CreateSalaryTimer(client)
 		client:notifyLocalized("salary", nut.currency.get(pay))
 	end)
 end
+
+-- Just refer to the SCHEMA's name.
+function GM:GetGameDescription()
+	if (istable(SCHEMA)) then
+		return tostring(SCHEMA.name)
+	end
+	return self.Name
+end
