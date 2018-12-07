@@ -261,11 +261,17 @@ function GM:CreateLoadingScreen()
 	nut.gui.loading = loader
 end
 
+function GM:ShouldCreateLoadingScreen()
+	return not IsValid(nut.gui.loading)
+end
+
 function GM:InitializedConfig()
 	hook.Run("LoadFonts", nut.config.get("font"), nut.config.get("genericFont"))
 
-	if (not nut.config.loaded and not IsValid(nut.gui.loading)) then
-		hook.Run("CreateLoadingScreen")
+	if (not nut.config.loaded) then
+		if (hook.Run("ShouldCreateLoadingScreen") ~= false) then
+			hook.Run("CreateLoadingScreen")
+		end
 		nut.config.loaded = true
 	end
 end
