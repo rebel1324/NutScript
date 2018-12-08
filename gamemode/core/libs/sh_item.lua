@@ -42,8 +42,8 @@ function nut.item.register(uniqueID, baseID, isBaseItem, path, luaGenerated)
 	local targetTable = (isBaseItem and nut.item.base or nut.item.list)
 
 	ITEM = targetTable[uniqueID] or setmetatable({
-		hooks = {},
-		postHooks = {},
+		hooks = table.Copy(baseTable.hooks or {}),
+		postHooks = table.Copy(baseTable.postHooks or {}),
 		BaseClass = baseTable,
 		__tostring = baseTable.__tostring,
 	}, {
