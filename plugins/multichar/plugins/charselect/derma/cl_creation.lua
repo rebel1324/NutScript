@@ -6,7 +6,6 @@ function PANEL:configureSteps()
 	self:addStep(vgui.Create("nutCharacterModel"))
 	self:addStep(vgui.Create("nutCharacterBiography"))
 	hook.Run("ConfigureCharacterCreationSteps", self)
-	PrintTable(self.steps)
 end
 
 -- If the faction and model character data has been set, updates the
