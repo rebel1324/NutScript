@@ -29,7 +29,7 @@ if (SERVER) then
 				runSpeed = runSpeed * 0.775
 			end
 
-			if (client:IsSprinting()) then
+			if (client:isRunning()) then
 				local bonus = character.getAttrib
 					and character:getAttrib("end", 0)
 					or 0

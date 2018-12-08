@@ -177,8 +177,12 @@ do
 		end
 	end
 
-	-- Alias to Player.IsSprinting
-	playerMeta.isRunning = playerMeta.IsSprinting
+	-- Returns true if the player is moving at least the running speed.
+	local vectorLength2D = FindMetaTable("Vector").Length2D
+
+	function playerMeta:isRunning()
+		return vectorLength2D(self.GetVelocity(self)) > (self.GetWalkSpeed(self) + 10)
+	end
 
 	-- Checks if the player has a female model.
 	function playerMeta:isFemale()
