@@ -1,7 +1,4 @@
 local PANEL = {}
-	local gradient = Material("vgui/gradient-d")
-	local gradient2 = Material("vgui/gradient-u")
-
 	local COLOR_FADED = Color(200, 200, 200, 100)
 	local COLOR_ACTIVE = color_white
 	local COLOR_WRONG = Color(255, 100, 80)
@@ -31,8 +28,8 @@ local PANEL = {}
 		self.arguments = {}
 
 		self.scroll = self:Add("DScrollPanel")
-		self.scroll:SetPos(4, 30)
-		self.scroll:SetSize(w - 8, h - 70)
+		self.scroll:SetPos(4, 31)
+		self.scroll:SetSize(w - 8, h - 66)
 		self.scroll:GetVBar():SetWide(0)
 		self.scroll.PaintOver = function(this, w, h)
 			local entry = self.text
@@ -137,7 +134,7 @@ local PANEL = {}
 			self.text:Dock(FILL)
 			self.text.History = nut.chat.history
 			self.text:SetHistoryEnabled(true)
-			self.text:DockMargin(3, 3, 3, 3)
+			self.text:DockMargin(0, 0, 0, 0)
 			self.text:SetFont("nutChatFont")
 			self.text.OnEnter = function(this)
 				local text = this:GetText()
