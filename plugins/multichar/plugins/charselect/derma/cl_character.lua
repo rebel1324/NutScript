@@ -175,7 +175,6 @@ function PANEL:Init()
 	end
 	nut.gui.character = self
 
-	self:ParentToHUD()
 	self:Dock(FILL)
 	self:MakePopup()
 	self:SetAlpha(0)
