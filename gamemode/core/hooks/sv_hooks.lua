@@ -26,6 +26,7 @@ function GM:SetupBotInventory(client, character)
 	inventory.id = "bot"..character:getID()
 
 	character.vars.inv[1] = inventory
+	nut.inventory.instances[inventory.id] = inventory
 end
 
 -- When the player first joins, send all important NutScript data.
