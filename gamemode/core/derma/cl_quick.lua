@@ -1,5 +1,8 @@
 local PANEL = {}
 	function PANEL:Init()
+		if (IsValid(nut.gui.quick)) then
+			nut.gui.quick:Remove()
+		end
 		nut.gui.quick = self
 
 		self:SetSize(400, 36)
@@ -34,12 +37,12 @@ local PANEL = {}
 		self.expand.DoClick = function(this)
 			if (self.expanded) then
 				self:SizeTo(self:GetWide(), 36, 0.15, nil, nil, function()
-					self:MoveTo(ScrW() - 36, 0, 0.15)
+					self:MoveTo(ScrW() - 36, 30, 0.15)
 				end)
 
 				self.expanded = false
 			else
-				self:MoveTo(ScrW() - 400, 0, 0.15, nil, nil, function()
+				self:MoveTo(ScrW() - 400, 30, 0.15, nil, nil, function()
 					local height = 0
 
 					for k, v in pairs(self.items) do
@@ -60,7 +63,7 @@ local PANEL = {}
 		self.scroll:SetPos(0, 36)
 		self.scroll:SetSize(self:GetWide(), ScrH() * 0.5)
 
-		self:MoveTo(self.x, 0, 0.05)
+		self:MoveTo(self.x, 30, 0.05)
 
 		self.items = {}
 
