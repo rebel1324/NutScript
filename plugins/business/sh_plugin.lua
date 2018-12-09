@@ -67,6 +67,4 @@ function PLUGIN:CanPlayerUseBusiness(client, uniqueID)
 			return false
 		end
 	end
-
-	return true
 end
