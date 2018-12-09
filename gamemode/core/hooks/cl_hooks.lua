@@ -307,11 +307,6 @@ function GM:InitPostEntity()
 	nut.joinTime = RealTime() - 0.9716
 end
 
-local OFFSET_NORMAL = Vector(0, 0, 80)
-local OFFSET_CROUCHING = Vector(0, 0, 48)
-
-paintedEntitiesCache = {}
-
 function GM:CalcView(client, origin, angles, fov)
 	local view = self.BaseClass:CalcView(client, origin, angles, fov)
 	local entity = Entity(client:getLocalVar("ragdoll", 0))

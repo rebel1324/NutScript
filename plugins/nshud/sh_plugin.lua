@@ -91,40 +91,69 @@ end
 
 local charInfo = {}
 
+local OFFSET_NORMAL = Vector(0, 0, 80)
+local OFFSET_CROUCHING = Vector(0, 0, 48)
+
+paintedEntitiesCache = {}
+
 function PLUGIN:DrawEntityInfo(entity, alpha, position)
-	if (entity.IsPlayer(entity)) then
-		local localPlayer = LocalPlayer()
-		local character = entity.getChar(entity)
+	if (not entity.IsPlayer(entity)) then return end
 
-		position = position or toScreen(entity.GetPos(entity) + (entity.Crouching(entity) and OFFSET_CROUCHING or OFFSET_NORMAL))
+	local localPlayer = LocalPlayer()
+	local character = entity.getChar(entity)
+	if (not character) then return end
 
-		if (character) then
-			local x, y = position.x, position.y
-			local ty = 0
+	position = position or toScreen(entity.GetPos(entity)
+		+ (entity.Crouching(entity) and OFFSET_CROUCHING or OFFSET_NORMAL))
 
-			charInfo = {}
-			charInfo[1] = {hookRun("GetDisplayedName", entity) or character.getName(character), teamGetColor(entity.Team(entity))}
+	local x, y = position.x, position.y
+	local ty = 0
 
-			local description = character.getDesc(character)
+	charInfo = {}
+	charInfo[1] = {
+		hookRun("GetDisplayedName", entity) or character.getName(character),
+		teamGetColor(entity.Team(entity))
+	}
 
-			if (description != entity.nutDescCache) then
-				entity.nutDescCache = description
-				entity.nutDescLines = nut.util.wrapText(description, ScrW() * 0.7, "nutSmallFont")
-			end
+	local description = character.getDesc(character)
+	if (description ~= entity.nutDescCache) then
+		entity.nutDescCache = description
+		entity.nutDescLines = nut.util.wrapText(
+			description,
+			ScrW() * 0.7,
+			"nutSmallFont"
+		)
+	end
 
-			for i = 1, #entity.nutDescLines do
-				charInfo[#charInfo + 1] = {entity.nutDescLines[i]}
-			end
+	for i = 1, #entity.nutDescLines do
+		charInfo[#charInfo + 1] = {entity.nutDescLines[i]}
+	end
 
-			hookRun("DrawCharInfo", entity, character, charInfo)
+	hookRun("DrawCharInfo", entity, character, charInfo)
 
-			for i = 1, #charInfo do
-				local info = charInfo[i]
+	for i = 1, #charInfo do
+		local info = charInfo[i]
 
-				_, ty = drawText(info[1], x, y, colorAlpha(info[2] or color_white, alpha), 1, 1, "nutSmallFont")
-				y = y + ty
-			end
-		end
+		_, ty = drawText(
+			info[1],
+			x, y,
+			colorAlpha(info[2] or color_white, alpha),
+			1, 1,
+			"nutSmallFont"
+		)
+		y = y + ty
+	end
+end
+
+function PLUGIN:ShouldDrawEntityInfo(entity)
+	if (entity.DrawEntityInfo) then
+		return true
+	end
+	if (entity.onShouldDrawEntityInfo) then
+		return entity:onShouldDrawEntityInfo()
+	end
+	if (entity:IsPlayer() and entity:getChar()) then
+		return true
 	end
 end
 
@@ -139,19 +168,21 @@ function PLUGIN:HUDPaintBackground()
 	local frameTime = FrameTime()
 	local scrW, scrH = ScrW(), ScrH()
 
-	if (localPlayer.getChar(localPlayer) and nextUpdate < realTime) then
+	if (nextUpdate < realTime) then
 		nextUpdate = realTime + 0.5
 
 		lastTrace.start = localPlayer.GetShootPos(localPlayer)
-		lastTrace.endpos = lastTrace.start + localPlayer.GetAimVector(localPlayer) * 160
+		lastTrace.endpos = lastTrace.start + localPlayer:GetAimVector() * 160
 		lastTrace.filter = localPlayer
 		lastTrace.mins = Vector(-4, -4, -4)
 		lastTrace.maxs = Vector(4, 4, 4)
 		lastTrace.mask = MASK_SHOT_HULL
-
 		lastEntity = util.TraceHull(lastTrace).Entity
 
-		if (IsValid(lastEntity) and (lastEntity.DrawEntityInfo or (lastEntity.onShouldDrawEntityInfo and lastEntity:onShouldDrawEntityInfo()) or hookRun("ShouldDrawEntityInfo", lastEntity))) then
+		if (
+			IsValid(lastEntity) and
+			hookRun("ShouldDrawEntityInfo", lastEntity)
+	 	) then
 			paintedEntitiesCache[lastEntity] = true
 		end
 	end
@@ -159,7 +190,11 @@ function PLUGIN:HUDPaintBackground()
 	for entity, drawing in pairs(paintedEntitiesCache) do
 		if (IsValid(entity)) then
 			local goal = drawing and 255 or 0
-			local alpha = mathApproach(entity.nutAlpha or 0, goal, frameTime * 1000)
+			local alpha = mathApproach(
+				entity.nutAlpha or 0,
+				goal,
+				frameTime * 1000
+			)
 
 			if (lastEntity != entity) then
 				paintedEntitiesCache[entity] = false
@@ -169,8 +204,9 @@ function PLUGIN:HUDPaintBackground()
 				local client = entity.getNetVar(entity, "player")
 
 				if (IsValid(client)) then
-					local position = toScreen(entity.LocalToWorld(entity, entity.OBBCenter(entity)))
-
+					local position = toScreen(
+						entity.LocalToWorld(entity, entity.OBBCenter(entity))
+					)
 					hookRun("DrawEntityInfo", client, alpha, position)
 				elseif (entity.onDrawEntityInfo) then
 					entity.onDrawEntityInfo(entity, alpha)
@@ -194,8 +230,13 @@ function PLUGIN:HUDPaintBackground()
 		hook.Run("DrawAmmoHUD", weapon)
 	end
 	
-	if (localPlayer.getLocalVar(localPlayer, "restricted") and !localPlayer.getLocalVar(localPlayer, "restrictNoMsg")) then
-		nut.util.drawText(L"restricted", scrW * 0.5, scrH * 0.33, nil, 1, 1, "nutBigFont")
+	if (
+		localPlayer.getLocalVar(localPlayer, "restricted") and
+		not localPlayer.getLocalVar(localPlayer, "restrictNoMsg")
+	) then
+		nut.util.drawText(
+			L"restricted", scrW * 0.5, scrH * 0.33, nil, 1, 1, "nutBigFont"
+		)
 	end
 end
 
