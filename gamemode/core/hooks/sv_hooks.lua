@@ -9,12 +9,23 @@ function GM:SetupBotCharacter(client)
 		model = faction and table.Random(faction.models) or "models/gman.mdl"
 	}, botID, client, client:SteamID64())
 	character.isBot = true
+
 	character.vars.inv = {}
+	hook.Run("SetupBotInventory", client, character)
 
-	nut.char.loaded[os.time()] = character
-
+	nut.char.loaded[botID] = character
 	character:setup()
 	client:Spawn()
+end
+
+function GM:SetupBotInventory(client, character)
+	local invType = hook.Run("GetDefaultInventoryType")
+	if (not invType) then return end
+
+	local inventory = nut.inventory.new(invType)
+	inventory.id = "bot"..character:getID()
+
+	character.vars.inv[1] = inventory
 end
 
 -- When the player first joins, send all important NutScript data.
