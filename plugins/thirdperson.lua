@@ -189,8 +189,12 @@ if (CLIENT) then
 	end
 
 	function PLUGIN:ShouldDrawLocalPlayer()
-		if (LocalPlayer():GetViewEntity() == LocalPlayer() and !IsValid(LocalPlayer():GetVehicle())) then
-			return LocalPlayer():CanOverrideView()
+		if (
+			LocalPlayer():GetViewEntity() == LocalPlayer() and
+			not IsValid(LocalPlayer():GetVehicle()) and
+			LocalPlayer():CanOverrideView()
+		) then
+			return true
 		end
 	end
 end
