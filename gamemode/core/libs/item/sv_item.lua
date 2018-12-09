@@ -1,7 +1,10 @@
 function nut.item.instance(index, uniqueID, itemData, x, y, callback)
 	-- New overload: nut.item.instance(itemType, itemData = {})
 	-- which returns a promise that resolves to the item instance
-	if (isstring(index) and (istable(itemData) or itemData == nil)) then
+	if (
+		isstring(index) and
+		(istable(uniqueID) or (itemData == nil and x == nil))
+	) then
 		itemData = uniqueID
 		uniqueID = index
 	end
