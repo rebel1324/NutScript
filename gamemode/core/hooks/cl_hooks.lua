@@ -312,6 +312,8 @@ function GM:CalcView(client, origin, angles, fov)
 	local entity = Entity(client:getLocalVar("ragdoll", 0))
 	local ragdoll = client:GetRagdollEntity()
 
+	if (client:GetViewEntity() ~= client) then return view end
+	
 	if (
 		-- First person if the player has fallen over.
 		(
