@@ -192,6 +192,7 @@ function playerMeta:setRagdolled(state, time, getUpGrace)
 		self:Freeze(true)
 		self:SetNoDraw(true)
 		self:SetNotSolid(true)
+		self:SetMoveType(MOVETYPE_NONE)
 
 		if (time) then
 			local time2 = time
