@@ -8,6 +8,8 @@ ITEM.outfitCategory = "hat"
 ITEM.pacData = {}
 
 --[[
+
+-- EXAMPLE:
 ITEM.pacData = {
 	[1] = {
 		["children"] = {
@@ -33,24 +35,6 @@ ITEM.pacData = {
 	},
 }
 
--- This will change a player's skin after changing the model. Keep in mind it starts at 0.
-ITEM.newSkin = 1
--- This will change a certain part of the model.
-ITEM.replacements = {"group01", "group02"}
--- This will change the player's model completely.
-ITEM.replacements = "models/manhack.mdl"
--- This will have multiple replacements.
-ITEM.replacements = {
-	{"male", "female"},
-	{"group01", "group02"}
-}
-
--- This will apply body groups.
-ITEM.bodyGroups = {
-	["blade"] = 1,
-	["bladeblur"] = 1
-}
-
 --]]
 
 -- Inventory drawing
@@ -68,7 +52,10 @@ function ITEM:removePart(client)
 	local char = client:getChar()
 	
 	self:setData("equip", false)
-	client:removePart(self.uniqueID)
+
+	if (client.removePart) then
+		client:removePart(self.uniqueID)
+	end
 
 	if (self.attribBoosts) then
 		for k, _ in pairs(self.attribBoosts) do
@@ -110,9 +97,7 @@ ITEM.functions.Equip = {
 
 		for k, v in pairs(items) do
 			if (v.id != item.id) then
-				local itemTable = nut.item.instances[v.id]
-
-				if (itemTable.pacData and v.outfitCategory == item.outfitCategory and itemTable:getData("equip")) then
+				if (v.pacData and v.outfitCategory == item.outfitCategory and v:getData("equip")) then
 					item.player:notify("You're already equipping this kind of outfit")
 
 					return false
@@ -121,7 +106,10 @@ ITEM.functions.Equip = {
 		end
 
 		item:setData("equip", true)
-		item.player:addPart(item.uniqueID, item)
+
+		if (item.player.addPart) then
+			item.player:addPart(item.uniqueID)
+		end
 
 		if (item.attribBoosts) then
 			for k, v in pairs(item.attribBoosts) do
@@ -142,6 +130,12 @@ function ITEM:onCanBeTransfered(oldInventory, newInventory)
 	end
 
 	return true
+end
+
+function ITEM:onLoadout()
+	if (self:getData("equip") and self.player.addPart) then
+		self.player:addPart(self.uniqueID)
+	end
 end
 
 function ITEM:onRemoved()
