@@ -58,7 +58,7 @@ if (CLIENT) then
 		end
 	end
 else
-	util.AddNetworkString("TypeStatus")
+	util.AddNetworkString("nutTypeStatus")
 
 	net.Receive("nutTypeStatus", function(_, client)
 		client:setNetVar("typing", net.ReadBool())
