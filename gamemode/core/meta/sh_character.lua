@@ -170,6 +170,13 @@ if (SERVER) then
 	function CHAR:delete()
 		nut.char.delete(self:getID())
 	end
+
+	-- Deletes this character from memory.
+	function CHAR:destroy()
+		local id = self:getID()
+		nut.char.loaded[id] = nil
+		netstream.Start(nil, "charDel", id)
+	end
 end
 
 -- Returns which player owns this character.
