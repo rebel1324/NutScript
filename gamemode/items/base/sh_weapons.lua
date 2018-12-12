@@ -18,7 +18,8 @@ if (CLIENT) then
 	end
 end
 
--- On item is dropped, Remove a weapon from the player and keep the ammo in the item.
+-- On item is dropped, Remove a weapon from the player and keep the ammo in
+-- the item.
 ITEM:hook("drop", function(item)
 	if (item:getData("equip")) then
 		item:setData("equip", nil)
@@ -37,7 +38,8 @@ ITEM:hook("drop", function(item)
 	end
 end)
 
--- On player uneqipped the item, Removes a weapon from the player and keep the ammo in the item.
+-- On player uneqipped the item, Removes a weapon from the player and keep
+-- the ammo in the item.
 ITEM.functions.EquipUn = { -- sorry, for name order.
 	name = "Unequip",
 	tip = "equipTip",
@@ -75,7 +77,8 @@ ITEM.functions.EquipUn = { -- sorry, for name order.
 	end
 }
 
--- On player eqipped the item, Gives a weapon to player and load the ammo data from the item.
+-- On player eqipped the item, Gives a weapon to player and load the ammo data
+-- from the item.
 ITEM.functions.Equip = {
 	name = "Equip",
 	tip = "equipTip",
@@ -88,18 +91,13 @@ ITEM.functions.Equip = {
 
 		for k, v in pairs(items) do
 			if (v.id != item.id) then
-				local itemTable = nut.item.instances[v.id]
-				
-				if (!itemTable) then
-					client:notifyLocalized("tellAdmin", "wid!xt")
-
+				if (
+					v.isWeapon and
+					client.carryWeapons[item.weaponCategory] and
+					v:getData("equip")
+			 	) then
+					client:notifyLocalized("weaponSlotFilled")
 					return false
-				else
-					if (itemTable.isWeapon and client.carryWeapons[item.weaponCategory] and itemTable:getData("equip")) then
-						client:notifyLocalized("weaponSlotFilled")
-
-						return false
-					end
 				end
 			end
 		end
@@ -113,13 +111,16 @@ ITEM.functions.Equip = {
 		if (IsValid(weapon)) then
 			timer.Simple(0, function()
 				client:SelectWeapon(weapon:GetClass())
-				--client:SetActiveWeapon(weapon)
 			end)
 			client.carryWeapons[item.weaponCategory] = weapon
 			client:EmitSound("items/ammo_pickup.wav", 80)
 
 			-- Remove default given ammo.
-			if (client:GetAmmoCount(weapon:GetPrimaryAmmoType()) == weapon:Clip1() and item:getData("ammo", 0) == 0) then
+			local ammoCount =  client:GetAmmoCount(weapon:GetPrimaryAmmoType())
+			if (
+				ammoCount == weapon:Clip1() and
+				item:getData("ammo", 0) == 0
+			) then
 				client:RemoveAmmo(weapon:Clip1(), weapon:GetPrimaryAmmoType())
 			end
 			item:setData("equip", true)
