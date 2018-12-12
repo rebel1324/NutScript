@@ -514,9 +514,7 @@ function nut.db.loadTables()
 				i = i + 1
 				return doNextQuery()
 			end
-			print(query)
 			nut.db.query(query, function()
-				print(i)
 				i = i + 1
 				doNextQuery()
 			end)
