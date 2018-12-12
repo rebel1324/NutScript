@@ -219,7 +219,6 @@ function ITEM:interact(action, client, entity, data)
 
 	if (result ~= false) then
 		if (IsValid(entity)) then
-			entity.nutIsSafe = true
 			entity:Remove()
 		else
 			self:remove()

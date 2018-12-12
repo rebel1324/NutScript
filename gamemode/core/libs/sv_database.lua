@@ -323,9 +323,8 @@ CREATE TABLE IF NOT EXISTS `nut_players` (
 	`_firstJoin` DATETIME,
 	`_lastJoin` DATETIME,
 	`_data` VARCHAR(255) NOT NULL COLLATE 'utf8mb4_general_ci',
-	`_intro` BINARY(1) NOT NULL,
-	PRIMARY KEY (`_steamID`),
-	UNIQUE INDEX `_steamID` (`_steamID`)
+	`_intro` BINARY(1) NULL DEFAULT 0,
+	PRIMARY KEY (`_steamID`)
 );
 
 CREATE TABLE IF NOT EXISTS `nut_characters` (
@@ -334,40 +333,38 @@ CREATE TABLE IF NOT EXISTS `nut_characters` (
 	`_name` VARCHAR(70) NOT NULL COLLATE 'utf8mb4_general_ci',
 	`_desc` VARCHAR(512) NOT NULL COLLATE 'utf8mb4_general_ci',
 	`_model` VARCHAR(255) NOT NULL COLLATE 'utf8mb4_general_ci',
-	`_attribs` VARCHAR(512) NOT NULL COLLATE 'utf8mb4_general_ci',
+	`_attribs` VARCHAR(512) DEFAULT NULL COLLATE 'utf8mb4_general_ci',
 	`_schema` VARCHAR(24) NOT NULL COLLATE 'utf8mb4_general_ci',
 	`_createTime` DATETIME NOT NULL,
 	`_lastJoinTime` DATETIME NOT NULL,
-	`_data` VARCHAR(1024) NOT NULL COLLATE 'utf8mb4_general_ci',
+	`_data` VARCHAR(1024) DEFAULT NULL COLLATE 'utf8mb4_general_ci',
 	`_money` INT(10) UNSIGNED NULL DEFAULT '0',
-	`_faction` VARCHAR(12) NOT NULL COLLATE 'utf8mb4_general_ci',
-	PRIMARY KEY (`_id`),
-	UNIQUE INDEX `_id` (`_id`)
+	`_faction` VARCHAR(12) DEFAULT NULL COLLATE 'utf8mb4_general_ci',
+	PRIMARY KEY (`_id`)
 );
 
 CREATE TABLE IF NOT EXISTS `nut_inventories` (
 	`_invID` INT(12) NOT NULL AUTO_INCREMENT,
 	`_charID` INT(12) NULL DEFAULT NULL,
 	`_invType` VARCHAR(24) NULL DEFAULT NULL COLLATE 'utf8mb4_general_ci',
-	PRIMARY KEY (`_invID`),
-	UNIQUE INDEX `_invID` (`_invID`)
+	PRIMARY KEY (`_invID`)
 );
 
 CREATE TABLE IF NOT EXISTS `nut_items` (
 	`_itemID` INT(12) NOT NULL AUTO_INCREMENT,
-	`_invID` INT(12) NOT NULL,
+	`_invID` INT(12) NULL DEFAULT NULL,
 	`_uniqueID` VARCHAR(60) NOT NULL COLLATE 'utf8mb4_general_ci',
 	`_data` VARCHAR(512) NULL DEFAULT NULL COLLATE 'utf8mb4_general_ci',
 	`_x` INT(4),
 	`_y` INT(4),
-	PRIMARY KEY (`_itemID`),
-	UNIQUE INDEX `_itemID` (`_itemID`)
+	PRIMARY KEY (`_itemID`)
 );
 
 CREATE TABLE IF NOT EXISTS `nut_invdata` (
-	`_invID` INT(12) FOREIGN KEY REFERENCES nut_inventories(_invID),
+	`_invID` INT(12) NOT NULL,
 	`_key` VARCHAR(32) NOT NULL COLLATE 'utf8mb4_general_ci',
 	`_value` VARCHAR(255) NOT NULL COLLATE 'utf8mb4_general_ci',
+	FOREIGN KEY (`_invID`) REFERENCES nut_inventories(_invID) ON DELETE CASCADE,
 	PRIMARY KEY (`_invID`, `_key`)
 );
 ]]
@@ -426,8 +423,8 @@ DROP TABLE IF EXISTS `nut_players`;
 DROP TABLE IF EXISTS `nut_characters`;
 DROP TABLE IF EXISTS `nut_inventories`;
 DROP TABLE IF EXISTS `nut_items`;
-DROP TABLE IF EXISTS `nut_inventories`;
 DROP TABLE IF EXISTS `nut_invdata`;
+DROP TABLE IF EXISTS `nut_inventories`;
 ]]
 
 local DROP_QUERY_LITE = [[
@@ -435,26 +432,47 @@ DROP TABLE IF EXISTS nut_players;
 DROP TABLE IF EXISTS nut_characters;
 DROP TABLE IF EXISTS nut_inventories;
 DROP TABLE IF EXISTS nut_items;
-DROP TABLE IF EXISTS nut_inventories;
 DROP TABLE IF EXISTS nut_invdata;
+DROP TABLE IF EXISTS nut_inventories;
 ]]
 
-function nut.db.wipeTables()
-	local function callback()
-		MsgC(Color(255, 0, 0), "[Nutscript] ALL NUTSCRIPT DATA HAS BEEN WIPED\n")
+function nut.db.wipeTables(callback)
+	nut.db.onQueryError = nil
+	local function realCallback()
+		nut.db.query("SET FOREIGN_KEY_CHECKS = 1;", function()
+			MsgC(
+				Color(255, 0, 0),
+				"[Nutscript] ALL NUTSCRIPT DATA HAS BEEN WIPED\n"
+			)
+			if (isfunction(callback)) then
+				callback()
+			end
+		end)
 	end
 
 	if (nut.db.object) then
-		local queries = string.Explode(";", DROP_QUERY)
-
-		for i = 1, #queries do
-			nut.db.query(queries[i], callback)
+		local function startDeleting()
+			local queries = string.Explode(";", DROP_QUERY)
+			local done = 0
+			for i = 1, #queries do
+				queries[i] = string.Trim(queries[i])
+				if (queries[i] == "") then
+					done = done + 1
+					continue
+				end
+				nut.db.query(queries[i], function()
+					done = done + 1
+					if (done >= #queries) then
+						realCallback()
+					end
+				end)
+			end
 		end
-	else
-		nut.db.query(DROP_QUERY_LITE, callback)
-	end
 
-	nut.db.loadTables()
+		nut.db.query("SET FOREIGN_KEY_CHECKS = 0;", startDeleting)
+	else
+		nut.db.query(DROP_QUERY_LITE, realCallback)
+	end
 end
 
 local resetCalled = 0
@@ -471,22 +489,40 @@ concommand.Add("nut_recreatedb", function(client, cmd, arguments)
 			MsgC(Color(255, 0, 0), "[Nutscript] DATABASE WIPE IN PROGRESS.\n")
 			
 			hook.Run("OnWipeTables")
-			nut.db.wipeTables()
+			nut.db.wipeTables(nut.db.loadTables)
 		end
 	end
 end)
 
 function nut.db.loadTables()
+	nut.db.onQueryError = nil
 	if (nut.db.object) then
 		-- This is needed to perform multiple queries since the string is only 1 big query.
 		local queries = string.Explode(";", MYSQL_CREATE_TABLES)
+		local i = 1
 
-		for i = 1, #queries do
-			nut.db.query(queries[i], function()
-				if (i < #queries) then return end
-				hook.Run("NutScriptTablesLoaded")
+		local function done()
+			hook.Run("NutScriptTablesLoaded")
+		end
+
+		local function doNextQuery()
+			if (i > #queries) then
+				return done()
+			end
+			local query = string.Trim(queries[i])
+			if (query == "") then
+				i = i + 1
+				return doNextQuery()
+			end
+			print(query)
+			nut.db.query(query, function()
+				print(i)
+				i = i + 1
+				doNextQuery()
 			end)
 		end
+
+		doNextQuery()
 	else
 		nut.db.query(SQLITE_CREATE_TABLES, function()
 			hook.Run("NutScriptTablesLoaded")

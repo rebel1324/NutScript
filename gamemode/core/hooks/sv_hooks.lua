@@ -656,20 +656,13 @@ function GM:CreateDefaultInventory(character)
 end
 
 function GM:NutScriptTablesLoaded()
-	local oldErrorHandler = nut.db.onQueryError
-	nut.db.onQueryError = function() end
 	-- Add missing NS1.2 columns for nut_player table.
-	nut.db.query(
-		"ALTER TABLE nut_players ADD COLUMN _firstJoin DATETIME",
-		function()
-			nut.db.query(
-				"ALTER TABLE nut_players ADD COLUMN _lastJoin DATETIME",
-				function()
-					nut.db.onQueryError = oldErrorHandler
-				end
-			)
-		end
-	)
+	nut.db.onQueryError = function() end
+	nut.db.query("ALTER TABLE nut_players ADD COLUMN _firstJoin DATETIME")
+	nut.db.query("ALTER TABLE nut_players ADD COLUMN _lastJoin DATETIME")
+	timer.Simple(1, function()
+		nut.db.onQueryError = nil
+	end)
 end
 
 function GM:PluginShouldLoad(plugin)
