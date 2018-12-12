@@ -65,6 +65,39 @@ function playerMeta:isStuck()
 	}, self).StartSolid
 end
 
+function playerMeta:createRagdoll(freeze)
+	local entity = ents.Create("prop_ragdoll")
+	entity:SetPos(self:GetPos())
+	entity:SetAngles(self:EyeAngles())
+	entity:SetModel(self:GetModel())
+	entity:SetSkin(self:GetSkin())
+	entity:Spawn()
+	entity:SetCollisionGroup(COLLISION_GROUP_WEAPON)
+	entity:Activate()
+
+	local velocity = self:GetVelocity()
+
+	for i = 0, entity:GetPhysicsObjectCount() - 1 do
+		local physObj = entity:GetPhysicsObjectNum(i)
+		if (IsValid(physObj)) then
+			local index = entity:TranslatePhysBoneToBone(i)
+			if (index) then
+				local position, angles = self:GetBonePosition(index)
+
+				physObj:SetPos(position)
+				physObj:SetAngles(angles)
+			end
+			if (freeze) then
+				physObj:EnableMotion(false)
+			else
+				physObj:SetVelocity(velocity)
+			end
+		end
+	end
+
+	return entity
+end
+
 function playerMeta:setRagdolled(state, time, getUpGrace)
 	getUpGrace = getUpGrace or time or 5
 
@@ -73,15 +106,8 @@ function playerMeta:setRagdolled(state, time, getUpGrace)
 			self.nutRagdoll:Remove()
 		end
 
-		local entity = ents.Create("prop_ragdoll")
-		entity:SetPos(self:GetPos())
-		entity:SetAngles(self:EyeAngles())
-		entity:SetModel(self:GetModel())
-		entity:SetSkin(self:GetSkin())
-		entity:Spawn()
+		local entity = self:createRagdoll()
 		entity:setNetVar("player", self)
-		entity:SetCollisionGroup(COLLISION_GROUP_WEAPON)
-		entity:Activate()
 		entity:CallOnRemove("fixer", function()
 			if (IsValid(self)) then
 				self:setLocalVar("blur", nil)
@@ -137,25 +163,6 @@ function playerMeta:setRagdolled(state, time, getUpGrace)
 				end
 			end
 		end)
-
-		local velocity = self:GetVelocity()
-
-		for i = 0, entity:GetPhysicsObjectCount() - 1 do
-			local physObj = entity:GetPhysicsObjectNum(i)
-
-			if (IsValid(physObj)) then
-				physObj:SetVelocity(velocity)
-
-				local index = entity:TranslatePhysBoneToBone(i)
-
-				if (index) then
-					local position, angles = self:GetBonePosition(index)
-
-					physObj:SetPos(position)
-					physObj:SetAngles(angles)
-				end
-			end
-		end
 
 		self:setLocalVar("blur", 25)
 		self.nutRagdoll = entity
