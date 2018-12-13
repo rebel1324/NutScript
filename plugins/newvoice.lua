@@ -118,6 +118,10 @@ if (CLIENT) then
 		gmod.GetGamemode().PlayerStartVoice = function() end
 		gmod.GetGamemode().PlayerEndVoice = function() end
 
+		if (IsValid(g_VoicePanelList)) then
+			g_VoicePanelList:Remove()
+		end
+		
 		g_VoicePanelList = vgui.Create("DPanel")
 
 		g_VoicePanelList:ParentToHUD()
