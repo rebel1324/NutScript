@@ -50,7 +50,11 @@ function nut.item.instance(index, uniqueID, itemData, x, y, callback)
 		end
 	end
 
-	if (MYSQLOO_PREPARED) then
+	if (not isnumber(index)) then
+		index = NULL
+	end
+
+	if (MYSQLOO_PREPARED and isnumber(index)) then
 		nut.db.preparedCall(
 			"itemInstance", onItemCreated, index, uniqueID, itemData, x, y
 		)

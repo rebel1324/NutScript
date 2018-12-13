@@ -18,8 +18,13 @@ util.AddNetworkString("nutInventoryRemove")
 function Inventory:addItem(item)
 	self.items[item:getID()] = item
 	item.invID = self:getID()
+
+	local id = self.id
+	if (not isnumber(id)) then
+		id = NULL
+	end
 	nut.db.updateTable({
-		_invID = self.id
+		_invID = id
 	}, nil, "items", "_itemID = "..item:getID())
 
 	-- Replicate adding the item to this inventory client-side
@@ -181,6 +186,12 @@ function Inventory:addAccessRule(rule, priority)
 	else
 		self.config.accessRules[#self.config.accessRules + 1] = rule
 	end
+	return self
+end
+
+-- Removes the first instance of a specific access rule from the inventory.
+function Inventory:removeAccessRule(rule)
+	table.RemoveByValue(self.config.accessRules, rule)
 	return self
 end
 
