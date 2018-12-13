@@ -587,47 +587,38 @@ nut.command.add("plytransfer", {
 		local name = table.concat(arguments, " ", 2)
 		local character = target:getChar()
 
-		if (IsValid(target) and character) then
-			local old_faction = character:getFaction()
-			local old_faction_name = character.vars.faction
-			local limit = nut.faction.indices[old_faction].limit
-			local faction = nut.faction.teams[name]
+		if (not IsValid(target) or not character) then
+			return "@plyNotExist"
+		end
 
-			if (!faction) then
-				for k, v in pairs(nut.faction.indices) do
-					if (nut.util.stringMatches(L(v.name, client), name)) then
-						faction = v
-						break
-					end
+		-- Find the specified faction.
+		local oldFaction = nut.faction.indices[character:getFaction()]
+		local faction = nut.faction.teams[name]
+		if (not faction) then
+			for k, v in pairs(nut.faction.indices) do
+				if (nut.util.stringMatches(L(v.name, client), name)) then
+					faction = v
+					break
 				end
 			end
+		end
+		if (not faction) then
+			return "@invalidFaction"
+		end
 
-			if (faction) then
-				target:getChar().vars.faction = faction.uniqueID
-				local success = target:getChar():setFaction(faction.index)
+		-- Change to the new faction.
+		target:getChar():setFaction(faction.index)
+		if (faction.onTransfered) then
+			faction:onTransfered(target, oldFaction)
+		end
+		hook.Run("CharacterFactionTransfered", character, oldFaction, faction)
 
-				if (faction.onTransfered) then
-					faction:onTransfered(target)
-				end
-
-				if (success) then
-					local new_faction = character:getFaction()
-					if (limit and old_faction != new_faction) then
-						nut.faction.indices[old_faction].limit = limit + 1
-						nut.faction.teams[old_faction_name].limit = limit + 1
-					end
-
-					for k, v in ipairs(player.GetAll()) do
-						nut.util.notifyLocalized("cChangeFaction", v, client:Name(), target:Name(), L(faction.name, v))
-					end
-				else
-					nut.util.notifyLocalized("limitFaction", client)
-				end
-			else
-				return "@invalidFaction"
-			end
-		else
-			return "@plyNoExist"
+		-- Notify everyone of the change.
+		for k, v in ipairs(player.GetAll()) do
+			nut.util.notifyLocalized(
+				"cChangeFaction",
+				v, client:Name(), target:Name(), L(faction.name, v)
+			)
 		end
 	end
 })

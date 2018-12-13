@@ -100,6 +100,7 @@ do
 		field = "_model",
 		default = "models/error.mdl",
 		onSet = function(character, value)
+			local oldVar = character:getModel()
 			local client = character:getPlayer()
 
 			if (IsValid(client) and client:getChar() == character) then
@@ -107,6 +108,12 @@ do
 			end
 
 			character.vars.model = value
+			netstream.Start(
+				nil, "charSet",
+				"model", character.vars.model,
+				character:getID()
+			)
+			hook.Run("OnCharVarChanged", character, "model", oldVar, value)
 		end,
 		onGet = function(character, default)
 			return character.vars.model or default
@@ -197,6 +204,7 @@ do
 		field = "_faction",
 		default = "Citizen",
 		onSet = function(character, value)
+			local oldVar = character:getFaction()
 			local faction = nut.faction.indices[value]
 			assert(faction, tostring(value).." is an invalid faction index")
 
@@ -204,6 +212,14 @@ do
 			client:SetTeam(value)
 
 			character.vars.faction = faction.uniqueID
+			netstream.Start(
+				nil, "charSet",
+				"faction", character.vars.faction,
+				character:getID()
+			)
+			hook.Run("OnCharVarChanged", character, "faction", oldVar, value)
+
+			return true -- Compatability with old version.
 		end,
 		onGet = function(character, default)
 			local faction = nut.faction.teams[character.vars.faction]
