@@ -252,5 +252,10 @@ LANGUAGE = {
 	splitQuarter = "Split 1/4",
 	recognize = "Allow this character to recognize you.",
 	recognized = "You gave this character your identity.",
-	already_recognized = "This character already knows you."
+	already_recognized = "This character already knows you.",
+	isTied = "This person has been tied up.",
+	tying = "Tying",
+	untying = "Untying",
+	beingUntied = "You are being untied.",
+	beingTied = "You are being tied.",
 }

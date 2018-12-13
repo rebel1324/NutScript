@@ -168,7 +168,7 @@ netstream.Hook("actBar", function(start, finish, text)
 		nut.bar.actionEnd = 0
 	else
 		if (text:sub(1, 1) == "@") then
-			text = L2(text:sub(2)) or text
+			text = L(text:sub(2))
 		end
 
 		nut.bar.actionStart = start
