@@ -197,44 +197,26 @@ do
 		field = "_faction",
 		default = "Citizen",
 		onSet = function(character, value)
-			local client = character:getPlayer()
-			local faction = character.vars.faction
-			local limit = nut.faction.indices[value].limit
-			
-			if (IsValid(client)) then
-				if (limit and limit > 0) then
-					nut.faction.indices[value].limit = limit - 1
-					nut.faction.teams[faction].limit = limit - 1
-					client:SetTeam(value)
-					return true
-				elseif (!limit) then
-					client:SetTeam(value)
-					return true
-				end
-			end
+			local faction = nut.faction.indices[value]
+			assert(faction, tostring(value).." is an invalid faction index")
 
-			return false
+			local client = character:getPlayer()
+			client:SetTeam(value)
+
+			character.vars.faction = faction.uniqueID
 		end,
 		onGet = function(character, default)
 			local faction = nut.faction.teams[character.vars.faction]
-
-			return faction and faction.index or 0
+			return faction and faction.index or default or 0
 		end,
 		onValidate = function(value, data, client)
 			if (not nut.faction.indices[value]) then
 				return false, "invalid", "faction"
 			end
-
-			local limit = nut.faction.indices[value].limit
-			if (value) then
-				if (client:hasWhitelist(value)) then
-					if ((limit and limit > 0) or !limit) then
-						return true
-					end
-				end
+			if (not client:hasWhitelist(value)) then
+				return false, "illegalAccess"
 			end
-
-			return false, "limitFaction"
+			return true
 		end,
 		onAdjust = function(client, data, value, newData)
 			newData.faction = nut.faction.indices[value].uniqueID

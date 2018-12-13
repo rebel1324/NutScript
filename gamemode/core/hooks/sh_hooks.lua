@@ -95,7 +95,6 @@ function GM:TranslateActivity(client, act)
 			if (tree.vehicle and tree.vehicle[class]) then
 				local act = tree.vehicle[class][1]
 				local fixvec = tree.vehicle[class][2]
-				--local fixang = tree.vehicle[class][3]
 
 				if (fixvec) then
 					client:SetLocalPos(Vector(16.5438, -0.1642, -20.5493))
@@ -146,8 +145,7 @@ function GM:TranslateActivity(client, act)
 end
 
 function GM:DoAnimationEvent(client, event, data)
-	local model = client:GetModel():lower()
-	local class = nut.anim.getModelClass(model)
+	local class = nut.anim.getModelClass(client:GetModel())
 
 	if (class == "player") then
 		return self.BaseClass:DoAnimationEvent(client, event, data)
@@ -199,19 +197,51 @@ end
 
 local vectorAngle = FindMetaTable("Vector").Angle
 local normalizeAngle = math.NormalizeAngle
+local oldCalcSeqOverride
 
 function GM:CalcMainActivity(client, velocity)
-	local eyeAngles = client.EyeAngles(client)
-	local yaw = vectorAngle(velocity)[2]
-	local normalized = normalizeAngle(yaw - eyeAngles[2])
-
-	client.SetPoseParameter(client, "move_yaw", normalized)
+	client.CalcIdeal = ACT_MP_STAND_IDLE
 	
-	local oldSeqOverride = client.CalcSeqOverride
-	local seqIdeal, seqOverride = self.BaseClass.CalcMainActivity(self.BaseClass, client, velocity)
-	--client.CalcSeqOverride is being -1 after this line.
+	oldCalcSeqOverride = client.CalcSeqOverride
+	client.CalcSeqOverride = -1
 
-	return seqIdeal, client.nutForceSeq or oldSeqOverride or client.CalcSeqOverride
+	local animClass = nut.anim.getModelClass(client:GetModel())
+	local usePlayerAnims = animClass == "player"
+
+	if (not usePlayerAnims) then
+		local eyeAngles = client.EyeAngles(client)
+		local yaw = vectorAngle(velocity)[2]
+		local normalized = normalizeAngle(yaw - eyeAngles[2])
+
+		client.SetPoseParameter(client, "move_yaw", normalized)
+	else
+		self:HandlePlayerLanding(client, velocity, client.m_bWasOnGround)
+	end
+
+	if (self:HandlePlayerNoClipping(client, velocity) ||
+		self:HandlePlayerDriving(client) ||
+		self:HandlePlayerVaulting(client, velocity) ||
+		self:HandlePlayerJumping(client, velocity) ||
+		self:HandlePlayerSwimming(client, velocity) ||
+		self:HandlePlayerDucking(client, velocity)) then
+	else
+		local len2D = velocity:Length2DSqr()
+		if (len2D > 22500) then
+			client.CalcIdeal = ACT_MP_RUN
+		elseif (len2D > 0.25) then
+			client.CalcIdeal = ACT_MP_WALK
+		end
+	end
+
+	client.m_bWasOnGround = client:IsOnGround()
+	client.m_bWasNoclipping = client:GetMoveType() == MOVETYPE_NOCLIP
+		and not client:InVehicle()
+
+	if (CLIENT) then
+		client:SetIK(false)
+	end
+
+	return client.CalcIdeal, client.nutForceSeq or oldCalcSeqOverride
 end
 
 function GM:OnCharVarChanged(char, varName, oldVar, newVar)
@@ -240,6 +270,34 @@ function GM:CanPlayerUseChar(client, char)
 
 		return false, "@charBanned"
 	end
+
+	local faction = nut.faction.indices[char:getFaction()]
+	if (
+		faction and
+		hook.Run("CheckFactionLimitReached", faction, char, client)
+	) then
+		return false, "@limitFaction"
+	end
+end
+
+-- Whether or not more players are not allowed to load a character of
+-- a specific faction since the faction is full.
+function GM:CheckFactionLimitReached(faction, character, client)
+	if (isfunction(faction.onCheckLimitReached)) then
+		return faction:onCheckLimitReached(character, client)
+	end
+
+	if (not isnumber(faction.limit)) then return false end
+
+	-- By default, the limit is the number of players allowed in that faction.
+	local maxPlayers = faction.limit
+	
+	-- If some number less than 1, treat it as a percentage of the player count.
+	if (faction.limit < 1) then
+		maxPlayers = math.Round(#player.GetAll() * faction.limit)
+	end
+
+	return team.NumPlayers(faction.index) >= maxPlayers
 end
 
 function GM:CanProperty(client, property, entity)
