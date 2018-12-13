@@ -224,9 +224,10 @@ do
 
 				for k, v in ipairs(self:GetWeapons()) do
 					self.nutRestrictWeps[k] = v:GetClass()
-					v:Remove()
 				end
-
+				timer.Simple(0, function()
+					self:StripWeapons()
+				end)
 				hook.Run("OnPlayerRestricted", self)
 			else
 				self:setNetVar("restricted")
