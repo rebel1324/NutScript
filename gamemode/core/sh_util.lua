@@ -95,9 +95,17 @@ function nut.util.getAdmins(isSuper)
 	return admins
 end
 
+-- Returns true if a string is a 32-bit SteamID.
+function nut.util.isSteamID(value)
+	if (string.match(value, "STEAM_(%d+):(%d+):(%d+)")) then
+		return true
+	end
+	return false
+end
+
 -- Finds a player by matching their name or steam id.
 function nut.util.findPlayer(identifier, allowPatterns)
-	if (string.find(identifier, "STEAM_(%d+):(%d+):(%d+)")) then
+	if (nut.util.isSteamID(identifier)) then
 		return player.GetBySteamID(identifier)
 	end
 
