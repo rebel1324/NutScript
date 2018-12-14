@@ -489,7 +489,11 @@ function GM:InitializedSchema()
 
 	nut.date.start = nut.data.get("date", os.time(), false, true)
 
-	game.ConsoleCommand("sbox_persist ns_"..SCHEMA.folder.."\n")
+	local persistString = GetConVar("sbox_persist"):GetString()
+	if (persistString == "" or string.StartWith(persistString, "ns_")) then
+		local newValue = "ns_"..SCHEMA.folder
+		game.ConsoleCommand("sbox_persist "..newValue.."\n")
+	end
 end
 
 function GM:PlayerCanHearPlayersVoice(listener, speaker)
