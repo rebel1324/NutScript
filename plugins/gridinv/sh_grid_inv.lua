@@ -174,7 +174,7 @@ if (SERVER) then
 			item = nut.item.list[itemTypeOrItem]
 		end
 		if (not item) then
-			return d:resolve({error = "invalid item type"})
+			return d:reject("invalid item type")
 		end
 
 		if (not x or not y) then
@@ -185,7 +185,7 @@ if (SERVER) then
 		local context = {item = item, x = x, y = y}
 		local canAccess, reason = self:canAccess("add", context)
 		if (not canAccess) then
-			return d:resolve({error = reason or "noAccess"})
+			return d:reject("noAccess")
 		end
 
 		-- If given an item instance, there's no need for a new instance.
@@ -193,7 +193,7 @@ if (SERVER) then
 			item:setData("x", x)
 			item:setData("y", y)
 			self:addItem(item)
-			return d:resolve({item})
+			return d:resolve(item)
 		end
 
 		-- Otherwise, make quantity number of instances.
