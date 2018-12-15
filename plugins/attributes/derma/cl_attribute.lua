@@ -47,70 +47,41 @@ local PANEL = {}
 
 		self.bar = self:Add("DPanel")
 		self.bar:Dock(FILL)
+		self.bar:DockMargin(2, 2, 2, 2)
 		self.bar.Paint = function(this, w, h)
-			surface.SetDrawColor(35, 35, 35, 250)
-			surface.DrawRect(0, 0, w, h)
-
-			w, h = w - 4, h - 4
-
-			local value = self.deltaValue / self.max
+			local value = math.Clamp(self.deltaValue / self.max, 0, 1)
 
 			if (value > 0) then
 				local color = nut.config.get("color")
 				local boostedValue = self.boostValue or 0
 				local add = 0
+				local barWidth = w * value
 
-				if (self.deltaValue != self.value) then
+				if (self.deltaValue ~= self.value) then
 					add = 35
 				end
 
 				-- your stat
-				do
-					if !(boostedValue < 0 and math.abs(boostedValue) > self.value) then
-						surface.SetDrawColor(color.r + add, color.g + add, color.b + add, 230)
-						surface.DrawRect(2, 2, w * value, h)
-
-						surface.SetDrawColor(255, 255, 255, 35)
-						surface.SetMaterial(gradient)
-						surface.DrawTexturedRect(2, 2, w * value, h)
-					end
-				end
+				surface.SetDrawColor(
+					color.r + add, color.g + add, color.b + add, 230
+				)
+				surface.DrawRect(0, 0, barWidth, h)
 
 				-- boosted stat
-				do
-				if (boostedValue != 0) then
-
+				if (boostedValue ~= 0) then
+					local boostW = math.Clamp(
+						math.abs(boostedValue / self.max),
+						0, 1
+					) * w * (self.deltaValue / self.value) + 1
 					if (boostedValue < 0) then
-						local please = math.min(self.value, math.abs(boostedValue))
-						boostValue = ((please or 0) / self.max) * (self.deltaValue / self.value)
+						surface.SetDrawColor(200, 80, 80, 200)
+						surface.DrawRect(barWidth - boostW, 0, boostW, h)
 					else
-						boostValue = ((boostedValue or 0) / self.max) * (self.deltaValue / self.value)
+						surface.SetDrawColor(80, 200, 80, 200)
+						surface.DrawRect(barWidth, 0, boostW, h)
 					end
-
-					if (boostedValue < 0) then
-						surface.SetDrawColor(200, 40, 40, 230)
-
-						local bWidth = math.abs(w * boostValue)
-						surface.DrawRect(2 + w * value - bWidth, 2, bWidth, h)
-
-						surface.SetDrawColor(255, 255, 255, 35)
-						surface.SetMaterial(gradient)
-						surface.DrawTexturedRect(2 + w * value - bWidth, 2, bWidth, h)
-					else
-						surface.SetDrawColor(40, 200, 40, 230)
-						surface.DrawRect(2 + w * value, 2, w * boostValue, h)
-
-						surface.SetDrawColor(255, 255, 255, 35)
-						surface.SetMaterial(gradient)
-						surface.DrawTexturedRect(2 + w * value, 2, w * boostValue, h)
-					end
-				end
 				end
 			end
-
-			surface.SetDrawColor(255, 255, 255, 5)
-			surface.SetMaterial(gradient2)
-			surface.DrawTexturedRect(2, 2, w, h)
 		end
 
 		self.label = self.bar:Add("DLabel")
@@ -167,5 +138,10 @@ local PANEL = {}
 	function PANEL:setReadOnly()
 		self.sub:Remove()
 		self.add:Remove()
+	end
+	
+	function PANEL:Paint(w, h)
+		surface.SetDrawColor(0, 0, 0, 200)
+		surface.DrawRect(0, 0, w, h)
 	end
 vgui.Register("nutAttribBar", PANEL, "DPanel")
