@@ -46,6 +46,13 @@ if (SERVER) then
 	function PLUGIN:PostPlayerLoadout(client)
 		nut.attribs.setup(client)
 	end
+
+	function PLUGIN:OnCharAttribBoosted(client, character, attribID)
+		local attribute = nut.attribs.list[attribID]
+		if (attribute) then
+			attribute:onSetup(client, character:getAttrib(attribID, 0))
+		end
+	end
 else
 	function PLUGIN:CreateCharInfoText(panel, suppress)
 		if (suppress and suppress.attrib) then return end
