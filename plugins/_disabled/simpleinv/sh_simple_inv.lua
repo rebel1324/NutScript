@@ -62,13 +62,13 @@ if (SERVER) then
 		local context = {item = item, forced = forced, quantity = quantity}
 		local canAccess, reason = self:canAccess("add", context)
 		if (not canAccess) then
-			return d:resolve({error = reason or "noAccess"})
+			return d:reject(reason or "noAccess")
 		end
 
 		-- If given an item instance, there's no need for a new instance.
 		if (justAddDirectly) then
 			self:addItem(item)
-			return d:resolve({item})
+			return d:resolve(item)
 		end
 
 		-- Otherwise, make quantity number of instances.
@@ -79,7 +79,7 @@ if (SERVER) then
 				self:addItem(item)
 				items[#items + 1] = item
 				if (#items == quantity) then
-					d:resolve(items)
+					d:resolve(quantity == 1 and items[1] or items)
 				end
 			end)
 		end
