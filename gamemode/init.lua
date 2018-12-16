@@ -18,8 +18,6 @@ include("shared.lua")
 
 -- Connect to the database using SQLite, mysqloo, or tmysql4.
 timer.Simple(0, function()
-	if (nut.db.connected) then return end
-
 	hook.Run("SetupDatabase")
 
 	nut.db.connect(function()
@@ -30,7 +28,6 @@ timer.Simple(0, function()
 		MsgC(Color(0, 255, 0), "NutScript has connected to the database.\n")
 		MsgC(Color(0, 255, 0), "Database Type: "..nut.db.module..".\n")
 
-		nut.db.connected = true
 		hook.Run("DatabaseConnected")
 	end)
 end)

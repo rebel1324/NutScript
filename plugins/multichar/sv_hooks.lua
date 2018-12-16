@@ -8,7 +8,9 @@ function PLUGIN:PlayerNutDataLoaded(client)
 		)
 
 		for k, v in ipairs(charList) do
-			nut.char.loaded[v]:sync(client)
+			if (nut.char.loaded[v]) then
+				nut.char.loaded[v]:sync(client)
+			end
 		end
 
 		for k, v in ipairs(player.GetAll()) do

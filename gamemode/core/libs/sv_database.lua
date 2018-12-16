@@ -295,15 +295,20 @@ modules.mysqloo = {
 
 
 -- Add default values here.
-nut.db.escape = modules.sqlite.escape
-nut.db.query = modules.sqlite.query
+nut.db.escape = nut.db.escape or modules.sqlite.escape
+nut.db.query = nut.db.query or modules.sqlite.query
 
 function nut.db.connect(callback)
 	local dbModule = modules[nut.db.module]
 
 	if (dbModule) then
-		if (!nut.db.object) then
-			dbModule.connect(callback)
+		if (not nut.db.connected and not nut.db.object) then
+			dbModule.connect(function()
+				nut.db.connected = true
+				if (isfunction(callback)) then
+					callback()
+				end
+			end)
 		end
 
 		nut.db.escape = dbModule.escape
