@@ -121,7 +121,7 @@ do
 	end
 
 	function charMeta:getAttrib(key, default)
-		local att = self:getAttribs()[key] or default
+		local att = self:getAttribs()[key] or default or 0
 		local boosts = self:getBoosts()[key]
 
 		if (boosts) then
