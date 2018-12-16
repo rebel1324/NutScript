@@ -41,6 +41,7 @@ local PANEL = {}
 		end
 		self.sub.OnCursorExited = self.sub.OnMouseReleased
 
+		self.t = 0
 		self.value = 0
 		self.deltaValue = self.value
 		self.max = 10
@@ -49,37 +50,33 @@ local PANEL = {}
 		self.bar:Dock(FILL)
 		self.bar:DockMargin(2, 2, 2, 2)
 		self.bar.Paint = function(this, w, h)
-			local value = math.Clamp(self.deltaValue / self.max, 0, 1)
+			self.t = Lerp(FrameTime() * 10, self.t, 1)
+
+			local value = (self.value / self.max) * self.t
+			local boostedValue = self.boostValue or 0
+			local barWidth = w * value
 
 			if (value > 0) then
 				local color = nut.config.get("color")
-				local boostedValue = self.boostValue or 0
-				local add = 0
-				local barWidth = w * value
-
-				if (self.deltaValue ~= self.value) then
-					add = 35
-				end
 
 				-- your stat
-				surface.SetDrawColor(
-					color.r + add, color.g + add, color.b + add, 230
-				)
+				surface.SetDrawColor(color)
 				surface.DrawRect(0, 0, barWidth, h)
 
-				-- boosted stat
-				if (boostedValue ~= 0) then
-					local boostW = math.Clamp(
-						math.abs(boostedValue / self.max),
-						0, 1
-					) * w * (self.deltaValue / self.value) + 1
-					if (boostedValue < 0) then
-						surface.SetDrawColor(200, 80, 80, 200)
-						surface.DrawRect(barWidth - boostW, 0, boostW, h)
-					else
-						surface.SetDrawColor(80, 200, 80, 200)
-						surface.DrawRect(barWidth, 0, boostW, h)
-					end
+			end
+
+			-- boosted stat
+			if (boostedValue ~= 0) then
+				local boostW = math.Clamp(
+					math.abs(boostedValue / self.max),
+					0, 1
+				) * w * self.t + 1
+				if (boostedValue < 0) then
+					surface.SetDrawColor(200, 80, 80, 200)
+					surface.DrawRect(barWidth - boostW, 0, boostW, h)
+				else
+					surface.SetDrawColor(80, 200, 80, 200)
+					surface.DrawRect(barWidth, 0, boostW, h)
 				end
 			end
 		end
