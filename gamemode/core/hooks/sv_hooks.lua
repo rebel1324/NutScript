@@ -455,8 +455,12 @@ function GM:InitPostEntity()
 		nut.entityDataLoaded = true
 	end)
 
-	hook.Run("LoadData")
-	hook.Run("PostLoadData")
+
+	nut.db.waitForTablesToLoad()
+		:next(function()
+			hook.Run("LoadData")
+			hook.Run("PostLoadData")
+		end)
 end
 
 function GM:ShutDown()

@@ -502,6 +502,7 @@ function nut.db.loadTables()
 		local i = 1
 
 		local function done()
+			nut.db.tablesLoaded = true
 			hook.Run("NutScriptTablesLoaded")
 		end
 
@@ -523,11 +524,28 @@ function nut.db.loadTables()
 		doNextQuery()
 	else
 		nut.db.query(SQLITE_CREATE_TABLES, function()
+			nut.db.tablesLoaded = true
 			hook.Run("NutScriptTablesLoaded")
 		end)
 	end
 
 	hook.Run("OnLoadTables")
+end
+
+function nut.db.waitForTablesToLoad()
+	TABLE_WAIT_ID = TABLE_WAIT_ID or 0
+
+	local d = deferred.new()
+	if (nut.db.tablesLoaded) then
+		d:resolve()
+	else
+		hook.Add("NutScriptTablesLoaded", tostring(TABLE_WAIT_ID), function()
+			d:resolve()
+		end)
+	end
+
+	TABLE_WAIT_ID = TABLE_WAIT_ID + 1
+	return d
 end
 
 function nut.db.convertDataType(value, noEscape)
