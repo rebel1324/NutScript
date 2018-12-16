@@ -1,4 +1,4 @@
-net.Receive("nutStorageUnluck", function()
+net.Receive("nutStorageUnlock", function()
 	local entity = net.ReadEntity()
 	hook.Run("StorageUnlockPrompt", entity)
 end)

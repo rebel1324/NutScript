@@ -1,6 +1,6 @@
 util.AddNetworkString("nutStorageOpen")
-util.AddNetworkString("nutStorageLock")
 util.AddNetworkString("nutStorageExit")
+util.AddNetworkString("nutStorageUnlock")
 util.AddNetworkString("nutStorageTransfer")
 
 local TRANSFER = "transfer"
