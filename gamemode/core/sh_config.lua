@@ -2,6 +2,7 @@ nut.config = nut.config or {}
 nut.config.stored = nut.config.stored or {}
 
 function nut.config.add(key, value, desc, callback, data, noNetworking, schemaOnly)
+	assert(isstring(key), "expected config key to be string, got "..type(key))
 	local oldConfig = nut.config.stored[key]
 
 	nut.config.stored[key] = {data = data, value = oldConfig and oldConfig.value or value, default = value, desc = desc, noNetworking = noNetworking, global = !schemaOnly, callback = callback}
@@ -243,7 +244,8 @@ if (CLIENT) then
 						end
 
 						-- Add a new row for the config to the properties.
-						local row = properties:CreateRow(category, k)
+						print(category, k)
+						local row = properties:CreateRow(category, tostring(k))
 						row:Setup(form, v.data and v.data.data or {})
 						row:SetValue(value)
 						row:SetTooltip(v.desc)
