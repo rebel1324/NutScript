@@ -49,7 +49,7 @@ if (SERVER) then
 
 	function PLUGIN:OnCharAttribBoosted(client, character, attribID)
 		local attribute = nut.attribs.list[attribID]
-		if (attribute) then
+		if (attribute and isfunction(attribute.onSetup)) then
 			attribute:onSetup(client, character:getAttrib(attribID, 0))
 		end
 	end
