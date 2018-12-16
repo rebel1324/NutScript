@@ -38,7 +38,7 @@ do
 	end
 
 	function playerMeta:saveNutData()
-		local name = self:Name()
+		local name = self:steamName()
 		local steamID64 = self:SteamID64()
 		local timeStamp = os.date("%Y-%m-%d %H:%M:%S", os.time())
 
