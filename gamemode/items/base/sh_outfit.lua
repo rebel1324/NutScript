@@ -171,9 +171,9 @@ ITEM.functions.Equip = {
 			end
 		end
 
-		if (item.attribBoosts) then
-			for k, v in pairs(item.attribBoosts) do
-				char:addBoost(item.uniqueID, k, v)
+		if (istable(item.attribBoosts)) then
+			for attribute, boost in pairs(item.attribBoosts) do
+				char:addBoost(item.uniqueID, attribute, boost)
 			end
 		end
 

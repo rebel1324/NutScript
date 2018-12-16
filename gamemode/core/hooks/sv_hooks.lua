@@ -357,14 +357,12 @@ function GM:PostPlayerLoadout(client)
 	local char = client:getChar()
 
 	if (char:getInv()) then
-		for k, v in pairs(char:getInv():getItems()) do
-			v:call("onLoadout", client)
+		for _, item in pairs(char:getInv():getItems()) do
+			item:call("onLoadout", client)
 
-			if (v:getData("equip")) then
-				if (v.attribBoosts) then
-					for k, v in pairs(v.attribBoosts) do
-						char:addBoost(v.uniqueID, k, v)
-					end
+			if (item:getData("equip") and istable(item.attribBoosts)) then
+				for attribute, boost in pairs(item.attribBoosts) do
+					char:addBoost(item.uniqueID, attribute, boost)
 				end
 			end
 		end
