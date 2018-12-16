@@ -20,13 +20,13 @@ nut.config.add("color", Color(75, 119, 190), "The main color theme for the frame
 
 nut.config.add("font", "Arial", "The font used to display titles.", function(oldValue, newValue)
 	if (CLIENT) then
-		hook.Run("LoadFonts", newValue, nut.config.get("genericFont"))
+		hook.Run("LoadNutFonts", newValue, nut.config.get("genericFont"))
 	end
 end, {category = "appearance"})
 
 nut.config.add("genericFont", "Segoe UI", "The font used to display generic texts.", function(oldValue, newValue)
 	if (CLIENT) then
-		hook.Run("LoadFonts", nut.config.get("font"), newValue)
+		hook.Run("LoadNutFonts", nut.config.get("font"), newValue)
 	end
 end, {category = "appearance"})
 

@@ -9,7 +9,11 @@ ALWAYS_RAISED["nut_areahelper"] = true
 nut.config.add("areaFontSize", 26, "The size of the font of Area Display.", 
 	function(oldValue, newValue)
 		if (CLIENT) then
-			hook.Run("LoadFonts", nut.config.get("font"))
+			hook.Run(
+				"LoadNutFonts",
+				nut.config.get("font"),
+				nut.config.get("genericFont")
+			)
 		end
 	end,
 	{data = {min = 1, max = 128},

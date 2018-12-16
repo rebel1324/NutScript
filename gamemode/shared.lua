@@ -73,7 +73,11 @@ NUT_PLUGINS_ALREADY_LOADED = false
 function GM:OnReloaded()
 	-- Reload the default fonts.
 	if (CLIENT) then
-		hook.Run("LoadFonts", nut.config.get("font"), nut.config.get("genericFont"))
+		hook.Run(
+			"LoadNutFonts",
+			nut.config.get("font"),
+			nut.config.get("genericFont")
+		)
 	else
 		-- Auto-reload support for faction pay timers.
 		for _, client in ipairs(player.GetAll()) do

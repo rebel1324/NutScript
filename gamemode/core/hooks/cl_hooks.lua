@@ -1,4 +1,6 @@
-function GM:LoadFonts(font, genericFont)
+function GM:LoadNutFonts(font, genericFont)
+	local oldFont, oldGenericFont = font, genericFont
+
 	surface.CreateFont("nut3D2DFont", {
 		font = font,
 		size = 2048,
@@ -215,6 +217,8 @@ function GM:LoadFonts(font, genericFont)
 		extended = true,
 		antialias = true
 	})
+
+	hook.Run("LoadFonts", oldFont, oldGenericFont)
 end
 
 function GM:CreateLoadingScreen()
@@ -266,7 +270,11 @@ function GM:ShouldCreateLoadingScreen()
 end
 
 function GM:InitializedConfig()
-	hook.Run("LoadFonts", nut.config.get("font"), nut.config.get("genericFont"))
+	hook.Run(
+		"LoadNutFonts",
+		nut.config.get("font"),
+		nut.config.get("genericFont")
+	)
 
 	if (not nut.config.loaded) then
 		if (hook.Run("ShouldCreateLoadingScreen") ~= false) then
@@ -526,5 +534,9 @@ end
 
 function GM:ScreenResolutionChanged(oldW, oldH)
 	RunConsoleCommand("fixchatplz")
-	hook.Run("LoadFonts", nut.config.get("font"), nut.config.get("genericFont"))
+	hook.Run(
+		"LoadNutFonts",
+		nut.config.get("font"),
+		nut.config.get("genericFont")
+	)
 end
