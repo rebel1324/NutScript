@@ -244,7 +244,6 @@ if (CLIENT) then
 						end
 
 						-- Add a new row for the config to the properties.
-						print(category, k)
 						local row = properties:CreateRow(category, tostring(k))
 						row:Setup(form, v.data and v.data.data or {})
 						row:SetValue(value)
