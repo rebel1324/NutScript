@@ -195,7 +195,7 @@ function ITEM:interact(action, client, entity, data)
 	end
 
 	canInteract = isfunction(callback.onCanRun)
-		and callback.onCanRun(self, data) == false
+		and not callback.onCanRun(self, data)
 		or true
 	if (not canInteract) then
 		self.player = oldPlayer

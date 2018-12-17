@@ -442,8 +442,8 @@ function GM:ItemShowEntityMenu(entity)
 	for k, v in SortedPairs(itemTable.functions) do
 		if (k == "combine") then continue end -- yeah, noob protection
 
-		if (v.onCanRun) then
-			if (v.onCanRun(itemTable) == false) then
+		if (isfunction(v.onCanRun)) then
+			if (not v.onCanRun(itemTable)) then
 				continue
 			end
 		end

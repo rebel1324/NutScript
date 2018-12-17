@@ -135,7 +135,7 @@ function PANEL:openActionMenu()
 	end
 
 	for k, v in SortedPairs(itemTable.functions) do
-		if (isfunction(v.onCanRun) and v.onCanRun(itemTable) == false) then
+		if (isfunction(v.onCanRun) and not v.onCanRun(itemTable)) then
 			continue
 		end
 
