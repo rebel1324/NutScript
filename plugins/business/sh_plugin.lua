@@ -18,53 +18,35 @@ function PLUGIN:CanPlayerUseBusiness(client, uniqueID)
 		return false
 	end
 
+	-- ITEM.noBusiness = true means item cannot be sold via business.
 	if (itemTable.noBusiness) then
 		return false
 	end
-	
-	if (itemTable.factions) then
-		local allowed = false
 
-		if (type(itemTable.factions) == "table") then
-			for k, v in pairs(itemTable.factions) do
-				if (client:Team() == v) then
-					allowed = true
-
-					break
-				end
-			end
-		elseif (client:Team() != itemTable.factions) then
-			allowed = false
-		end
-
-		if (!allowed) then
-			return false
-		end
+	-- Check if player has the flag ITEM.flag
+	if (
+		isstring(itemTable.flag) and
+		client:getChar():hasFlags(itemTable.flag)
+	) then
+		return true
 	end
 
-	if (itemTable.classes) then
-		local allowed = false
+	-- Check if allowed by class.
+	local classID = itemTable.classes or itemTable.class
+	local charClass = client:getChar():getClass()
 
-		if (type(itemTable.classes) == "table") then
-			for k, v in pairs(itemTable.classes) do
-				if (client:getChar():getClass() == v) then
-					allowed = true
-
-					break
-				end
-			end
-		elseif (client:getChar():getClass() == itemTable.classes) then
-			allowed = true
-		end
-
-		if (!allowed) then
-			return false
-		end
+	if (isnumber(classID) and charClass == classID) then
+		return true
+	elseif (istable(classID) and table.HasValue(classID, charClass)) then
+		return true
 	end
 
-	if (itemTable.flag) then
-		if (!client:getChar():hasFlags(itemTable.flag)) then
-			return false
-		end
+	-- Check if allowed by faction.
+	local factions = itemTable.factions or itemTable.faction
+	local faction = client:getChar():getFaction()
+	if (isnumber(factions) and faction == factions) then
+		return true
+	elseif (istable(factions) and table.HasValue(factions, faction)) then
+		return true
 	end
 end

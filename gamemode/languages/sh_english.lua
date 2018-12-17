@@ -211,7 +211,7 @@ LANGUAGE = {
 	thirdpersonToggle = "Toggle Thirdperson",
 	thirdpersonClassic = "Use Classic Thirdperson",
 	thirdpersonConfig = "Thirdperson Configuration",
-	equippedBag = "The bag that you moved has equipped item.",
+	equippedBag = "Equipped items cannot moved between inventories.",
 	useTip = "Uses the item.",
 	equipTip = "Equips the item.",
 	unequipTip = "Unequips the item.",
@@ -258,5 +258,6 @@ LANGUAGE = {
 	untying = "Untying",
 	beingUntied = "You are being untied.",
 	beingTied = "You are being tied.",
-	sameOutfitCategory = "You are already wearing this type of outfit."
+	sameOutfitCategory = "You are already wearing this type of outfit.",
+	noBusiness = "You are not allowed to purchase anything right now.",
 }

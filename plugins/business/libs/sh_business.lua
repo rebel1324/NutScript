@@ -20,7 +20,7 @@ if (SERVER) then
 		for k, v in pairs(items) do
 			local itemTable = nut.item.list[k]
 
-			if (itemTable and hook.Run("CanPlayerUseBusiness", client, k) != false) then
+			if (itemTable and hook.Run("CanPlayerUseBusiness", client, k)) then
 				local amount = math.Clamp(tonumber(v) or 0, 0, 10)
 
 				if (amount == 0) then

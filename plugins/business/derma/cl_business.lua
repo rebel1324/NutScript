@@ -6,12 +6,6 @@ function PANEL:Init()
 	self:SetSize(size, size * 1.4)
 end
 
-local function drawIcon(mat, self, x, y)
-	surface.SetDrawColor(color_white)
-	surface.SetMaterial(mat)
-	surface.DrawTexturedRect(0, 0, x, y)
-end
-
 function PANEL:setItem(itemTable)
 	self.itemName = L(itemTable.name):lower()
 
@@ -35,17 +29,11 @@ function PANEL:setItem(itemTable)
 		surface.DrawRect(0, 0, w, h)
 	end
 
-	self.icon = self:Add("SpawnIcon")
-	self.icon:SetZPos(1)
-	self.icon:SetSize(self:GetWide(), self:GetWide())
-	self.icon:Dock(FILL)
-	self.icon:DockMargin(5, 5, 5, 10)
+	self.icon = self:Add("nutItemIcon")
+	self.icon:SetSize(128, 128)
 	self.icon:InvalidateLayout(true)
-	self.icon:SetModel(itemTable.model, itemTable.skin or 0)
-	self.icon:SetTooltip(
-		Format(nut.config.itemFormat,
-		itemTable.getName and itemTable:getName() or L(itemTable.name), itemTable:getDesc() or "")
-	)
+	self.icon:setItemType(itemTable.uniqueID)
+	self.icon:Center()
 	self.icon.itemID = true
 	self.icon.DoClick = function(this)
 		if (!IsValid(nut.gui.checkout) and (this.nextClick or 0) < CurTime()) then
@@ -56,22 +44,7 @@ function PANEL:setItem(itemTable)
 			this.nextClick = CurTime() + 0.5
 		end
 	end
-	self.icon.PaintOver = function(this, w, h)
-		if (itemTable and itemTable.paintOver) then
-			local w, h = this:GetSize()
-
-			itemTable.paintOver(this, itemTable, w, h)
-		end
-	end
-
-	if (itemTable.icon) then
-		self.icon.Icon:SetVisible(false)
-		self.Paint = function(self, x, y)
-			drawIcon(itemTable.icon, self, x, y)
-		end
-	else
-		renderNewIcon(self.icon, itemTable)
-	end
+	self.icon.PaintBehind = function() end
 end
 vgui.Register("nutBusinessItem", PANEL, "DPanel")
 
@@ -81,6 +54,18 @@ function PANEL:Init()
 	nut.gui.business = self
 
 	self:SetSize(self:GetParent():GetSize())
+
+	if (not self:canPlayerUseBusiness()) then
+		self.error = self:Add("DLabel")
+		self.error:SetFont("nutMenuButtonLightFont")
+		self.error:Dock(FILL)
+		self.error:SetText(L"noBusiness")
+		self.error:SetTextColor(color_white)
+		self.error:SetExpensiveShadow(1, color_black)
+		self.error:SizeToContents()
+		self.error:SetContentAlignment(5)
+		return
+	end
 
 	self.categories = self:Add("DScrollPanel")
 	self.categories:Dock(LEFT)
@@ -142,7 +127,7 @@ function PANEL:Init()
 	local first = true
 
 	for k, v in pairs(nut.item.list) do
-		if (hook.Run("CanPlayerUseBusiness", LocalPlayer(), k) == false) then
+		if (not hook.Run("CanPlayerUseBusiness", LocalPlayer(), k)) then
 			continue
 		end
 
@@ -191,6 +176,15 @@ function PANEL:Init()
 	end
 end
 
+function PANEL:canPlayerUseBusiness()
+	for k, v in pairs(nut.item.list) do
+		if (hook.Run("CanPlayerUseBusiness", LocalPlayer(), k)) then
+			return true
+		end
+	end
+	return false
+end
+
 function PANEL:getCartCount()
 	local count = 0
 
@@ -214,7 +208,7 @@ function PANEL:loadItems(category, search)
 	self.itemList:InvalidateLayout(true)
 
 	for uniqueID, itemTable in SortedPairsByMemberValue(items, "name") do
-		if (hook.Run("CanPlayerUseBusiness", LocalPlayer(), uniqueID) == false) then
+		if (not hook.Run("CanPlayerUseBusiness", LocalPlayer(), uniqueID)) then
 			continue
 		end
 
