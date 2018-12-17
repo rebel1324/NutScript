@@ -230,7 +230,7 @@ function Inventory:loadItems()
 				if (not itemTable) then
 					ErrorNoHalt(
 						"Inventory "..self.id.." contains invalid item "
-						..uniqueID.." ("..itemID..")"
+						..uniqueID.." ("..itemID..")\n"
 					)
 					continue
 				end
