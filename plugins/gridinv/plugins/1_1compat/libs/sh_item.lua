@@ -91,7 +91,7 @@ end
 
 netstream.Hook("invMv", function(client)
 	print("Tell the developer that 'invMv' has been deprecated!")
-	print("Instead, the nutItemTransfer net message should be used.")
+	print("Instead, the nutTransferItem net message should be used.")
 	client:ChatPrint("Tell the developer that 'invMv' has been deprecated!")
-	client:ChatPrint("Instead, the nutItemTransfer net message should be used.")
+	client:ChatPrint("Instead, the nutTransferItem net message should be used.")
 end)

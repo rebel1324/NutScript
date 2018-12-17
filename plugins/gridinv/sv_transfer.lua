@@ -61,7 +61,7 @@ function PLUGIN:HandleItemTransferRequest(client, itemID, x, y, invID)
 	return oldInventory:removeItem(itemID, true)
 		:next(function()
 			return inventory:add(item, x, y)
-		end, fail)
+		end)
 		:next(function(res)
 			if (not res or not res.error) then return end
 
@@ -74,7 +74,7 @@ function PLUGIN:HandleItemTransferRequest(client, itemID, x, y, invID)
 
 			originalAddRes = res
 			return oldInventory:add(item, oldX, oldY)
-		end, fail)
+		end)
 		:next(function(res)
 			if (res and res.error) then return res end
 			if (tryCombineWith and IsValid(client)) then
@@ -88,7 +88,8 @@ function PLUGIN:HandleItemTransferRequest(client, itemID, x, y, invID)
 				fail()
 			end
 			return originalAddRes
-		end, fail)
+		end)
+		:catch(fail)
 end
 
 net.Receive("nutTransferItem", function(_, client)
