@@ -77,6 +77,17 @@ function GridInv:doesItemFitAtPos(testItem, x, y)
 		end
 	end
 
+	-- Make sure it won't overlap with an allocated spot.
+	if (self.occupied) then
+		for x2 = 0, (testItem.width or 1) - 1 do
+			for y2 = 0, (testItem.height or 1) - 1 do
+				if (self.occupied[(x + x2)..(y + y2)]) then
+					return false
+				end
+			end
+		end
+	end
+
 	-- If no overlap and we can hold the item, it fits.
 	return true
 end
@@ -196,10 +207,26 @@ if (SERVER) then
 			return d:resolve(item)
 		end
 
+		-- Allocate space for the item.
+		self.occupied = self.occupied or {}
+		for x2 = 0, (item.width or 1) - 1 do
+			for y2 = 0, (item.height or 1) - 1 do
+				self.occupied[(x + x2)..(y + y2)] = true
+			end
+		end
+
 		-- Otherwise, make quantity number of instances.
 		data = table.Merge({x = x, y = y}, data or {})
 		local itemType = item.uniqueID
 		nut.item.instance(self:getID(), itemType, data, 0, 0, function(item)
+			if (self.occupied) then
+				for x2 = 0, (item.width or 1) - 1 do
+					for y2 = 0, (item.height or 1) - 1 do
+						self.occupied[(x + x2)..(y + y2)] = nil
+					end
+				end
+			end
+
 			self:addItem(item)
 			d:resolve(item)
 		end)
