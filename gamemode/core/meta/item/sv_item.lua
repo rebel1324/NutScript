@@ -16,13 +16,15 @@ end
 function ITEM:delete()
 	self:destroy()
 	return nut.db.delete("items", "_itemID = "..self:getID())
+		:next(function()
+			self:onRemoved() -- Poorly named, should've been called onDeleted...
+		end)
 end
 
 -- Permanently deletes this item instance and from the inventory it is in.
 function ITEM:remove()
 	return self:removeFromInventory()
 		:next(function() return self:delete() end)
-		:next(function() self:onRemoved() end)
 end
 
 -- Deletes the in-memory data for this item
