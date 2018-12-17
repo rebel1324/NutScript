@@ -148,3 +148,10 @@ function ITEM:onRemoved()
 		end
 	end
 end
+
+function ITEM:onRegistered()
+	if (not self.isBase) then
+		ErrorNoHalt("pacoutfit item is deprecated.\n")
+		ErrorNoHalt("Change the item base for "..self.name.." to 'outfit'")
+	end
+end

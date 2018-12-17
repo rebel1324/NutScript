@@ -258,4 +258,5 @@ LANGUAGE = {
 	untying = "Untying",
 	beingUntied = "You are being untied.",
 	beingTied = "You are being tied.",
+	sameOutfitCategory = "You are already wearing this type of outfit."
 }
