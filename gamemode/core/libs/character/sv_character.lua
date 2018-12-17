@@ -57,6 +57,7 @@ function nut.char.restore(client, callback, noCache, id)
 	nut.db.query(query, function(data)
 		local characters = {}
 		local results = data or {}
+		local done = 0
 
 		if (#results == 0) then
 			if (callback) then
@@ -133,8 +134,9 @@ function nut.char.restore(client, callback, noCache, id)
 				:next(function(inventories)
 					character.vars.inv = inventories
 					nut.char.loaded[id] = character
+					done = done + 1
 
-					if (k == #results and callback) then
+					if (done == #results and callback) then
 						callback(characters)
 					end
 				end)
