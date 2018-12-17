@@ -1,4 +1,6 @@
 nut.db = nut.db or {}
+nut.db.queryQueue = nut.db.queue or {}
+
 nut.util.include("nutscript/gamemode/config/sv_database.lua")
 
 local function ThrowQueryFault(query, fault)
@@ -70,6 +72,8 @@ modules.tmysql4 = {
 					ThrowQueryFault(query, lastID or "")
 				end
 			end, 3)
+		else
+			nut.db.queryQueue[#nut.db.queryQueue] = {query, callback}
 		end
 	end,
 	escape = function(value)
@@ -112,7 +116,7 @@ PREPARE_CACHE = {}
 nut.db.prepared = nut.db.prepared or {}
 modules.mysqloo = {
 	query = function(query, callback)
-		if (nut.db.getObject()) then
+		if (nut.db.getObject and nut.db.getObject()) then
 			local object = nut.db.getObject():query(query)
 
 			if (callback) then
@@ -123,8 +127,11 @@ modules.mysqloo = {
 
 			function object:onError(fault)
 				if (nut.db.getObject():status() == mysqloo.DATABASE_NOT_CONNECTED) then
-					MYSQLOO_QUEUE[#MYSQLOO_QUEUE + 1] = {query, callback}
-					nut.db.connect()
+					nut.db.queryQueue[#nut.db.queryQueue + 1] = {
+						query,
+						callback
+					}
+					nut.db.connect(nil, true)
 
 					return
 				end
@@ -133,6 +140,8 @@ modules.mysqloo = {
 			end
 
 			object:start()
+		else
+			nut.db.queryQueue[#nut.db.queryQueue + 1] = {query, callback}
 		end
 	end,
 	escape = function(value)
@@ -223,12 +232,6 @@ modules.mysqloo = {
 					nut.db.getObject = modules.mysqloo.getObject
 					nut.db.preparedCall = modules.mysqloo.preparedCall
 
-					for k, v in ipairs(MYSQLOO_QUEUE) do
-						nut.db.query(v[1], v[2])
-					end
-
-					MYSQLOO_QUEUE = {}
-
 					if (callback) then
 						callback()
 					end
@@ -237,7 +240,7 @@ modules.mysqloo = {
 				end
 			end
 
-			timer.Create("nutMySQLWakeUp" .. i, 1 + i, 0, function()
+			timer.Create("nutMySQLWakeUp" .. i, 600 + i, 0, function()
 				pool:query("SELECT 1 + 1")
 			end)
 		end
@@ -296,18 +299,25 @@ modules.mysqloo = {
 
 -- Add default values here.
 nut.db.escape = nut.db.escape or modules.sqlite.escape
-nut.db.query = nut.db.query or modules.sqlite.query
+nut.db.query = nut.db.query or function(...)
+	nut.db.queryQueue[#nut.db.queryQueue + 1] = {...}
+end
 
-function nut.db.connect(callback)
+function nut.db.connect(callback, reconnect)
 	local dbModule = modules[nut.db.module]
 
 	if (dbModule) then
-		if (not nut.db.connected and not nut.db.object) then
+		if ((reconnect or not nut.db.connected) and not nut.db.object) then
 			dbModule.connect(function()
 				nut.db.connected = true
 				if (isfunction(callback)) then
 					callback()
 				end
+
+				for i = 1, #nut.db.queryQueue do
+					nut.db.query(unpack(nut.db.queryQueue[i]))
+				end
+				nut.db.queryQueue = {}
 			end)
 		end
 
