@@ -260,4 +260,6 @@ LANGUAGE = {
 	beingTied = "You are being tied.",
 	sameOutfitCategory = "You are already wearing this type of outfit.",
 	noBusiness = "You are not allowed to purchase anything right now.",
+	panelRemoved = "You have removed %s 3D panels.",
+	panelAdded = "You have added a 3D panel.",
 }

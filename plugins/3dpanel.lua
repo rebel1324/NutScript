@@ -146,7 +146,7 @@ nut.command.add("paneladd", {
 	syntax = "<string url> [number w] [number h] [number scale]",
 	onRun = function(client, arguments)
 		if (!arguments[1]) then
-			return L("invalidArg", 1)
+			return L("invalidArg", client, 1)
 		end
 
 		-- Get the position and angles of the panel.
