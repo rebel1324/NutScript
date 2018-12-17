@@ -122,15 +122,15 @@ local function action(self)
 		"ITEM.width = "..ICON_INFO.w .."\n"..
 		"ITEM.height = "..ICON_INFO.h .."\n"..
 		"ITEM.iconCam = {" .."\n"..
-		"\tpos = Vector("..tab.cam_pos.x..", "..tab.cam_pos.y..", "..tab.cam_pos.z..")" .."\n"..
-		"\tang = Angle("..tab.cam_ang.p..", "..tab.cam_ang.y..", "..tab.cam_ang.r..")" .."\n"..
+		"\tpos = Vector("..tab.cam_pos.x..", "..tab.cam_pos.y..", "..tab.cam_pos.z.."),\n"..
+		"\tang = Angle("..tab.cam_ang.p..", "..tab.cam_ang.y..", "..tab.cam_ang.r.."),\n"..
 		"\tfov = "..tab.cam_fov .. "," .."\n"
 		if (ICON_INFO.outline) then
 			text = text .. "\toutline = true," .. "\n" ..
 			"\toutlineColor = Color("..
 			ICON_INFO.outlineColor.r .. ", " ..
 			ICON_INFO.outlineColor.g .. ", " ..
-			ICON_INFO.outlineColor.b .. ")" .. "\n"
+			ICON_INFO.outlineColor.b .. ")," .. "\n"
 		end
 		text = text .. "}"
 
