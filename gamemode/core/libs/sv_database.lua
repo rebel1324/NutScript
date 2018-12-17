@@ -4,9 +4,6 @@ nut.db.queryQueue = nut.db.queue or {}
 nut.util.include("nutscript/gamemode/config/sv_database.lua")
 
 local function ThrowQueryFault(query, fault)
-	if (isfunction(nut.db.onQueryError)) then
-		return nut.db.onQueryError(query, fault)
-	end
 	MsgC(Color(255, 0, 0), "* "..query.."\n")
 	MsgC(Color(255, 0, 0), fault.."\n")
 end
@@ -20,26 +17,49 @@ end
 
 local modules = {}
 
+-- Decorator to add callback-less overload that returns a promise instead.
+local function promisifyIfNoCallback(queryHandler)
+	return function(query, callback)
+		local d
+		local function throw(err)
+			if (d) then
+				d:reject(err)
+			else
+				ThrowQueryFault(query, fault)
+			end
+		end
+		if (not isfunction(callback)) then
+			d = deferred.new()
+			callback = function(results, lastID)
+				d:resolve({results = results, lastID = lastID})
+			end
+		end
+
+		queryHandler(query, callback, throw)
+		return d
+	end
+end
+
 -- SQLite for local storage.
 modules.sqlite = {
-	query = function(query, callback)
+	query = promisifyIfNoCallback(function(query, callback, throw)
 		local data = sql.Query(query)
-		local fault = sql.LastError()
+		local err = sql.LastError()
 
 		if (data == false) then
-			ThrowQueryFault(query, fault)
+			throw(err)
 		end
 
 		if (callback) then
 			local lastID = tonumber(sql.QueryValue("SELECT last_insert_rowid()"))
-
 			callback(data, lastID)
 		end
-	end,
+	end),
 	escape = function(value)
 		return sql.SQLStr(value, true)
 	end,
 	connect = function(callback)
+		nut.db.query = modules.sqlite.query
 		if (callback) then
 			callback()
 		end
@@ -48,7 +68,7 @@ modules.sqlite = {
 
 -- tmysql4 module for MySQL storage.
 modules.tmysql4 = {
-	query = function(query, callback)
+	query = promisifyIfNoCallback(function(query, callback, throw)
 		if (nut.db.object) then
 			nut.db.object:Query(query, function(data, status, lastID)
 				if (QUERY_SUCCESS and status == QUERY_SUCCESS) then
@@ -63,19 +83,17 @@ modules.tmysql4 = {
 							end
 
 							return
-						else
-							lastID = data[1].error
 						end
 					end
 
 					file.Write("nut_queryerror.txt", query)
-					ThrowQueryFault(query, lastID or "")
+					throw(lastID) -- last ID is actually the error string.
 				end
 			end, 3)
 		else
 			nut.db.queryQueue[#nut.db.queryQueue] = {query, callback}
 		end
-	end,
+	end),
 	escape = function(value)
 		if (nut.db.object) then
 			return nut.db.object:Escape(value)
@@ -115,7 +133,7 @@ PREPARE_CACHE = {}
 -- mysqloo for MySQL storage.
 nut.db.prepared = nut.db.prepared or {}
 modules.mysqloo = {
-	query = function(query, callback)
+	query = promisifyIfNoCallback(function(query, callback, throw)
 		if (nut.db.getObject and nut.db.getObject()) then
 			local object = nut.db.getObject():query(query)
 
@@ -136,14 +154,14 @@ modules.mysqloo = {
 					return
 				end
 
-				ThrowQueryFault(query, fault)
+				throw(fault)
 			end
 
 			object:start()
 		else
 			nut.db.queryQueue[#nut.db.queryQueue + 1] = {query, callback}
 		end
-	end,
+	end),
 	escape = function(value)
 		local object = nut.db.getObject()
 
@@ -268,7 +286,7 @@ modules.mysqloo = {
 				end
 			end
 			function prepObj:onError(err)
-				print(err)
+				ServerLog(err)
 			end
 
 			local arguments = {...}
@@ -295,7 +313,6 @@ modules.mysqloo = {
 		end
 	end
 }
-
 
 -- Add default values here.
 nut.db.escape = nut.db.escape or modules.sqlite.escape
@@ -452,7 +469,6 @@ DROP TABLE IF EXISTS nut_inventories;
 ]]
 
 function nut.db.wipeTables(callback)
-	nut.db.onQueryError = nil
 	local function realCallback()
 		nut.db.query("SET FOREIGN_KEY_CHECKS = 1;", function()
 			MsgC(
@@ -510,16 +526,17 @@ concommand.Add("nut_recreatedb", function(client, cmd, arguments)
 end)
 
 function nut.db.loadTables()
-	nut.db.onQueryError = nil
-	if (nut.db.object) then
+	local function done()
+		nut.db.tablesLoaded = true
+		hook.Run("NutScriptTablesLoaded")
+	end
+
+	if (nut.db.module == "sqlite") then
+		nut.db.query(SQLITE_CREATE_TABLES, done)
+	else
 		-- This is needed to perform multiple queries since the string is only 1 big query.
 		local queries = string.Explode(";", MYSQL_CREATE_TABLES)
 		local i = 1
-
-		local function done()
-			nut.db.tablesLoaded = true
-			hook.Run("NutScriptTablesLoaded")
-		end
 
 		local function doNextQuery()
 			if (i > #queries) then
@@ -537,11 +554,6 @@ function nut.db.loadTables()
 		end
 
 		doNextQuery()
-	else
-		nut.db.query(SQLITE_CREATE_TABLES, function()
-			nut.db.tablesLoaded = true
-			hook.Run("NutScriptTablesLoaded")
-		end)
 	end
 
 	hook.Run("OnLoadTables")

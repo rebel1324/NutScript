@@ -663,12 +663,11 @@ end
 
 function GM:NutScriptTablesLoaded()
 	-- Add missing NS1.2 columns for nut_player table.
-	nut.db.onQueryError = function() end
+	local ignore = function() end
 	nut.db.query("ALTER TABLE nut_players ADD COLUMN _firstJoin DATETIME")
+		:catch(ignore)
 	nut.db.query("ALTER TABLE nut_players ADD COLUMN _lastJoin DATETIME")
-	timer.Simple(1, function()
-		nut.db.onQueryError = nil
-	end)
+		:catch(ignore)
 end
 
 function GM:PluginShouldLoad(plugin)
