@@ -163,7 +163,7 @@ modules.mysqloo = {
 		end
 	end),
 	escape = function(value)
-		local object = nut.db.getObject()
+		local object = nut.db.getObject and nut.db.getObject()
 
 		if (object) then
 			return object:escape(value)
