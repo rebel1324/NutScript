@@ -5,6 +5,7 @@ PLUGIN.desc = "A replacement for the default weapon selection."
 
 local IsValid, tonumber, FrameTime, Lerp, ScrW, ScrH, CurTime, ipairs = IsValid, tonumber, FrameTime, Lerp, ScrW, ScrH, CurTime, ipairs
 local RunConsoleCommand, LocalPlayer, math, color_white, surface = RunConsoleCommand, LocalPlayer, math, color_white, surface
+local pi = math.pi
 
 if (CLIENT) then
 
@@ -15,66 +16,90 @@ if (CLIENT) then
 	PLUGIN.alphaDelta = PLUGIN.alphaDelta or PLUGIN.alpha
 	PLUGIN.fadeTime = PLUGIN.fadeTime or 0
 
+	-- Player.GetWeapons may not be sequential, so this gives us the weapon
+	-- as if we had sequential indices.
+	function PLUGIN:getWeaponFromIndex(i)
+		local index = 1
+		for k, v in pairs(LocalPlayer():GetWeapons()) do
+			if (index == i) then
+				return v
+			end
+			index = index + 1
+		end
+		return NULL
+	end
+
 	function PLUGIN:HUDPaint()
 		local frameTime = FrameTime()
 		self.alphaDelta = Lerp(frameTime * 10, self.alphaDelta, self.alpha)
 
 		local fraction = self.alphaDelta
+		if (fraction <= 0) then return end
 
-		if (fraction > 0) then
-			local client = LocalPlayer()
-			local weapons = client:GetWeapons()
-			local total = #weapons
-			local x, y = ScrW() * 0.5, ScrH() * 0.5
-			local spacing = math.pi * 0.85
-			local radius = 240 * self.alphaDelta
+		local shiftX = ScrW()*.02
 
-			self.deltaIndex = Lerp(frameTime * 12, self.deltaIndex, self.index) --math.Approach(self.deltaIndex, self.index, fTime() * 12)
+		local client = LocalPlayer()
+		local weapons = client:GetWeapons()
+		local x, y = ScrW() * 0.5, ScrH() * 0.5
+		local spacing = math.pi * 0.85
+		local radius = 240 * self.alphaDelta
 
-			local index = self.deltaIndex
+		self.deltaIndex = Lerp(frameTime * 12, self.deltaIndex, self.index)
+		local index = self.deltaIndex
+		local realIndex = 1
+
+		for _, v in pairs(weapons) do
+			local theta = (realIndex - index) * 0.1
+			local color = ColorAlpha(
+				realIndex == self.index
+				and nut.config.get("color")
+				or color_white, (255 - math.abs(theta * 3) * 255) * fraction
+			)
+			local lastY = 0
+
+			if (self.markup and (realIndex == 1 or realIndex < self.index)) then
+				local w, h = self.markup:Size()
+				lastY = (h * fraction)
+				if (realIndex == self.index - 1 or realIndex == 1) then
+					self.infoAlpha = Lerp(frameTime * 5, self.infoAlpha, 255)
+					self.markup:Draw(
+						x + 6 + shiftX, y + 30,
+						0, 0,
+						self.infoAlpha * fraction
+					)
+				end
+
+				if (self.index == 1) then
+					lastY = 0
+				end
+			end
+
+			surface.SetFont("nutSubTitleFont")
 			
-			for k, v in ipairs(weapons) do
-				if (!weapons[self.index]) then
-					self.index = total
-				end
+			local name = v:GetPrintName():upper()
+			local tx, ty = surface.GetTextSize(name)
+			local scale = (1 - math.abs(theta*2))
+			local matrix = Matrix()
+			matrix:Translate(Vector(
+				shiftX + x + math.cos(theta * spacing + pi) * radius + radius,
+				y + lastY + math.sin(theta * spacing + pi) * radius - ty/2 ,
+				1))
+			matrix:Scale(Vector(1, 1, 0) * scale)
+			cam.PushModelMatrix(matrix)
+				nut.util.drawText(
+					name,
+					2, ty/2,
+					color,
+					0, 1,
+					"nutSubTitleFont"
+				)
+			cam.PopModelMatrix()
 
-				local theta = (k - index) * 0.1
-				local color = ColorAlpha(k == self.index and nut.config.get("color") or color_white, (255 - math.abs(theta * 3) * 255) * fraction)
-				local lastY = 0
-				local shiftX = ScrW()*.02
+			realIndex = realIndex + 1
+		end
 
-				if (self.markup and k < self.index) then
-					local w, h = self.markup:Size()
-
-					lastY = (h * fraction)
-
-					if (k == self.index - 1) then
-						self.infoAlpha = Lerp(frameTime * 3, self.infoAlpha, 255)
-
-						self.markup:Draw(x + 6 + shiftX, y + 30, 0, 0, self.infoAlpha * fraction)
-					end
-				end
-
-				surface.SetFont("nutSubTitleFont")
-				local tx, ty = surface.GetTextSize(v:GetPrintName():upper())
-				local scale = (1 - math.abs(theta*2))
-
-				local matrix = Matrix()
-				matrix:Translate(Vector(
-					shiftX + x + math.cos(theta * spacing + math.pi) * radius + radius,
-					y + lastY + math.sin(theta * spacing + math.pi) * radius - ty/2 ,
-					1))
-				matrix:Rotate(angle or Angle(0, 0, 0))
-				matrix:Scale(Vector(1, 1, 0) * scale)
-
-				cam.PushModelMatrix(matrix)
-					nut.util.drawText(v:GetPrintName():upper(), 2, ty/2, color, 0, 1, "nutSubTitleFont")
-				cam.PopModelMatrix()
-			end
-
-			if (self.fadeTime < CurTime() and self.alpha > 0) then
-				self.alpha = 0
-			end
+		if (self.fadeTime < CurTime() and self.alpha > 0) then
+			self.alpha = 0
 		end
 	end
 
@@ -90,9 +115,18 @@ if (CLIENT) then
 		self.fadeTime = CurTime() + 5
 		
 		local client = LocalPlayer()
-		local weapon = client:GetWeapons()[self.index]
+		local weapon
+		local index = 1
+		for k, v in pairs(client:GetWeapons()) do
+			if (index == self.index) then
+				weapon = v
+				break
+			end
+			index = index + 1
+		end
 
 		self.markup = nil
+		self.infoAlpha = 0
 
 		if (IsValid(weapon)) then
 			local text = ""
@@ -100,16 +134,23 @@ if (CLIENT) then
 			for k, v in ipairs(weaponInfo) do
 				if (weapon[v] and weapon[v]:find("%S")) then
 					local color = nut.config.get("color")
-					text = text.."<font=nutItemBoldFont><color="..color.r..","..color.g..","..color.b..">"..L(v).."</font></color>\n"..weapon[v].."\n"
+					text = text
+						.."<font=nutItemBoldFont><color="
+						..color.r..","..color.g..","..color.b..">"
+						..L(v)..
+						"</font></color>\n"..weapon[v].."\n"
 				end
 			end
 
-			if (text != "") then
-				self.markup = markup.Parse("<font=nutItemDescFont>"..text, ScrW() * 0.3)
-				self.infoAlpha = 0
+			if (text ~= "") then
+				self.markup = markup.Parse(
+					"<font=nutItemDescFont>"..text,
+					ScrW() * 0.3
+				)
 			end
 
-			local source, pitch = hook.Run("WeaponCycleSound") or "common/talk.wav"
+			local source, pitch = hook.Run("WeaponCycleSound")
+				or "common/talk.wav"
 			client:EmitSound(source or "common/talk.wav", 45, pitch or 180)
 		end
 	end
@@ -117,42 +158,58 @@ if (CLIENT) then
 	function PLUGIN:PlayerBindPress(client, bind, pressed)
 		local weapon = client:GetActiveWeapon()
 		local lPly = LocalPlayer()
-		if (!client:InVehicle() and (!IsValid(weapon) or weapon:GetClass() != "weapon_physgun" or !client:KeyDown(IN_ATTACK)) and hook.Run("CanPlayerChooseWeapon") ~= false) then
-			bind = bind:lower()
-			if (bind:find("invprev") and pressed) then
-				self.index = self.index - 1
+		if (client:InVehicle()) then return end
+		if (
+			IsValid(weapon) and
+			weapon:GetClass() == "weapon_physgun" and
+			client:KeyDown(IN_ATTACK)
+		) then return end
+		if (hook.Run("CanPlayerChooseWeapon") == false) then return end
+		if (not pressed) then return end
 
-				if (self.index < 1) then
-					self.index = #client:GetWeapons()
-				end
-				self:onIndexChanged()
-				return true
-			elseif (bind:find("invnext") and pressed) then
-				self.index = self.index + 1
+		bind = bind:lower()
 
-				if (self.index > #client:GetWeapons()) then
-					self.index = 1
-				end
+		local total = table.Count(client:GetWeapons())
 
-				self:onIndexChanged()
-				return true
-			elseif (bind:find("slot")) then
-				self.index = math.Clamp(tonumber(bind:match("slot(%d)")) or 1, 1, #lPly:GetWeapons())
-				self:onIndexChanged()
-				return true
-			elseif (bind:find("attack") and pressed and self.alpha > 0) then
-				local weapon = lPly:GetWeapons()[self.index]
-				local source, pitch = hook.Run("WeaponSelectSound", weapon)
-					or "common/talk.wav"
-				lPly:EmitSound(source, 45, pitch or 200)
-
-				local weapon = lPly:GetWeapons()[self.index]
-				if (IsValid(weapon)) then
-					lPly:SelectWeapon(weapon:GetClass())
-				end
-				self.alpha = 0
-				return true
+		if (bind:find("invprev")) then
+			self.index = self.index - 1
+			if (self.index < 1) then
+				self.index = total
 			end
+
+			self:onIndexChanged()
+			return true
+		elseif (bind:find("invnext")) then
+			self.index = self.index + 1
+			if (self.index > total) then
+				self.index = 1
+			end
+
+			self:onIndexChanged()
+			return true
+		elseif (bind:find("slot")) then
+			self.index = math.Clamp(
+				tonumber(bind:match("slot(%d)")) or 1,
+				1, total
+			)
+			self:onIndexChanged()
+			return true
+		elseif (bind:find("attack") and self.alpha > 0) then
+			local weapon = self:getWeaponFromIndex(self.index)
+			if (not IsValid(weapon)) then
+				self.alpha = 0
+				self.infoAlpha = 0
+				return
+			end
+
+			local source, pitch = hook.Run("WeaponSelectSound", weapon)
+				or "common/talk.wav"
+			lPly:EmitSound(source, 45, pitch or 200)
+			lPly:SelectWeapon(weapon:GetClass())
+
+			self.alpha = 0
+			self.infoAlpha = 0
+			return true
 		end
 	end
 end
