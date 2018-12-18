@@ -21,7 +21,7 @@ function PANEL:updateModel()
 	if (istable(modelInfo)) then
 		model, skin, groups = unpack(modelInfo)
 	else
-		model, skin, groups = modelInfo, 1, {}
+		model, skin, groups = modelInfo, 0, {}
 	end
 
 	self.model:SetModel(model)
