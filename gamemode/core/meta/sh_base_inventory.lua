@@ -147,7 +147,7 @@ end
 function Inventory:getItemsByUniqueID(itemType)
 	ErrorNoHalt(
 		"Inventory:getItemsByUniqueID is deprecated.\n"..
-		"Use Inventory:getItemsByType instead.\n"
+		"Use Inventory:getItemsOfType instead.\n"
 	)
 	return self:getItemsOfType(itemType)
 end
