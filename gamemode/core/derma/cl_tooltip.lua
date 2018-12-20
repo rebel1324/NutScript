@@ -1,24 +1,28 @@
 local itemWidth = ScrW()*.15
+
+local PADDING = 12
+local PADDING_HALF = PADDING * 0.5
+
 hook.Add("TooltipInitialize", "nutItemTooltip", function(self, panel)
-	if (panel.itemID) then
+	if (panel.nutToolTip or panel.itemID) then
 		self.markupObject = nut.markup.parse(self:GetText(), itemWidth)
 		self:SetText("")
-		self:SetWide(math.max(itemWidth, 200) + 15)
-		self:SetHeight(self.markupObject:getHeight() + 20)
+		self:SetWide(math.max(itemWidth, 200) + PADDING)
+		self:SetHeight(self.markupObject:getHeight() + PADDING)
+		self:SetAlpha(0)
+		self:AlphaTo(255, 0.2, 0)
 		self.isItemTooltip = true
 	end
 end)
 
 hook.Add("TooltipPaint", "nutItemTooltip", function(self, w, h)
 	if (self.isItemTooltip) then
-		nut.util.drawBlur(self, 10)
-		surface.SetDrawColor(55, 55, 55, 120)
+		nut.util.drawBlur(self, 2, 2)
+		surface.SetDrawColor(0, 0, 0, 150)
 		surface.DrawRect(0, 0, w, h)
-		surface.SetDrawColor(255, 255, 255, 120)
-		surface.DrawOutlinedRect(1, 1, w - 2, h - 2)
 
 		if (self.markupObject) then
-			self.markupObject:draw(15, 10)
+			self.markupObject:draw(PADDING_HALF, PADDING_HALF)
 		end
 
 		return true
