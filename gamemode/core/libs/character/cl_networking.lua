@@ -8,7 +8,9 @@ netstream.Hook("charSet", function(key, value, id)
 	local character = nut.char.loaded[id]
 
 	if (character) then
+		local oldValue = character.vars[key]
 		character.vars[key] = value
+		hook.Run("CharacterDataChanged", character, key, oldValue, value)
 	end
 end)
 
