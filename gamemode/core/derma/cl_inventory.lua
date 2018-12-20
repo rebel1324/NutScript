@@ -37,6 +37,7 @@ function PANEL:setItemType(itemTypeOrID)
 	end
 	assert(item, "invalid item type or ID "..tostring(item))
 
+	self.nutToolTip = true
 	self.itemTable = item
 	self:SetModel(item.model, item.skin)
 	self:updateTooltip()
@@ -78,7 +79,7 @@ end
 function PANEL:updateTooltip()
 	self:SetTooltip(
 		"<font=nutItemBoldFont>"..self.itemTable:getName().."</font>\n"..
-		self.itemTable:getDesc()
+		"<font=nutItemDescFont>"..self.itemTable:getDesc()
 	)
 end
 
