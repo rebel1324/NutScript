@@ -262,4 +262,5 @@ LANGUAGE = {
 	noBusiness = "You are not allowed to purchase anything right now.",
 	panelRemoved = "You have removed %s 3D panels.",
 	panelAdded = "You have added a 3D panel.",
+	itemOnGround = "Your item has been placed on the ground."
 }

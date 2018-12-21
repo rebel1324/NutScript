@@ -27,15 +27,15 @@ NUT_ITEM_DEFAULT_FUNCTIONS = {
 			if (not inventory) then return false end
 			inventory:add(item)
 				:next(function(res)
-					if (res.error) then
-						return client:notifyLocalized(res.error)
-					end
 					if (IsValid(entity)) then
 						entity.nutIsSafe = true
 						entity:Remove()
 					end
 					if (not IsValid(client)) then return end
 					nut.log.add(client, "itemTake", item.name, 1)
+				end)
+				:catch(function(err)
+					client:notifyLocalized(err)
 				end)
 
 			return false

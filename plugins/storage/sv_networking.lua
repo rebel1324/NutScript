@@ -75,17 +75,16 @@ net.Receive("nutStorageTransfer", function(_, client)
 		:next(function()
 			return toInv:add(item)
 		end)
-		:next(function(res)
-			-- If something went wrong, move the item back to its old inventory.
-			if (res.error and IsValid(client)) then
-				client:notifyLocalized(res.error)
-				return fromInv:add(item)
+		:catch(function(err)
+			if (IsValid(client)) then
+				client:notifyLocalized(err)
 			end
+			return fromInv:add(item)
 		end)
-		:next(function(res)
-			-- And if that doesn't work, just spawn it in the world.
-			if (res and res.error) then
-				item:spawn(failItemDropPos)
+		:catch(function(err)
+			item:spawn(failItemDropPos)
+			if (IsValid(client)) then
+				client:notifyLocalized("itemOnGround")
 			end
 		end)
 end)

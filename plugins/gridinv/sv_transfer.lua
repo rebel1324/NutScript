@@ -52,6 +52,9 @@ function PLUGIN:HandleItemTransferRequest(client, itemID, x, y, invID)
 			print(err)
 			debug.Trace()
 		end
+		if (IsValid(client)) then
+			client:notifyLocalized("itemOnGround")
+		end
 		item:spawn(failItemDropPos)
 	end
 
