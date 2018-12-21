@@ -212,7 +212,7 @@ function GM:LoadNutFonts(font, genericFont)
 
 	surface.CreateFont("nutNoticeFont", {
 		font = genericFont,
-		size = 16,
+		size = 22,
 		weight = 500,
 		extended = true,
 		antialias = true
