@@ -25,7 +25,7 @@ local function promisifyIfNoCallback(queryHandler)
 			if (d) then
 				d:reject(err)
 			else
-				ThrowQueryFault(query, fault)
+				ThrowQueryFault(query, err)
 			end
 		end
 		if (not isfunction(callback)) then
