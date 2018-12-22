@@ -1,140 +1,85 @@
 local EDITOR = {}
 
-EDITOR.name = function(vendor, client, key, data)
-	vendor:setNetVar("name", data)
+EDITOR.name = function(vendor, client)
+	local name = net.ReadString()
+	vendor:setName(name)
 end
 
-EDITOR.desc = function(vendor, client, key, data)
-	vendor:setNetVar("desc", data)
+EDITOR.desc = function(vendor, client)
+	local desc = net.ReadString()
+	vendor:setDesc(desc)
 end
 
-EDITOR.bubble = function(vendor, client, key, data)
-	vendor:setNetVar("noBubble", data)
+EDITOR.bubble = function(vendor, client)
+	local noBubble = net.ReadBool()
+	vendor:setNoBubble(noBubble)
 end
 
-EDITOR.mode = function(vendor, client, key, data)
-	local uniqueID = data[1]
+EDITOR.mode = function(vendor, client)
+	local itemType = net.ReadString()
+	local mode = net.ReadInt(8)
 
-	vendor.items[uniqueID] = vendor.items[uniqueID] or {}
-	vendor.items[uniqueID][VENDOR_MODE] = data[2]
-
-	netstream.Start(vendor.receivers, "vendorEdit", key, data)
+	vendor:setTradeMode(itemType, mode)
 end
 
-EDITOR.price = function(vendor, client, key, data)
-	local uniqueID = data[1]
-	data[2] = tonumber(data[2])
+EDITOR.price = function(vendor, client)
+	local itemType = net.ReadString()
+	local price = net.ReadInt(32)
 
-	if (data[2]) then
-		data[2] = math.Round(data[2])
-	end
-
-	vendor.items[uniqueID] = vendor.items[uniqueID] or {}
-	vendor.items[uniqueID][VENDOR_PRICE] = data[2]
-
-	netstream.Start(vendor.receivers, "vendorEdit", key, data)
-	return uniqueID
+	vendor:setItemPrice(itemType, price)
 end
 
-EDITOR.stockDisable = function(vendor, client, key, data)
-	vendor.items[data] = vendor.items[uniqueID] or {}
-	vendor.items[data][VENDOR_MAXSTOCK] = nil
-
-	netstream.Start(vendor.receivers, "vendorEdit", key, data)
+EDITOR.stockDisable = function(vendor, client)
+	local itemType = net.ReadString()
+	vendor:setMaxStock(itemType, nil)
 end
 
-EDITOR.stockMax = function(vendor, client, key, data)
-	local uniqueID = data[1]
-	data[2] = math.max(math.Round(tonumber(data[2]) or 1), 1)
-
-	vendor.items[uniqueID] = vendor.items[uniqueID] or {}
-	vendor.items[uniqueID][VENDOR_MAXSTOCK] = data[2]
-	vendor.items[uniqueID][VENDOR_STOCK] = math.Clamp(vendor.items[uniqueID][VENDOR_STOCK] or data[2], 1, data[2])
-
-	data[3] = vendor.items[uniqueID][VENDOR_STOCK]
-
-	netstream.Start(vendor.receivers, "vendorEdit", key, data)
-	return uniqueID
+EDITOR.stockMax = function(vendor, client)
+	local itemType = net.ReadString()
+	local value = net.ReadUInt(32)
+	vendor:setMaxStock(itemType, value)
 end
 
-EDITOR.stock = function(vendor, client, key, data)
-	local uniqueID = data[1]
-
-	vendor.items[uniqueID] = vendor.items[uniqueID] or {}
-
-	if (not vendor.items[uniqueID][VENDOR_MAXSTOCK]) then
-		data[2] = math.max(math.Round(tonumber(data[2]) or 0), 0)
-		vendor.items[uniqueID][VENDOR_MAXSTOCK] = data[2]
-	end
-
-	data[2] = math.Clamp(math.Round(tonumber(data[2]) or 0), 0, vendor.items[uniqueID][VENDOR_MAXSTOCK])
-	vendor.items[uniqueID][VENDOR_STOCK] = data[2]
-
-	netstream.Start(vendor.receivers, "vendorEdit", key, data)
-	return uniqueID
+EDITOR.stock = function(vendor, client)
+	local itemType = net.ReadString()
+	local value = net.ReadUInt(32)
+	vendor:setStock(itemType, value)
 end
 
-EDITOR.faction = function(vendor, client, key, factionID)
-	local faction = nut.faction.teams[factionID]
-
-	if (faction) then
-		vendor.factions[factionID] = not vendor.factions[factionID]
-
-		if (not vendor.factions[factionID]) then
-			vendor.factions[factionID] = nil
-		end
-	end
-
-	return {factionID, vendor.factions[factionID]}
+EDITOR.faction = function(vendor, client)
+	local factionID = net.ReadUInt(8)
+	local allowed = net.ReadBool()
+	vendor:setFactionAllowed(factionID, allowed)
 end
 
-EDITOR.class = function(vendor, client, key, uniqueID)
-	local class
-
-	for k, v in ipairs(nut.class.list) do
-		if (v.uniqueID == uniqueID) then
-			class = v
-
-			break
-		end
-	end
-
-	if (class) then
-		vendor.classes[data] = not vendor.classes[data]
-
-		if (not vendor.classes[data]) then
-			vendor.classes[data] = nil
-		end
-	end
-
-	return {uniqueID, vendor.classes[uniqueID]}
+EDITOR.class = function(vendor, client)
+	local classID = net.ReadUInt(8)
+	local allowed = net.ReadBool()
+	vendor:setClassAllowed(classID, allowed)
 end
 
-EDITOR.model = function(vendor, client, key, data)
-	vendor:SetModel(data)
-	vendor:setAnim()
+EDITOR.model = function(vendor, client)
+	local model = net.ReadString()
+	vendor:setModel(model)
 end
 
-EDITOR.useMoney = function(vendor, client, key, data)
-	if (vendor.money) then
-		vendor:setMoney()
+EDITOR.useMoney = function(vendor, client)
+	local useMoney = net.ReadBool()
+	if (useMoney) then
+		vendor:setMoney(nut.config.get("defMoney", 0))
 	else
-		vendor:setMoney(0)
+		vendor:setMoney(nil)
 	end
 end
 
 EDITOR.money = function(vendor, client, key, data)
-	data = math.Round(math.abs(tonumber(data) or 0))
-
-	vendor:setMoney(data)
-	return nil, false
+	local money = net.ReadUInt(32)
+	vendor:setMoney(money)
 end
 
-EDITOR.scale = function(vendor, client, key, data)
-	data = tonumber(data) or 0.5
-
-	vendor:setNetVar("scale", data)
-	netstream.Start(vendor.receivers, "vendorEdit", key, data)
+EDITOR.scale = function(vendor, client)
+	local scale = net.ReadFloat()
+	vendor:setSellScale(scale)
 end
 
 return EDITOR

@@ -1,7 +1,3 @@
-VENDOR_BUY = 1
-VENDOR_SELL = 2
-VENDOR_BOTH = 3
-
 -- Keys for vendor messages.
 VENDOR_WELCOME = 1
 VENDOR_LEAVE = 2

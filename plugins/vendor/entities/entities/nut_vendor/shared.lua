@@ -4,144 +4,143 @@ ENT.Category = "NutScript"
 ENT.Spawnable = true
 ENT.AdminOnly = true
 ENT.isVendor = true
+ENT.items = {}
+ENT.factions = {}
+ENT.messages = {}
+ENT.classes = {}
 
 NUT_VENDORS = NUT_VENDORS or {}
 
 function ENT:Initialize()
-	if (SERVER) then
-		self:SetModel("models/mossman.mdl")
-		self:SetUseType(SIMPLE_USE)
-		self:SetMoveType(MOVETYPE_NONE)
-		self:DrawShadow(true)
-		self:SetSolid(SOLID_BBOX)
-		self:PhysicsInit(SOLID_BBOX)
-
-		self.items = {}
-		self.messages = {}
-		self.factions = {}
-		self.classes = {}
-
-		self:setNetVar("name", "John Doe")
-		self:setNetVar("desc", "")
-
-		self.receivers = {}
-
-		local physObj = self:GetPhysicsObject()
-
-		if (IsValid(physObj)) then
-			physObj:EnableMotion(false)
-			physObj:Sleep()
-		end
-
-		NUT_VENDORS[self:EntIndex()] = self
+	if (CLIENT) then
+		timer.Simple(1, function()
+			if (not IsValid(self)) then return end
+			self:setAnim()
+		end)
+		return
 	end
 
-	timer.Simple(1, function()
-		if (IsValid(self)) then
-			self:setAnim()
-		end
-	end)
+	self:SetModel("models/mossman.mdl")
+	self:SetUseType(SIMPLE_USE)
+	self:SetMoveType(MOVETYPE_NONE)
+	self:DrawShadow(true)
+	self:SetSolid(SOLID_BBOX)
+	self:PhysicsInit(SOLID_BBOX)
+
+	self:setNetVar("name", "John Doe")
+	self:setNetVar("desc", "")
+
+	self.receivers = {}
+
+	local physObj = self:GetPhysicsObject()
+
+	if (IsValid(physObj)) then
+		physObj:EnableMotion(false)
+		physObj:Sleep()
+	end
+
+	NUT_VENDORS[self:EntIndex()] = self
 end
 
-function ENT:canAccess(client)
-	if (client:IsAdmin()) then
+function ENT:getMoney()
+	return self.money
+end
+
+function ENT:hasMoney(amount)
+	local moeny = self:getMoney()
+
+	-- Vendor not using money system so they can always afford it.
+	if (not money) then
 		return true
 	end
 
-	local allowed = false
-	local factionID = nut.faction.indices[client:Team()].uniqueID
-
-	if (self.factions and table.Count(self.factions) > 0) then
-		if (self.factions[uniqueID]) then
-			allowed = true
-		else
-			return false
-		end
-	end
-
-	if (allowed and self.classes and table.Count(self.classes) > 0) then
-		local class = nut.class.list[client:getChar():getClass()]
-		local classID = class and class.uniqueID
-
-		if (!self.classes[class]) then
-			return false
-		end
-	end
-
-	return true
+	return money >= amount
 end
 
+-- Return how much stock for an item the vendor has. If the stock
+-- is not applicable, nil is returned.
 function ENT:getStock(uniqueID)
-	if (self.items[uniqueID] and self.items[uniqueID][VENDOR_MAXSTOCK]) then
-		return self.items[uniqueID][VENDOR_STOCK] or 0, self.items[uniqueID][VENDOR_MAXSTOCK]
+	if (
+		self.items[uniqueID] and
+		self.items[uniqueID][VENDOR_MAXSTOCK]
+	) then
+		return self.items[uniqueID][VENDOR_STOCK] or 0,
+			self.items[uniqueID][VENDOR_MAXSTOCK]
 	end
 end
 
-function ENT:getPrice(uniqueID, selling)
-	local price = 0
-
-	if (isstring(uniqueID)) then
-		price = nut.item.list[uniqueID] and self.items[uniqueID] and self.items[uniqueID][VENDOR_PRICE] or nut.item.list[uniqueID]:getPrice() or 0
-	elseif (istable(uniqueID)) then
-		price = uniqueID:getPrice()
-	elseif (isnumber(uniqueID)) then
-		price = nut.item.instances[uniqueID]:getPrice()
+-- Returns the maximum number of stock for an item if applicable.
+function ENT:getMaxStock(itemType)
+	if (self.items[itemType]) then
+		return self.items[itemType][VENDOR_MAXSTOCK]
 	end
+end
 
-	if (selling) then
-		price = math.floor(price * (self:getNetVar("scale", 0.5)))
+-- Returns true if the given item is in stock.
+function ENT:isItemInStock(itemType, amount)
+	amount = amount or 1
+	assert(isnumber(amount), "amount must be a number")
+
+	local info = self.items[itemType]
+	if (not info) then
+		return false
+	end
+	if (not info[VENDOR_MAXSTOCK]) then
+		return true
+	end
+	return info[VENDOR_STOCK] >= amount
+end
+
+-- Returns the price for an item. If isSellingToVendor, then the price is
+-- the amount the player receives for selling the item. That is, it is scaled.
+function ENT:getPrice(uniqueID, isSellingToVendor)
+	local price = nut.item.list[uniqueID]
+		and self.items[uniqueID]
+		and self.items[uniqueID][VENDOR_PRICE]
+		or nut.item.list[uniqueID]:getPrice()
+
+	-- If selling to the vendor, scale the price down since it is "used".
+	if (isSellingToVendor) then
+		price = math.floor(price * self:getSellScale())
 	end
 
 	return price
 end
 
-function ENT:canSellToPlayer(client, uniqueID)
-	local data = self.items[uniqueID]
-
-	if (!data or !client:getChar() or !nut.item.list[uniqueID]) then
-		return false
+function ENT:getTradeMode(itemType)
+	if (self.items[itemType]) then
+		return self.items[itemType][VENDOR_MODE]
 	end
-
-	if (data[VENDOR_MODE] == VENDOR_BUYONLY) then
-		return false
-	end
-
-	if (!client:getChar():hasMoney(self:getPrice(uniqueID))) then
-		return false
-	end
-
-	if (data[VENDOR_STOCK] and data[VENDOR_STOCK] < 1) then
-		return false
-	end
-
-	return true
 end
 
-function ENT:canBuyFromPlayer(client, uniqueID)
-	local data = self.items[uniqueID]
-
-	if (!data or !client:getChar() or !nut.item.list[uniqueID]) then
-		return false
-	end
-
-	if (data[VENDOR_MODE] != VENDOR_SELLONLY) then
-		return false
-	end
-
-	if (!self:hasMoney(data[VENDOR_PRICE] or nut.item.list[uniqueID].price or 0)) then
-		return false
-	end
-
-	return true
-end
-
-function ENT:hasMoney(amount)
-	-- Vendor not using money system so they can always afford it.
-	if (!self.money) then
+function ENT:isClassAllowed(classID)
+	local class = nut.class.list[classID]
+	if (not class) then return false end
+	local faction = nut.faction.indices[class.faction]
+	if (faction and self:isFactionAllowed(faction.index)) then
 		return true
 	end
+	return self.classes[classID] == true
+end
 
-	return self.money >= amount
+function ENT:isFactionAllowed(factionID)
+	return self.factions[factionID] == true
+end
+
+function ENT:getSellScale()
+	return self:getNetVar("scale", 0.5)
+end
+
+function ENT:getName()
+	return self:getNetVar("name", "")
+end
+
+function ENT:getDesc()
+	return self:getNetVar("desc", "")
+end
+
+function ENT:getNoBubble()
+	return self:getNetVar("noBubble") == true
 end
 
 function ENT:setAnim()
@@ -152,8 +151,4 @@ function ENT:setAnim()
 	end
 
 	self:ResetSequence(4)
-end
-
-function ENT:getMoney()
-	return self.money
 end
