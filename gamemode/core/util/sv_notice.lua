@@ -17,7 +17,11 @@ function nut.util.notifyLocalized(message, recipient, ...)
 	local args = {...}
 
 	-- Allow 2nd argument to just be part of the varargs.
-	if (type(recipient) ~= "table" and type(recipient) ~= "Player") then
+	if (
+		recipient ~= nil and
+		type(recipient) ~= "table" and
+		type(recipient) ~= "Player"
+	) then
 		table.insert(args, 1, recipient)
 		recipient = nil
 	end
