@@ -4,12 +4,23 @@ ENT.Category = "NutScript"
 ENT.Spawnable = true
 ENT.AdminOnly = true
 ENT.isVendor = true
-ENT.items = {}
-ENT.factions = {}
-ENT.messages = {}
-ENT.classes = {}
 
 NUT_VENDORS = NUT_VENDORS or {}
+
+function ENT:setupVars()
+	if (SERVER) then
+		self:setNetVar("name", "John Doe")
+		self:setNetVar("desc", "")
+
+		self.receivers = {}
+	end
+
+	self.items = {}
+	self.factions = {}
+	self.messages = {}
+	self.classes = {}
+	self.hasSetupVars = true
+end
 
 function ENT:Initialize()
 	if (CLIENT) then
@@ -26,11 +37,7 @@ function ENT:Initialize()
 	self:DrawShadow(true)
 	self:SetSolid(SOLID_BBOX)
 	self:PhysicsInit(SOLID_BBOX)
-
-	self:setNetVar("name", "John Doe")
-	self:setNetVar("desc", "")
-
-	self.receivers = {}
+	self:setupVars()
 
 	local physObj = self:GetPhysicsObject()
 

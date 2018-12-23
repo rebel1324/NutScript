@@ -24,6 +24,10 @@ function ENT:Draw()
 end
 
 function ENT:Think()
+	if (not self.hasSetupVars) then
+		self:setupVars()
+	end
+
 	local noBubble = self:getNetVar("noBubble")
 
 	if (IsValid(self.bubble) and noBubble) then
