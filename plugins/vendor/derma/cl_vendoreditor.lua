@@ -103,7 +103,7 @@ function PANEL:Init()
 			if (IsValid(self) and IsValid(self.sellScale)) then
 				value = self.sellScale:GetValue()
 
-				local diff = math.abs(value - entity:getNetVar("scale"))
+				local diff = math.abs(value - entity:getSellScale())
 				if (diff > 0.05) then
 					EDITOR.scale(value)
 				end
