@@ -218,6 +218,7 @@ function PANEL:reset()
 	local curStep = self.steps[self.curStep]
 	if (IsValid(curStep)) then
 		curStep:SetVisible(false)
+		curStep:onHide()
 	end
 
 	self.curStep = 0
@@ -277,6 +278,7 @@ function PANEL:onStepChanged(oldStep, newStep)
 		oldStep:AlphaTo(0, ANIM_SPEED, 0, function()
 			self:showError()
 			oldStep:SetVisible(false)
+			oldStep:onHide()
 			showNewStep()
 		end)
 	else
