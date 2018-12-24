@@ -102,4 +102,7 @@ function PANEL:addLabel(text)
 	return label
 end
 
+function PANEL:onHide()
+end
+
 vgui.Register("nutCharacterCreateStep", PANEL, "DScrollPanel")
