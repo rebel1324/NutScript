@@ -1,202 +1,145 @@
+local function addNetHandler(name, handler)
+	assert(isfunction(handler), "handler is not a function")
+	net.Receive("nutVendor"..name, function()
+		if (not IsValid(nutVendorEnt)) then return end
+		handler(nutVendorEnt)
+	end)
+end
 
-netstream.Hook("vendorOpen", function(index, items, money, messages, factions, classes)
-	local entity = Entity(index)
+net.Receive("nutVendorSync", function()
+	local vendor = net.ReadEntity()
+	if (not IsValid(vendor)) then return end
 
-	if (!IsValid(entity)) then
-		return
+	vendor.money = net.ReadInt(32)
+	if (vendor.money < 0) then
+		vendor.money = nil
 	end
 
-	entity.money = money
-	entity.items = items
-	entity.messages = messages
-	entity.factions = factions
-	entity.classes = classes
+	local count = net.ReadUInt(16)
+	for i = 1, count do
+		local itemType = net.ReadString()
+		local price = net.ReadInt(32)
+		local stock = net.ReadInt(32)
+		local maxStock = net.ReadInt(32)
+		local mode = net.ReadInt(8)
 
-	nut.gui.vendor = vgui.Create("nutVendor")
-	nut.gui.vendor:setup(entity)
+		if (price < 0) then price = nil end
+		if (stock < 0) then stock = nil end
+		if (maxStock <= 0) then maxStock = nil end
+		if (mode < 0) then mode = nil end
 
-	if (LocalPlayer():IsAdmin() and messages) then
-		nut.gui.vendorEditor = vgui.Create("nutVendorEditor")
+		vendor.items[itemType] = {
+			[VENDOR_PRICE] = price,
+			[VENDOR_STOCK] = stock,
+			[VENDOR_MAXSTOCK] = maxStock,
+			[VENDOR_MODE] = mode
+		}
+	end
+
+	hook.Run("VendorSynchronized", vendor)
+end)
+
+net.Receive("nutVendorOpen", function()
+	local vendor = net.ReadEntity()
+	if (IsValid(vendor)) then
+		nutVendorEnt = vendor
+		hook.Run("VendorOpened", vendor)
 	end
 end)
 
-netstream.Hook("vendorEdit", function(key, data)
-	local panel = nut.gui.vendor
-
-	if (!IsValid(panel)) then
-		return
-	end
-
-	local entity = panel.entity
-
-	if (!IsValid(entity)) then
-		return
-	end
-
-	if (key == "mode") then
-		local itemType, mode = data[1], data[2]
-		entity.items[itemType] = entity.items[itemType] or {}
-		entity.items[itemType][VENDOR_MODE] = mode
-
-		if (not mode) then
-			panel:removeItem(itemType)
-		elseif (mode == VENDOR_SELLANDBUY) then
-			panel:addItem(itemType, panel.buyingItems)
-			panel:addItem(itemType, panel.sellingItems)
-		else
-			local isSellOnly = mode == VENDOR_SELLONLY
-			panel:addItem(
-				itemType,
-				isSellOnly and panel.sellingItems or panel.buyingItems
-			)
-			panel:removeItem(
-				itemType,
-				isSellOnly and panel.buyingItems or panel.sellingItems
-			)
-		end
-	elseif (key == "price") then
-		local uniqueID = data[1]
-
-		entity.items[uniqueID] = entity.items[uniqueID] or {}
-		entity.items[uniqueID][VENDOR_PRICE] = tonumber(data[2])
-	elseif (key == "stockDisable") then
-		if (entity.items[data]) then
-			entity.items[data][VENDOR_MAXSTOCK] = nil
-		end
-	elseif (key == "stockMax") then
-		local uniqueID = data[1]
-		local value = data[2]
-		local current = data[3]
-
-		entity.items[uniqueID] = entity.items[uniqueID] or {}
-		entity.items[uniqueID][VENDOR_MAXSTOCK] = value
-		entity.items[uniqueID][VENDOR_STOCK] = current
-	elseif (key == "stock") then
-		local uniqueID = data[1]
-		local value = data[2]
-
-		entity.items[uniqueID] = entity.items[uniqueID] or {}
-
-		if (!entity.items[uniqueID][VENDOR_MAXSTOCK]) then
-			entity.items[uniqueID][VENDOR_MAXSTOCK] = value
-		end
-
-		entity.items[uniqueID][VENDOR_STOCK] = value
-	end
+net.Receive("nutVendorExit", function()
+	nutVendorEnt = nil
+	hook.Run("VendorExited")
 end)
 
-netstream.Hook("vendorEditFinish", function(key, data)
-	local panel = nut.gui.vendor
-	local editor = nut.gui.vendorEditor
-
-	if (!IsValid(panel) or !IsValid(editor)) then
-		return
-	end
-
-	local entity = panel.entity
-
-	if (!IsValid(entity)) then
-		return
-	end
-
-	if (key == "name") then
-		editor.name:SetText(entity:getNetVar("name"))
-	elseif (key == "desc") then
-		editor.desc:SetText(entity:getNetVar("desc"))
-	elseif (key == "bubble") then
-		editor.bubble.noSend = true
-		editor.bubble:SetValue(data and 1 or 0)
-	elseif (key == "mode") then
-		if (data[2] == nil) then
-			editor.lines[data[1]]:SetValue(2, L"none")
-		else
-			editor.lines[data[1]]:SetValue(2, L(VENDOR_TEXT[data[2]]))
-		end
-	elseif (key == "price") then
-		editor.lines[data]:SetValue(3, entity:getPrice(data))
-	elseif (key == "stockDisable") then
-		editor.lines[data]:SetValue(4, "-")
-	elseif (key == "stockMax" or key == "stock") then
-		local current, max = entity:getStock(data)
-
-		editor.lines[data]:SetValue(4, current.."/"..max)
-	elseif (key == "faction") then
-		local uniqueID = data[1]
-		local state = data[2]
-		local panel = nut.gui.editorFaction
-
-		entity.factions[uniqueID] = state
-
-		if (IsValid(panel) and IsValid(panel.factions[uniqueID])) then
-			panel.factions[uniqueID]:SetChecked(state == true)
-		end
-	elseif (key == "class") then
-		local uniqueID = data[1]
-		local state = data[2]
-		local panel = nut.gui.editorFaction
-
-		entity.classes[uniqueID] = state
-
-		if (IsValid(panel) and IsValid(panel.classes[uniqueID])) then
-			panel.classes[uniqueID]:SetChecked(state == true)
-		end
-	elseif (key == "model") then
-		editor.model:SetText(entity:GetModel())
-	elseif (key == "scale") then
-		editor.sellScale.noSend = true
-		editor.sellScale:SetValue(data)
-	end
-
-	surface.PlaySound("buttons/button14.wav")
+addNetHandler("Money", function(vendor)
+	local money = net.ReadInt(32)
+	if (money < 0) then money = nil end
+	vendor.money = money
+	hook.Run("VendorMoneyUpdated", vendor, money, vendor.money)
 end)
 
-netstream.Hook("vendorMoney", function(value)
-	local panel = nut.gui.vendor
+addNetHandler("Price", function(vendor)
+	local itemType = net.ReadString()
+	local value = net.ReadInt(32)
+	if (value < 0) then value = nil end
 
-	if (!IsValid(panel)) then
-		return
-	end
+	vendor.items[itemType] = vendor.items[itemType] or {}
+	vendor.items[itemType][VENDOR_PRICE] = value
 
-	local entity = panel.entity
-
-	if (!IsValid(entity)) then
-		return
-	end
-
-	entity.money = value
-
-	local editor = nut.gui.vendorEditor
-
-	if (IsValid(editor)) then
-		local useMoney = tonumber(value) != nil
-
-		editor.money:SetDisabled(!useMoney)
-		editor.money:SetEnabled(useMoney)
-		editor.money:SetText(useMoney and value or "∞")
-	end
+	hook.Run("VendorItemPriceUpdated", vendor, itemType, value)
 end)
 
-netstream.Hook("vendorStock", function(uniqueID, amount)
-	local panel = nut.gui.vendor
+addNetHandler("Mode", function(vendor)
+	local itemType = net.ReadString()
+	local value = net.ReadInt(8)
+	if (value < 0) then value = nil end
 
-	if (!IsValid(panel)) then
-		return
+	vendor.items[itemType] = vendor.items[itemType] or {}
+	vendor.items[itemType][VENDOR_MODE] = value
+
+	hook.Run("VendorItemModeUpdated", vendor, itemType, value)
+end)
+
+addNetHandler("Stock", function(vendor)
+	local itemType = net.ReadString()
+	local value = net.ReadUInt(32)
+
+	vendor.items[itemType] = vendor.items[itemType] or {}
+	vendor.items[itemType][VENDOR_STOCK] = value
+
+	hook.Run("VendorItemStockUpdated", vendor, itemType, value)
+end)
+
+addNetHandler("MaxStock", function(vendor)
+	local itemType = net.ReadString()
+	local value = net.ReadUInt(32)
+	if (value == 0) then value = nil end
+
+	vendor.items[itemType] = vendor.items[itemType] or {}
+	vendor.items[itemType][VENDOR_MAXSTOCK] = value
+
+	hook.Run("VendorItemMaxStockUpdated", vendor, itemType, value)
+end)
+
+addNetHandler("AllowFaction", function(vendor)
+	local id = net.ReadUInt(8)
+	local allowed = net.ReadBool()
+
+	if (allowed) then
+		vendor.factions[id] = true
+	else
+		vendor.factions[id] = nil
 	end
 
-	local entity = panel.entity
+	hook.Run("VendorFactionUpdated", vendor, id, allowed)
+end)
 
-	if (!IsValid(entity)) then
-		return
+addNetHandler("AllowClass", function(vendor)
+	local id = net.ReadUInt(8)
+	local allowed = net.ReadBool()
+
+	if (allowed) then
+		vendor.classes[id] = true
+	else
+		vendor.classes[id] = nil
 	end
 
-	entity.items[uniqueID] = entity.items[uniqueID] or {}
-	entity.items[uniqueID][VENDOR_STOCK] = amount
+	hook.Run("VendorClassUpdated", vendor, id, allowed)
+end)
 
-	local editor = nut.gui.vendorEditor
+net.Receive("nutVendorEdit", function()
+	local key = net.ReadString()
+	-- Give some time to receive the update.
+	timer.Simple(0.25, function()
+		if (not IsValid(nutVendorEnt)) then return end
+		hook.Run("VendorEdited", nutVendorEnt, key)
+	end)
+end)
 
-	if (IsValid(editor)) then
-		local _, max = entity:getStock(uniqueID)
-
-		editor.lines[uniqueID]:SetValue(4, amount.."/"..max)
+net.Receive("nutVendorFaction", function()
+	local factionID = net.ReadUInt(8)
+	if (IsValid(nutVendorEnt)) then
+		nutVendorEnt.factions[factionID] = true
 	end
 end)
