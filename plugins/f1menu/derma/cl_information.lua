@@ -94,7 +94,7 @@ local PANEL = {}
 	function PANEL:setup()
 		local char = LocalPlayer():getChar()
 		if (self.desc) then
-			self.desc:SetText(char:getDesc():gsub("#", "\226\128\139#"))
+			self.desc:SetText(char:getDesc())
 			self.desc.OnEnter = function(this, w, h)
 				nut.command.send(
 					"chardesc",

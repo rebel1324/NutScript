@@ -54,6 +54,7 @@ net.Receive("nutCharCreate", function(_, client)
 	for i = 1, numValues do
 		data[net.ReadString()] = net.ReadType()
 	end
+	local originalData = table.Copy(data)
 
 	-- Store adjusted data here.
 	local newData = {}
@@ -90,7 +91,7 @@ net.Receive("nutCharCreate", function(_, client)
 	end
 
 	-- Last adjustments go here.
-	hook.Run("AdjustCreationData", client, data, newData)
+	hook.Run("AdjustCreationData", client, data, newData, originalData)
 	data = table.Merge(data, newData)
 	data.steamID = client:SteamID64()
 
@@ -100,7 +101,7 @@ net.Receive("nutCharCreate", function(_, client)
 			nut.char.loaded[id]:sync(client)
 			table.insert(client.nutCharList, id)
 			PLUGIN:syncCharList(client)
-			hook.Run("OnCharCreated", client, nut.char.loaded[id])
+			hook.Run("OnCharCreated", client, nut.char.loaded[id], originalData)
 			response(id)
 		end
 	end)
