@@ -44,8 +44,7 @@ cvars.AddChangeCallback("sbox_persist", function(name, old, new)
 	timer.Create("sbox_persist_change_timer", 1, 1, function()
 		hook.Run("PersistenceSave", old)
 
-		--game.CleanUpMap() -- Maybe this should be moved to PersistenceLoad?
-		--seriously you just did this for 2 years? fuck off
+		game.CleanUpMap() -- Maybe this should be moved to PersistenceLoad?
 
 		if (new == "") then return end
 
