@@ -198,7 +198,7 @@ end
 function PANEL:listenForChanges()
 	-- Money changes.
 	hook.Add("VendorMoneyUpdated", self, self.onVendorMoneyUpdated)
-	hook.Add("CharacterDataChanged", self, self.onCharVarChanged)
+	hook.Add("OnCharVarChanged", self, self.onCharVarChanged)
 
 	-- Price change.
 	hook.Add("VendorItemPriceUpdated", self, self.onVendorPriceUpdated)

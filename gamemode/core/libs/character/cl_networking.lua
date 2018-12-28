@@ -10,7 +10,7 @@ netstream.Hook("charSet", function(key, value, id)
 	if (character) then
 		local oldValue = character.vars[key]
 		character.vars[key] = value
-		hook.Run("CharacterDataChanged", character, key, oldValue, value)
+		hook.Run("OnCharVarChanged", character, key, oldValue, value)
 	end
 end)
 
@@ -23,7 +23,7 @@ netstream.Hook("charVar", function(key, value, id)
 		local oldVar = character:getVar()[key]
 		character:getVar()[key] = value
 
-		hook.Run("OnCharVarChanged", character, key, oldVar, value)
+		hook.Run("OnCharLocalVarChanged", character, key, oldVar, value)
 	end
 end)
 
