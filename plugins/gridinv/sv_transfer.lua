@@ -89,6 +89,8 @@ function PLUGIN:HandleItemTransferRequest(client, itemID, x, y, invID)
 		:next(function(res)
 			if (res and res.error) then
 				fail()
+			else
+				hook.Run("ItemTransfered", context)
 			end
 			return originalAddRes
 		end)

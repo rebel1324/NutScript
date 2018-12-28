@@ -68,12 +68,15 @@ net.Receive("nutStorageTransfer", function(_, client)
 	) then
 		return
 	end
-
 	-- Swap the item between the storage inventory and character's inventory.
 	local failItemDropPos = client:getItemDropPos()
 	fromInv:removeItem(itemID, true)
 		:next(function()
 			return toInv:add(item)
+		end)
+		:next(function(res)
+			hook.Run("ItemTransfered", context)
+			return res
 		end)
 		:catch(function(err)
 			if (IsValid(client)) then
