@@ -7,26 +7,25 @@ nut.util.include("character/cl_networking.lua")
 nut.util.include("character/sv_character.lua")
 
 function nut.char.new(data, id, client, steamID)
-	if (data.name) then
-		data.name = data.name:gsub("#", "#​")
-	end
-
-	if (data.desc) then
-		data.desc = data.desc:gsub("#", "#​")
-	end
-	
 	local character = setmetatable({vars = {}}, nut.meta.character)
-		for k, v in pairs(data) do
-			if (v != nil) then
-				character.vars[k] = v
+		for k, v in pairs(nut.char.vars) do
+			local value = data[k]
+			if (value == nil) then
+				value = v.default
+				if (istable(value)) then
+					value = table.Copy(value)
+				end
 			end
+			character.vars[k] = value
 		end
 
 		character.id = id or 0
 		character.player = client
 
 		if (IsValid(client) or steamID) then
-			character.steamID = IsValid(client) and client:SteamID64() or steamID
+			character.steamID = IsValid(client)
+				and client:SteamID64()
+				or steamID
 		end
 	return character
 end
@@ -65,7 +64,11 @@ do
 			end
 		end,
 		onPostSetup = function(panel, faction, payload)
-			local name, disabled = hook.Run("GetDefaultCharName", LocalPlayer(), faction)
+			local name, disabled = hook.Run(
+				"GetDefaultCharName",
+				LocalPlayer(),
+				faction
+			)
 
 			if (name) then
 				panel:SetText(name)
@@ -258,7 +261,12 @@ do
 			data[key] = value
 
 			if (!noReplication and IsValid(client)) then
-				netstream.Start(receiver or client, "charData", character:getID(), key, value)
+				netstream.Start(
+					receiver or client,
+					"charData",
+					character:getID(),
+					key, value
+				)
 			end
 
 			character.vars.data = data
@@ -292,7 +300,10 @@ do
 			if (!noReplication and IsValid(client)) then
 				local id
 
-				if (client:getChar() and client:getChar():getID() == character:getID()) then
+				if (
+					client:getChar() and
+					client:getChar():getID() == character:getID()
+				) then
 					id = client:getChar():getID()
 				else
 					id = character:getID()
@@ -335,7 +346,9 @@ do
 	function playerMeta:Name()
 		local character = self.getChar(self)
 		
-		return character and character.getName(character) or self.steamName(self)
+		return character
+			and character.getName(character)
+			or self.steamName(self)
 	end
 
 	playerMeta.Nick = playerMeta.Name
