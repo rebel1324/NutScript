@@ -158,7 +158,6 @@ local PANEL = {}
 		end)
 
 		slot.name = slot:Add("DLabel")
-		slot.name:SetText(client:Name())
 		slot.name:Dock(TOP)
 		slot.name:DockMargin(65, 0, 48, 0)
 		slot.name:SetTall(18)
@@ -186,7 +185,6 @@ local PANEL = {}
 		slot.desc:DockMargin(65, 0, 48, 0)
 		slot.desc:SetWrap(true)
 		slot.desc:SetContentAlignment(7)
-		slot.desc:SetText(hook.Run("GetDisplayedDescription", client) or (client:getChar() and client:getChar():getDesc()) or "")
 		slot.desc:SetTextColor(color_white)
 		slot.desc:SetExpensiveShadow(1, Color(0, 0, 0, 100))
 		slot.desc:SetFont("nutSmallFont")
@@ -211,9 +209,12 @@ local PANEL = {}
 
 			local overrideName = hook.Run("ShouldAllowScoreboardOverride", client, "name") and hook.Run("GetDisplayedName", client)
 			local name = overrideName or client:Name()
+			name = name:gsub("#", "\226\128\139#")
+
 			local model = client:GetModel()
 			local skin = client:GetSkin()
 			local desc = hook.Run("ShouldAllowScoreboardOverride", client, "desc") and hook.Run("GetDisplayedDescription", client) or (client:getChar() and client:getChar():getDesc()) or ""
+			desc = desc:gsub("#", "\226\128\139#")
 
 			self.model:setHidden(overrideName)
 
@@ -266,6 +267,8 @@ local PANEL = {}
 				v.Paint = paintFunctions[i % 2]
 			end
 		end
+
+		slot:update()
 
 		return slot
 	end

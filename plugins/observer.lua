@@ -34,7 +34,7 @@ if (CLIENT) then
 					surface.DrawRect(x - size/2, y - size/2, size, size)
 				end
 
-				nut.util.drawText(v:Name(), x, y - size, ColorAlpha(teamColor, alpha), TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER, nil, alpha)
+				nut.util.drawText(v:Name():gsub("#", "\226\128\139#"), x, y - size, ColorAlpha(teamColor, alpha), TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER, nil, alpha)
 			end
 		end
 	end

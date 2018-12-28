@@ -40,7 +40,10 @@ local PANEL = {}
 
 		for k, v in ipairs(player.GetAll()) do
 			if (v != LocalPlayer() and v:getChar()) then
-				self.access:AddLine(v:Name(), L(ACCESS_LABELS[access[v] or 0])).player = v
+				self.access:AddLine(
+					v:Name():gsub("#", "\226\128\139#"),
+					L(ACCESS_LABELS[access[v] or 0])
+				).player = v
 			end
 		end
 

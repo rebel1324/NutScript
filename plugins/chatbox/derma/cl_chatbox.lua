@@ -269,7 +269,7 @@ local PANEL = {}
 			elseif (type(v) == "Player") then
 				local color = team.GetColor(v:Team())
 
-				text = text.."<color="..color.r..","..color.g..","..color.b..">"..v:Name():gsub("<", "&lt;"):gsub(">", "&gt;")
+				text = text.."<color="..color.r..","..color.g..","..color.b..">"..v:Name():gsub("<", "&lt;"):gsub(">", "&gt;"):gsub("#", "\226\128\139#")
 			else
 				text = text..tostring(v):gsub("<", "&lt;"):gsub(">", "&gt;")
 				text = text:gsub("%b**", function(value)

@@ -94,17 +94,27 @@ local PANEL = {}
 	function PANEL:setup()
 		local char = LocalPlayer():getChar()
 		if (self.desc) then
-			self.desc:SetText(char:getDesc())
+			self.desc:SetText(char:getDesc():gsub("#", "\226\128\139#"))
 			self.desc.OnEnter = function(this, w, h)
-				nut.command.send("chardesc", this:GetText())
+				nut.command.send(
+					"chardesc",
+					this:GetText():gsub("\226\128\139#", "#")
+				)
 			end
 		end
 
 		if (self.name) then
-			self.name:SetText(LocalPlayer():Name())
-			self.name.Think = function(this)
-				this:SetText(LocalPlayer():Name())
-			end
+			self.name:SetText(LocalPlayer():Name():gsub("#", "\226\128\139#"))
+			hook.Add(
+				"OnCharVarChanged",
+				self,
+				function(panel, character, key, oldValue, value)
+					if (char ~= character) then return end
+					if (key ~= "name") then return end
+
+					self.name:SetText(value:gsub("#", "\226\128\139#"))
+				end
+			)
 		end
 
 		if (self.money) then

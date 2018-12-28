@@ -118,9 +118,14 @@ function PLUGIN:DrawEntityInfo(entity, alpha, position)
 	local description = character.getDesc(character)
 	if (description ~= entity.nutDescCache) then
 		entity.nutDescCache = description
+
+		if (description:len() > 250) then
+			description = description:sub(1, 250).."..."
+		end
+
 		entity.nutDescLines = nut.util.wrapText(
 			description,
-			ScrW() * 0.7,
+			ScrW() * 0.5,
 			"nutSmallFont"
 		)
 	end
@@ -135,7 +140,7 @@ function PLUGIN:DrawEntityInfo(entity, alpha, position)
 		local info = charInfo[i]
 
 		_, ty = drawText(
-			info[1],
+			info[1]:gsub("#", "\226\128\139#"),
 			x, y,
 			colorAlpha(info[2] or color_white, alpha),
 			1, 1,
