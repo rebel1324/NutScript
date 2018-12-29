@@ -196,7 +196,11 @@ if (SERVER) then
 		local context = {item = item, x = x, y = y}
 		local canAccess, reason = self:canAccess("add", context)
 		if (not canAccess) then
-			return d:reject(reason or "noAccess")
+			if (istable(reason)) then
+				return d:resolve({error = reason})
+			else
+				return d:reject(tostring(reason or "noAccess"))
+			end
 		end
 
 		-- If given an item instance, there's no need for a new instance.
