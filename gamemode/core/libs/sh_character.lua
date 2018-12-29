@@ -193,7 +193,14 @@ do
 					newData.model = model[1]
 					newData.data = newData.data or {}
 					newData.data.skin = model[2] or 0
-					newData.data.groups = model[3]
+
+					local groups = {}
+					local i = 0
+					for value in model[3]:gmatch("%d") do
+						groups[i] = tonumber(value)
+						i = i + 1
+					end
+					newData.data.groups = groups
 				end
 			end
 		end

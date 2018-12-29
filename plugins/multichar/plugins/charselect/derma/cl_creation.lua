@@ -28,8 +28,12 @@ function PANEL:updateModel()
 	local entity = self.model:GetEntity()
 	if (not IsValid(entity)) then return end
 	entity:SetSkin(skin)
-	for group, value in pairs(groups) do
-		entity:SetBodygroup(group, value)
+	if (istable(groups)) then
+		for group, value in pairs(groups) do
+			entity:SetBodygroup(group, value)
+		end
+	elseif (isstring(groups)) then
+		entity:SetBodyGroups(groups)
 	end
 end
 
