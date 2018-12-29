@@ -108,7 +108,7 @@ function nut.class.getPlayers(class)
 	return players
 end
 
-function charMeta:joinClass(class)
+function charMeta:joinClass(class, isForced)
 	if (!class) then
 		self:kickClass()
 
@@ -118,7 +118,7 @@ function charMeta:joinClass(class)
 	local oldClass = self:getClass()
 	local client = self:getPlayer()
 
-	if (nut.class.canBe(client, class)) then
+	if (isForced or nut.class.canBe(client, class)) then
 		self:setClass(class)
 		hook.Run("OnPlayerJoinClass", client, class, oldClass)
 
