@@ -98,7 +98,7 @@ local PANEL = {}
 			self.desc.OnEnter = function(this, w, h)
 				nut.command.send(
 					"chardesc",
-					this:GetText():gsub("\226\128\139#", "#")
+					(this:GetText():gsub("\226\128\139#", "#"))
 				)
 			end
 		end
