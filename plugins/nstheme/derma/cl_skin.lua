@@ -38,37 +38,43 @@ local SKIN = {}
 	end
 
 	function SKIN:PaintPanel(panel)
-		if (panel:GetPaintBackground()) then
-			local w, h = panel:GetWide(), panel:GetTall()
-
-			surface.SetDrawColor(0, 0, 0, 100)
-			surface.DrawRect(0, 0, w, h)
-			surface.DrawOutlinedRect(0, 0, w, h)
+		if (not panel.m_bBackground) then return end
+		if (panel.GetPaintBackground and not panel:GetPaintBackground()) then
+			return
 		end
+
+		local w, h = panel:GetWide(), panel:GetTall()
+
+		surface.SetDrawColor(0, 0, 0, 100)
+		surface.DrawRect(0, 0, w, h)
+		surface.DrawOutlinedRect(0, 0, w, h)
 	end
 
 	function SKIN:PaintButton(panel)
-		if (panel:GetPaintBackground()) then
-			local w, h = panel:GetWide(), panel:GetTall()
-			local alpha = 50
-
-			if (panel:GetDisabled()) then
-				alpha = 10
-			elseif (panel.Depressed) then
-				alpha = 180
-			elseif (panel.Hovered) then
-				alpha = 75
-			end
-
-			surface.SetDrawColor(30, 30, 30, alpha)
-			surface.DrawRect(0, 0, w, h)
-
-			surface.SetDrawColor(0, 0, 0, 180)
-			surface.DrawOutlinedRect(0, 0, w, h)
-
-			surface.SetDrawColor(180, 180, 180, 2)
-			surface.DrawOutlinedRect(1, 1, w - 2, h - 2)
+		if (not panel.m_bBackground) then return end
+		if (panel.GetPaintBackground and not panel:GetPaintBackground()) then
+			return
 		end
+
+		local w, h = panel:GetWide(), panel:GetTall()
+		local alpha = 50
+
+		if (panel:GetDisabled()) then
+			alpha = 10
+		elseif (panel.Depressed) then
+			alpha = 180
+		elseif (panel.Hovered) then
+			alpha = 75
+		end
+
+		surface.SetDrawColor(30, 30, 30, alpha)
+		surface.DrawRect(0, 0, w, h)
+
+		surface.SetDrawColor(0, 0, 0, 180)
+		surface.DrawOutlinedRect(0, 0, w, h)
+
+		surface.SetDrawColor(180, 180, 180, 2)
+		surface.DrawOutlinedRect(1, 1, w - 2, h - 2)
 	end
 
 	-- I don't think we gonna need minimize button and maximize button.
