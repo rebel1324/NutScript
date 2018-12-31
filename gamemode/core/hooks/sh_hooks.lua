@@ -199,6 +199,19 @@ local vectorAngle = FindMetaTable("Vector").Angle
 local normalizeAngle = math.NormalizeAngle
 local oldCalcSeqOverride
 
+function GM:HandlePlayerLanding(client, velocity, wasOnGround)
+	if (client:GetMoveType() == MOVETYPE_NOCLIP) then return end
+
+	if (client:IsOnGround() and not wasOnGround) then
+		local length = (client.lastVelocity or velocity):LengthSqr()
+		local animClass = nut.anim.getModelClass(client:GetModel())
+		if (animClass ~= "player" and length < 100000) then return end
+
+		client:AnimRestartGesture(GESTURE_SLOT_JUMP, ACT_LAND, true)
+		return true
+	end
+end
+
 function GM:CalcMainActivity(client, velocity)
 	client.CalcIdeal = ACT_MP_STAND_IDLE
 	
@@ -206,24 +219,24 @@ function GM:CalcMainActivity(client, velocity)
 	client.CalcSeqOverride = -1
 
 	local animClass = nut.anim.getModelClass(client:GetModel())
-	local usePlayerAnims = animClass == "player"
 
-	if (not usePlayerAnims) then
+	if (animClass ~= "player") then
 		local eyeAngles = client.EyeAngles(client)
 		local yaw = vectorAngle(velocity)[2]
 		local normalized = normalizeAngle(yaw - eyeAngles[2])
 
 		client.SetPoseParameter(client, "move_yaw", normalized)
-	else
-		self:HandlePlayerLanding(client, velocity, client.m_bWasOnGround)
 	end
 
-	if (self:HandlePlayerNoClipping(client, velocity) ||
-		self:HandlePlayerDriving(client) ||
-		self:HandlePlayerVaulting(client, velocity) ||
-		self:HandlePlayerJumping(client, velocity) ||
-		self:HandlePlayerSwimming(client, velocity) ||
-		self:HandlePlayerDucking(client, velocity)) then
+	if (
+		self:HandlePlayerLanding(client, velocity, client.m_bWasOnGround) or
+		self:HandlePlayerNoClipping(client, velocity) or
+		self:HandlePlayerDriving(client) or
+		self:HandlePlayerVaulting(client, velocity) or
+		(usingPlayerAnims and self:HandlePlayerJumping(client, velocity)) or
+		self:HandlePlayerSwimming(client, velocity) or
+		self:HandlePlayerDucking(client, velocity)
+	) then
 	else
 		local len2D = velocity:Length2DSqr()
 		if (len2D > 22500) then
@@ -236,6 +249,7 @@ function GM:CalcMainActivity(client, velocity)
 	client.m_bWasOnGround = client:IsOnGround()
 	client.m_bWasNoclipping = client:GetMoveType() == MOVETYPE_NOCLIP
 		and not client:InVehicle()
+	client.lastVelocity = velocity
 
 	if (CLIENT) then
 		client:SetIK(false)
