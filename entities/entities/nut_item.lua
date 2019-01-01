@@ -132,7 +132,7 @@ else
 			self.desc = description
 			self.markup = nut.markup.parse(
 				"<font=nutItemDescFont>"..description.."</font>",
-				ScrW() * 0.7
+				ScrW() * 0.5
 			)
 		end
 		return self.markup
@@ -144,6 +144,9 @@ else
 
 		local oldEntity = itemTable.entity
 		itemTable.entity = self
+
+		local oldData = itemTable.data
+		itemTable.data = self:getNetVar("data") or oldData
 
 		local position = toScreen(self:LocalToWorld(self:OBBCenter()))
 		local x, y = position.x, position.y
@@ -173,6 +176,7 @@ else
 			alpha * 0.65
 		)
 
+		itemTable.data = oldData
 		itemTable.entity = oldEntity
 	end
 

@@ -40,7 +40,7 @@ function ITEM:getEntity()
 	local id = self:getID()
 
 	for k, v in ipairs(ents.FindByClass("nut_item")) do
-		if (v:getNetVar("id") == id) then
+		if (v.nutItemID == id) then
 			return v
 		end
 	end
@@ -122,12 +122,8 @@ function ITEM:setData(key, value, receivers, noSave, noCheckEntity)
 
 	if (!noCheckEntity) then
 		local ent = self:getEntity()
-
 		if (IsValid(ent)) then
-			local data = ent:getNetVar("data", {})
-			data[key] = value
-
-			ent:setNetVar("data", data)
+			ent:setNetVar("data", self.data)
 		end
 	end
 
