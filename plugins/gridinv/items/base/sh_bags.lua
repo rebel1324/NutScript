@@ -123,3 +123,12 @@ function ITEM:onCombine(other)
 		)
 	end)
 end
+
+if (SERVER) then
+	function ITEM:onDisposed()
+		local inventory = self:getInv()
+		if (inventory) then
+			inventory:destroy()
+		end
+	end
+end
