@@ -33,6 +33,11 @@ function ITEM:destroy()
 		net.WriteUInt(self:getID(), 32)
 	net.Broadcast()
 	nut.item.instances[self:getID()] = nil
+	self:onDisposed()
+end
+
+-- Called when the item data has been cleaned up from memory.
+function ITEM:onDisposed()
 end
 
 -- Returns the entity representing this item, if one exists.
