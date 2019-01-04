@@ -106,12 +106,17 @@ function GM:CanPlayerInteractItem(client, action, item)
 		return false
 	end
 
-	if (action == "drop" and hook.Run("CanPlayerDropItem", client, item) == false) then
+	if (
+		action == "drop" and
+		hook.Run("CanPlayerDropItem", client, item) == false
+	) then
 		return false
 	end
 
-	if (action == "take" and hook.Run("
-				Item", client, item) == false) then
+	if (
+		action == "take" and
+		hook.Run("CanPlayerTakeItem", client, item) == false
+	) then
 		return false
 	end
 
