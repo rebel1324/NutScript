@@ -44,9 +44,9 @@ if (SERVER) then
 		end
 	end
 
-	function nut.log.addRaw(logString, shouldNotify)		
+	function nut.log.addRaw(logString, shouldNotify, flag)		
 		if (shouldNotify) then
-			nut.log.send(nut.util.getAdmins(), logString)
+			nut.log.send(nut.util.getAdmins(), logString, flag)
 		end
 
 		Msg("[LOG] ", logString.."\n")
@@ -76,6 +76,6 @@ if (SERVER) then
 	end
 else
 	netstream.Hook("nutLogStream", function(logString, flag)
-		MsgC(consoleColor, "[SERVER] ", color_white, tostring(logString).."\n")
+		MsgC(consoleColor, "[SERVER] ", nut.log.color[flag] or color_white, tostring(logString).."\n")
 	end)
 end
