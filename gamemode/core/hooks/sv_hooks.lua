@@ -118,10 +118,10 @@ function GM:CanPlayerInteractItem(client, action, item)
 end
 
 function GM:CanPlayerTakeItem(client, item)
-	if (type(item) == "Entity") then
+	if (type(item.entity) == "Entity") then
 		local char = client:getChar()
 
-		if (item.nutSteamID and item.nutSteamID == client:SteamID() and item.nutCharID != char:getID()) then
+		if (item.entity.nutSteamID and item.entity.nutSteamID == client:SteamID() and item.entity.nutCharID != char:getID()) then
 			client:notifyLocalized("playerCharBelonging")
 
 			return false
