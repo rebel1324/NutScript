@@ -110,7 +110,8 @@ function GM:CanPlayerInteractItem(client, action, item)
 		return false
 	end
 
-	if (action == "take" and hook.Run("CanPlayerTakeItem", client, item) == false) then
+	if (action == "take" and hook.Run("
+				Item", client, item) == false) then
 		return false
 	end
 
@@ -118,10 +119,13 @@ function GM:CanPlayerInteractItem(client, action, item)
 end
 
 function GM:CanPlayerTakeItem(client, item)
-	if (type(item) == "Entity") then
+	if (IsValid(item.entity)) then
 		local char = client:getChar()
 
-		if (item.nutSteamID and item.nutSteamID == client:SteamID() and item.nutCharID != char:getID()) then
+		if (
+			item.entity.nutSteamID == client:SteamID() and
+			item.entity.nutCharID ~= char:getID()
+		) then
 			client:notifyLocalized("playerCharBelonging")
 
 			return false
