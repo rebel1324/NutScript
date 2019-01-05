@@ -72,4 +72,15 @@ else
 			return FormatString(info[key], ...)
 		end
 	end
+	
+	function L3(key, ...)
+		local langKey = NUT_CVAR_LANG:GetString()
+		local info = nut.lang.stored[langKey]
+
+		if (info and info[key]) then
+			return FormatString(info[key], ...)
+		else
+			return key
+		end
+	end
 end
