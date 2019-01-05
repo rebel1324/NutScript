@@ -199,7 +199,6 @@ function nut.plugin.loadEntities(path)
 end
 
 function nut.plugin.initialize()
-	nut.plugin.loadFromDir("nutscript/plugins")
 	nut.plugin.loadFromDir(engine.ActiveGamemode().."/plugins")
 	nut.plugin.load("schema", engine.ActiveGamemode().."/schema")
 	hook.Run("InitializedSchema")
