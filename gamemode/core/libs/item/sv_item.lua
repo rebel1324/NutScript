@@ -116,10 +116,26 @@ end
 
 -- Instances and spawns a given item type.
 function nut.item.spawn(uniqueID, position, callback, angles, data)
+	local d
+	if (not isfunction(callback)) then
+		-- Promise returning overload (uniqueID, position[, angles, data])
+		if (type(callback) == "Angle" or istable(angles)) then
+			angles = callback
+			data = angles
+		end
+
+		d = deferred.new()
+		callback = function(item)
+			d:resolve(item)
+		end
+	end
+
 	nut.item.instance(0, uniqueID, data or {}, 1, 1, function(item)
 		local entity = item:spawn(position, angles)
 		if (callback) then
 			callback(item, entity)
 		end
 	end)
+
+	return d
 end
