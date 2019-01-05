@@ -95,13 +95,18 @@ function nut.plugin.loadExtras(path)
 	nut.util.includeDir(path.."/libs", true, true)
 	nut.faction.loadFromDir(path.."/factions")
 	nut.class.loadFromDir(path.."/classes")
-	nut.item.loadFromDir(path.."/items")
 	nut.util.includeDir(path.."/derma", true)
 	nut.plugin.loadEntities(path.."/entities")
 	nut.lang.loadFromDir(path.."/languages")
 	nut.plugin.loadFromDir(path.."/plugins")
 
 	hook.Run("DoPluginIncludes", path, PLUGIN)
+
+	local hookID = "nutItems"..path
+	hook.Add("InitializedPlugins", hookID, function()
+		nut.item.loadFromDir(path.."/items")
+		hook.Remove("InitializedPlugins", hookID)
+	end)
 end
 
 function nut.plugin.loadEntities(path)
