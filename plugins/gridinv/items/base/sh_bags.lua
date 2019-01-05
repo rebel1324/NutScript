@@ -54,6 +54,7 @@ function ITEM:onInstanced()
 			self:setData("id", inventory:getID())
 			hook.Run("SetupBagInventoryAccessRules", inventory)
 			inventory:sync()
+			self:resolveInvAwaiters(inventory)
 		end)
 end
 
@@ -63,6 +64,7 @@ function ITEM:onRestored()
 		nut.inventory.loadByID(invID)
 			:next(function(inventory)
 				hook.Run("SetupBagInventoryAccessRules", inventory)
+				self:resolveInvAwaiters(inventory)
 			end)
 	end
 end
@@ -130,5 +132,28 @@ if (SERVER) then
 		if (inventory) then
 			inventory:destroy()
 		end
+	end
+
+	function ITEM:resolveInvAwaiters(inventory)
+		if (self.awaitingInv) then
+			for _, d in ipairs(self.awaitingInv) do
+				d:resolve(inventory)
+			end
+			self.awaitingInv = nil
+		end
+	end
+
+	function ITEM:awaitInv()
+		local d = deferred.new()
+		local inventory = self:getInv()
+
+		if (inventory) then
+			d:resolve(inventory)
+		else
+			self.awaitingInv = self.awaitingInv or {}
+			self.awaitingInv[#self.awaitingInv + 1] = d
+		end
+
+		return d
 	end
 end
