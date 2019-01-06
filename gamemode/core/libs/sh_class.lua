@@ -97,11 +97,12 @@ end
 
 function nut.class.getPlayers(class)
 	local players = {}
-	for k, v in ipairs(player.GetAll()) do
+	for k = 1, player.GetCount() do
+		local v = player.GetAll()[k]
 		local char = v:getChar()
 
 		if (char and char:getClass() == class) then
-			table.insert(players, v)
+			players[#players + 1] = v
 		end
 	end
 
