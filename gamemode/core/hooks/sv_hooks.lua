@@ -183,7 +183,7 @@ function GM:PlayerLoadedChar(client, character, lastChar)
 	end
 
 	if (character) then
-		for k, v in pairs(nut.class.list) do
+		for k, v in next, nut.class.list do
 			if (v.faction == client:Team()) then
 				if (v.isDefault) then
 					character:setClass(v.index)
@@ -366,11 +366,11 @@ function GM:PostPlayerLoadout(client)
 	local char = client:getChar()
 
 	if (char:getInv()) then
-		for _, item in pairs(char:getInv():getItems()) do
+		for _, item in next, char:getInv():getItems() do
 			item:call("onLoadout", client)
 
 			if (item:getData("equip") and istable(item.attribBoosts)) then
-				for attribute, boost in pairs(item.attribBoosts) do
+				for attribute, boost in next, item.attribBoosts do
 					char:addBoost(item.uniqueID, attribute, boost)
 				end
 			end
@@ -573,7 +573,7 @@ function GM:CharacterPreSave(character)
 	if (not character:getInv()) then
 		return
 	end
-	for k, v in pairs(character:getInv():getItems()) do
+	for k, v in next, character:getInv():getItems() do
 		if (v.onSave) then
 			v:call("onSave", client)
 		end
@@ -581,7 +581,7 @@ function GM:CharacterPreSave(character)
 end
 
 function GM:OnServerLog(client, logType, ...)
-	for k, v in pairs(nut.util.getAdmins()) do
+	for k, v in next, nut.util.getAdmins() do
 		if (hook.Run("CanPlayerSeeLog", v, logType) != false) then
 			nut.log.send(v, nut.log.getString(client, logType, ...))
 		end
