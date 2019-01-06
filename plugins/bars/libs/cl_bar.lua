@@ -20,7 +20,7 @@ function nut.bar.add(getValue, color, priority, identifier)
 		local oldBar = nut.bar.get(identifier)
 
 		if (oldBar) then
-			table.remove(nut.bar.list, oldBar.priority)
+			nut.bar.list[oldBar.priority] = nil
 		end
 	end
 
@@ -50,7 +50,7 @@ function nut.bar.remove(identifier)
 	end
 
 	if (bar) then
-		table.remove(nut.bar.list, bar.priority)
+		nut.bar.list[bar.priority] = nil
 	end
 end
 
