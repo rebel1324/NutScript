@@ -68,11 +68,65 @@ function nut.util.includeDir(directory, fromLua, recursive)
 	end
 end
 
+-- Credits: framework flux
+-- Function: nut.util.serialize (table toSerialize)
+-- Description: Converts a table into the string format.
+-- Argument: table toSerialize - Table to convert.
+--
+-- Returns: string - pON-encoded table. If pON fails then JSON is returned.
+function nut.util.serialize(tab)
+	if istable(tab) then
+		local success, value = pcall(pon.encode, tab)
+
+		if !success then
+			success, value = pcall(util.TableToJSON, tab)
+
+			if !success then
+				ErrorNoHalt('Failed to serialize a table!\n')
+				ErrorNoHalt(value..'\n')
+
+				return ''
+			end
+		end
+
+		return value
+	else
+		print('You must serialize a table, not '..type(tab)..'!')
+		return ''
+	end
+end
+
+-- Credits: framework flux
+-- Function: nut.util.deserialize (string toDeserialize)
+-- Description: Converts a string back into table. Uses pON at first, if it fails it falls back to JSON.
+-- Argument: string toDeserialize - String to convert.
+--
+-- Returns: table - Decoded string.
+function nut.util.deserialize(data)
+	if isstring(data) then
+		local success, value = pcall(pon.decode, data)
+
+		if !success then
+			success, value = pcall(util.JSONToTable, data)
+	
+			if !success then
+				ErrorNoHalt('Failed to deserialize a string!\n')
+				ErrorNoHalt(value..'\n')
+
+				return {}
+			end
+		end
+
+		return value
+	else
+		print('You must deserialize a string, not '..type(data)..'!')
+		return {}
+	end
+end
+
 -- Returns the address:port of the server.
 function nut.util.getAddress()
-	ErrorNoHalt(
-		"nut.util.getAddress() is deprecated, use game.GetIPAddress()\n"
-	)
+	ErrorNoHalt("nut.util.getAddress() is deprecated, use game.GetIPAddress()\n")
 	return game.GetIPAddress()
 end
 
