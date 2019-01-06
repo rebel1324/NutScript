@@ -200,7 +200,9 @@ end
 
 function nut.plugin.initialize()
 	nut.plugin.loadFromDir("nutscript/plugins")
-	nut.plugin.loadFromDir(engine.ActiveGamemode().."/plugins")
+	if (engine.ActiveGamemode() != 'nutscript') then
+		nut.plugin.loadFromDir(engine.ActiveGamemode().."/plugins")
+	end
 	nut.plugin.load("schema", engine.ActiveGamemode().."/schema")
 	hook.Run("InitializedSchema")
 
