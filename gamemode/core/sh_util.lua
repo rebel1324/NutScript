@@ -192,9 +192,10 @@ end
 function nut.util.getAllChar()
 	local charTable = {}
 
-	for k, v in ipairs(player.GetAll()) do
+	for k = 1, player.GetCount() do
+		local v = player.GetAll()[k]
 		if (v:getChar()) then
-			table.insert(charTable, v:getChar():getID())
+			charTable[#charTable + 1] = v:getChar():getID()
 		end
 	end
 
