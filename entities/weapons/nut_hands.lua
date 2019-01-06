@@ -264,7 +264,7 @@ function SWEP:checkValidity()
 end
 
 local function isPlayerStandsOn(entity)
-	for _, client in pairs(player.GetAll()) do
+	for _, client in ipairs(player.GetAll()) do
 		if (client:GetGroundEntity() == entity) then
 			return true
 		end
