@@ -1,16 +1,19 @@
+local nut = nut
+
 nut.plugin = nut.plugin or {}
 nut.plugin.list = nut.plugin.list or {}
 nut.plugin.unloaded = nut.plugin.unloaded or {}
+
+nut.util.include("nutscript/gamemode/core/meta/sh_tool.lua")
+
+local ipairs, next, file, hook, engine, string = ipairs, next, file, hook, engine, string
 
 function nut.plugin.load(uniqueID, path, isSingleFile, variable)
 	variable = uniqueID == "schema" and "SCHEMA" or variable or "PLUGIN"
 	if (hook.Run("PluginShouldLoad", uniqueID) == false) then return end
 
 	-- Do not load non-existent plugins.
-	if (
-		not isSingleFile and
-		not file.Exists(path.."/sh_"..variable:lower()..".lua", "LUA")
-	) then
+	if (!isSingleFile and !file.Exists(path.."/sh_"..variable:lower()..".lua", "LUA")) then
 		return
 	end
 
@@ -48,10 +51,8 @@ function nut.plugin.load(uniqueID, path, isSingleFile, variable)
 	if (!isSingleFile) then
 		nut.plugin.loadExtras(path)
 	end
-	nut.util.include(
-		isSingleFile and path or path.."/sh_"..variable:lower()..".lua",
-		"shared"
-	)
+	
+	nut.util.include(isSingleFile and path or path.."/sh_"..variable:lower()..".lua", "shared")
 	PLUGIN.loading = false
 
 	-- Add helper methods for persistent data.
@@ -70,8 +71,8 @@ function nut.plugin.load(uniqueID, path, isSingleFile, variable)
 	end
 
 	-- Add listeners for the plugin hooks so they run.
-	for k, v in pairs(PLUGIN) do
-		if (type(v) == "function") then
+	for k, v in next, PLUGIN do
+		if (isfunction(v)) then
 			hook.Add(k, PLUGIN, v)
 		end
 	end
@@ -110,7 +111,7 @@ function nut.plugin.loadExtras(path)
 end
 
 function nut.plugin.loadEntities(path)
-	local files, folders
+	local files, folders, bLoadedTools
 
 	local function IncludeFiles(path2, clientOnly)
 		if (SERVER and file.Exists(path2.."init.lua", "LUA") or CLIENT) then
@@ -133,9 +134,7 @@ function nut.plugin.loadEntities(path)
 		return false
 	end
 
-	local function HandleEntityInclusion(
-		folder, variable, register, default, clientOnly
-	)
+	local function HandleEntityInclusion(folder, variable, register, default, clientOnly)
 		files, folders = file.Find(path.."/"..folder.."/*", "LUA")
 		default = default or {}
 
@@ -177,6 +176,23 @@ function nut.plugin.loadEntities(path)
 			_G[variable] = nil
 		end
 	end
+	
+	local function RegisterTool(tool, className)
+		local gmodTool = weapons.GetStored("gmod_tool")
+
+		if (className:sub(1, 3) == "sh_") then
+			className = className:sub(4)
+		end
+
+		if (gmodTool) then
+			gmodTool.Tool[className] = tool
+		else
+			-- this should never happen
+			ErrorNoHalt(string.format("attempted to register tool '%s' with invalid gmod_tool weapon", className))
+		end
+
+		bLoadedTools = true
+	end
 
 	-- Include entities.
 	HandleEntityInclusion("entities", "ENT", scripted_ents.Register, {
@@ -191,16 +207,35 @@ function nut.plugin.loadEntities(path)
 		Secondary = {},
 		Base = "weapon_base"
 	})
+	
+	-- Include tools.
+	HandleEntityInclusion("tools", "TOOL", RegisterTool, {}, false, function(className)
+		if (className:sub(1, 3) == "sh_") then
+			className = className:sub(4)
+		end
+
+		TOOL = nut.meta.tool:Create()
+		TOOL.Mode = className
+		TOOL:CreateConVars()
+	end)
 
 	-- Include effects.
-	HandleEntityInclusion(
-		"effects", "EFFECT", effects and effects.Register, nil, true
-	)
+	HandleEntityInclusion("effects", "EFFECT", effects and effects.Register, nil, true)
+	
+	-- only reload spawn menu if any new tools were registered
+	-- thanks helix
+	if (CLIENT and bLoadedTools) then
+		RunConsoleCommand("spawnmenu_reload")
+	end
 end
 
 function nut.plugin.initialize()
 	nut.plugin.loadFromDir("nutscript/plugins")
-	nut.plugin.loadFromDir(engine.ActiveGamemode().."/plugins")
+	
+	if (engine.ActiveGamemode() != 'nutscript') then
+		nut.plugin.loadFromDir(engine.ActiveGamemode().."/plugins")
+	end
+	
 	nut.plugin.load("schema", engine.ActiveGamemode().."/schema")
 	hook.Run("InitializedSchema")
 
@@ -220,7 +255,7 @@ function nut.plugin.loadFromDir(directory)
 end
 
 function nut.plugin.setDisabled(uniqueID, disabled)
-	disabled = util.tobool(disabled)
+	disabled = tobool(disabled)
 
 	local oldData = table.Copy(nut.data.get("unloaded", {}, false, true))
 	oldData[uniqueID] = disabled
