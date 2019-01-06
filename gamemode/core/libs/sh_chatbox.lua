@@ -1,5 +1,5 @@
 nut.chat = nut.chat or {}
-nut.chat.classes = nut.char.classes or {}
+nut.chat.classes = nut.chat.classes or {}
 
 local DUMMY_COMMAND = {syntax = "<string text>", onRun = function() end}
 
