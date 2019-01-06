@@ -142,7 +142,7 @@ nut.config.add(
 	300,
 	"How often a player gets paid in seconds.",
 	nil,
-	{category = "characters"}
+	{min = 1, max = 3600, category = "characters"}
 )
 
 local dist = nut.config.get("voiceDistance")
