@@ -371,7 +371,7 @@ CREATE TABLE IF NOT EXISTS `nut_characters` (
 	`_lastJoinTime` DATETIME NOT NULL,
 	`_data` VARCHAR(1024) DEFAULT NULL COLLATE 'utf8mb4_general_ci',
 	`_money` INT(10) UNSIGNED NULL DEFAULT '0',
-	`_faction` VARCHAR(12) DEFAULT NULL COLLATE 'utf8mb4_general_ci',
+	`_faction` VARCHAR(24) DEFAULT NULL COLLATE 'utf8mb4_general_ci',
 	PRIMARY KEY (`_id`)
 );
 
