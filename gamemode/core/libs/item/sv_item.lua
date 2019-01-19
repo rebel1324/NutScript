@@ -92,7 +92,7 @@ function nut.item.loadItemByID(itemIndex, recipientFilter)
 		return
 	end
 
-	nut.db.query("SELECT _itemID, _uniqueID, _data, _x, _y FROM nut_items WHERE _itemID IN "..range, function(data)
+	nut.db.query("SELECT _itemID, _uniqueID, _data, _x, _y, _quantity FROM nut_items WHERE _itemID IN "..range, function(data)
 		if (data) then
 			for k, v in ipairs(data) do
 				local itemID = tonumber(v._itemID)
@@ -109,6 +109,8 @@ function nut.item.loadItemByID(itemIndex, recipientFilter)
 					-- Legacy support for x, y data
 					item.data.x = tonumber(v._x)
 					item.data.y = tonumber(v._y)
+
+					item.quantity = tonumber(v._quantity)
 
 					item:onRestored()
 				end

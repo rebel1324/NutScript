@@ -154,9 +154,6 @@ if (SERVER) then
 		self.owner = owner
 	end
 
-	function GridInv:canGetMultiStack()
-	end
-
 	function GridInv:add(itemTypeOrItem, xOrQuantity, yOrData)
 		local x, y, quantity, data
 		local isStackCommand = type(itemTypeOrItem) == "string" && type(xOrQuantity) == "number"
