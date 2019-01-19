@@ -213,7 +213,7 @@ function GM:CharacterLoaded(id)
 		if (IsValid(client)) then
 			local uniqueID = "nutSaveChar"..client:SteamID()
 
-			timer.Create(uniqueID, nut.config.get("saveInterval"), 0, function()
+			timer.Create(uniqueID, nut.config.get("saveInterval", 1600), 0, function()
 				if (IsValid(client) and client:getChar()) then
 					client:getChar():save()
 				else
