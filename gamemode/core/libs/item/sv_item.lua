@@ -41,10 +41,12 @@ function nut.item.instance(index, uniqueID, itemData, x, y, callback)
 			-- Legacy support for x, y data: add it back to the data for use
 			item.data.x = x
 			item.data.y = y
+			item.quantity = itemTable.maxQuantity
 
 			if (callback) then
 				callback(item)
 			end
+
 			d:resolve(item)
 			item:onInstanced(index, x, y, item)
 		end
@@ -56,7 +58,7 @@ function nut.item.instance(index, uniqueID, itemData, x, y, callback)
 
 	if (MYSQLOO_PREPARED and isnumber(index)) then
 		nut.db.preparedCall(
-			"itemInstance", onItemCreated, index, uniqueID, itemData, x, y
+			"itemInstance", onItemCreated, index, uniqueID, itemData, x, y, itemTable.maxQuantity or 1 
 		)
 	else
 		nut.db.insertTable({
@@ -64,7 +66,8 @@ function nut.item.instance(index, uniqueID, itemData, x, y, callback)
 			_uniqueID = uniqueID,
 			_data = itemData,
 			_x = x,
-			_y = y
+			_y = y,
+			_quantity = itemTable.maxQuantity or 1 
 		}, onItemCreated, "items")
 	end
 

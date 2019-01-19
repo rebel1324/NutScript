@@ -22,15 +22,28 @@ netstream.Hook("invData", function(id, key, value)
 	end
 end)
 
+netstream.Hook("invQuantity", function(id, quantity)
+	local item = nut.item.instances[id]
+
+	if (item) then
+		local oldValue = item:getQuantity()
+		item.quantity = quantity
+		
+		hook.Run("ItemQuantityChanged", item, oldValue, quantity)
+	end
+end)
+
 net.Receive("nutItemInstance", function()
 	local itemID = net.ReadUInt(32)
 	local itemType = net.ReadString()
 	local data = net.ReadTable()
 	local item = nut.item.new(itemType, itemID)
 	local invID = net.ReadType()
+	local quantity = net.ReadUInt(32)
 
 	item.data = table.Merge(item.data or {}, data)
 	item.invID = invID
+	item.quantity = quantity
 
 	nut.item.instances[itemID] = item
 	hook.Run("ItemInitialized", item)

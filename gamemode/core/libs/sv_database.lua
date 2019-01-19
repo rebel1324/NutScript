@@ -387,6 +387,7 @@ CREATE TABLE IF NOT EXISTS `nut_items` (
 	`_invID` INT(12) NULL DEFAULT NULL,
 	`_uniqueID` VARCHAR(60) NOT NULL COLLATE 'utf8mb4_general_ci',
 	`_data` VARCHAR(512) NULL DEFAULT NULL COLLATE 'utf8mb4_general_ci',
+	`_quantity` INT(16),
 	`_x` INT(4),
 	`_y` INT(4),
 	PRIMARY KEY (`_itemID`)
@@ -437,6 +438,7 @@ CREATE TABLE IF NOT EXISTS nut_items (
 	_invID integer,
 	_uniqueID varchar,
 	_data varchar,
+	_quantity integer,
 	_x integer,
 	_y integer
 );
@@ -693,14 +695,16 @@ MYSQLOO_INTEGER = 0
 MYSQLOO_STRING = 1
 MYSQLOO_BOOL = 2
 function GM:RegisterPreparedStatements()
-	MsgC(Color(0, 255, 0), "[Nutscript] ADDED 2 PREPARED STATEMENTS\n")
+	MsgC(Color(0, 255, 0), "[Nutscript] ADDED 5 PREPARED STATEMENTS\n")
 	nut.db.prepare("itemData", "UPDATE nut_items SET _data = ? WHERE _itemID = ?", {MYSQLOO_STRING, MYSQLOO_INTEGER})
 	nut.db.prepare("itemx", "UPDATE nut_items SET _x = ? WHERE _itemID = ?", {MYSQLOO_INTEGER, MYSQLOO_INTEGER})
 	nut.db.prepare("itemy", "UPDATE nut_items SET _y = ? WHERE _itemID = ?", {MYSQLOO_INTEGER, MYSQLOO_INTEGER})
-	nut.db.prepare("itemInstance", "INSERT INTO nut_items (_invID, _uniqueID, _data, _x, _y) VALUES (?, ?, ?, ?, ?)", {
+	nut.db.prepare("itemq", "UPDATE nut_items SET _quantity = ? WHERE _itemID = ?", {MYSQLOO_INTEGER, MYSQLOO_INTEGER})
+	nut.db.prepare("itemInstance", "INSERT INTO nut_items (_invID, _uniqueID, _data, _x, _y, _quantity) VALUES (?, ?, ?, ?, ?, ?)", {
 		MYSQLOO_INTEGER,
 		MYSQLOO_STRING,
 		MYSQLOO_STRING,
+		MYSQLOO_INTEGER,
 		MYSQLOO_INTEGER,
 		MYSQLOO_INTEGER,
 	})

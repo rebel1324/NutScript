@@ -154,8 +154,12 @@ if (SERVER) then
 		self.owner = owner
 	end
 
+	function GridInv:canGetMultiStack()
+	end
+
 	function GridInv:add(itemTypeOrItem, xOrQuantity, yOrData)
 		local x, y, quantity, data
+		local isStackCommand = type(itemTypeOrItem) == "string" && type(xOrQuantity) == "number"
 
 		-- Overload of GridInv:add(itemTypeOrItem, quantity, data)
 		if (type(yOrData) == "table") then
@@ -192,6 +196,50 @@ if (SERVER) then
 			x, y = self:findFreePosition(item)
 		end
 
+		if (isStackCommand and item.isStackable != true) then
+			isStackCommand = false
+		end
+
+		local targetAssignments = {}
+		local remainingQuantity = xOrQuantity
+
+		if (isStackCommand) then
+			local items = self:getItemsOfType(itemTypeOrItem)
+			
+			if (items) then
+				for _, targetItem in pairs(items) do
+					if (remainingQuantity == 0) then -- nothing to fill. 
+						break 
+					end
+
+					local freeSpace = targetItem.maxQuantity - targetItem:getQuantity()
+					
+					if (freeSpace > 0) then
+						local filler = freeSpace - remainingQuantity
+
+						if (filler > 0) then
+							targetAssignments[targetItem] = remainingQuantity	
+							remainingQuantity = 0
+						else
+							targetAssignments[targetItem] = freeSpace		
+							remainingQuantity = math.abs(filler)
+						end
+					end
+				end
+			end
+		end
+
+		if (isStackCommand and remainingQuantity == 0) then
+			local resultItems = {}
+
+			for targetItem, assignedQuantity in pairs(targetAssignments) do
+				targetItem:addQuantity(assignedQuantity)
+				table.insert(resultItems, targetItem)
+			end
+
+			return d:resolve(resultItems)
+		end
+
 		-- Permission check adding the item.
 		local context = {item = item, x = x, y = y}
 		local canAccess, reason = self:canAccess("add", context)
@@ -204,7 +252,7 @@ if (SERVER) then
 		end
 
 		-- If given an item instance, there's no need for a new instance.
-		if (justAddDirectly) then
+		if (not isStackCommand && justAddDirectly) then
 			item:setData("x", x)
 			item:setData("y", y)
 			self:addItem(item)
@@ -233,6 +281,31 @@ if (SERVER) then
 
 			self:addItem(item)
 			d:resolve(item)
+		end):next(function(item)
+			if (isStackCommand and remainingQuantity > 0) then
+				for targetItem, assignedQuantity in pairs(targetAssignments) do
+					targetItem:addQuantity(assignedQuantity)
+				end
+				
+				local overStacks = math.ceil(remainingQuantity/item.maxQuantity) - 1
+
+				if (overStacks > 0) then
+					local items = {}
+					for i = 1, overStacks do
+						items[i] = self:add(itemTypeOrItem)
+					end
+					deferred.all(items):next(nil, function(error)
+						hook.Run("OnPlayerLostStackItem", itemTypeOrItem) -- TODO: yes. just in case. maybe drop or something.
+					end)
+
+					item:setQuantity(remainingQuantity - (item.maxQuantity * overStacks))
+					self:addItem(item)
+					
+					return d:resolve(items)
+				else
+					item:setQuantity(remainingQuantity)
+				end
+			end
 		end)
 
 		return d

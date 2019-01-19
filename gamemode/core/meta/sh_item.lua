@@ -7,6 +7,13 @@ ITEM.desc = ITEM.desc or "[[INVALID ITEM]]"
 ITEM.id = ITEM.id or 0
 ITEM.uniqueID = "undefined"
 ITEM.isItem = true
+ITEM.isStackable = false
+ITEM.quantity = 1
+ITEM.maxQuantity = 1
+
+function ITEM:getQuantity()
+	return self.quantity
+end
 
 function ITEM:__eq(other)
 	return self:getID() == other:getID()

@@ -113,6 +113,7 @@ function ITEM:sync(recipient)
 		net.WriteString(self.uniqueID)
 		net.WriteTable(self.data)
 		net.WriteType(self.invID)
+		net.WriteUInt(self.quantity, 32)
 	if (recipient == nil) then
 		net.Broadcast()
 	else
@@ -171,6 +172,43 @@ function ITEM:setData(key, value, receivers, noSave, noCheckEntity)
 	end
 
 	self.data.x, self.data.y = x, y
+end
+
+function ITEM:addQuantity(quantity, receivers, noCheckEntity)
+	self:setQuantity(self:getQuantity() + quantity, receivers, noCheckEntity)
+end
+
+function ITEM:setQuantity(quantity, receivers, noCheckEntity)
+	self.quantity = quantity
+
+	if (!noCheckEntity) then
+		local ent = self:getEntity()
+
+		if (IsValid(ent)) then
+			ent:setNetVar("quantity", self.quantity)
+		end
+	end
+
+	if (receivers or self:getOwner()) then
+		netstream.Start(
+			receivers or self:getOwner(),
+			"invQuantity",
+			self:getID(),
+			self.quantity
+		)
+	end
+
+	if (noSave or not nut.db) then return end
+
+	-- Weird workaround, but essentially xy data should not be saved in the
+	-- data column.
+	if (MYSQLOO_PREPARED) then
+		nut.db.preparedCall("itemq", nil, self.quantity, self:getID())
+	else
+		nut.db.updateTable({
+			_quantity = self.quantity
+		}, nil, "items", "_itemID = "..self:getID())
+	end
 end
 
 function ITEM:interact(action, client, entity, data)

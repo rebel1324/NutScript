@@ -12,24 +12,10 @@ function ITEM:getDesc()
 	return Format(self.ammoDesc or self.desc, self:getQuantity())
 end
 
-function ITEM:getQuantity()
-	return self:getData("quantity", self.maxQuantity)
-end
-
-if (SERVER) then
-	function ITEM:addQuantity(amount)
-		self:setData("quantity", self:getQuantity() + amount)
-	end
-
-	function ITEM:onInstanced()
-		self:setData("quantity", self.maxQuantity or 1)
-	end
-else
-	function ITEM:paintOver(item, w, h)
-		local quantity = item:getQuantity()
-
-		nut.util.drawText(quantity, 8, 5, color_white, TEXT_ALIGN_LEFT, TEXT_ALIGN_TOP, "nutChatFont")
-	end
+function ITEM:paintOver(item, w, h)
+	local quantity = item:getQuantity()
+	
+	nut.util.drawText(quantity, 8, 5, color_white, TEXT_ALIGN_LEFT, TEXT_ALIGN_TOP, "nutChatFont")
 end
 
 local loadAmount = {
