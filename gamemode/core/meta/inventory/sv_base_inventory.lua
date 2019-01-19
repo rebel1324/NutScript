@@ -250,7 +250,6 @@ function Inventory:loadItems()
 				item.data.y = tonumber(result._y)
 
 				item.quantity = tonumber(result._quantity)
-				print("quantity", item.quantity)
 				items[itemID] = item
 				item:onRestored(self)
 			end
