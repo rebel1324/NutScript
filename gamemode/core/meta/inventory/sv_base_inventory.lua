@@ -218,7 +218,7 @@ end
 -- Loads the items contained in this inventory.
 function Inventory:loadItems()
 	local ITEM_TABLE = "items"
-	local ITEM_FIELDS = {"_itemID", "_uniqueID", "_data", "_x", "_y"}
+	local ITEM_FIELDS = {"_itemID", "_uniqueID", "_data", "_x", "_y", "_quantity"}
 
 	return nut.db.select(ITEM_FIELDS, ITEM_TABLE, "_invID = "..self.id)
 		:next(function(res)
@@ -249,6 +249,8 @@ function Inventory:loadItems()
 				item.data.x = tonumber(result._x)
 				item.data.y = tonumber(result._y)
 
+				item.quantity = tonumber(result._quantity)
+				print("quantity", item.quantity)
 				items[itemID] = item
 				item:onRestored(self)
 			end
@@ -289,6 +291,7 @@ function Inventory:sync(recipients)
 			net.WriteUInt(item:getID(), 32)
 			net.WriteString(item.uniqueID)
 			net.WriteTable(item.data)
+			net.WriteUInt(item:getQuantity(), 32)
 		end
 
 		-- TODO:

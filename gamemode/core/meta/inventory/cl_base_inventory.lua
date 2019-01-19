@@ -28,14 +28,15 @@ net.Receive("nutInventoryInit", function()
 
 	local expectedItems = net.ReadUInt(32)
 	local function readItem()
-		return net.ReadUInt(32), net.ReadString(), net.ReadTable()
+		return net.ReadUInt(32), net.ReadString(), net.ReadTable(), net.ReadUInt(32)
 	end
 
 	for i = 1, expectedItems do
-		local itemID, itemType, data = readItem()
+		local itemID, itemType, data, quantity = readItem()
 		local item = nut.item.new(itemType, itemID)
 		item.data = table.Merge(item.data, data)
 		item.invID = instance.id
+		item.quantity = quantity
 		instance.items[itemID] = item
 		hook.Run("ItemInitialized", item)
 	end
