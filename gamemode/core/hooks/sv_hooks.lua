@@ -213,7 +213,7 @@ function GM:CharacterLoaded(id)
 		if (IsValid(client)) then
 			local uniqueID = "nutSaveChar"..client:SteamID()
 
-			timer.Create(uniqueID, nut.config.get("saveInterval", 1600), 0, function()
+			timer.Create(uniqueID, nut.config.get("saveInterval", 300), 0, function()
 				if (IsValid(client) and client:getChar()) then
 					client:getChar():save()
 				else
@@ -314,8 +314,8 @@ function GM:PlayerLoadout(client)
 		-- Set their player model to the character's model.
 		client:SetModel(character:getModel())
 		client:Give("nut_hands")
-		client:SetWalkSpeed(nut.config.get("walkSpeed"))
-		client:SetRunSpeed(nut.config.get("runSpeed"))
+		client:SetWalkSpeed(nut.config.get("walkSpeed", 130))
+		client:SetRunSpeed(nut.config.get("runSpeed", 235))
 		
 		local faction = nut.faction.indices[client:Team()]
 
