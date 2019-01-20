@@ -206,6 +206,7 @@ function nut.plugin.initialize()
 	hook.Run("InitializedSchema")
 
 	hook.Run("InitializedPlugins")
+	hook.Run("InitializedItems")
 end
 
 function nut.plugin.loadFromDir(directory)
