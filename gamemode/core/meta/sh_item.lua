@@ -60,7 +60,7 @@ function ITEM:call(method, client, entity, ...)
 
 	self.player = client or self.player
 	self.entity = entity or self.entity
-	
+
 	if (type(self[method]) == "function") then
 		local results = {self[method](self, ...)}
 

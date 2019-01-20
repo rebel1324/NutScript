@@ -131,8 +131,9 @@ function PANEL:addItem(item)
 	self.icons[id] = icon
 end
 
-local COLOR_OCCUPIED = Color(255, 0, 0, 25)
-local COLOR_UNOCCUPIED = Color(0, 255, 0, 25)
+local COLOR_OCCUPIED = Color(231, 76, 60, 25)
+local COLOR_UNOCCUPIED = Color(46, 204, 113, 25)
+local COLOR_COMBINE = Color(241, 196, 15, 25)
 
 function PANEL:drawHeldItemRectangle()
 	local heldItem = nut.item.held
@@ -149,37 +150,67 @@ function PANEL:drawHeldItemRectangle()
 	local trimX, trimY
 	local maxOffsetY = (item.height or 1) - 1
 	local maxOffsetX = (item.width or 1) - 1
+	local drawTarget = nil 
+	for itemID, invItem in pairs(self.inventory.items) do
+		if (item:getID() == itemID) then continue end
 
-	for offsetY = 0, maxOffsetY do
-		trimY = 0
-		for offsetX = 0, maxOffsetX do
-			trimX = 0
-			if (offsetY == maxOffsetY) then
-				trimY = PADDING
-			end
-			if (offsetX == maxOffsetX) then
-				trimX = PADDING
-			end
+		local targetX, targetY = invItem:getData("x") - 1, invItem:getData("y") - 1
+		local targetW, targetH = invItem.width - 1, invItem.height - 1
 
-			local realX, realY = x + offsetX, y + offsetY
-			if (
-				realX >= self.gridW or realY >= self.gridH
-				or realX < 0 or realY < 0
-			) then
-				continue
-			end
+		if (
+			x + (item.width - 1) >= targetX and x <= targetX + targetW and
+			y + (item.height - 1) >= targetY and y <= targetY + targetH and 
+			(invItem.onCombine or item.onCombineTo)
+		) then
+			drawTarget = {
+				x = targetX, y = targetY, w = invItem.width, h = invItem.height
+			}
+			break
+		end
+	end
 
-			surface.SetDrawColor(
-				self.occupied[y + offsetY][x + offsetX]
-				and COLOR_OCCUPIED
-				or COLOR_UNOCCUPIED
-			)
-			surface.DrawRect(
-				(x + offsetX) * size,
-				(y + offsetY) * size,
-				size - trimX,
-				size - trimY
-			)
+	if (drawTarget) then
+		surface.SetDrawColor(
+			COLOR_COMBINE
+		)
+		surface.DrawRect(
+			drawTarget.x * size,
+			drawTarget.y * size,
+			drawTarget.w * size - PADDING,
+			drawTarget.h * size - PADDING
+		)
+	else
+		for offsetY = 0, maxOffsetY do
+			trimY = 0
+			for offsetX = 0, maxOffsetX do
+				trimX = 0
+				if (offsetY == maxOffsetY) then
+					trimY = PADDING
+				end
+				if (offsetX == maxOffsetX) then
+					trimX = PADDING
+				end
+
+				local realX, realY = x + offsetX, y + offsetY
+				if (
+					realX >= self.gridW or realY >= self.gridH
+					or realX < 0 or realY < 0
+				) then
+					continue
+				end
+
+				surface.SetDrawColor(
+					self.occupied[y + offsetY][x + offsetX]
+					and COLOR_OCCUPIED
+					or COLOR_UNOCCUPIED
+				)
+				surface.DrawRect(
+					(x + offsetX) * size,
+					(y + offsetY) * size,
+					size - trimX,
+					size - trimY
+				)
+			end
 		end
 	end
 end
