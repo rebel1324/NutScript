@@ -10,6 +10,7 @@ ITEM.isItem = true
 ITEM.isStackable = false
 ITEM.quantity = 1
 ITEM.maxQuantity = 1
+ITEM.canSplit = true
 
 function ITEM:getQuantity()
 	return self.quantity
