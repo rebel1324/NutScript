@@ -16,11 +16,16 @@ end
 if (SERVER) then
 	-- Called when item has been dragged on top of target (also an item).
 	function PLUGIN:ItemCombine(client, item, target)
-		if (target:call("onCombine", client, nil, item)) then -- when other items dragged into the item.
-			return
+		if (item.onCombine) then
+			if (target:call("onCombine", client, nil, item)) then -- when other items dragged into the item.
+				return
+			end
 		end
-		if (target and item:call("onCombineTo", client, nil, target)) then -- when you drag the item on something
-			return
+
+		if (item.onCombineTo) then
+			if (target and item:call("onCombineTo", client, nil, target)) then -- when you drag the item on something
+				return
+			end
 		end
 	end
 
