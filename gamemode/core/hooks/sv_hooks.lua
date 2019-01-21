@@ -45,7 +45,7 @@ function GM:PlayerInitialSpawn(client)
 	client:loadNutData(function(data)
 		if (!IsValid(client)) then return end
 
-		local address = game.GetIPAddress()
+		local address = client:IPAddress()
 		client:setNutData("lastIP", address)
 
 		netstream.Start(
