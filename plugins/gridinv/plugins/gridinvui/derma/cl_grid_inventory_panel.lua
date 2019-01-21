@@ -62,13 +62,15 @@ function PANEL:removeIcon(icon)
 end
 
 function PANEL:onItemPressed(itemIcon, keyCode)
-	if (keyCode == MOUSE_RIGHT) then
-		itemIcon:openActionMenu()
-	elseif (keyCode == MOUSE_LEFT) then
-		itemIcon:DragMousePress(keyCode)
-		itemIcon:MouseCapture(true)
-		nut.item.held = itemIcon
-		nut.item.heldPanel = self
+	if (hook.Run("InterceptClickItemIcon", self, itemIcon, keyCode) != true) then
+		if (keyCode == MOUSE_RIGHT) then
+			itemIcon:openActionMenu()
+		elseif (keyCode == MOUSE_LEFT) then
+			itemIcon:DragMousePress(keyCode)
+			itemIcon:MouseCapture(true)
+			nut.item.held = itemIcon
+			nut.item.heldPanel = self
+		end
 	end
 end
 
