@@ -172,12 +172,6 @@ function ENT:setClassAllowed(classID, isAllowed)
 	net.Send(self.receivers)
 end
 
--- Set the price scaling for when a player is selling an item to the vendor.
-function ENT:setSellScale(scale)
-	assert(isnumber(scale), "scale must be a number")
-	self:setNetVar("scale", scale)
-end
-
 -- Forces a player to leave the trade with this vendor.
 function ENT:removeReceiver(client, requestedByPlayer)
 	table.RemoveByValue(self.receivers, client)
@@ -308,7 +302,10 @@ function ENT:setModel(model)
 end
 
 -- Sets how much of the original price a player gets back for selling an item.
+-- Set the price scaling for when a player is selling an item to the vendor.
 function ENT:setSellScale(scale)
+	assert(isnumber(scale), "scale must be a number")
+
 	self:setNetVar("scale", scale)
 	net.Start("nutVendorEdit")
 		net.WriteString("scale")
