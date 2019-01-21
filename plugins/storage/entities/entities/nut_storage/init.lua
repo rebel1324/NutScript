@@ -12,21 +12,18 @@ local OPEN_TIME = 0.7
 function ENT:Initialize()
 	self:SetModel("models/props_junk/watermelon01.mdl")
 	self:SetSolid(SOLID_VPHYSICS)
-	self:PhysicsInit(SOLID_VPHYSICS)
 	self:SetUseType(SIMPLE_USE)
 	self.receivers = {}
 	
+	self:PostInitialize()
+
+	self:PhysicsInit(SOLID_VPHYSICS)
 	local physObj = self:GetPhysicsObject()
 
 	if (IsValid(physObj)) then
 		physObj:EnableMotion(true)
 		physObj:Wake()
 	end
-	
-	self:PostInitialize()
-end
-
-function ENT:PostInitialize()
 end
 
 function ENT:setInventory(inventory)

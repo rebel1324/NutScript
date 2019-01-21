@@ -140,6 +140,8 @@ if (CLIENT) then
 			panel:oldOnRemove()
 		end
 
+		hook.Run("OnCreateStoragePanel", localInvPanel, storageInvPanel, storage)
+
 		localInvPanel.OnRemove = exitStorageOnRemove
 		storageInvPanel.OnRemove = exitStorageOnRemove
 	end
