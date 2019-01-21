@@ -1,3 +1,6 @@
+nut.meta.item.width = 1
+nut.meta.item.height = 1
+
 local GridInv = nut.Inventory:extend("GridInv")
 
 -- Useful access rules:
