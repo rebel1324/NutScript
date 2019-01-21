@@ -2,6 +2,8 @@ local GridInv = nut.Inventory:extend("GridInv")
 
 -- Useful access rules:
 local function CanAccessInventoryIfCharacterIsOwner(inventory, action, context)
+	if (inventory.virtual) then return (action == "transfer") end 
+
 	local ownerID = inventory:getData("char")
 	local client = context.client
 	if (table.HasValue(client.nutCharList or {}, ownerID)) then
@@ -13,6 +15,8 @@ local function CanNotAddItemIfNoSpace(inventory, action, context)
 	if (action ~= "add") then
 		return
 	end
+
+	if (inventory.virtual) then return true end 
 
 	local x, y = context.x, context.y
 	if (not x or not y) then return false, "noFit" end
