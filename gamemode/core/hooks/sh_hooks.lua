@@ -404,14 +404,9 @@ function GM:Move(client, moveData)
 end
 
 function GM:CanItemBeTransfered(itemObject, curInv, inventory)
-	if (itemObject:getData("equip")) then
-		if (SERVER) then
-			local owner = itemObject:getOwner()
-			if (IsValid(owner)) then
-				owner:notifyLocalized("equippedBag")
-			end
-		end
-		return false
+	if (itemObject.onCanBeTransfered) then
+		local itemHook = itemObject:onCanBeTransfered(curInv, inventory)
+		
+		return (itemHook != false)
 	end
-	return true
 end
