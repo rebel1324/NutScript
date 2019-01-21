@@ -22,6 +22,11 @@ function ENT:Initialize()
 		physObj:EnableMotion(true)
 		physObj:Wake()
 	end
+	
+	self:PostInitialize()
+end
+
+function ENT:PostInitialize()
 end
 
 function ENT:setInventory(inventory)
