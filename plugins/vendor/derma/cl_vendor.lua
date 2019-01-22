@@ -248,6 +248,15 @@ function PANEL:OnRemove()
 	self:nutDeleteInventoryHooks()
 end
 
+function PANEL:OnKeyCodePressed(keyCode)
+	local useKey = input.LookupBinding("+use", true)
+
+	if (useKey) then
+		self:Remove()
+	end
+end
+
+
 vgui.Register("nutVendor", PANEL, "EditablePanel")
 
 if (IsValid(nut.gui.vendor)) then
