@@ -85,6 +85,7 @@ function PANEL:onItemReleased(itemIcon, keyCode)
 	y = math.Round((y - (itemH * 0.5)) / size) + 1
 
 	self.inventory:requestTransfer(item:getID(), self.inventory:getID(), x, y)
+	hook.Run("OnRequestItemTransfer", self, item:getID(), self.inventory:getID(), x, y) -- mostly for sound for bag/inventory/storage etc..
 end
 
 function PANEL:populateItems()
