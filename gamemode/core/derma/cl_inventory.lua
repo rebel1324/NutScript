@@ -276,14 +276,12 @@ hook.Add("CreateMenuButtons", "nutInventory", function(tabs)
 			local inventory = LocalPlayer():getChar():getInv()
 
 			if (inventory) then
-				inventory:show(panel)
+				local mainPanel = inventory:show(panel)
+				
+				hook.Add("PostRenderVGUI", mainPanel, function()
+					hook.Run("PostDrawInventory", mainPanel)
+				end)
 			end
 		end
 	end
-end)
-
-hook.Add("PostRenderVGUI", "nutInvHelper", function()
-	local pnl = nut.gui.inv1
-
-	hook.Run("PostDrawInventory", pnl)
 end)
