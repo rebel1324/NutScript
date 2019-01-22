@@ -29,7 +29,7 @@ local function CanNotTransferBagIntoBag(inventory, action, context)
 	if (action ~= TRANSFER) then return end
 
 	local item, toInventory = context.item, context.to
-	if (toInventory:getData("item") and item.isBag) then
+	if (toInventory and toInventory:getData("item") and item.isBag) then -- if to inventory is not valid, it goes to the ground.
 		return false, "A bag cannot be placed into another bag"
 	end
 end
