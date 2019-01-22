@@ -23,6 +23,10 @@ end
 
 -- Permanently deletes this item instance and from the inventory it is in.
 function ITEM:remove()
+	if (IsValid(self.entity)) then
+		self.entity:Remove()
+	end
+
 	return self:removeFromInventory()
 		:next(function() return self:delete() end)
 end
