@@ -151,8 +151,13 @@ function PANEL:openActionMenu()
 						send = v.onClick(itemTable)
 					end
 
-					if (v.sound) then
-						surface.PlaySound(v.sound)
+					local snd = v.sound or SOUND_INVENTORY_INTERACT
+					if (snd) then
+						if (type(snd) == 'table') then
+							LocalPlayer():EmitSound(unpack(snd))
+						elseif (type(snd) == 'string') then
+							surface.PlaySound(snd)
+						end
 					end
 
 					if (send != false) then
@@ -176,8 +181,13 @@ function PANEL:openActionMenu()
 							send = v.onClick(itemTable, sub.data)
 						end
 
-						if (v.sound) then
-							surface.PlaySound(v.sound)
+						local snd = v.sound or SOUND_INVENTORY_INTERACT
+						if (snd) then
+							if (type(snd) == 'table') then
+								LocalPlayer():EmitSound(unpack(snd))
+							elseif (type(snd) == 'string') then
+								surface.PlaySound(snd)
+							end
 						end
 
 						if (send != false) then
@@ -202,8 +212,13 @@ function PANEL:openActionMenu()
 						send = v.onClick(itemTable)
 					end
 
-					if (v.sound) then
-						surface.PlaySound(v.sound)
+					local snd = v.sound or SOUND_INVENTORY_INTERACT
+					if (snd) then
+						if (type(snd) == 'table') then
+							LocalPlayer():EmitSound(unpack(snd))
+						elseif (type(snd) == 'string') then
+							surface.PlaySound(snd)
+						end
 					end
 
 					if (send != false) then
