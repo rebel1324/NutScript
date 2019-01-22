@@ -439,6 +439,10 @@ function GM:ItemShowEntityMenu(entity)
 	itemTable.player = LocalPlayer()
 	itemTable.entity = entity
 
+	if (input.IsShiftDown()) then
+		callback("take") 
+	end
+
 	for k, v in SortedPairs(itemTable.functions) do
 		if (k == "combine") then continue end -- yeah, noob protection
 
