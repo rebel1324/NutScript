@@ -217,9 +217,13 @@ function ITEM:interact(action, client, entity, data)
 		"Item action cannot be performed without a player"
 	)
 
-	local canInteract =
+	local canInteract, reason =
 		hook.Run("CanPlayerInteractItem", client, action, self, data)
 	if (canInteract == false) then
+		if (reason) then 
+			client:notifyLocalized(reason)
+		end
+
 		return false
 	end
 

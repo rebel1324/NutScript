@@ -1,3 +1,19 @@
+
+local PROHIBITED_ACTIONS = {
+	["Equip"] = true,
+	["EquipUn"] = true,
+}
+
+function PLUGIN:CanPlayerInteractItem(client, action, itemObject, data)
+	local inventory = nut.inventory.instances[itemObject.invID]
+
+	if (inventory and inventory.isStorage == true) then
+		if (PROHIBITED_ACTIONS[action]) then
+			return false, "forbiddenActionStorage"
+		end
+	end
+end
+
 local MAX_ACTION_DISTANCE = 128
 local RULES = {
 	AccessIfStorageReceiver = function(inventory, action, context)

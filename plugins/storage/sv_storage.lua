@@ -1,6 +1,5 @@
 -- This file is responsible for creating, saving, and loading storage
 -- entities.
-
 function PLUGIN:PlayerSpawnedProp(client, model, entity)
 	local data = self.definitions[model:lower()]
 	if (not data) then return end
@@ -19,6 +18,7 @@ function PLUGIN:PlayerSpawnedProp(client, model, entity)
 	nut.inventory.instance(data.invType, data.invData)
 		:next(function(inventory)
 			if (IsValid(storage)) then
+				inventory.isStorage = true
 				storage:setInventory(inventory)
 				self:saveStorage()
 
