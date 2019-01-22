@@ -61,6 +61,13 @@ function PLUGIN:CanPlayerTradeWithVendor(
 	end
 end
 
+if (not VENDOR_INVENTORY_MEASURE) then
+	VENDOR_INVENTORY_MEASURE = nut.inventory.types["grid"]:new()
+	VENDOR_INVENTORY_MEASURE.data = {w = 8, h = 8}
+	VENDOR_INVENTORY_MEASURE.virtual = true
+	VENDOR_INVENTORY_MEASURE:onInstanced()
+end
+
 function PLUGIN:VendorTradeAttempt(
 	client,
 	vendor,
@@ -87,8 +94,30 @@ function PLUGIN:VendorTradeAttempt(
 
 	-- Then, transfer the money and item.
 	if (isSellingToVendor) then
-		local item = character:getInv():getFirstItemOfType(itemType)
+		local inventory = character:getInv()
+		local item = inventory:getFirstItemOfType(itemType)
+		
 		if (item) then
+			local context = {
+				client = client,
+				item = item,
+				from = inventory,
+				to = VENDOR_INVENTORY_MEASURE
+			}
+			local canTransfer, reason = VENDOR_INVENTORY_MEASURE:canAccess("transfer", context)
+			if (not canTransfer) then
+				client:notifyLocalized(reason or "vendorError")
+
+				return
+			end
+
+			local canTransferItem, reason = hook.Run("CanItemBeTransfered", item, inventory, VENDOR_INVENTORY_MEASURE)
+			if (canTransferItem == false) then
+				client:notifyLocalized(reason or "vendorError")
+			
+				return
+			end
+
 			vendor:takeMoney(price)
 			character:giveMoney(price)
 
