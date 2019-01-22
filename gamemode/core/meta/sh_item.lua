@@ -13,6 +13,10 @@ ITEM.maxQuantity = 1
 ITEM.canSplit = true
 
 function ITEM:getQuantity()
+	if (self.id == 0) then
+		return self.maxQuantity -- for display purpose.
+	end
+
 	return self.quantity
 end
 
