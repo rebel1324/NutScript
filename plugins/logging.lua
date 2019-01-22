@@ -22,7 +22,7 @@ if (SERVER) then
 
 	nut.log.addType("playerConnected", function(client, ...)
 		local data = {...}
-		local steamID = data[1]
+		local steamID = data[2]
 
 		return string.format("%s[%s] has connected to the server.", client:Name(), steamID or client:SteamID())
 	end)
