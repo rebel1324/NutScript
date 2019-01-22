@@ -91,7 +91,7 @@ if (SERVER) then
 					nut.item.spawn(uniqueID, entity:GetPos() + Vector(0, 0, 16))
 					itemTaken()
 				else
-					client:getChar():getInv():add(uniqueID, amount)
+					client:getChar():getInv():add(uniqueID, amount * itemTable.maxQuantity, {})
 						:next(function(res)
 							if (IsValid(client) and res.error) then
 								client:notifyLocalized(res.error)
