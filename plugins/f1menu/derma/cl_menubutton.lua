@@ -28,7 +28,7 @@ local PANEL = {}
 		local color = self:GetTextColor()
 		self:SetTextColor(Color(math.max(color.r - 25, 0), math.max(color.g - 25, 0), math.max(color.b - 25, 0)))
 
-		surface.PlaySound("ui/buttonrollover.wav")
+		surface.PlaySound(SOUND_MENU_BUTTON_ROLLOVER)
 	end
 
 	function PANEL:OnCursorExited()
@@ -46,7 +46,7 @@ local PANEL = {}
 			self:SetTextColor(nut.config.get("color"))
 		end
 
-		surface.PlaySound("ui/buttonclickrelease.wav")
+		surface.PlaySound(SOUND_MENU_BUTTON_PRESSED)
 
 		if (code == MOUSE_LEFT and self.DoClick) then
 			self:DoClick(self)

@@ -40,7 +40,7 @@ function PANEL:setItem(itemTable)
 			local parent = nut.gui.business
 			parent:buyItem(itemTable.uniqueID)
 
-			surface.PlaySound("buttons/button14.wav")
+			surface.PlaySound(SOUND_BUSINESS_BUY)
 			this.nextClick = CurTime() + 0.5
 		end
 	end
@@ -268,7 +268,7 @@ PANEL = {}
 				self.finalGlow:SetAlpha(255)
 				self.finalGlow:AlphaTo(0, 0.5)
 
-				return surface.PlaySound("buttons/button11.wav")
+				return surface.PlaySound(SOUND_BUSINESS_PREVENT_BUY)
 			end
 
 			netstream.Start("bizBuy", self.itemData)
@@ -295,7 +295,7 @@ PANEL = {}
 					self.done = true
 					self:ShowCloseButton(true)
 
-					surface.PlaySound("buttons/button3.wav")
+					surface.PlaySound(SOUND_BUSINESS_PREVENT_RESPONSE)
 				end
 			end)
 
@@ -304,7 +304,7 @@ PANEL = {}
 					self.text:SetText(L"buyFailed")
 					self:ShowCloseButton(true)
 
-					surface.PlaySound("buttons/button11.wav")
+					surface.PlaySound(SOUND_BUSINESS_PREVENT_TIMEOUT)
 				end
 			end)
 		end

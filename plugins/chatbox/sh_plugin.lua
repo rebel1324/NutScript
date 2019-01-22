@@ -53,7 +53,11 @@ if (CLIENT) then
 	function PLUGIN:ChatText(index, name, text, messageType)
 		if (messageType == "none" and IsValid(self.panel)) then
 			self.panel:addText(text)
-			chat.PlaySound()
+			if (SOUND_CUSTOM_CHAT_SOUND and SOUND_CUSTOM_CHAT_SOUND != "") then
+				surface.PlaySound(SOUND_CUSTOM_CHAT_SOUND)
+			else
+				chat.PlaySound()
+			end
 		end
 	end
 

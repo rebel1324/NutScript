@@ -235,15 +235,15 @@ function PANEL:Paint(w, h)
 end
 
 function PANEL:hoverSound()
-	LocalPlayer():EmitSound("buttons/button15.wav", 35, 250)
+	LocalPlayer():EmitSound(unpack(SOUND_CHAR_HOVER))
 end
 
 function PANEL:clickSound()
-	LocalPlayer():EmitSound("buttons/button14.wav", 35, 255)
+	LocalPlayer():EmitSound(unpack(SOUND_CHAR_CLICK))
 end
 
 function PANEL:warningSound()
-	LocalPlayer():EmitSound("friends/friend_join.wav", 40, 255)
+	LocalPlayer():EmitSound(unpack(SOUND_CHAR_WARNING))
 end
 
 vgui.Register("nutCharacter", PANEL, "EditablePanel")

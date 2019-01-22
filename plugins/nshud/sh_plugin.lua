@@ -98,6 +98,7 @@ paintedEntitiesCache = {}
 
 function PLUGIN:DrawEntityInfo(entity, alpha, position)
 	if (not entity.IsPlayer(entity)) then return end
+	if (hookRun("ShouldDrawPlayerInfo", entity) == false) then return end
 
 	local localPlayer = LocalPlayer()
 	local character = entity.getChar(entity)
@@ -157,7 +158,7 @@ function PLUGIN:ShouldDrawEntityInfo(entity)
 	if (entity.onShouldDrawEntityInfo) then
 		return entity:onShouldDrawEntityInfo()
 	end
-	if (entity:IsPlayer() and entity:getChar()) then
+	if (entity:IsPlayer() and entity:getChar() and entity:GetNoDraw() != true) then
 		return true
 	end
 end

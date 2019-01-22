@@ -119,10 +119,7 @@ function ITEM:onCombine(other)
 		if (istable(res) and type(res.error) == "string") then
 			return client:notifyLocalized(res.error)
 		end
-		client:EmitSound(
-			"physics/cardboard/cardboard_box_impact_soft2.wav",
-			50
-		)
+		client:EmitSound(unpack(SOUND_BAG_RESPONSE))
 	end)
 end
 

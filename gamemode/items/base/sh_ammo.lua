@@ -69,10 +69,10 @@ ITEM.functions.use = { -- sorry, for name order.
 			item:addQuantity(-num)
 
 			item.player:GiveAmmo(num, item.ammo)
-			item.player:EmitSound("items/ammo_pickup.wav", 110)
+			item.player:EmitSound(self.useSound or "items/ammo_pickup.wav", 110)
 		elseif (data == 0) then
 			item.player:GiveAmmo(item:getQuantity(), item.ammo)
-			item.player:EmitSound("items/ammo_pickup.wav", 110)
+			item.player:EmitSound(self.useSound or "items/ammo_pickup.wav", 110)
 			return true
 		end
 		return item:getQuantity() <= 0

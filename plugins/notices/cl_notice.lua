@@ -34,7 +34,7 @@ function nut.util.notify(message)
 
 	-- Once the notice appears, make a sound and message.
 	timer.Simple(0.15, function()
-		LocalPlayer():EmitSound("garrysmod/content_downloaded.wav", 50, 250)
+		LocalPlayer():EmitSound(unpack(SOUND_NOTIFY))
 	end)
 
 	-- After the notice has displayed for 7.5 seconds, remove it.

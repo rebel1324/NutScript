@@ -121,7 +121,7 @@ function PANEL:delta(delta)
 		self.points = self.parent:onPointChange(self.key, delta)
 		self:updateQuantity()
 		if (oldPoints ~= self.points) then
-			LocalPlayer():EmitSound("buttons/button16.wav", 30, 255)
+			LocalPlayer():EmitSound(unpack(SOUND_ATTRIBUTE_BUTTON))
 		end
 	end
 end

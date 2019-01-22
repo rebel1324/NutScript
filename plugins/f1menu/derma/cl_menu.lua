@@ -85,7 +85,7 @@ local PANEL = {}
 		local key = input.IsKeyDown(KEY_F1)
 		if (key and (self.noAnchor or CurTime()+.4) < CurTime() and self.anchorMode == true) then
 			self.anchorMode = false
-			surface.PlaySound("buttons/lightswitch2.wav")
+			surface.PlaySound(SOUND_F1_MENU_UNANCHOR)
 		end
 
 		if (!self.anchorMode) then
