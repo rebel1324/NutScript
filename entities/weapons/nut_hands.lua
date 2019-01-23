@@ -471,6 +471,7 @@ function SWEP:doPickup(throw, entity, trace)
 		local phys = entity:GetPhysicsObject()
 		
 		if (!IsValid(phys) or !phys:IsMoveable() or phys:HasGameFlag(FVPHYSICS_PLAYER_HELD)) then
+			hook.Run("OnPickupObject", false, self.Owner, entity)
 			return
 		end
 			
@@ -484,6 +485,7 @@ function SWEP:doPickup(throw, entity, trace)
 					-- make the refire slower to avoid immediately dropping
 					local delay = (entity:GetClass() == "prop_ragdoll") and 0.8 or 0.1
 						
+					hook.Run("OnPickupObject", true, self.Owner, entity)
 					self:SetNextSecondaryFire(CurTime() + delay)
 					return
 				else
