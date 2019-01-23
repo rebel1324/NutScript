@@ -127,7 +127,7 @@ function PANEL:openActionMenu()
 	itemTable.player = LocalPlayer()
 
 	local menu = DermaMenu()
-	local override = hook.Run("OnCreateItemInteractionMenu", panel, menu, itemTable)
+	local override = hook.Run("OnCreateItemInteractionMenu", self, menu, itemTable)
 	if (override) then
 		if (IsValid(menu)) then
 			menu:Remove()

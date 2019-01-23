@@ -1,5 +1,6 @@
 function PLUGIN:VendorOpened(vendor)
 	vgui.Create("nutVendor")
+	hook.Run("OnOpenVendorMenu", self) -- mostly for sound or welcome stuffs
 end
 
 function PLUGIN:VendorExited()
