@@ -195,9 +195,23 @@ if (SERVER) then
 		if (not item) then
 			return d:reject("invalid item type")
 		end
-
+		
+		local targetInventory = self
 		if (not x or not y) then
 			x, y = self:findFreePosition(item)
+
+			if (not x or not y) then
+				for _, bagItem in pairs(self:getItems(true)) do
+					if (bagItem.isBag == true) then
+						targetInventory = bagItem:getInv()
+						x, y = targetInventory:findFreePosition(item)
+
+						if (x and y) then
+							break
+						end
+					end
+				end				
+			end
 		end
 
 		if (isStackCommand and item.isStackable != true) then
@@ -208,7 +222,7 @@ if (SERVER) then
 		local remainingQuantity = xOrQuantity
 
 		if (isStackCommand) then
-			local items = self:getItemsOfType(itemTypeOrItem)
+			local items = targetInventory:getItemsOfType(itemTypeOrItem)
 			
 			if (items) then
 				for _, targetItem in pairs(items) do
@@ -246,7 +260,7 @@ if (SERVER) then
 
 		-- Permission check adding the item.
 		local context = {item = item, x = x, y = y}
-		local canAccess, reason = self:canAccess("add", context)
+		local canAccess, reason = targetInventory:canAccess("add", context)
 		if (not canAccess) then
 			if (istable(reason)) then
 				return d:resolve({error = reason})
@@ -259,31 +273,31 @@ if (SERVER) then
 		if (not isStackCommand && justAddDirectly) then
 			item:setData("x", x)
 			item:setData("y", y)
-			self:addItem(item)
+			targetInventory:addItem(item)
 			return d:resolve(item)
 		end
 
 		-- Allocate space for the item.
-		self.occupied = self.occupied or {}
+		targetInventory.occupied = targetInventory.occupied or {}
 		for x2 = 0, (item.width or 1) - 1 do
 			for y2 = 0, (item.height or 1) - 1 do
-				self.occupied[(x + x2)..(y + y2)] = true
+				targetInventory.occupied[(x + x2)..(y + y2)] = true
 			end
 		end
 
 		-- Otherwise, make quantity number of instances.
 		data = table.Merge({x = x, y = y}, data or {})
 		local itemType = item.uniqueID
-		nut.item.instance(self:getID(), itemType, data, 0, 0, function(item)
-			if (self.occupied) then
+		nut.item.instance(targetInventory:getID(), itemType, data, 0, 0, function(item)
+			if (targetInventory.occupied) then
 				for x2 = 0, (item.width or 1) - 1 do
 					for y2 = 0, (item.height or 1) - 1 do
-						self.occupied[(x + x2)..(y + y2)] = nil
+						targetInventory.occupied[(x + x2)..(y + y2)] = nil
 					end
 				end
 			end
 
-			self:addItem(item)
+			targetInventory:addItem(item)
 			d:resolve(item)
 		end):next(function(item)
 			if (isStackCommand and remainingQuantity > 0) then
@@ -303,7 +317,7 @@ if (SERVER) then
 					end)
 
 					item:setQuantity(remainingQuantity - (item.maxQuantity * overStacks))
-					self:addItem(item)
+					targetInventory:addItem(item)
 					
 					return d:resolve(items)
 				else
