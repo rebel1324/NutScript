@@ -4,6 +4,7 @@ ENT.Type = "anim"
 ENT.PrintName = "Storage"
 ENT.Category = "NutScript"
 ENT.Spawnable = false
+ENT.isStorageEntity = true
 
 function ENT:getInv()
 	return nut.inventory.instances[self:getNetVar("id")]
