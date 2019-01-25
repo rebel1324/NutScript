@@ -264,4 +264,5 @@ LANGUAGE = {
 	panelAdded = "You have added a 3D panel.",
 	itemOnGround = "Your item has been placed on the ground.",
 	forbiddenActionStorage = "You can't do this action with storaged item."
+	cantDropBagHasEquipped = "You can't drop bag that has equipped item."
 }

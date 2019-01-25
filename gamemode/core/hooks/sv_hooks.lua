@@ -101,6 +101,23 @@ function GM:KeyRelease(client, key)
 	end
 end
 
+function GM:CanPlayerDropItem(client, item)
+	if (item.isBag) then
+		local inventory = item:getInv()
+
+		if (inventory) then
+			local items = inventory:getItems()
+			
+			for id, item in pairs(items) do
+				if (not item.ignoreEquipCheck and item:getData("equip") == true) then
+					client:notifyLocalized("cantDropBagHasEquipped")
+					return false
+				end	
+			end
+		end
+	end
+end
+
 function GM:CanPlayerInteractItem(client, action, item)
 	if (client:getNetVar("restricted")) then
 		return false

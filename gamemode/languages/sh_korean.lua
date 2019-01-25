@@ -251,5 +251,6 @@ LANGUAGE = {
 	noBusiness = "당신은 지금 아무것도 구매하실 수 없습니다.",
 	panelRemoved = "당신은 %s개의 3D 패널을 지웠습니다.",
  	panelAdded = "당신은 3D 패널을 추가했습니다.",
-	forbiddenActionStorage = "해당 행동은 보관된 아이템에게 할 수 없습니다."
+	forbiddenActionStorage = "해당 행동은 보관된 아이템에게 할 수 없습니다.",
+	cantDropBagHasEquipped = "장착된 아이템이 있는 가방은 버릴 수 없습니다."
 }
