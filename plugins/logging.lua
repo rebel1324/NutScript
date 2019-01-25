@@ -64,6 +64,11 @@ if (SERVER) then
 		return (L("%s used '%s'", client:Name(), arg[1]))
 	end)
 
+	nut.log.addType("charCreate", function(client, ...)
+		local arg = {...}
+		return (L("%s created the character #%s(%s)", client:steamName(), arg[1]:getID(), arg[1]:getName()))
+	end)
+
 	nut.log.addType("charLoad", function(client, ...)
 		local arg = {...}
 		return (L("%s loaded the character #%s(%s)", client:steamName(), arg[1], arg[2]))
@@ -71,7 +76,7 @@ if (SERVER) then
 
 	nut.log.addType("charDelete", function(client, ...)
 		local arg = {...}
-		return (L("%s(%s) deleted character (%s)", client:steamName(), client:SteamID(), arg[1]))
+		return (L("%s(%s) deleted character (%s)", IsValid(client) and client:steamName() or "COMMAND", IsValid(client) and client:SteamID() or "", arg[1]))
 	end)
 
 	nut.log.addType("itemUse", function(client, ...)
@@ -106,8 +111,12 @@ if (SERVER) then
 		nut.log.add(client, "charLoad", id, character:getName())
 	end
 
-	function PLUGIN:OnCharDelete(client, id)
+	function PLUGIN:OnCharacterDelete(client, id)
 		nut.log.add(client, "charDelete", id)
+	end
+
+	function PLUGIN:OnCharCreated(client, character)
+		nut.log.add(client, "charCreate", character)
 	end
 	
 	function PLUGIN:OnTakeShipmentItem(client, itemClass, amount)
