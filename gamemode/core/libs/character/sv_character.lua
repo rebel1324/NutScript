@@ -157,19 +157,25 @@ function nut.char.cleanUpForPlayer(client)
 	end
 end
 
-function nut.char.delete(id)
+local function removePlayer(client)
+	if (client:getChar() and client:getChar():getID() == id) then
+		client:KillSilent()
+		client:setNetVar("char", nil)
+		client:Spawn()
+	end
+end
+
+function nut.char.delete(id, client)
 	assert(type(id) == "number", "id must be a number")
 
-	local deletedPlayer 
-	for _, client in ipairs(player.GetAll()) do
-		if (not table.HasValue(client.nutCharList or {}, id)) then continue end
-		table.RemoveByValue(client.nutCharList, id)
-		
-		if (client:getChar() and client:getChar():getID() == id) then
-			deletedPlayer = client
-			client:KillSilent()
-			client:setNetVar("char", nil)
-			client:Spawn()
+	if (IsValid(client)) then
+		removePlayer(client)
+	else
+		for _, client in ipairs(player.GetAll()) do
+			if (not table.HasValue(client.nutCharList or {}, id)) then continue end
+			table.RemoveByValue(client.nutCharList, id)
+			
+			removePlayer(client)
 		end
 	end
 
@@ -189,5 +195,5 @@ function nut.char.delete(id)
 		end
 	)
 
-	hook.Run("OnCharacterDelete", deletedPlayer, id)
+	hook.Run("OnCharacterDelete", client, id)
 end

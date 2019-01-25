@@ -168,7 +168,7 @@ if (SERVER) then
 
 	-- Deletes this character from existence along with its associated data.
 	function CHAR:delete()
-		nut.char.delete(self:getID())
+		nut.char.delete(self:getID(), self:getPlayer())
 	end
 
 	-- Deletes this character from memory.
