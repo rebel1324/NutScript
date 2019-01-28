@@ -22,16 +22,16 @@ function nut.currency.spawn(pos, amount, angle)
 		print("[Nutscript] Can't create currency entity: Invalid Position")
 	elseif (!amount or amount < 0) then
 		print("[Nutscript] Can't create currency entity: Invalid Amount of money")
+	else
+		local money = ents.Create("nut_money")
+		money:SetPos(pos)
+		money:setAmount(math.Round(math.abs(amount)))
+		money:SetAngles(angle or Angle(0, 0, 0))
+		money:Spawn()
+		money:Activate()
+
+		return money
 	end
-
-	local money = ents.Create("nut_money")
-	money:SetPos(pos)
-	money:setAmount(math.Round(math.abs(amount)))
-	money:SetAngles(angle or Angle(0, 0, 0))
-	money:Spawn()
-	money:Activate()
-
-	return money
 end
 
 function GM:OnPickupMoney(client, moneyEntity)
