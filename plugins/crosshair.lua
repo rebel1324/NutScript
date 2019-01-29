@@ -57,7 +57,7 @@ function PLUGIN:PostDrawHUD()
 		return
 	end
 
-	if (hook.Run("ShouldDrawCrosshair") == false or g_ContextMenu:IsVisible() or IsValid(nut.gui.char) and nut.gui.char:IsVisible()) then
+	if (hook.Run("ShouldDrawCrosshair") == false or g_ContextMenu:IsVisible() or IsValid(nut.gui.character) and nut.gui.character:IsVisible()) then
 		return
 	end
 

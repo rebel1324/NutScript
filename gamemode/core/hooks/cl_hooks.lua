@@ -524,12 +524,6 @@ function GM:SetupQuickMenu(menu)
 	end
 end
 
-function GM:ShouldDrawLocalPlayer(client)
-	if (IsValid(nut.gui.char) and nut.gui.char:IsVisible()) then
-		return false
-	end
-end
-
 function GM:DrawNutModelView(panel, ent)
 	if (IsValid(ent.weapon)) then
 		ent.weapon:DrawModel()

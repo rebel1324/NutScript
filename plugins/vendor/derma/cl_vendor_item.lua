@@ -50,7 +50,7 @@ function PANEL:setIsSelling(isSelling)
 end
 
 local function clickEffects()
-	LocalPlayer():EmitSound("buttons/button15.wav", 30, 250)
+	LocalPlayer():EmitSound(unpack(SOUND_VENDOR_CLICK))
 end
 
 local function sellItemToVendor(panel)
