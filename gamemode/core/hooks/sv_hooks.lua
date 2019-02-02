@@ -694,6 +694,9 @@ function GM:NutScriptTablesLoaded()
 		:catch(ignore)
 	nut.db.query("ALTER TABLE nut_players ADD COLUMN _lastJoin DATETIME")
 		:catch(ignore)
+	-- Add missing _quantity colunm for nut_item table.
+	nut.db.query("ALTER TABLE nut_items ADD COLUMN _quantity INTEGER")
+		:catch(ignore)
 end
 
 function GM:PluginShouldLoad(plugin)
