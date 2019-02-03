@@ -11,7 +11,17 @@ nut.config.add(
 	nil,
 	{category = PLUGIN.name}
 )
-
+nut.config.add(
+	"musicvolume",
+	"0.25",
+	"The Volume for the music played in the character menu.",
+	nil,
+	{
+		form = "Float",
+		data = {min = 0, max = 1},
+		category = PLUGIN.name
+	}
+)
 nut.config.add(
 	"backgroundURL",
 	"",
