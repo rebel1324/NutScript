@@ -1,7 +1,7 @@
 local PANEL = {}
 
 local FADE_TIME = 5
-local VOLUME = 0.25
+local VOLUME = nut.config.get("musicvolume", 0.25)
 
 function PANEL:Init()
 	if (nut.menuMusic) then
