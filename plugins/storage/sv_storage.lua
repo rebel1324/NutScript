@@ -98,6 +98,7 @@ function PLUGIN:LoadData()
 		nut.inventory.loadByID(invID)
 			:next(function(inventory)
 				if (inventory and IsValid(storage)) then
+					inventory.isStorage = true
 					storage:setInventory(inventory)
 					hook.Run("StorageRestored", storage, inventory)
 				elseif (IsValid(storage)) then
