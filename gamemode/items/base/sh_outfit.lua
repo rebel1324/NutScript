@@ -56,7 +56,7 @@ function ITEM:removeOutfit(client)
 	character:setModel(character:getData("oldMdl", character:getModel()))
 	character:setData("oldMdl", nil)
 
-	client:SetSkin(character:getData("oldSkin", 0))
+	client:SetSkin(character:getData("oldSkin", character:getData("skin", 0)))
 	character:setData("oldSkin", nil)
 
 	for k, v in pairs(self.bodyGroups or {}) do
