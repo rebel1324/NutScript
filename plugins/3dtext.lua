@@ -111,7 +111,7 @@ else
 			local object = nut.markup.parse("<font=nut3D2DFont>"..v[3]:gsub("\\n", "\n"))
 				
 			local pos = {0, 0}
-			local text = {
+			local textTable = {
 					pos = pos,
 					color = color_white,
 					text = "",
@@ -125,11 +125,12 @@ else
 				pos[1] = x
 				pos[2] = y
 					
-				text.color = ColorAlpha(color, alpha)
-				text.yalign = alignY
-				text.font = font
+				textTable.color = ColorAlpha(color, alpha)
+				textTable.text = text
+				textTable.yalign = alignY
+				textTable.font = font
 					
-				draw.TextShadow(text, 1, alpha)
+				draw.TextShadow(textTable, 1, alpha)
 			end
 
 			-- Set the text to have a markup object to draw.
