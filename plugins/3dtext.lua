@@ -109,16 +109,27 @@ else
 		for k, v in pairs(PLUGIN.list) do
 			-- Generate markup object since it hasn't been done already.
 			local object = nut.markup.parse("<font=nut3D2DFont>"..v[3]:gsub("\\n", "\n"))
+				
+			local pos = {0, 0}
+			local text = {
+					pos = pos,
+					color = color_white,
+					text = "",
+					xalign = 0,
+					yalign = 0,
+					font = ""
+			}
+
 			-- Same thing with adding a shadow.
 			object.onDrawText = function(text, font, x, y, color, alignX, alignY, alpha)
-				draw.TextShadow({
-					pos = {x, y},
-					color = ColorAlpha(color, alpha),
-					text = text,
-					xalign = 0,
-					yalign = alignY,
-					font = font
-				}, 1, alpha)
+				pos[1] = x
+				pos[2] = y
+					
+				text.color = ColorAlpha(color, alpha)
+				text.yalign = alignY
+				text.font = font
+					
+				draw.TextShadow(text, 1, alpha)
 			end
 
 			-- Set the text to have a markup object to draw.
