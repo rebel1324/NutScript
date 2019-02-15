@@ -15,7 +15,9 @@ function ENT:Initialize()
 	self:SetUseType(SIMPLE_USE)
 	self.receivers = {}
 	
-	self:PostInitialize()
+	if (isfunction(self.PostInitialize)) then
+		self:PostInitialize()
+	end
 
 	self:PhysicsInit(SOLID_VPHYSICS)
 	local physObj = self:GetPhysicsObject()
