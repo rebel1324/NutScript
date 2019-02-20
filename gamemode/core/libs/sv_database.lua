@@ -231,6 +231,7 @@ modules.mysqloo = {
 		for i = 1, poolNum do
 			nut.db.pool[i] = mysqloo.connect(hostname, username, password, database, port)
 			local pool = nut.db.pool[i]
+			pool:setAutoReconnect(true)
 			pool:connect()
 
 			function pool:onConnectionFailed(fault)

@@ -114,6 +114,9 @@ net.Receive("nutCharDelete", function(_, client)
 
 	if (character and character.steamID == steamID) then
 		character:delete()
-		PLUGIN:syncCharList(client)
+
+		timer.Simple(.5, function()
+			PLUGIN:syncCharList(client)
+		end)
 	end
 end)

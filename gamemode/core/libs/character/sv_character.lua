@@ -181,6 +181,14 @@ function nut.char.delete(id, client)
 
 	hook.Run("PreCharacterDelete", id)
 
+	for index, charID in pairs(client.nutCharList) do
+		if (charID == id) then
+			table.remove(client.nutCharList, index)
+			
+			break
+		end
+	end
+
 	nut.char.loaded[id] = nil
 	netstream.Start(nil, "charDel", id)
 	nut.db.query("DELETE FROM nut_characters WHERE _id = "..id)
