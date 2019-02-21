@@ -24,9 +24,18 @@ NUT_ITEM_DEFAULT_FUNCTIONS = {
 			local inventory = client:getChar():getInv()
 			local entity = item.entity
 
+			if (client.itemTakeTransaction and client.itemTakeTransactionTimeout > RealTime()) then
+				return false
+			end
+
+			client.itemTakeTransaction = true 
+			client.itemTakeTransactionTimeout = RealTime()
+
 			if (not inventory) then return false end
 			inventory:add(item)
 				:next(function(res)
+					client.itemTakeTransaction = nil
+
 					if (IsValid(entity)) then
 						entity.nutIsSafe = true
 						entity:Remove()
@@ -35,6 +44,8 @@ NUT_ITEM_DEFAULT_FUNCTIONS = {
 					nut.log.add(client, "itemTake", item.name, 1)
 				end)
 				:catch(function(err)
+					client.itemTakeTransaction = nil
+
 					client:notifyLocalized(err)
 				end)
 

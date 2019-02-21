@@ -60,8 +60,8 @@ if (SERVER) then
 		local entity = client.nutShipment
 		local itemTable = nut.item.list[uniqueID]
 
-		if (client.shipmentInteraction) then
-			if (client.shipmentTimeout > RealTime()) then
+		if (client.shipmentTransaction) then
+			if (client.shipmentTransactionTimeout > RealTime()) then
 				return	
 			end
 		end
@@ -86,7 +86,7 @@ if (SERVER) then
 					end
 					
 					entity.items[uniqueID] = entity.items[uniqueID] - 1
-					client.shipmentInteraction = nil
+					client.shipmentTransaction = nil
 
 					if (entity:getItemCount() < 1) then
 						entity:GibBreakServer(Vector(0, 0, 0.5))
@@ -96,8 +96,8 @@ if (SERVER) then
 					netstream.Start(client, "takeShp", uniqueID, amount)
 				end
 
-				client.shipmentTimeout = RealTime() + 1
-				client.shipmentInteraction = true
+				client.shipmentTransaction = true
+				client.shipmentTransactionTimeout = RealTime() + 1
 
 				if (drop) then
 					nut.item.spawn(uniqueID, entity:GetPos() + Vector(0, 0, 16))
@@ -111,7 +111,7 @@ if (SERVER) then
 								itemTaken()
 							end
 						end, function(error)
-							client.shipmentInteraction = nil
+							client.shipmentTransaction = nil
 							client:notifyLocalized(error)
 						end)
 				end

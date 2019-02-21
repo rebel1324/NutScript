@@ -68,6 +68,14 @@ net.Receive("nutStorageTransfer", function(_, client)
 	) then
 		return
 	end
+
+	if (client.storageTransaction and client.storageTransactionTimeout > RealTime()) then
+		return
+	end
+
+	client.storageTransaction = true
+	client.storageTransactionTimeout = RealTime() + .1
+
 	-- Swap the item between the storage inventory and character's inventory.
 	local failItemDropPos = client:getItemDropPos()
 	fromInv:removeItem(itemID, true)
@@ -75,16 +83,19 @@ net.Receive("nutStorageTransfer", function(_, client)
 			return toInv:add(item)
 		end)
 		:next(function(res)
+			client.storageTransaction = nil
 			hook.Run("ItemTransfered", context)
 			return res
 		end)
 		:catch(function(err)
+			client.storageTransaction = nil
 			if (IsValid(client)) then
 				client:notifyLocalized(err)
 			end
 			return fromInv:add(item)
 		end)
 		:catch(function(err)
+			client.storageTransaction = nil
 			item:spawn(failItemDropPos)
 			if (IsValid(client)) then
 				client:notifyLocalized("itemOnGround")

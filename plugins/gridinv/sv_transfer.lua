@@ -47,7 +47,16 @@ function PLUGIN:HandleItemTransferRequest(client, itemID, x, y, invID)
 	local oldX, oldY = item:getData("x"), item:getData("y")
 	local failItemDropPos = client:getItemDropPos()
 
+	if (client.invTransferTransaction and client.invTransferTransactionTimeout > RealTime()) then
+		return
+	end
+
+	client.invTransferTransaction = true
+	client.invTransferTransactionTimeout = RealTime()
+
 	local function fail(err)
+		client.invTransferTransaction = nil
+
 		if (err) then
 			print(err)
 			debug.Trace()
@@ -87,6 +96,8 @@ function PLUGIN:HandleItemTransferRequest(client, itemID, x, y, invID)
 			end
 		end)
 		:next(function(res)
+			client.invTransferTransaction = nil
+			
 			if (res and res.error) then
 				fail()
 			else
