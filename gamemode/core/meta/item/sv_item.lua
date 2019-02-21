@@ -23,12 +23,19 @@ end
 
 -- Permanently deletes this item instance and from the inventory it is in.
 function ITEM:remove()
+	local d = deferred.new()
+
 	if (IsValid(self.entity)) then
 		self.entity:Remove()
 	end
 
-	return self:removeFromInventory()
-		:next(function() return self:delete() end)
+	self:removeFromInventory()
+		:next(function()
+			d:resolve()
+			return self:delete()
+		end)
+
+	return d
 end
 
 -- Deletes the in-memory data for this item
