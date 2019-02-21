@@ -111,6 +111,7 @@ if (SERVER) then
 								itemTaken()
 							end
 						end, function(error)
+							client.shipmentInteraction = nil
 							client:notifyLocalized(error)
 						end)
 				end
@@ -129,10 +130,9 @@ else
 	end)
 
 	netstream.Hook("takeShp", function(name, amount)
-		print("fuuck")
 		if (nut.gui.shipment and nut.gui.shipment:IsVisible()) then
 			local item = nut.gui.shipment.itemPanels[name]
-			print("hey", item)
+
 			if (item) then
 				item:update()
 			end
