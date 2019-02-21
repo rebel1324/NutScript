@@ -76,7 +76,7 @@ if (CLIENT) then
 
 			surface.SetFont("nutSubTitleFont")
 			
-			local name = v:GetPrintName():upper()
+			local name = hook.Run("GetWeaponName", v) or v:GetPrintName():upper()
 			local tx, ty = surface.GetTextSize(name)
 			local scale = (1 - math.abs(theta*2))
 			local matrix = Matrix()
