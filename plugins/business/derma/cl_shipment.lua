@@ -12,6 +12,7 @@ local PANEL = {}
 		self.list:Dock(FILL)
 	end
 
+
 	function PANEL:setItems(entity, items)
 		self.entity = entity
 		self.items = true
@@ -54,18 +55,6 @@ local PANEL = {}
 				item.take:DockMargin(3, 3, 3, 3)
 				item.take.DoClick = function(this)
 					netstream.Start("shpUse", k)
-					items[k] = items[k] - 1
-
-					item.quantity:SetText(items[k])
-
-					if (items[k] <= 0) then
-						item:Remove()
-						items[k] = nil
-					end
-
-					if (table.Count(items) == 0) then
-						self:Remove()
-					end
 				end
 
 				item.drop = item:Add("DButton")
@@ -75,12 +64,19 @@ local PANEL = {}
 				item.drop:DockMargin(3, 3, 0, 3)
 				item.drop.DoClick = function(this)
 					netstream.Start("shpUse", k, 1)
-					items[k] = items[k] - 1
+				end
 
+				function item:update()
+					items[k] = items[k] - 1
 					item.quantity:SetText(items[k])
 
 					if (items[k] <= 0) then
 						item:Remove()
+						items[k] = nil
+					end
+
+					if (table.Count(items) == 0) then
+						self:Remove()
 					end
 				end
 

@@ -60,6 +60,12 @@ if (SERVER) then
 		local entity = client.nutShipment
 		local itemTable = nut.item.list[uniqueID]
 
+		if (client.shipmentInteraction) then
+			if (client.shipmentTimeout > RealTime()) then
+				return	
+			end
+		end
+
 		if (itemTable and IsValid(entity)) then
 			if (entity:GetPos():Distance(client:GetPos()) > 128) then
 				client.nutShipment = nil
@@ -80,12 +86,18 @@ if (SERVER) then
 					end
 					
 					entity.items[uniqueID] = entity.items[uniqueID] - 1
+					client.shipmentInteraction = nil
 
 					if (entity:getItemCount() < 1) then
 						entity:GibBreakServer(Vector(0, 0, 0.5))
 						entity:Remove()
 					end
+
+					netstream.Start(client, "takeShp", uniqueID, amount)
 				end
+
+				client.shipmentTimeout = RealTime() + 1
+				client.shipmentInteraction = true
 
 				if (drop) then
 					nut.item.spawn(uniqueID, entity:GetPos() + Vector(0, 0, 16))
@@ -98,6 +110,8 @@ if (SERVER) then
 							elseif (not res.error) then
 								itemTaken()
 							end
+						end, function(error)
+							client:notifyLocalized(error)
 						end)
 				end
 			end
@@ -115,16 +129,12 @@ else
 	end)
 
 	netstream.Hook("takeShp", function(name, amount)
+		print("fuuck")
 		if (nut.gui.shipment and nut.gui.shipment:IsVisible()) then
-			local item = nut.gui.shipment.itemPanel[name]
-
+			local item = nut.gui.shipment.itemPanels[name]
+			print("hey", item)
 			if (item) then
-				item.amount = item.amount - 1
-				item:Update(item.amount)
-
-				if (item.amount <= 0) then
-					item:Remove()
-				end
+				item:update()
 			end
 		end
 	end)
