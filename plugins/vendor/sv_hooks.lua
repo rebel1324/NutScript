@@ -92,6 +92,13 @@ function PLUGIN:VendorTradeAttempt(
 	local character = client:getChar()
 	local price = vendor:getPrice(itemType, isSellingToVendor)
 
+	if (client.vendorTransaction and client.vendorTimeout > RealTime()) then
+		return
+	end
+
+	client.vendorTransaction = true 
+	client.vendorTimeout = RealTime() + .1
+
 	-- Then, transfer the money and item.
 	if (isSellingToVendor) then
 		local inventory = character:getInv()
@@ -122,6 +129,12 @@ function PLUGIN:VendorTradeAttempt(
 			character:giveMoney(price)
 
 			item:remove()
+				:next(function()
+					client.vendorTransaction = nil
+				end)
+				:catch(function()
+					client.vendorTransaction = nil
+				end)
 			vendor:addStock(itemType)
 		end
 
@@ -134,14 +147,19 @@ function PLUGIN:VendorTradeAttempt(
 
 		local position = client:getItemDropPos()
 		character:getInv():add(itemType)
+			:next(function()
+				client.vendorTransaction = nil
+			end)
 			:catch(function(err)
 				if (IsValid(client)) then
 					client:notifyLocalized("itemOnGround")
 				end
+				client.vendorTransaction = nil
 				return nut.item.spawn(itemType, position)
 			end)
 			:catch(function(err)
 				client:notifyLocalized(err)
+				client.vendorTransaction = nil
 			end)
 
 		nut.log.add(client, "vendorBuy", itemType, vendor:getNetVar("name"))
