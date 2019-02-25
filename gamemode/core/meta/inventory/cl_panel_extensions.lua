@@ -75,7 +75,9 @@ function PANEL:nutDeleteInventoryHooks(id)
 	if (id == nil) then
 		for invID, hookIDs in pairs(self.nutToRemoveHooks) do
 			for i = 1, #hookIDs do
-				hook.Remove(hookIDs[i], self.nutHookID)
+				if (IsValid(self.nutHookID)) then
+					hook.Remove(hookIDs[i], self.nutHookID)
+				end
 			end
 			self.nutToRemoveHooks[invID] = nil
 		end
