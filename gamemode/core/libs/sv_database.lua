@@ -70,24 +70,20 @@ modules.sqlite = {
 modules.tmysql4 = {
 	query = promisifyIfNoCallback(function(query, callback, throw)
 		if (nut.db.object) then
-			nut.db.object:Query(query, function(data, status, lastID)
-				if (QUERY_SUCCESS and status == QUERY_SUCCESS) then
-					if (callback) then
-						callback(data, lastID)
-					end
-				else
-					if (data and data[1]) then
-						if (data[1].status) then
-							if (callback) then
-								callback(data[1].data, data[1].lastid)
-							end
+			nut.db.object:Query(query, function(status, result)
+				if (result) then
+					result = result[1]
 
-							return
+					local queryStatus, queryError, affected, lastID, time, data = result.status, result.error, result.affected, result.lastid, result.time, result.data 
+
+					if (queryStatus and queryStatus == true) then
+						if (callback) then
+							callback(data, lastID)
 						end
 					end
-
+				else
 					file.Write("nut_queryerror.txt", query)
-					throw(lastID) -- last ID is actually the error string.
+					throw(queryError) -- last ID is actually the error string.
 				end
 			end, 3)
 		else
