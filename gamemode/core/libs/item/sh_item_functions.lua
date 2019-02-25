@@ -32,6 +32,9 @@ NUT_ITEM_DEFAULT_FUNCTIONS = {
 			client.itemTakeTransactionTimeout = RealTime()
 
 			if (not inventory) then return false end
+
+			local d = deferred.new()
+
 			inventory:add(item)
 				:next(function(res)
 					client.itemTakeTransaction = nil
@@ -40,16 +43,21 @@ NUT_ITEM_DEFAULT_FUNCTIONS = {
 						entity.nutIsSafe = true
 						entity:Remove()
 					end
+					
 					if (not IsValid(client)) then return end
 					nut.log.add(client, "itemTake", item.name, 1)
+
+					d:resolve()
 				end)
 				:catch(function(err)
 					client.itemTakeTransaction = nil
 
 					client:notifyLocalized(err)
+
+					d:reject()
 				end)
 
-			return false
+			return d 
 		end,
 		onCanRun = function(item)
 			return IsValid(item.entity)
