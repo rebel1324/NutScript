@@ -273,7 +273,7 @@ function ITEM:interact(action, client, entity, data)
 	end
 	hook.Run("OnPlayerInteractItem", client, action, self, result, data)
 
-	if (result ~= false) then
+	if (result ~= false and not deferred.isPromise(result)) then
 		if (IsValid(entity)) then
 			entity:Remove()
 		else
