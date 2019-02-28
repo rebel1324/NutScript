@@ -60,10 +60,8 @@ if (SERVER) then
 		local entity = client.nutShipment
 		local itemTable = nut.item.list[uniqueID]
 
-		if (client.shipmentTransaction) then
-			if (client.shipmentTransactionTimeout > RealTime()) then
-				return	
-			end
+		if (client.shipmentTransaction and client.shipmentTransactionTimeout > RealTime()) then
+			return
 		end
 
 		if (itemTable and IsValid(entity)) then
