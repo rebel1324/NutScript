@@ -110,6 +110,7 @@ modules.tmysql4 = {
 		local object, fault = tmysql.initialize(hostname, username, password, database, port)
 
 		if (object) then
+			object:SetCharacterSet("utf8")
 			nut.db.object = object
 			nut.db.escape = modules.tmysql4.escape
 			nut.db.query = modules.tmysql4.query
