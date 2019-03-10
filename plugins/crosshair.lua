@@ -111,13 +111,17 @@ function PLUGIN:PostDrawHUD()
 
 	curAlpha = hook.Run("GetCrosshairAlpha", curAlpha, entity) or curAlpha
 
-	drawdot( {math_round(cx), math_round(cy)}, crossSize, colors)
-	drawdot( {math_round(cx + curGap), math_round(cy)}, crossSize, colors)
-	drawdot( {math_round(cx - curGap), math_round(cy)}, crossSize, colors) 
-	drawdot( {math_round(cx), math_round(cy + curGap * .8)}, crossSize, colors) 
-	drawdot( {math_round(cx), math_round(cy - curGap * .8)}, crossSize, colors) 
+	if (curAlpha > 1) then
+		drawdot( {math_round(cx), math_round(cy)}, crossSize, colors)
+		drawdot( {math_round(cx + curGap), math_round(cy)}, crossSize, colors)
+		drawdot( {math_round(cx - curGap), math_round(cy)}, crossSize, colors) 
+		drawdot( {math_round(cx), math_round(cy + curGap * .8)}, crossSize, colors) 
+		drawdot( {math_round(cx), math_round(cy - curGap * .8)}, crossSize, colors) 
+	end
 
-	nut.util.drawText(lastIcon or "", cx + (adx or 0), cy + (ady or 0), ColorAlpha(color_white, curIconAlpha), 1, 1, "nutCrossIcons")
+	if (lastIcon) then
+		nut.util.drawText(astIcon or "", cx + (adx or 0), cy + (ady or 0), ColorAlpha(color_white, curIconAlpha), 1, 1, "nutCrossIcons")
+	end
 end
 
 function PLUGIN:GetCrosshairIcon(curAlpha, entity, weapon, distance)
