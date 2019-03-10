@@ -57,6 +57,11 @@ if (SERVER) then
 	end)
 
 	netstream.Hook("shpUse", function(client, uniqueID, drop)
+		if (client.nextUse and client.nextUse > RealTime()) then
+			return
+		end
+		client.nextUse = RealTime() + .05
+
 		local entity = client.nutShipment
 		local itemTable = nut.item.list[uniqueID]
 
@@ -65,6 +70,9 @@ if (SERVER) then
 		end
 
 		if (itemTable and IsValid(entity)) then
+			client.shipmentTransaction = true
+			client.shipmentTransactionTimeout = RealTime() + .1
+
 			if (entity:GetPos():Distance(client:GetPos()) > 128) then
 				client.nutShipment = nil
 
@@ -84,24 +92,21 @@ if (SERVER) then
 					end
 					
 					entity.items[uniqueID] = entity.items[uniqueID] - 1
-					client.shipmentTransaction = nil
 
 					if (entity:getItemCount() < 1) then
 						entity:GibBreakServer(Vector(0, 0, 0.5))
 						entity:Remove()
 					end
 
+					client.shipmentTransaction = nil
 					netstream.Start(client, "takeShp", uniqueID, amount)
 				end
-
-				client.shipmentTransaction = true
-				client.shipmentTransactionTimeout = RealTime() + 1
 
 				if (drop) then
 					nut.item.spawn(uniqueID, entity:GetPos() + Vector(0, 0, 16))
 					itemTaken()
 				else
-					client:getChar():getInv():add(uniqueID, amount * itemTable.maxQuantity, {})
+					client:getChar():getInv():add(uniqueID, itemTable.maxQuantity, {})
 						:next(function(res)
 							if (IsValid(client) and res.error) then
 								client:notifyLocalized(res.error)
@@ -109,8 +114,8 @@ if (SERVER) then
 								itemTaken()
 							end
 						end, function(error)
-							client.shipmentTransaction = nil
 							client:notifyLocalized(error)
+							client.shipmentTransaction = nil
 						end)
 				end
 			end
