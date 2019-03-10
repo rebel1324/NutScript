@@ -285,6 +285,7 @@ PANEL = {}
 	end
 vgui.Register("nutInventory", PANEL, "DFrame")
 
+local margin = 10
 hook.Add("CreateMenuButtons", "nutInventory", function(tabs)
 	if (hook.Run("CanPlayerViewInventory") != false) then
 		tabs["inv"] = function(panel)
@@ -292,6 +293,33 @@ hook.Add("CreateMenuButtons", "nutInventory", function(tabs)
 
 			if (inventory) then
 				local mainPanel = inventory:show(panel)
+
+				local sortPanels = {}
+				local totalSize = {x = 0, y = 0, p = 0}
+				table.insert(sortPanels, mainPanel)
+
+				totalSize.x = totalSize.x + mainPanel:GetWide() + margin
+				totalSize.y = math.max(totalSize.y, mainPanel:GetTall())
+
+				for id, item in pairs(inventory:getItems()) do
+						local inventory = item:getInv()
+
+						local childPanels = inventory:show(mainPanel)
+						nut.gui["inv"..inventory:getID()] = childPanels
+						table.insert(sortPanels, childPanels)
+						
+						totalSize.x = totalSize.x + childPanels:GetWide() + margin
+						totalSize.y = math.max(totalSize.y, childPanels:GetTall())
+					end
+				end
+				
+				local px, py, pw, ph = mainPanel:GetBounds()
+				local x, y = px + pw/2 - totalSize.x / 2, py + ph/2 
+				for _, panel in pairs(sortPanels) do
+					panel:ShowCloseButton(true)
+					panel:SetPos(x, y - panel:GetTall()/2)
+					x = x + panel:GetWide() + margin
+				end
 				
 				hook.Add("PostRenderVGUI", mainPanel, function()
 					hook.Run("PostDrawInventory", mainPanel)
