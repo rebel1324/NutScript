@@ -31,10 +31,14 @@ if (CLIENT) then
 
 	function PLUGIN:HUDPaint()
 		local frameTime = FrameTime()
-		self.alphaDelta = Lerp(frameTime * 10, self.alphaDelta, self.alpha)
 
 		local fraction = self.alphaDelta
-		if (fraction <= 0) then return end
+		if (fraction <= 0.01 and self.alpha == 0) then
+			self.alphaDelta = 0	
+			return
+		else
+			self.alphaDelta = Lerp(frameTime * 10, self.alphaDelta, self.alpha)
+		end
 
 		local shiftX = ScrW()*.02
 
