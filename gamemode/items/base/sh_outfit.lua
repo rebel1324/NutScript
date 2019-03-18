@@ -53,23 +53,25 @@ function ITEM:removeOutfit(client)
 	self:setData("equip", nil)
 
 	-- Revert the model, skin, and bodygroups.
-	character:setModel(character:getData("oldMdl", character:getModel()))
-	character:setData("oldMdl", nil)
+	if (hook.Run("CanOutfitChangeModel", self) != false) then
+		character:setModel(character:getData("oldMdl", character:getModel()))
+		character:setData("oldMdl", nil)
 
-	client:SetSkin(character:getData("oldSkin", character:getData("skin", 0)))
-	character:setData("oldSkin", nil)
+		client:SetSkin(character:getData("oldSkin", character:getData("skin", 0)))
+		character:setData("oldSkin", nil)
 
-	for k, v in pairs(self.bodyGroups or {}) do
-		local index = client:FindBodygroupByName(k)
+		for k, v in pairs(self.bodyGroups or {}) do
+			local index = client:FindBodygroupByName(k)
 
-		if (index > -1) then
-			client:SetBodygroup(index, 0)
+			if (index > -1) then
+				client:SetBodygroup(index, 0)
 
-			local groups = character:getData("groups", {})
+				local groups = character:getData("groups", {})
 
-			if (groups[index]) then
-				groups[index] = nil
-				character:setData("groups", groups)
+				if (groups[index]) then
+					groups[index] = nil
+					character:setData("groups", groups)
+				end
 			end
 		end
 	end
@@ -144,62 +146,65 @@ ITEM.functions.Equip = {
 		end
 
 		item:setData("equip", true)
-		char:setData(
-			"oldMdl",
-			char:getData("oldMdl", item.player:GetModel())
-		)
 
-		-- Do model substitutions.
-		if (type(item.onGetReplacement) == "function") then
-			char:setModel(item:onGetReplacement())
-		elseif (item.replacement or item.replacements) then
-			if (type(item.replacements) == "table") then
-				if (
-					#item.replacements == 2 and isstring(item.replacements[1])
-				) then
-					local newModel = item.player:GetModel():lower():gsub(
-						item.replacement[1],
-						item.replacements[2]
-					):lower()
-					char:setModel(newModel)
+		if (hook.Run("CanOutfitChangeModel", item) != false) then
+			char:setData(
+				"oldMdl",
+				char:getData("oldMdl", item.player:GetModel())
+			)
+
+			-- Do model substitutions.
+			if (type(item.onGetReplacement) == "function") then
+				char:setModel(item:onGetReplacement())
+			elseif (item.replacement or item.replacements) then
+				if (type(item.replacements) == "table") then
+					if (
+						#item.replacements == 2 and isstring(item.replacements[1])
+					) then
+						local newModel = item.player:GetModel():lower():gsub(
+							item.replacement[1],
+							item.replacements[2]
+						):lower()
+						char:setModel(newModel)
+					else
+						for k, v in ipairs(item.replacements) do
+							char:setModel(item.player:GetModel():gsub(v[1], v[2]))
+						end
+					end
 				else
-					for k, v in ipairs(item.replacements) do
-						char:setModel(item.player:GetModel():gsub(v[1], v[2]))
+					char:setModel(tostring(item.replacement or item.replacements))
+				end
+			end
+
+			-- Then apply the new skin for the model.
+			if (isnumber(item.newSkin)) then
+				char:setData("oldSkin", item.player:GetSkin())
+				char:setData("skin", item.newSkin)
+				item.player:SetSkin(item.newSkin)
+			end
+
+			-- Then set appropriate body groups for the model.
+			if (istable(item.bodyGroups)) then
+				local groups = {}
+
+				for k, value in pairs(item.bodyGroups) do
+					local index = item.player:FindBodygroupByName(k)
+
+					if (index > -1) then
+						groups[index] = value
 					end
 				end
-			else
-				char:setModel(tostring(item.replacement or item.replacements))
-			end
-		end
 
-		-- Then apply the new skin for the model.
-		if (isnumber(item.newSkin)) then
-			char:setData("oldSkin", item.player:GetSkin())
-			char:setData("skin", item.newSkin)
-			item.player:SetSkin(item.newSkin)
-		end
+				local newGroups = char:getData("groups", {})
 
-		-- Then set appropriate body groups for the model.
-		if (istable(item.bodyGroups)) then
-			local groups = {}
-
-			for k, value in pairs(item.bodyGroups) do
-				local index = item.player:FindBodygroupByName(k)
-
-				if (index > -1) then
-					groups[index] = value
+				for index, value in pairs(groups) do
+					newGroups[index] = value
+					item.player:SetBodygroup(index, value)
 				end
-			end
 
-			local newGroups = char:getData("groups", {})
-
-			for index, value in pairs(groups) do
-				newGroups[index] = value
-				item.player:SetBodygroup(index, value)
-			end
-
-			if (table.Count(newGroups) > 0) then
-				char:setData("groups", newGroups)
+				if (table.Count(newGroups) > 0) then
+					char:setData("groups", newGroups)
+				end
 			end
 		end
 
