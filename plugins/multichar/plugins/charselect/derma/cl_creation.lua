@@ -292,6 +292,7 @@ end
 
 function PANEL:Init()
 	self:Dock(FILL)
+	self:InvalidateParent(true);
 	local canCreate, reason = self:canCreateCharacter()
 	if (not canCreate) then
 		return self:showMessage(reason)
@@ -308,12 +309,14 @@ function PANEL:Init()
 
 	self.content = self:Add("DPanel")
 	self.content:Dock(FILL)
+	self.content:InvalidateParent(true);
 	self.content:DockMargin(sideMargin, 64, sideMargin, 0)
 	self.content:SetDrawBackground(false)
 
 	self.model = self.content:Add("nutModelPanel")
 	self.model:SetWide(ScrW() * 0.25)
 	self.model:Dock(LEFT)
+	self.model:InvalidateParent(true);
 	self.model:SetModel("models/error.mdl")
 	self.model.oldSetModel = self.model.SetModel
 	self.model.SetModel = function(model, ...)
