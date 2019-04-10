@@ -1,6 +1,6 @@
 function GM:PlayerInitialSpawn(client)
 	client.nutJoinTime = RealTime()
-	
+
 	if (client:IsBot()) then
 		local botID = os.time()
 		local index = math.random(1, table.Count(nut.faction.indices))
@@ -29,11 +29,11 @@ function GM:PlayerInitialSpawn(client)
 
 	nut.config.send(client)
 	nut.date.send(client)
-	
+
 	client:loadNutData(function(data)
 		if (!IsValid(client)) then return end
 
-		local address = nut.util.getAddress()			
+		local address = nut.util.getAddress()
 		local noCache = client:getNutData("lastIP", address) != address
 		client:setNutData("lastIP", address)
 
@@ -68,7 +68,7 @@ function GM:PlayerInitialSpawn(client)
 
 	timer.Simple(1, function()
 		if (!IsValid(client)) then return end
-		
+
 		client:KillSilent()
 		client:StripAmmo()
 	end)
@@ -137,7 +137,7 @@ end
 function GM:CanPlayerTakeItem(client, item)
 	if (type(item) == "Entity") then
 		local char = client:getChar()
-		
+
 		if (item.nutSteamID and item.nutSteamID == client:SteamID() and item.nutCharID != char:getID()) then
 			client:notifyLocalized("playerCharBelonging")
 
@@ -192,7 +192,7 @@ function GM:PlayerLoadedChar(client, character, lastChar)
 			end
 		end
 
-		lastChar:setVar("charEnts", nil) 
+		lastChar:setVar("charEnts", nil)
 	end
 
 	if (character) then
@@ -222,6 +222,8 @@ function GM:PlayerLoadedChar(client, character, lastChar)
 			character:giveMoney(pay)
 			client:notifyLocalized("salary", nut.currency.get(pay))
 		end)
+	elseif timer.Exists("nutSalary" .. client:UniqueID()) then
+		timer.Remove("nutSalary" .. client:UniqueID())
 	end
 
 
@@ -315,7 +317,7 @@ function GM:PlayerSpawnVehicle(client, model, name, data)
 			return client:getChar():hasFlags("C")
 		end
 	end
-	
+
 	return false
 end
 
@@ -326,7 +328,7 @@ function GM:PlayerLoadout(client)
 
 		return
 	end
-	
+
 	client:SetWeaponColor(Vector(client:GetInfo("cl_weaponcolor")))
 	client:StripWeapons()
 	client:setLocalVar("blur", nil)
@@ -341,7 +343,7 @@ function GM:PlayerLoadout(client)
 		client:Give("nut_hands")
 		client:SetWalkSpeed(nut.config.get("walkSpeed"))
 		client:SetRunSpeed(nut.config.get("runSpeed"))
-		
+
 		local faction = nut.faction.indices[client:Team()]
 
 		if (faction) then
@@ -583,15 +585,15 @@ end
 
 function GM:PlayerCanHearPlayersVoice(listener, speaker)
 	local allowVoice = nut.config.get("allowVoice")
-	
+
 	if (!allowVoice) then
 		return false, false
 	end
-	
+
 	if (listener:GetPos():DistToSqr(speaker:GetPos()) > nut.config.squaredVoiceDistance) then
 		return false, false
 	end
-	
+
 	return true, true
 end
 
