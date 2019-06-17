@@ -77,11 +77,7 @@ function nut.faction.get(identifier)
 end
 
 function nut.faction.getIndex(uniqueID)
-	for k, v in ipairs(nut.faction.indices) do
-		if (v.uniqueID == uniqueID) then
-			return k
-		end
-	end
+	return nut.faction.teams[uniqueID] and nut.faction.teams[uniqueID].index
 end
 
 if (CLIENT) then
