@@ -120,7 +120,7 @@ function PLUGIN:PostDrawHUD()
 	end
 
 	if (lastIcon) then
-		nut.util.drawText(astIcon or "", cx + (adx or 0), cy + (ady or 0), ColorAlpha(color_white, curIconAlpha), 1, 1, "nutCrossIcons")
+		nut.util.drawText(lastIcon or "", cx + (adx or 0), cy + (ady or 0), ColorAlpha(color_white, curIconAlpha), 1, 1, "nutCrossIcons")
 	end
 end
 
