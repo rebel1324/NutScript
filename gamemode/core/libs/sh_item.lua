@@ -37,30 +37,53 @@ function nut.item.register(uniqueID, baseID, isBaseItem, path, luaGenerated)
 	local meta = nut.meta.item
 	local baseTable = nut.item.base[baseID] or nut.meta.item
 	if (baseID) then
-		assert(baseTable, "Item "..uniqueID.." must non-existent base "..baseID)
+		assert(baseTable, "Item "..uniqueID.." has a non-existent base "..baseID)
 	end
 	local targetTable = (isBaseItem and nut.item.base or nut.item.list)
 
-	ITEM = targetTable[uniqueID] or setmetatable({
-		hooks = table.Copy(baseTable.hooks or {}),
-		postHooks = table.Copy(baseTable.postHooks or {}),
-		BaseClass = baseTable,
-		__tostring = baseTable.__tostring,
-	}, {
-		__eq = baseTable.__eq,
-		__tostring = baseTable.__tostring,
-		__index = baseTable
-	})
+	if luaGenerated then
+		ITEM = setmetatable({
+			hooks = table.Copy(baseTable.hooks or {}),
+			postHooks = table.Copy(baseTable.postHooks or {}),
+			BaseClass = baseTable,
+			__tostring = baseTable.__tostring,
+		}, {
+			__eq = baseTable.__eq,
+			__tostring = baseTable.__tostring,
+			__index = baseTable
+		})
 
-	ITEM.__tostring = baseTable.__tostring
-	ITEM.desc = "noDesc"
-	ITEM.uniqueID = uniqueID
-	ITEM.base = baseID
-	ITEM.isBase = isBaseItem
-	ITEM.category = ITEM.category or "misc"
-	ITEM.functions = ITEM.functions or table.Copy(
-		baseTable.functions or NUT_ITEM_DEFAULT_FUNCTIONS
-	)
+		ITEM.__tostring = baseTable.__tostring
+		ITEM.desc = "noDesc"
+		ITEM.uniqueID = uniqueID
+		ITEM.base = baseID
+		ITEM.isBase = isBaseItem
+		ITEM.category = ITEM.category or "misc"
+		ITEM.functions = ITEM.functions or table.Copy(
+			baseTable.functions or NUT_ITEM_DEFAULT_FUNCTIONS
+		)
+	else
+		ITEM = targetTable[uniqueID] or setmetatable({
+			hooks = table.Copy(baseTable.hooks or {}),
+			postHooks = table.Copy(baseTable.postHooks or {}),
+			BaseClass = baseTable,
+			__tostring = baseTable.__tostring,
+		}, {
+			__eq = baseTable.__eq,
+			__tostring = baseTable.__tostring,
+			__index = baseTable
+		})
+
+		ITEM.__tostring = baseTable.__tostring
+		ITEM.desc = "noDesc"
+		ITEM.uniqueID = uniqueID
+		ITEM.base = baseID
+		ITEM.isBase = isBaseItem
+		ITEM.category = ITEM.category or "misc"
+		ITEM.functions = ITEM.functions or table.Copy(
+			baseTable.functions or NUT_ITEM_DEFAULT_FUNCTIONS
+		)
+	end
 
 	if (not luaGenerated and path) then
 		nut.util.include(path)
