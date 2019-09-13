@@ -158,10 +158,11 @@ function nut.char.cleanUpForPlayer(client)
 end
 
 local function removePlayer(client)
-	if (client:getChar() and client:getChar():getID() == id) then
+	if (client:getChar()) then
 		client:KillSilent()
 		client:setNetVar("char", nil)
 		client:Spawn()
+		netstream.Start(client, "charKick", nil, true)
 	end
 end
 
