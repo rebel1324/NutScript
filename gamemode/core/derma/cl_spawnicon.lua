@@ -71,6 +71,7 @@ local PANEL = {}
 		else
 			self:SetAmbientLight(Color(20, 20, 20))
 			self:SetAlpha(255)
+			self:SetColor(Color(255, 255, 255))
 
 			for i = 0, 5 do
 				if (i == 1 or i == 5) then
