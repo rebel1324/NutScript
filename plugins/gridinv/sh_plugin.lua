@@ -23,7 +23,7 @@ if (SERVER) then
 		end
 
 		if (item.onCombineTo) then
-			if (target and item:call("onCombineTo", client, nil, target)) then -- when you drag the item on something
+			if (item and item:call("onCombineTo", client, nil, target)) then -- when you drag the item on something
 				return
 			end
 		end
