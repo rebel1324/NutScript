@@ -8,11 +8,13 @@ META.vars = META.vars or {}
 function META:getID()
 	return self.id or 0
 end
+META.GetID = META.getID
 
 function META:setSize(w, h)
 	self.w = w
 	self.h = h
 end
+META.SetSize = META.setSize
 
 function META:__tostring()
 	return "inventory["..(self.id or 0).."]"
@@ -21,6 +23,7 @@ end
 function META:getSize()
 	return self.w, self.h
 end
+META.GetSize = META.getSize
 
 -- this is pretty good to debug/develop function to use.
 function META:print(printPos)
@@ -34,6 +37,7 @@ function META:print(printPos)
 		print(str)
 	end
 end
+META.print = META.Print
 
 -- find out stacked shit
 function META:findError()
@@ -55,6 +59,7 @@ function META:findError()
 		end
 	end
 end
+META.FindError = META.findError
 
 -- For the debug/item creation purpose
 function META:printAll()
@@ -77,6 +82,7 @@ function META:printAll()
 		PrintTable(self.vars or {})
 	print("------------------------")
 end
+META.PrintAll = META.printAll
 
 function META:setOwner(owner, fullUpdate)
 	if (type(owner) == "Player" and owner:getNetVar("char")) then
@@ -101,6 +107,7 @@ function META:setOwner(owner, fullUpdate)
 
 	self.owner = owner
 end
+META.SetOwner = META.setOwner
 
 function META:canItemFit(x, y, w, h, item2)
 	local canFit = true
@@ -128,6 +135,7 @@ function META:canItemFit(x, y, w, h, item2)
 
 	return canFit
 end
+META.CanItemFit = META.canItemFit
 
 function META:findEmptySlot(w, h, onlyMain)
 	w = w or 1
@@ -165,12 +173,14 @@ function META:findEmptySlot(w, h, onlyMain)
 		end
 	end
 end
+META.FindEmptySlot = META.findEmptySlot
 
 function META:getItemAt(x, y)
 	if (self.slots and self.slots[x]) then
 		return self.slots[x][y]
 	end
 end
+META.GetItemAt = META.getItemAt
 
 function META:remove(id, noReplication, noDelete)
 	local x2, y2
@@ -213,6 +223,7 @@ function META:remove(id, noReplication, noDelete)
 
 	return x2, y2
 end
+META.Remove = META.remove
 
 function META:getReceiver()
 	for k, v in ipairs(player.GetAll()) do
@@ -221,6 +232,7 @@ function META:getReceiver()
 		end
 	end
 end
+META.GetReceiver = META.getReciver
 
 function META:getItemCount(uniqueID, onlyMain)
 	local i = 0
@@ -233,6 +245,7 @@ function META:getItemCount(uniqueID, onlyMain)
 
 	return i
 end
+META.GetItemCount = META.getItemCount
 
 function META:getItemsByUniqueID(uniqueID, onlyMain)
 	local items = {}
@@ -245,6 +258,7 @@ function META:getItemsByUniqueID(uniqueID, onlyMain)
 
 	return items
 end
+META.GetItemsByUniqueID = META.getItemsByUniqueID
 
 function META:getItemByID(id, onlyMain)
 	for k, v in pairs(self:getItems(onlyMain)) do
@@ -253,6 +267,7 @@ function META:getItemByID(id, onlyMain)
 		end
 	end
 end
+META.GetItemByID = META.getItemByID
 
 function META:getItemsByID(id, onlyMain)
 	local items = {}
@@ -265,6 +280,7 @@ function META:getItemsByID(id, onlyMain)
 
 	return items
 end
+META.GetItemsByID = META.getItemsByID
 
 -- This function may pretty heavy.
 function META:getItems(onlyMain)
@@ -292,6 +308,7 @@ function META:getItems(onlyMain)
 
 	return items
 end
+META.GetItems = META.getItems
 
 function META:getBags()
 	local invs = {}
@@ -312,6 +329,7 @@ function META:getBags()
 
 	return invs
 end
+META.GetBags = META.getBags
 
 function META:matchData(id, matchData)
 	local item = self:getItemByID(id)
@@ -326,6 +344,7 @@ function META:matchData(id, matchData)
 		return true
 	end
 end
+META.MatchData = META.matchData
 
 function META:hasItem(targetID, data)
 	local items = self:getItems()
@@ -348,6 +367,7 @@ function META:hasItem(targetID, data)
 
 	return false
 end
+META.HasItem = META.hasItem
 
 if (SERVER) then
 	function META:sendSlot(x, y, item, receiver)
@@ -370,9 +390,10 @@ if (SERVER) then
 			end
 		end
 	end
+	META.SendSlot = META.sendSlot
 
 	function META:add(uniqueID, quantity, data, x, y, noReplication)
-	quantity = quantity or 1
+		quantity = quantity or 1
 
 		if (quantity > 0) then
 			if (type(uniqueID) != "number" and quantity > 1) then
@@ -480,6 +501,7 @@ if (SERVER) then
 			return false, "noOwner"
 		end
 	end
+	META.Add = META.add
 
 	function META:sync(receiver, fullUpdate)
 		local slots = {}
@@ -498,6 +520,7 @@ if (SERVER) then
 			v:call("onSendData", receiver)
 		end
 	end
+	META.Sync = META.sync
 end
 
 nut.meta.inventory = META
