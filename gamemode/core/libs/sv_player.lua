@@ -37,6 +37,7 @@ do
 			end
 		end)
 	end
+	playerMeta.LoadNutData = playerMeta.loadNutData
 
 	function playerMeta:saveNutData()
 		local name = self:steamName()
@@ -48,6 +49,7 @@ do
 			_data = self.nutData
 		}, nil, "players", "_steamID = "..steamID64)
 	end
+	playerMeta.SaveNutData = playerMeta.saveNutData
 
 	function playerMeta:setNutData(key, value, noNetworking)
 		self.nutData = self.nutData or {}
@@ -57,6 +59,7 @@ do
 			netstream.Start(self, "nutData", key, value)
 		end
 	end
+	playerMeta.SetNutData = playerMeta.setNutData
 end
 
 -- Whitelisting information for the player.
@@ -81,4 +84,5 @@ do
 
 		return false
 	end
+	playerMeta.SetWhitelisted = playerMeta.setWhitelisted
 end
