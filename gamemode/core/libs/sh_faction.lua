@@ -71,10 +71,12 @@ function nut.faction.loadFromDir(directory)
 		FACTION = nil
 	end
 end
+nut.faction.LoadFromDir = nut.faction.loadFromDir
 
 function nut.faction.get(identifier)
 	return nut.faction.indices[identifier] or nut.faction.teams[identifier]
 end
+nut.faction.Get = nut.faction.get
 
 function nut.faction.getIndex(uniqueID)
 	for k, v in ipairs(nut.faction.indices) do
@@ -83,6 +85,7 @@ function nut.faction.getIndex(uniqueID)
 		end
 	end
 end
+nut.faction.GetIndex = nut.faction.getIndex
 
 if (CLIENT) then
 	function nut.faction.hasWhitelist(faction)
@@ -100,4 +103,5 @@ if (CLIENT) then
 
 		return false
 	end
+	nut.faction.HasWhitelist = nut.faction.hasWhitelist
 end
