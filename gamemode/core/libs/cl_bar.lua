@@ -14,6 +14,7 @@ function nut.bar.get(identifier)
 		end
 	end
 end
+nut.bar.Get = nut.bar.get
 
 function nut.bar.add(getValue, color, priority, identifier)
 	if (identifier) then
@@ -38,6 +39,7 @@ function nut.bar.add(getValue, color, priority, identifier)
 
 	return priority
 end
+nut.bar.Add = nut.bar.add
 
 function nut.bar.remove(identifier)
 	local bar
@@ -53,6 +55,7 @@ function nut.bar.remove(identifier)
 		table.remove(nut.bar.list, bar.priority)
 	end
 end
+nut.bar.Remove = nut.bar.remove
 
 local color_dark = Color(0, 0, 0, 225)
 local gradient = nut.util.getMaterial("vgui/gradient-u")
@@ -75,6 +78,7 @@ function nut.bar.draw(x, y, w, h, value, color)
 	surface.SetMaterial(gradient)
 	surface.DrawTexturedRect(x, y, w, h)
 end	
+nut.bar.Draw = nut.bar.draw
 
 local TEXT_COLOR = Color(240, 240, 240)
 local SHADOW_COLOR = Color(20, 20, 20)
@@ -112,6 +116,7 @@ function nut.bar.drawAction()
 		end
 	end
 end
+nut.bar.DrawAction = nut.bar.drawAction
 
 local Approach = math.Approach
 
@@ -151,6 +156,7 @@ function nut.bar.drawAll()
 
 	nut.bar.drawAction()
 end
+nut.bar.DrawAll = nut.bar.drawAll
 
 do
 	nut.bar.add(function()
