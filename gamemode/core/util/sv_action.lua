@@ -16,7 +16,7 @@ function playerMeta:setAction(text, time, callback, startTime, finishTime)
 	finishTime = finishTime or (startTime + time)
 
 	if (text == false) then
-		timer.Remove("nutAct"..self:UniqueID())
+		timer.Remove("nutAct" .. self:UniqueID())
 		netstream.Start(self, "actBar")
 
 		return
@@ -28,7 +28,7 @@ function playerMeta:setAction(text, time, callback, startTime, finishTime)
 	-- If we have provided a callback, run it delayed.
 	if (callback) then
 		-- Create a timer that runs once with a delay.
-		timer.Create("nutAct"..self:UniqueID(), time, 1, function()
+		timer.Create("nutAct" .. self:UniqueID(), time, 1, function()
 			-- Call the callback if the player is still valid.
 			if (IsValid(self)) then
 				callback(self)
@@ -39,15 +39,15 @@ end
 
 -- Do an action that requires the player to stare at something.
 function playerMeta:doStaredAction(entity, callback, time, onCancel, distance)
-	local uniqueID = "nutStare"..self:UniqueID()
+	local uniqueID = "nutStare" .. self:UniqueID()
 	local data = {}
 	data.filter = self
 
 	timer.Create(uniqueID, 0.1, time / 0.1, function()
 		if (IsValid(self) and IsValid(entity)) then
 			data.start = self:GetShootPos()
-			data.endpos = data.start + self:GetAimVector()*(distance or 96)
-			
+			data.endpos = data.start + self:GetAimVector() * (distance or 96)
+
 			local targetEntity = util.TraceLine(data).Entity
 			if (
 				IsValid(targetEntity) and
@@ -55,9 +55,9 @@ function playerMeta:doStaredAction(entity, callback, time, onCancel, distance)
 				IsValid(targetEntity:getNetVar("player"))
 			) then
 				targetEntity = targetEntity:getNetVar("player")
-			end
-
-			if (targetEntity != entity) then
+				end
+			
+			if (targetEntity != entity["player"]) then
 				timer.Remove(uniqueID)
 
 				if (onCancel) then
@@ -68,7 +68,6 @@ function playerMeta:doStaredAction(entity, callback, time, onCancel, distance)
 			end
 		else
 			timer.Remove(uniqueID)
-
 			if (onCancel) then
 				onCancel()
 			end
