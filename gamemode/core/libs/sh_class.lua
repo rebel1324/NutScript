@@ -85,7 +85,9 @@ function nut.class.canBe(client, class)
 		end
 	end
 
-	hook.Run("CanPlayerJoinClass", client, class, info)
+	if (hook.Run("CanPlayerJoinClass", client, class, info) == false) then
+		return false
+	end
 
 	-- See if the class allows the player to join it.
 	return info:onCanBe(client)
