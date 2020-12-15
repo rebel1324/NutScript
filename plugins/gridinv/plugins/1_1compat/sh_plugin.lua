@@ -12,7 +12,9 @@ if (SERVER) then
 		-- If the migration has not started before, start it.
 		local data = self:getData(nil, true, true)
 		if (data and data.lastMigration) then return end
-
+		local currentHibernationBool = GetConVar("sv_hibernate_think"):GetBool()
+		nut.data.set("currentHibernationBool", currentHibernationBool, true, true)
+		game.ConsoleCommand("sv_hibernate_think 1\n")
 		local WAIT = 10
 
 		-- Add a bot to start timers.
@@ -25,7 +27,7 @@ if (SERVER) then
 		hook.Add("CheckPassword", "nutInvDBMigration", function()
 			return false, "NutScript inventory data migration in progress"
 		end)
-
+			
 		timer.Simple(WAIT, function()
 			game.ConsoleCommand("nut_migrateinv\n")
 		end)
