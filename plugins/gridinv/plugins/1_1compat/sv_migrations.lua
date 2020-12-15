@@ -158,6 +158,8 @@ function PLUGIN:migrateInventories()
 			end)
 
 			self:print("FINISHED MIGRATIONS")
+			local hibernationBool = nut.data.get("currentHibernationBool", 0, true, true)
+			game.ConsoleCommand("sv_hibernate_think "..tostring(hibernationBool).."\n")
 			RunConsoleCommand("changelevel", game.GetMap())
 		end)
 end
