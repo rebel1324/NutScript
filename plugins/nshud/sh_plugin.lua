@@ -71,7 +71,7 @@ function PLUGIN:GetInjuredText(client)
 	local health = client:Health()
 
 	for k, v in pairs(injTextTable) do
-		if ((health / LocalPlayer():GetMaxHealth()) < k) then
+		if ((health / client:GetMaxHealth()) < k) then
 			return v[1], v[2]
 		end
 	end
