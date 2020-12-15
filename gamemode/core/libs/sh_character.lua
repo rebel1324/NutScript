@@ -49,6 +49,7 @@ if (SERVER) then
 			end)
 		end)
 	end
+	nut.char.Create = nut.char.create
 
 	function nut.char.restore(client, callback, noCache, id)
 		local steamID64 = client:SteamID64()
@@ -166,6 +167,7 @@ if (SERVER) then
 			nut.char.cache[steamID64] = characters
 		end)
 	end
+	nut.char.Restore = nut.char.restore
 
 	function nut.char.loadChar(callback, noCache, id)
 		local fields = "_id, _name, _desc, _model, _attribs, _data, _money, _faction"
@@ -262,6 +264,7 @@ if (SERVER) then
 			end
 		end)
 	end
+	nut.char.LoadChar = nut.char.loadChar
 end
 
 function nut.char.new(data, id, client, steamID)
@@ -288,6 +291,7 @@ function nut.char.new(data, id, client, steamID)
 		end
 	return character
 end
+nut.char.New = nut.char.new
 
 nut.char.varHooks = nut.char.varHooks or {}
 function nut.char.hookVar(varName, hookName, func)
@@ -295,6 +299,7 @@ function nut.char.hookVar(varName, hookName, func)
 
 	nut.char.varHooks[varName][hookName] = func
 end
+nut.char.HookVar = nut.char.hookVar
 
 -- Registration of default variables go here.
 do
@@ -839,6 +844,7 @@ do
 	function playerMeta:getChar()
 		return nut.char.loaded[self.getNetVar(self, "char")]
 	end
+	playerMeta.GetChar = playerMeta.getChar
 
 	function playerMeta:Name()
 		local character = self.getChar(self)

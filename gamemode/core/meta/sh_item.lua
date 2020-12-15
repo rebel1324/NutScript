@@ -16,16 +16,19 @@ end
 function ITEM:getID()
 	return self.id
 end
+ITEM.GetID = ITEM.getID
 
 function ITEM:getName()
 	return (CLIENT and L(self.name) or self.name)
 end
+ITEM.GetName = ITEM.getName
 
 function ITEM:getDesc()
 	if (!self.desc) then return "ERROR" end
 	
 	return L(self.desc or "noDesc")
 end
+ITEM.GetDesc = ITEM.getDesc
 
 -- Dev Buddy. You don't have to print the item data with PrintData();
 function ITEM:print(detail)
@@ -35,6 +38,7 @@ function ITEM:print(detail)
 		print(Format("%s[%s]", self.uniqueID, self.id))
 	end
 end
+ITEM.Print = ITEM.print
 
 -- Dev Buddy, You don't have to make another function to print the item Data.
 function ITEM:printData()
@@ -44,6 +48,7 @@ function ITEM:printData()
 		print(Format("[%s] = %s", k, v))
 	end
 end
+ITEM.PrintData = ITEM.printData
 
 function ITEM:call(method, client, entity, ...)
 	local oldPlayer, oldEntity = self.player, self.entity
@@ -63,6 +68,7 @@ function ITEM:call(method, client, entity, ...)
 	self.player = oldPlayer
 	self.entity = oldEntity
 end
+ITEM.Call = ITEM.call
 
 function ITEM:getOwner()
 	local inventory = nut.item.inventories[self.invID]
@@ -81,6 +87,7 @@ function ITEM:getOwner()
 		end
 	end
 end
+ITEM.GetOwner = ITEM.getOwner
 
 function ITEM:setData(key, value, receivers, noSave, noCheckEntity)
 	self.data = self.data or {}
@@ -111,6 +118,7 @@ function ITEM:setData(key, value, receivers, noSave, noCheckEntity)
 		end
 	end	
 end
+ITEM.SetData = ITEM.setData
 
 function ITEM:getData(key, default)
 	self.data = self.data or {}
@@ -142,6 +150,7 @@ function ITEM:getData(key, default)
 
 	return
 end
+ITEM.GetData = ITEM.getData
 
 
 function ITEM:hook(name, func)
@@ -149,12 +158,14 @@ function ITEM:hook(name, func)
 		self.hooks[name] = func
 	end
 end
+ITEM.Hook = ITEM.hook
 
 function ITEM:postHook(name, func)
 	if (name) then
 		self.postHooks[name] = func
 	end
 end
+ITEM.PostHook = ITEM.postHook
 
 function ITEM:remove()
 	local inv = nut.item.inventories[self.invID]
@@ -235,6 +246,7 @@ function ITEM:remove()
 
 	return true
 end
+ITEM.Remove = ITEM.remove
 
 if (SERVER) then
 	function ITEM:getEntity()
@@ -246,6 +258,8 @@ if (SERVER) then
 			end
 		end
 	end
+	ITEM.GetEntity = ITEM.getEntity
+	
 	-- Spawn an item entity based off the item table.
 	function ITEM:spawn(position, angles)
 		-- Check if the item has been created before.
@@ -276,6 +290,7 @@ if (SERVER) then
 			return entity
 		end
 	end
+	ITEM.Spawn = ITEM.spawn
 
 	-- Transfers an item to a specific inventory.
 	function ITEM:transfer(invID, x, y, client, noReplication, isLogical)		
@@ -376,6 +391,7 @@ if (SERVER) then
 		else
 			return false, "invalidInventory"
 		end
+		ITEM.Transfer = ITEM.transfer
 	end
 end
 

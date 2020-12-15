@@ -29,6 +29,7 @@ function setNetVar(key, value, receiver)
 	nut.net.globals[key] = value
 	netstream.Start(receiver, "gVar", key, value)
 end
+SetNetVar = setNetVar
 
 function playerMeta:syncVars()
 	for entity, data in pairs(nut.net) do
@@ -43,15 +44,18 @@ function playerMeta:syncVars()
 		end
 	end
 end
+playerMeta.SyncVars = playerMeta.syncVars
 
 function entityMeta:sendNetVar(key, receiver)
 	netstream.Start(receiver, "nVar", self:EntIndex(), key, nut.net[self] and nut.net[self][key])
 end
+entityMeta.SendNetVar = entityMeta.sendNetVar
 
 function entityMeta:clearNetVars(receiver)
 	nut.net[self] = nil
 	netstream.Start(receiver, "nDel", self:EntIndex())
 end
+entityMeta.ClearNetVars = entityMeta.clearNetVars
 
 function entityMeta:setNetVar(key, value, receiver)
 	if (checkBadType(key, value)) then return end
@@ -64,6 +68,7 @@ function entityMeta:setNetVar(key, value, receiver)
 
 	self:sendNetVar(key, receiver)
 end
+entityMeta.SetNetVar = entityMeta.setNetVar
 
 function entityMeta:getNetVar(key, default)
 	if (nut.net[self] and nut.net[self][key] != nil) then
@@ -72,6 +77,7 @@ function entityMeta:getNetVar(key, default)
 
 	return default
 end
+entityMeta.GetNetVar = entityMeta.getNetVar
 
 function playerMeta:setLocalVar(key, value)
 	if (checkBadType(key, value)) then return end
@@ -81,14 +87,17 @@ function playerMeta:setLocalVar(key, value)
 
 	netstream.Start(self, "nLcl", key, value)
 end
+playerMeta.SetLocalVar = playerMeta.setLocalVar
 
 playerMeta.getLocalVar = entityMeta.getNetVar
+playerMeta.GetLocalVar = playerMeta.getLocalVar
 
 function getNetVar(key, default)
 	local value = nut.net.globals[key]
 
 	return value != nil and value or default
 end
+GetNetVar = getNetVar
 
 hook.Add("EntityRemoved", "nCleanUp", function(entity)
 	entity:clearNetVars()

@@ -79,6 +79,7 @@ function nut.command.add(command, data)
 
 	nut.command.list[command] = data
 end
+nut.command.Add = nut.command.add
 
 -- Returns whether or not a player is allowed to run a certain command.
 function nut.command.hasAccess(client, command)
@@ -94,6 +95,7 @@ function nut.command.hasAccess(client, command)
 
 	return false
 end
+nut.command.HasAccess = nut.command.hasAccess
 
 -- Gets a table of arguments from a string.
 function nut.command.extractArgs(text)
@@ -134,6 +136,7 @@ function nut.command.extractArgs(text)
 
 	return arguments
 end
+nut.command.ExtractArgs = nut.command.extractArgs
 
 if (SERVER) then
 	-- Finds a player or gives an error notification.
@@ -146,6 +149,7 @@ if (SERVER) then
 			client:notifyLocalized("plyNoExist")
 		end
 	end
+	nut.command.FindPlayer = nut.command.findPlayer
 
 	-- Forces a player to run a command.
 	function nut.command.run(client, command, arguments)
@@ -172,6 +176,7 @@ if (SERVER) then
 			end
 		end
 	end
+	nut.command.Run = nut.command.run
 
 	-- Add a function to parse a regular chat string.
 	function nut.command.parse(client, text, realCommand, arguments)
@@ -216,6 +221,7 @@ if (SERVER) then
 
 		return false
 	end
+	nut.command.Parse = nut.command.parse
 
 	concommand.Add("nut", function(client, _, arguments)
 		local command = arguments[1]
@@ -242,4 +248,5 @@ else
 	function nut.command.send(command, ...)
 		netstream.Start("cmd", command, {...})
 	end
+	nut.command.Send = nut.command.send
 end

@@ -39,6 +39,7 @@ function nut.menu.add(options, position, onRemove)
 		onRemove = onRemove
 	})
 end
+nut.menu.Add = nut.menu.add
 
 -- Gradient for subtle effects.
 local gradient = Material("vgui/gradient-u")
@@ -150,6 +151,7 @@ function nut.menu.drawAll()
 		end
 	end
 end
+nut.menu.DrawAll = nut.menu.drawAll
 
 -- Determines which menu is being looked at
 function nut.menu.getActiveMenu()
@@ -208,6 +210,7 @@ function nut.menu.getActiveMenu()
 		end
 	end
 end
+nut.menu.GetActiveMenu = nut.menu.getActiveMenu
 
 -- Handles whenever a button has been pressed.
 function nut.menu.onButtonPressed(menu, callback)
@@ -221,3 +224,4 @@ function nut.menu.onButtonPressed(menu, callback)
 
 	return false
 end
+nut.menu.OnButtonPressed = nut.menu.onButtonPressed

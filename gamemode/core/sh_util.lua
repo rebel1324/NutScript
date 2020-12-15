@@ -24,6 +24,7 @@ function nut.util.include(fileName, state)
 		end
 	end
 end
+nut.util.Include = nut.util.include
 
 -- Include files based off the prefix within a directory.
 function nut.util.includeDir(directory, fromLua, recursive)
@@ -59,6 +60,7 @@ function nut.util.includeDir(directory, fromLua, recursive)
 		end
 	end
 end
+nut.util.IncludeDir = nut.util.includeDir
 
 -- Returns the address:port of the server.
 function nut.util.getAddress()
@@ -75,6 +77,7 @@ function nut.util.getAddress()
 		ip[4] = bit.band(address, 0x000000FF)
 	return table.concat(ip, ".")..":"..GetConVarString("hostport")
 end
+nut.util.GetAddress = nut.util.getAddress
 
 -- Returns a table of admin players
 function nut.util.getAdmins(isSuper)
@@ -94,6 +97,7 @@ function nut.util.getAdmins(isSuper)
 
 	return admins
 end
+nut.util.GetAdmins = nut.util.getAdmins
 
 -- Returns a single cached copy of a material or creates it if it doesn't exist.
 function nut.util.getMaterial(materialPath)
@@ -103,6 +107,7 @@ function nut.util.getMaterial(materialPath)
 
 	return nut.util.cachedMaterials[materialPath]
 end
+nut.util.GetMaterial = nut.util.getMaterial
 
 -- Finds a player by matching their name or steam id.
 function nut.util.findPlayer(identifier, allowPatterns)
@@ -120,6 +125,7 @@ function nut.util.findPlayer(identifier, allowPatterns)
 		end
 	end
 end
+nut.util.FindPlayer = nut.util.findPlayer
 
 -- Returns whether or a not a string matches.
 function nut.util.stringMatches(a, b)
@@ -137,6 +143,7 @@ function nut.util.stringMatches(a, b)
 
 	return false
 end
+nut.util.StringMatches = nut.util.stringMatches
 
 local ADJUST_SOUND = SoundDuration("npc/metropolice/pain1.wav") > 0 and "" or "../../hl2/sound/"
 
@@ -176,6 +183,7 @@ function nut.util.emitQueuedSounds(entity, sounds, delay, spacing, volume, pitch
 	-- Return how long it took for the whole thing.
 	return delay
 end
+nut.util.EmitQueuedSounds = nut.util.emitQueuedSounds
 
 function nut.util.gridVector(vec, gridSize)
 	if (gridSize <= 0) then
@@ -190,6 +198,7 @@ function nut.util.gridVector(vec, gridSize)
 
 	return vec
 end
+nut.util.GridVector = nut.util.gridVector
 
 function nut.util.getAllChar()
 	local charTable = {}
@@ -202,6 +211,7 @@ function nut.util.getAllChar()
 
 	return charTable
 end
+nut.util.GetAllChar = nut.util.getAllChar
 
 if (CLIENT) then
 	NUT_CVAR_CHEAP = CreateClientConVar("nut_cheapblur", 0, true)
@@ -238,6 +248,7 @@ if (CLIENT) then
 			end
 		end
 	end
+	nut.util.DrawBlur = nut.util.drawBlur
 
 	function nut.util.drawBlurAt(x, y, w, h, amount, passes)
 		-- Intensity of the blur.
@@ -263,6 +274,7 @@ if (CLIENT) then
 			end
 		end
 	end
+	nut.util.DrawBlurAt = nut.util.drawBlurAt
 
 	-- Draw a text with a shadow.
 	function nut.util.drawText(text, x, y, color, alignX, alignY, font, alpha)
@@ -277,6 +289,7 @@ if (CLIENT) then
 			yalign = alignY or 0
 		}, 1, alpha or (color.a * 0.575))
 	end
+	nut.util.DrawText = nut.util.drawText
 
 	-- Wraps text so it does not pass a certain width.
 	function nut.util.wrapText(text, width, font)
@@ -314,6 +327,7 @@ if (CLIENT) then
 
 		return lines, maxW
 	end
+	nut.util.WrapText = nut.util.wrapText
 
 	local LAST_WIDTH = ScrW()
 	local LAST_HEIGHT = ScrH()
@@ -338,6 +352,7 @@ do
 	function entityMeta:isDoor()
 		return self:GetClass():find("door")
 	end
+	entityMeta.IsDoor = entityMeta.isDoor
 
 	-- Make a cache of chairs on start.
 	local CHAIR_CACHE = {}
@@ -354,12 +369,14 @@ do
 		-- Micro-optimization in-case this gets used a lot.
 		return CHAIR_CACHE[self.GetModel(self)]
 	end
+	entityMeta.IsChair = entityMeta.isChair
 
 	if (SERVER) then
 		-- Returns the door's slave entity.
 		function entityMeta:getDoorPartner()
 			return self.nutPartner
 		end
+		entityMeta.GetDoorPartner = entityMeta.getDoorPartner
 
 		-- Returns whether door/button is locked or not.
 		function entityMeta:isLocked()
@@ -379,6 +396,7 @@ do
 
 			return
 		end
+		entityMeta.IsLocked = entityMeta.isLocked
 
 		-- Returns the entity that blocking door's sequence.
 		function entityMeta:getBlocker()
@@ -386,6 +404,7 @@ do
 
 			return (datatable.pBlocker)
 		end
+		entityMeta.GetBlocker = entityMeta.getBlocker
 	else
 		-- Returns the door's slave entity.
 		function entityMeta:getDoorPartner()
@@ -403,6 +422,7 @@ do
 				end
 			end
 		end
+		entityMeta.GetDoorPartner = entityMeta.getDoorPartner
 	end
 
 	-- Makes a fake door to replace it.
@@ -518,6 +538,7 @@ do
 
 		return dummy
 	end
+	entityMeta.BlastDoor = entityMeta.blastDoor
 end
 
 -- Misc. player stuff.
@@ -533,12 +554,18 @@ do
 		function playerMeta:getPlayTime()
 			return self.nutPlayTime + (RealTime() - (self.nutJoinTime or RealTime()))
 		end
+		playerMeta.getPlaytime = playerMeta.getPlayTime
+		playerMeta.GetPlayTime = playerMeta.getPlayTime
+		playerMeta.GetPlaytime = playerMeta.getPlayTime
 	else
 		nut.playTime = nut.playTime or 0
 
 		function playerMeta:getPlayTime()
 			return nut.playTime + (RealTime() - nut.joinTime or 0)
 		end
+		playerMeta.getPlaytime = playerMeta.getPlayTime
+		playerMeta.GetPlayTime = playerMeta.getPlayTime
+		playerMeta.GetPlaytime = playerMeta.getPlayTime
 	end
 
 	-- Returns whether or not the player has their weapon raised.
@@ -575,6 +602,7 @@ do
 		-- Returns what the gamemode decides.
 		return self.getNetVar(self, "raised", false)
 	end
+	playerMeta.IsWepRaised = playerMeta.isWepRaised
 
 	local vectorLength2D = FindMetaTable("Vector").Length2D
 
@@ -582,6 +610,7 @@ do
 	function playerMeta:isRunning()
 		return vectorLength2D(self.GetVelocity(self)) > (self.GetWalkSpeed(self) + 10)
 	end
+	playerMeta.IsRunning = playerMeta.isRunning
 
 	-- Checks if the player has a female model.
 	function playerMeta:isFemale()
@@ -589,6 +618,7 @@ do
 
 		return model:find("female") or model:find("alyx") or model:find("mossman") or nut.anim.getModelClass(model) == "citizen_female"
 	end
+	playerMeta.IsFemale = playerMeta.isFemale
 
 	-- Returns a good position in front of the player for an entity.
 	function playerMeta:getItemDropPos()
@@ -605,6 +635,7 @@ do
 
 		return trace.HitPos
 	end
+	playerMeta.GetItemDropPos = playerMeta.getItemDropPos
 
 	-- Do an action that requires the player to stare at something.
 	function playerMeta:doStaredAction(entity, callback, time, onCancel, distance)
@@ -635,6 +666,7 @@ do
 			end
 		end)
 	end
+	playerMeta.DoStaredAction = playerMeta.doStaredAction
 
 	if (SERVER) then
 		-- Sets whether or not the weapon is raised.
@@ -650,6 +682,7 @@ do
 				weapon:SetNextSecondaryFire(CurTime() + 1)
 			end
 		end
+		playerMeta.SetWepRaised = playerMeta.setWepRaised
 
 		-- Inverts whether or not the weapon is raised.
 		function playerMeta:toggleWepRaised()
@@ -665,6 +698,7 @@ do
 				end
 			end
 		end
+		playerMeta.ToggleWepRaised = playerMeta.toggleWepRaised
 
 		-- Performs a delayed action on a player.
 		function playerMeta:setAction(text, time, callback, startTime, finishTime)
@@ -702,6 +736,7 @@ do
 				end)
 			end
 		end
+		playerMeta.SetAction = playerMeta.setAction
 
 		-- Sends a Derma string request to the client.
 		function playerMeta:requestString(title, subTitle, callback, default)
@@ -712,6 +747,7 @@ do
 
 			netstream.Start(self, "strReq", time, title, subTitle, default)
 		end
+		playerMeta.RequestString = playerMeta.requestString
 
 		-- Removes a player's weapon and restricts interactivity.
 		function playerMeta:setRestricted(state, noMessage)
@@ -748,8 +784,9 @@ do
 				hook.Run("OnPlayerUnRestricted", self)
 			end
 		end
+		playerMeta.SetRestricted = playerMeta.setRestricted
 	end
-
+	
 	-- Player ragdoll utility stuff.
 	do
 		function nut.util.findEmptySpace(entity, filter, spacing, size, height, tolerance)
@@ -794,6 +831,7 @@ do
 
 			return output
 		end
+		nut.util.FindEmptySpace = nut.util.findEmptySpace
 
 		function playerMeta:isStuck()
 			return util.TraceEntity({
@@ -802,6 +840,7 @@ do
 				filter = self
 			}, self).StartSolid
 		end
+		playerMeta.IsStuck = playerMeta.isStuck
 
 		function playerMeta:setRagdolled(state, time, getUpGrace)
 			getUpGrace = getUpGrace or time or 5
@@ -963,6 +1002,7 @@ do
 				hook.Run("OnCharFallover", self, entity, false)
 			end
 		end
+		playerMeta.SetRagdolled = playerMeta.setRagdolled
 	end
 end
 
@@ -976,6 +1016,7 @@ do
 
 		return os.difftime(os.time(date), os.time(localDate))
 	end
+	nut.util.GetUTCTime nut.util.getUTCTime
 
 	-- Setup for time strings.
 	local TIME_UNITS = {}
@@ -1009,4 +1050,5 @@ do
 
 		return time
 	end
+	nut.util.GetStringTime = nut.util.getStringTime
 end
