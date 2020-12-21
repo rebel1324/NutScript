@@ -1016,7 +1016,7 @@ do
 
 		return os.difftime(os.time(date), os.time(localDate))
 	end
-	nut.util.GetUTCTime nut.util.getUTCTime
+	nut.util.GetUTCTime = nut.util.getUTCTime
 
 	-- Setup for time strings.
 	local TIME_UNITS = {}
