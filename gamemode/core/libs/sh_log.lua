@@ -27,14 +27,17 @@ if (SERVER) then
 	function nut.log.loadTables()
 		file.CreateDir("nutscript/logs")
 	end
+	nut.log.LoadTables = nut.log.loadTables
 
 	function nut.log.resetTables()
 	end
+	nut.log.ResetTables = nut.log.resetTables
 
 	nut.log.types = nut.log.types or {}
 	function nut.log.addType(logType, func)
 		nut.log.types[logType] = func
 	end
+	nut.log.AddType = nut.log.addType
 
 	function nut.log.getString(client, logType, ...)
 		local text = nut.log.types[logType]
@@ -49,6 +52,7 @@ if (SERVER) then
 
 		return text
 	end
+	nut.log.GetString = nut.log.getString
 
 	function nut.log.addRaw(logString, flag)		
 		nut.log.send(nut.util.getAdmins(), logString, flag)
@@ -59,6 +63,7 @@ if (SERVER) then
 			file.Append("nutscript/logs/"..os.date("%x"):gsub("/", "-")..".txt", "["..os.date("%X").."]\t"..logString.."\r\n")
 		end
 	end
+	nut.log.AddRaw = nut.log.addRaw
 
 	function nut.log.add(client, logType, ...)
 		local logString = nut.log.getString(client, logType, ...)
@@ -72,16 +77,19 @@ if (SERVER) then
 			file.Append("nutscript/logs/"..os.date("%x"):gsub("/", "-")..".txt", "["..os.date("%X").."]\t"..logString.."\r\n")
 		end
 	end
+	nut.log.Add = nut.log.add
 
 	function nut.log.open(client)
 		local logData = {}
 
 		netstream.Hook(client, "nutLogView", logData)
 	end
+	nut.log.Open = nut.log.open
 
 	function nut.log.send(client, logString, flag)
 		netstream.Start(client, "nutLogStream", logString, flag)
 	end
+	nut.log.Send = nut.log.send
 else
 	netstream.Hook("nutLogStream", function(logString, flag)
 		MsgC(consoleColor, "[SERVER] ", nut.log.color[flag] or color_white, logString .. "\n")

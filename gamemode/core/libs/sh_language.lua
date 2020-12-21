@@ -19,6 +19,7 @@ function nut.lang.loadFromDir(directory)
 		end
 	end
 end
+nut.lang.LoadFromDir = nut.lang.loadFromDir
 
 local FormatString = string.format
 

@@ -6,6 +6,7 @@ function nut.config.add(key, value, desc, callback, data, noNetworking, schemaOn
 
 	nut.config.stored[key] = {data = data, value = oldConfig and oldConfig.value or value, default = value, desc = desc, noNetworking = noNetworking, global = !schemaOnly, callback = callback}
 end
+nut.config.Add = nut.config.add
 
 function nut.config.setDefault(key, value)
 	local config = nut.config.stored[key]
@@ -14,6 +15,7 @@ function nut.config.setDefault(key, value)
 		config.default = value
 	end
 end
+nut.config.SetDefault = nut.config.setDefault
 
 function nut.config.forceSet(key, value, noSave)
 	local config = nut.config.stored[key]
@@ -26,6 +28,7 @@ function nut.config.forceSet(key, value, noSave)
 		nut.config.save()
 	end
 end
+nut.config.ForceSet = nut.config.forceSet
 
 function nut.config.set(key, value)
 	local config = nut.config.stored[key]
@@ -47,6 +50,7 @@ function nut.config.set(key, value)
 		end
 	end
 end
+nut.config.Set = nut.config.set
 
 function nut.config.get(key, default)
 	local config = nut.config.stored[key]
@@ -61,6 +65,7 @@ function nut.config.get(key, default)
 
 	return default
 end
+nut.config.Get = nut.config.get
 
 function nut.config.load()
 	if (SERVER) then
@@ -85,6 +90,7 @@ function nut.config.load()
 	nut.util.include("nutscript/gamemode/config/sh_config.lua")
 	hook.Run("InitializedConfig")
 end
+nut.config.Load = nut.config.load
 
 if (SERVER) then
 	function nut.config.getChangedValues()
@@ -98,10 +104,12 @@ if (SERVER) then
 
 		return data
 	end
+	nut.config.GetChangedValues = nut.config.getChangedValues
 
 	function nut.config.send(client)
 		netstream.Start(client, "cfgList", nut.config.getChangedValues())
 	end
+	nut.config.Send = nut.config.send
 
 	function nut.config.save()
 		local globals = {}
@@ -119,6 +127,7 @@ if (SERVER) then
 		nut.data.set("config", globals, true, true)
 		nut.data.set("config", data, false, true)
 	end
+	nut.config.Save = nut.config.save
 
 	netstream.Hook("cfgSet", function(client, key, value)
 		// NEED TO ADD HOOK: CanPlayerModifyConfig

@@ -29,10 +29,12 @@ if (SERVER) then
 			day = nut.config.get("day")
 		})
 	end
+	nut.date.Get = nut.date.get
 
 	function nut.date.send(client)
 		netstream.Start(client, "dateSync", CurTime(), os.time() - nut.date.start)
 	end
+	nut.date.Send = nut.date.send
 else
 	function nut.date.get()
 		local realTime = RealTime()
@@ -44,6 +46,7 @@ else
 			day = nut.config.get("day")
 		}) + (realTime - (nut.joinTime or realTime))
 	end
+	nut.date.Get = nut.date.get
 
 	netstream.Hook("dateSync", function(curTime, offset)
 		offset = offset + (CurTime() - curTime)

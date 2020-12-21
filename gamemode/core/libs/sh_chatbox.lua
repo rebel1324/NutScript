@@ -75,6 +75,7 @@ function nut.chat.register(chatType, data)
 	-- Add the chat type to the list of classes.
 	nut.chat.classes[chatType] = data
 end
+nut.chat.Register = nut.chat.register
 
 -- Identifies which chat mode should be used.
 function nut.chat.parse(client, message, noSend)
@@ -144,6 +145,7 @@ function nut.chat.parse(client, message, noSend)
 	-- This would be useful if you want to send the message on your own.
 	return chatType, message, anonymous
 end
+nut.chat.Parse = nut.chat.parse
 
 if (SERVER) then
 	-- Send a chat message using the specified chat type.
@@ -168,6 +170,7 @@ if (SERVER) then
 			netstream.Start(receivers, "cMsg", speaker, chatType, hook.Run("PlayerMessageSend", speaker, chatType, text, anonymous, receivers) or text, anonymous)
 		end
 	end
+	nut.chat.Send = nut.chat.send
 else
 	-- Call onChatAdd for the appropriate chatType.
 	netstream.Hook("cMsg", function(client, chatType, text, anonymous)

@@ -21,6 +21,7 @@ function nut.attribs.loadFromDir(directory)
 		ATTRIBUTE = nil
 	end
 end
+nut.attribs.LoadFromDir = nut.attribs.loadFromDir
 
 function nut.attribs.setup(client)
 	local character = client:getChar()
@@ -33,6 +34,7 @@ function nut.attribs.setup(client)
 		end
 	end
 end
+nut.attribs.Setup = nut.attribs.setup
 
 -- Add updating of attributes to the character metatable.
 do
@@ -59,6 +61,7 @@ do
 
 			hook.Run("OnCharAttribUpdated", client, self, key, value)
 		end
+		charMeta.UpdateAttrib = charMeta.updateAttrib
 
 		function charMeta:setAttrib(key, value)
 			local attribute = nut.attribs.list[key]
@@ -80,6 +83,7 @@ do
 			
 			hook.Run("OnCharAttribUpdated", client, self, key, value)
 		end
+		charMeta.SetAttrib = charMeta.setAttrib
 
 		function charMeta:addBoost(boostID, attribID, boostAmount)
 			local boosts = self:getVar("boosts", {})
@@ -91,6 +95,7 @@ do
 
 			return self:setVar("boosts", boosts, nil, self:getPlayer())
 		end
+		charMeta.AddBoost = charMeta.addBoost
 		
 		function charMeta:removeBoost(boostID, attribID)
 			local boosts = self:getVar("boosts", {})
@@ -102,6 +107,7 @@ do
 
 			return self:setVar("boosts", boosts, nil, self:getPlayer())
 		end
+		charMeta.RemoveBoost = charMeta.removeBoost
 	else
 		netstream.Hook("attrib", function(id, key, value)
 			local character = nut.char.loaded[id]
@@ -117,10 +123,12 @@ do
 
 		return boosts[attribID]
 	end
+	charMeta.GetBoost = charMeta.getBoost
 
 	function charMeta:getBoosts()
 		return self:getVar("boosts", {})
 	end
+	charMeta.GetBoosts = charMeta.getBoosts
 
 	function charMeta:getAttrib(key, default)
 		local att = self:getAttribs()[key] or default
@@ -134,4 +142,5 @@ do
 	
 		return att
 	end
+	charMeta.GetAttrib = charMeta.getAttrib
 end

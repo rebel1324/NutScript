@@ -24,6 +24,7 @@ function nut.data.set(key, value, global, ignoreMap)
 
 	return path
 end
+nut.data.Set = nut.data.set
 
 -- Gets a piece of information for NutScript.
 function nut.data.get(key, default, global, ignoreMap, refresh)
@@ -61,6 +62,7 @@ function nut.data.get(key, default, global, ignoreMap, refresh)
 		return default
 	end
 end
+nut.data.Get = nut.data.get
 
 -- Deletes existing data in nutscript framework.
 function nut.data.delete(key, global, ignoreMap)
@@ -78,6 +80,7 @@ function nut.data.delete(key, global, ignoreMap)
 		return false
 	end
 end
+nut.data.Delete = nut.data.delete
 
 timer.Create("nutSaveData", 600, 0, function()
 	hook.Run("SaveData")

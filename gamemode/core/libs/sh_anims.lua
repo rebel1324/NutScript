@@ -296,6 +296,7 @@ function nut.anim.setModelClass(model, class)
 	
 	translations[model:lower()] = class
 end
+nut.anim.SetModelClass = nut.anim.setModelClass
 
 -- Micro-optimization since the get class function gets called a lot.
 local stringLower = string.lower
@@ -317,6 +318,7 @@ function nut.anim.getModelClass(model)
 	
 	return class
 end
+nut.anim.GetModelClass = nut.anim.getModelClass
 
 nut.anim.setModelClass("models/police.mdl", "metrocop")
 nut.anim.setModelClass("models/combine_super_soldier.mdl", "overwatch")
@@ -364,6 +366,7 @@ do
 
 		return false
 	end
+	playerMeta.ForceSequence = playerMeta.forceSequence
 
 	function playerMeta:leaveSequence()
 		hook.Run("OnPlayerLeaveSequence", self)
@@ -377,6 +380,7 @@ do
 			self:nutSeqCallback()
 		end
 	end
+	playerMeta.LeaveSequence = playerMeta.leaveSequence
 
 	if (CLIENT) then
 		netstream.Hook("seqSet", function(entity, sequence)

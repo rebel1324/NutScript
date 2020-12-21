@@ -194,6 +194,7 @@ function MarkupObject:create()
 
 	return o
 end
+MarkupObject.Create = MarkupObject.create
 
 --[[---------------------------------------------------------
     Name: MarkupObject:GetWidth()
@@ -203,6 +204,7 @@ end
 function MarkupObject:getWidth()
 	return self.totalWidth
 end
+MarkupObject.GetWidth = MarkupObject.getWidth
 
 --[[---------------------------------------------------------
     Name: MarkupObject:GetHeight()
@@ -212,12 +214,14 @@ end
 function MarkupObject:getHeight()
 	return self.totalHeight
 end
+MarkupObject.GetHeight = MarkupObject.getHeight
 
 --[[---------------------------------------------------------
 -----------------------------------------------------------]]
 function MarkupObject:size()
 	return self.totalWidth, self.totalHeight
 end
+MarkupObject.Size = MarkupObject.size
 
 --[[---------------------------------------------------------
     Name: MarkupObject:Draw(xOffset, yOffset, halign, valign, alphaoverride)
@@ -274,6 +278,7 @@ function MarkupObject:draw(xOffset, yOffset, halign, valign, alphaoverride)
 		end
 	end
 end
+MarkupObject.Draw = MarkupObject.draw
 
 --[[---------------------------------------------------------
     Name: Parse(ml, maxwidth)

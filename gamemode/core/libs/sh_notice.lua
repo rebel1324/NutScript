@@ -3,11 +3,13 @@ if (SERVER) then
 	function nut.util.notify(message, recipient)
 		netstream.Start(recipient, "notify", message)
 	end
+	nut.util.Notify = nut.util.notify
 
 	-- Sends a translated notification.
 	function nut.util.notifyLocalized(message, recipient, ...)
 		netstream.Start(recipient, "notifyL", message, ...)
 	end
+	nut.util.NotifyLocalized = nut.util.notifyLocalized
 
 	do
 		local playerMeta = FindMetaTable("Player")
@@ -16,11 +18,13 @@ if (SERVER) then
 		function playerMeta:notify(message)
 			nut.util.notify(message, self)
 		end
+		playerMeta.Notify = playerMeta.notify
 
 		-- Utility function to notify a localized message to a player.
 		function playerMeta:notifyLocalized(message, ...)
 			nut.util.notifyLocalized(message, self, ...)
 		end
+		playerMeta.NotifyLocalized = playerMeta.notifyLocalized
 	end
 else
 	-- List of notice panels.
@@ -79,11 +83,13 @@ else
 			end
 		end)
 	end
+	nut.util.Notify = nut.util.notify
 
 	-- Creates a translated notification.
 	function nut.util.notifyLocalized(message, ...)
 		nut.util.notify(L(message, ...))
 	end
+	nut.util.NotifyLocalized = nut.util.notifyLocalized
 
 	-- Receives a notification from the server.
 	netstream.Hook("notify", nut.util.notify)

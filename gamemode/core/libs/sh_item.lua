@@ -14,6 +14,7 @@ local zeroInv = nut.item.inventories[0]
 function zeroInv:getID()
 	return 0
 end
+zeroInv.GetID = zeroInv.getID
 
 -- WARNING: You have to manually sync the data to client if you're trying to use item in the logical inventory in the vgui.
 function zeroInv:add(uniqueID, quantity, data)
@@ -45,6 +46,7 @@ function zeroInv:add(uniqueID, quantity, data)
 		return false, "notValid"
 	end
 end
+zeroInv.Add = zeroInv.add
 
 function nut.item.instance(index, uniqueID, itemData, x, y, callback)
 	if (!uniqueID or nut.item.list[uniqueID]) then
@@ -74,6 +76,7 @@ function nut.item.instance(index, uniqueID, itemData, x, y, callback)
 		ErrorNoHalt("[NutScript] Attempt to give an invalid item! ("..(uniqueID or "nil")..")\n")
 	end
 end
+nut.item.Instance = nut.item.instance
 
 function nut.item.registerInv(invType, w, h, isBag)
 	nut.item.inventoryTypes[invType] = {w = w, h = h}
@@ -84,6 +87,7 @@ function nut.item.registerInv(invType, w, h, isBag)
 
 	return nut.item.inventoryTypes[invType]
 end
+nut.item.RegisterInv = nut.item.registerInv
 
 function nut.item.newInv(owner, invType, callback)
 	local invData = nut.item.inventoryTypes[invType] or {w = 1, h = 1}
@@ -114,14 +118,17 @@ function nut.item.newInv(owner, invType, callback)
 		end
 	end, "inventories")
 end
+nut.item.NewInv = nut.item.newInv
 
 function nut.item.get(identifier)
 	return nut.item.base[identifier] or nut.item.list[identifier]
 end
+nut.item.Get = nut.item.get
 
 function nut.item.getInv(invID)
 	return nut.item.inventories[invID]
 end
+nut.item.GetInv = nut.item.getInv
 
 function nut.item.load(path, baseID, isBaseItem)
 	local uniqueID = path:match("sh_([_%w]+)%.lua")
@@ -135,6 +142,7 @@ function nut.item.load(path, baseID, isBaseItem)
 		end
 	end
 end
+nut.item.Load = nut.item.load
 
 function nut.item.register(uniqueID, baseID, isBaseItem, path, luaGenerated)
 	local meta = nut.meta.item
@@ -249,6 +257,7 @@ function nut.item.register(uniqueID, baseID, isBaseItem, path, luaGenerated)
 		ErrorNoHalt("[NutScript] You tried to register an item without uniqueID!\n")
 	end
 end
+nut.item.Register = nut.item.register
 
 
 function nut.item.loadFromDir(directory)
@@ -276,6 +285,7 @@ function nut.item.loadFromDir(directory)
 		nut.item.load(directory.."/"..v)
 	end
 end
+nut.item.LoadFromDir = nut.item.loadFromDir
 
 function nut.item.new(uniqueID, id)
 	if (nut.item.instances[id] and nut.item.instances[id].uniqueID == uniqueID) then
@@ -296,6 +306,7 @@ function nut.item.new(uniqueID, id)
 		ErrorNoHalt("[NutScript] Attempt to index unknown item '"..uniqueID.."'\n")
 	end
 end
+nut.item.New = nut.item.new
 
 do
 	nut.util.include("nutscript/gamemode/core/meta/sh_inventory.lua")
@@ -306,6 +317,7 @@ do
 
 		return inventory
 	end
+	nut.item.CreateInv = nut.item.createInv
 
 	function nut.item.restoreInv(invID, w, h, callback)
 		if (type(invID) != "number" or invID < 0) then
@@ -373,6 +385,7 @@ do
 			end
 		end)
 	end
+	nut.item.RestoreInv = nut.item.restoreInv
 
 	if (CLIENT) then
 		netstream.Hook("item", function(uniqueID, id, data, invID)
@@ -571,6 +584,7 @@ do
 				end
 			end)
 		end
+		nut.item.LoadItemByID = nut.item.loadItemByID
 
 		netstream.Hook("invMv", function(client, oldX, oldY, x, y, invID, newInvID)
 			oldX, oldY, x, y, invID = tonumber(oldX), tonumber(oldY), tonumber(x), tonumber(y), tonumber(invID)
@@ -743,6 +757,7 @@ do
 			end
 		end)
 	end
+	nut.item.Spawn = nut.item.spawn
 end
 
 nut.char.registerVar("inv", {

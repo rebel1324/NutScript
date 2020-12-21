@@ -27,6 +27,7 @@ function getNetVar(key, default)
 
 	return value != nil and value or default
 end
+GetNetVar = getNetVar
 
 function entityMeta:getNetVar(key, default)
 	local index = self:EntIndex()
@@ -37,5 +38,7 @@ function entityMeta:getNetVar(key, default)
 
 	return default
 end
+entityMeta.GetNetVar = entityMeta.getNetVar
 
 playerMeta.getLocalVar = entityMeta.getNetVar
+playerMeta.GetLocalVar = playerMeta.getLocalVar
