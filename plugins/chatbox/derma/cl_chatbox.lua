@@ -1,7 +1,6 @@
 local PANEL = {}
 	local COLOR_FADED = Color(200, 200, 200, 100)
 	local COLOR_ACTIVE = color_white
-	local COLOR_WRONG = Color(255, 100, 80)
 
 	function PANEL:Init()
 		local border = 32
@@ -53,7 +52,7 @@ local PANEL = {}
 						local k2 = "/"..k
 
 						if (k2:match(command)) then
-							local x, y = nut.util.drawText(k2.."  ", 4, i * 20, color)
+							local x = nut.util.drawText(k2.."  ", 4, i * 20, color)
 
 							if (k == command and v.syntax) then
 								local i2 = 0
@@ -121,8 +120,8 @@ local PANEL = {}
 			self.entry = self:Add("EditablePanel")
 			self.entry:SetPos(self.x + 4, self.y + self:GetTall() - 32)
 			self.entry:SetWide(self:GetWide() - 8)
-			self.entry.Paint = function(this, w, h)
-			end
+			--self.entry.Paint = function(this, w, h)
+			--end
 			self.entry.OnRemove = function()
 				hook.Run("FinishChat")
 			end
@@ -259,7 +258,7 @@ local PANEL = {}
 		if (CHAT_CLASS) then
 			text = "<font="..(CHAT_CLASS.font or "nutChatFont")..">"
 		end
-		
+
 		for k, v in ipairs({...}) do
 			if (type(v) == "IMaterial") then
 				local ttx = v:GetName()

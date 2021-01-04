@@ -54,6 +54,9 @@ function nut.config.get(key, default)
 
 	if (config) then
 		if (config.value != nil) then
+			if type(config.value) == "table" and config.value.r and config.value.g and config.value.b then -- if the value is a table with rgb values
+				config.value = Color(config.value.r, config.value.g, config.value.b) -- convert it to a Color table
+			end
 			return config.value
 		elseif (config.default != nil) then
 			return config.default
@@ -134,7 +137,6 @@ if (SERVER) then
 					value2 = value2..v..(i == count and "]" or ", ")
 					i = i + 1
 				end
-
 				value = value2
 			end
 
@@ -185,7 +187,7 @@ if (CLIENT) then
 			tabs["config"] = function(panel)
 				local scroll = panel:Add("DScrollPanel")
 				scroll:Dock(FILL)
-				
+
 				hook.Run("CreateConfigPanel", panel)
 
 				local properties = scroll:Add("DProperties")
@@ -223,7 +225,7 @@ if (CLIENT) then
 								value = tonumber(nut.config.get(k)) or value
 							elseif (formType == "boolean") then
 								form = "Boolean"
-								value = util.tobool(nut.config.get(k))
+								value = tobool(nut.config.get(k))
 							else
 								form = "Generic"
 								value = nut.config.get(k) or value
@@ -262,7 +264,7 @@ if (CLIENT) then
 											value = math.Round(value)
 										end
 									elseif (form == "Boolean") then
-										value = util.tobool(value)
+										value = tobool(value)
 									end
 
 									netstream.Start("cfgSet", k, value)

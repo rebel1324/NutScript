@@ -45,7 +45,7 @@ function nut.plugin.load(uniqueID, path, isSingleFile, variable)
 	PLUGIN.loading = true
 	PLUGIN.path = path
 
-	if (!isSingleFile) then
+	if (not isSingleFile) then
 		nut.plugin.loadExtras(path)
 	end
 	nut.util.include(
@@ -145,7 +145,7 @@ function nut.plugin.loadEntities(path)
 			_G[variable] = table.Copy(default)
 				_G[variable].ClassName = v
 
-				if (IncludeFiles(path2, clientOnly) and !client) then
+				if (IncludeFiles(path2, clientOnly) and not client) then
 					if (clientOnly) then
 						if (CLIENT) then
 							register(_G[variable], v)
@@ -200,11 +200,12 @@ end
 
 function nut.plugin.initialize()
 	nut.plugin.loadFromDir(engine.ActiveGamemode().."/preload")
-	nut.plugin.loadFromDir("nutscript/plugins")
-	nut.plugin.loadFromDir(engine.ActiveGamemode().."/plugins")
+
 	nut.plugin.load("schema", engine.ActiveGamemode().."/schema")
 	hook.Run("InitializedSchema")
 
+	nut.plugin.loadFromDir("nutscript/plugins")
+	nut.plugin.loadFromDir(engine.ActiveGamemode().."/plugins")
 	hook.Run("InitializedPlugins")
 	hook.Run("InitializedItems")
 end
@@ -222,7 +223,7 @@ function nut.plugin.loadFromDir(directory)
 end
 
 function nut.plugin.setDisabled(uniqueID, disabled)
-	disabled = util.tobool(disabled)
+	disabled = tobool(disabled)
 
 	local oldData = table.Copy(nut.data.get("unloaded", {}, false, true))
 	oldData[uniqueID] = disabled
