@@ -145,12 +145,17 @@ if (SERVER) then
 		local entity = data[1]
 		local password = data[2]
 
-		if entity.lock == password then
-			OnStorageSend(client, entity)
-			netstream.Start(client, "nut_Storage", entity)
+		if (client.lastPasswordAttempt and CurTime() < client.lastPasswordAttempt + nut.config.passwordDelay) then
+			nut.util.Notify( nut.lang.Get( "password_too_quick" ), client)
 		else
-			nut.util.Notify( nut.lang.Get( "lock_wrong" ), client)	
-			entity:EmitSound( "doors/door_metal_thin_open1.wav" )
+			if entity.lock == password then
+				OnStorageSend(client, entity)
+				netstream.Start(client, "nut_Storage", entity)
+			else
+				nut.util.Notify( nut.lang.Get( "lock_wrong" ), client)	
+				entity:EmitSound( "doors/door_metal_thin_open1.wav" )
+			end
+			client.lastPasswordAttempt = CurTime()
 		end
 	end)
 	

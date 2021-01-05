@@ -11,6 +11,7 @@ nut.lang.Add("lock_try", "The container is locked.")
 nut.lang.Add("lock_locked", "The container is locked.")
 nut.lang.Add("lock_itsworld", "World Container is cannot be locked.")
 nut.lang.Add("lock_unlocked", "Unlocked the container.")
+nut.lang.Add("password_too_quick", "You're entering passwords too quickly.")
 
 nut.lang.Add("ui_passwordlock", "Password Lock")
 nut.lang.Add("ui_enterpassword", "Enter the password for the container")
@@ -18,6 +19,9 @@ nut.lang.Add("ui_locktype", "Which lock you want to use?")
 nut.lang.Add("ui_padlock", "Classic Padlock")
 nut.lang.Add("ui_digilock", "Digital Password Lock")
 nut.lang.Add("lock_noitem", "Not enough item for the action.")
+
+--How long a user has to wait between password attempts.
+nut.config.passwordDelay = 1
 
 nut.util.Include("cl_storage.lua")
 
