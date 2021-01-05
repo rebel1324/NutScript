@@ -20,6 +20,10 @@ nut.config.add("saveStorage", true, "Whether or not storages will save after a s
 	category = "Storage"
 })
 
+nut.config.add("passwordDelay", 1, "How long a user needs to wait between password attempts.", nil, {
+	category = "Storage"
+})
+
 if (SERVER) then
 	function PLUGIN:PlayerSpawnedProp(client, model, entity)
 		local data = STORAGE_DEFINITIONS[model:lower()]
@@ -134,13 +138,20 @@ if (SERVER) then
 
 	netstream.Hook("invLock", function(client, entity, password)
 		local dist = entity:GetPos():Distance(client:GetPos())
-
-		if (dist < 128 and password) then
-			if (entity.password and entity.password == password) then
-				entity:OpenInv(client)
-			else
-				client:notifyLocalized("wrongPassword")
+		local passwordDelay = nut.config.get("passwordDelay",1)
+		
+		if (client.lastPasswordAttempt and CurTime() < client.lastPasswordAttempt + passwordDelay) then
+			client:notifyLocalized("passwordTooQuick")
+		else
+			if (dist < 128 and password) then
+				if (entity.password and entity.password == password) then
+					entity:OpenInv(client)
+				else
+					client:notifyLocalized("wrongPassword")
+				end
 			end
+			
+			client.lastPasswordAttempt = CurTime()
 		end
 	end)
 else
