@@ -23,13 +23,19 @@ end)
 net.Receive("nutStorageUnlock", function(_, client)
 	local password = net.ReadString()
 	local storage = getValidStorage(client)
+	local passwordDelay = nut.config.get("passwordDelay",1)
 	if (not storage) then return end
-
-	if (storage.password == password) then
-		storage:openInv(client)
+		
+	if (client.lastPasswordAttempt and CurTime() < client.lastPasswordAttempt + passwordDelay) then
+		client:notifyLocalized("passwordTooQuick")
 	else
-		client:notifyLocalized("wrongPassword")
-		client.nutStorageEntity = nil
+		if (storage.password == password) then
+			storage:openInv(client)
+		else
+			client:notifyLocalized("wrongPassword")
+			client.nutStorageEntity = nil
+		end
+		client.lastPasswordAttempt = CurTime()
 	end
 end)
 

@@ -15,6 +15,10 @@ nut.util.include("cl_password.lua")
 
 nutStorageBase = PLUGIN
 
+nut.config.add("passwordDelay",1,"How long a user has to wait between password attempts.",nil,{
+	category = "Storage",
+})
+
 if (CLIENT) then
 	function PLUGIN:transferItem(itemID)
 		if (not nut.item.instances[itemID]) then return end
