@@ -424,8 +424,6 @@ nut.command.add("plywhitelist", {
 						v:notifyLocalized("whitelist", client:Name(), target:Name(), L(faction.name, v))
 					end
 				end
-			else
-				return "@invalidFaction"
 			end
 		end
 	end
@@ -464,8 +462,6 @@ nut.command.add("plyunwhitelist", {
 						v:notifyLocalized("unwhitelist", client:Name(), target:Name(), L(faction.name, v))
 					end
 				end
-			else
-				return "@invalidFaction"
 			end
 		end
 	end
@@ -570,10 +566,6 @@ nut.command.add("plytransfer", {
 
 		if (not IsValid(target) or not character) then
 			return "@plyNotExist"
-		end
-		
-		if (not faction) then
-			return "@invalidFaction"
 		end
 
 		-- Find the specified faction.
