@@ -414,20 +414,9 @@ nut.command.add("plywhitelist", {
 	syntax = "<string name> <string faction>",
 	onRun = function(client, arguments)
 		local target = nut.command.findPlayer(client, arguments[1])
-		local name = table.concat(arguments, " ", 2)
 
 		if (IsValid(target)) then
-			local faction = nut.faction.teams[name]
-
-			if (!faction) then
-				for k, v in ipairs(nut.faction.indices) do
-					if (nut.util.stringMatches(L(v.name, client), name) or nut.util.stringMatches(v.uniqueID, name)) then
-						faction = v
-
-						break
-					end
-				end
-			end
+			local faction = nut.command.findFaction(client,table.concat(arguments, " ", 2))
 
 			if (faction) then
 				if (target:setWhitelisted(faction.index, true)) then
@@ -435,8 +424,6 @@ nut.command.add("plywhitelist", {
 						v:notifyLocalized("whitelist", client:Name(), target:Name(), L(faction.name, v))
 					end
 				end
-			else
-				return "@invalidFaction"
 			end
 		end
 	end
@@ -465,20 +452,9 @@ nut.command.add("plyunwhitelist", {
 	syntax = "<string name> <string faction>",
 	onRun = function(client, arguments)
 		local target = nut.command.findPlayer(client, arguments[1])
-		local name = table.concat(arguments, " ", 2)
-
+		
 		if (IsValid(target)) then
-			local faction = nut.faction.teams[name]
-
-			if (!faction) then
-				for k, v in ipairs(nut.faction.indices) do
-					if (nut.util.stringMatches(L(v.name, client), name) or nut.util.stringMatches(v.uniqueID, name)) then
-						faction = v
-
-						break
-					end
-				end
-			end
+			local faction = nut.command.findFaction(client,table.concat(arguments, " ", 2))
 
 			if (faction) then
 				if (target:setWhitelisted(faction.index, false)) then
@@ -486,8 +462,6 @@ nut.command.add("plyunwhitelist", {
 						v:notifyLocalized("unwhitelist", client:Name(), target:Name(), L(faction.name, v))
 					end
 				end
-			else
-				return "@invalidFaction"
 			end
 		end
 	end
@@ -587,7 +561,7 @@ nut.command.add("plytransfer", {
 	syntax = "<string name> <string faction>",
 	onRun = function(client, arguments)
 		local target = nut.command.findPlayer(client, arguments[1])
-		local name = table.concat(arguments, " ", 2)
+		local faction = nut.command.findFaction(client, table.concat(arguments, " ", 2))
 		local character = target:getChar()
 
 		if (not IsValid(target) or not character) then
@@ -596,18 +570,6 @@ nut.command.add("plytransfer", {
 
 		-- Find the specified faction.
 		local oldFaction = nut.faction.indices[character:getFaction()]
-		local faction = nut.faction.teams[name]
-		if (not faction) then
-			for k, v in pairs(nut.faction.indices) do
-				if (nut.util.stringMatches(L(v.name, client), name)) then
-					faction = v
-					break
-				end
-			end
-		end
-		if (not faction) then
-			return "@invalidFaction"
-		end
 
 		-- Change to the new faction.
 		target:getChar():setFaction(faction.index)

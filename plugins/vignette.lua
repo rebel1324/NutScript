@@ -24,7 +24,7 @@ timer.Create("nutVignetteChecker", 1, 0, function()
 			data.filter = client
 		local trace = util.TraceLine(data)
 
-		if (trace.Hit) then
+		if (trace and trace.Hit) then
 			vignetteAlphaGoal = 80
 		else
 			vignetteAlphaGoal = 0

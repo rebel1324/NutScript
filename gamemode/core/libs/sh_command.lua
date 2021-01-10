@@ -146,6 +146,21 @@ if (SERVER) then
 			client:notifyLocalized("plyNoExist")
 		end
 	end
+	
+	-- Finds a faction based on the uniqueID, and then the name if no such uniqueID exists.
+	function nut.command.findFaction(client, name)
+		if (nut.faction.teams[name]) then
+			return nut.faction.teams[name]
+		end
+
+		for k, v in ipairs(nut.faction.indices) do
+			if (nut.util.stringMatches(L(v.name,client), name)) then
+				return v --This interrupt means we don't need an if statement below.
+			end
+		end
+
+		client:notifyLocalized("invalidFaction")
+	end
 
 	-- Forces a player to run a command.
 	function nut.command.run(client, command, arguments)
