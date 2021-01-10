@@ -99,7 +99,7 @@ function nut.char.restore(client, callback, noCache, id)
 			local character = nut.char.new(data, id, client)
 			hook.Run("CharacterRestored", character)
 			character.vars.inv = {}
-			
+
 			nut.inventory.loadAllFromCharID(id)
 				-- Try to get a default inventory if one does not exist.
 				:next(function(inventories)
@@ -122,7 +122,7 @@ function nut.char.restore(client, callback, noCache, id)
 				end, function(err)
 					print("Failed to load inventories for "..tostring(id))
 					print(err)
-					
+
 					if (IsValid(client)) then
 						client:ChatPrint(
 							"A server error occured while loading your"..
@@ -175,7 +175,7 @@ function nut.char.delete(id, client)
 		for _, client in ipairs(player.GetAll()) do
 			if (not table.HasValue(client.nutCharList or {}, id)) then continue end
 			table.RemoveByValue(client.nutCharList, id)
-			
+
 			removePlayer(client)
 		end
 	end
@@ -185,7 +185,6 @@ function nut.char.delete(id, client)
 	for index, charID in pairs(client.nutCharList) do
 		if (charID == id) then
 			table.remove(client.nutCharList, index)
-			
 			break
 		end
 	end

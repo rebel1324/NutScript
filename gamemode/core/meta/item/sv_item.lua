@@ -137,7 +137,7 @@ function ITEM:setData(key, value, receivers, noSave, noCheckEntity)
 	self.data = self.data or {}
 	self.data[key] = value
 
-	if (!noCheckEntity) then
+	if (not noCheckEntity) then
 		local ent = self:getEntity()
 		if (IsValid(ent)) then
 			ent:setNetVar("data", self.data)
@@ -192,7 +192,7 @@ end
 function ITEM:setQuantity(quantity, receivers, noCheckEntity)
 	self.quantity = quantity
 
-	if (!noCheckEntity) then
+	if (not noCheckEntity) then
 		local ent = self:getEntity()
 
 		if (IsValid(ent)) then
@@ -231,7 +231,7 @@ function ITEM:interact(action, client, entity, data)
 	local canInteract, reason =
 		hook.Run("CanPlayerInteractItem", client, action, self, data)
 	if (canInteract == false) then
-		if (reason) then 
+		if (reason) then
 			client:notifyLocalized(reason)
 		end
 
