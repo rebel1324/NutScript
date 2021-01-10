@@ -1,3 +1,4 @@
+local PLUGIN = PLUGIN
 PLUGIN.name = "NutScript Intro"
 PLUGIN.author = "Cheesenut"
 PLUGIN.desc = "NutScript and schema introduction shown when players first join."
@@ -6,10 +7,22 @@ nut.config.add("introEnabled", true, "Whether or not intro is enabled.", nil, {
 	category = PLUGIN.name
 })
 
+nut.config.add("playIntroOnlyOnce", true, "Whether the intro, if enabled, should play every time, or only on first join", nil, {
+	category = PLUGIN.name
+})
+
+nut.config.add("introFont", "Cambria", "Font of the intro screen", function(_, newFont)
+	if CLIENT then
+		PLUGIN:LoadFonts(newFont)
+	end
+end, {
+	category = PLUGIN.name
+})
+
 if (CLIENT) then
-	function PLUGIN:LoadFonts()
+	function PLUGIN:LoadFonts(newFont)
 		-- Introduction fancy font.
-		local font = "Cambria"
+		local font = newFont or nut.config.get("introFont", "Cambria")
 
 		surface.CreateFont("nutIntroTitleFont", {
 			font = font,
