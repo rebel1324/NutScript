@@ -8,7 +8,7 @@ local PANEL = {}
 		self:SetSize(400, 36)
 		self:SetPos(ScrW() - 36, -36)
 		self:MakePopup()
-		self:SetKeyBoardInputEnabled(false)
+		self:SetKeyboardInputEnabled(false)
 		self:SetZPos(999)
 		self:SetMouseInputEnabled(true)
 
