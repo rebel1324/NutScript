@@ -3,7 +3,7 @@ local PANEL = {}
 		self:SetFont("nutMenuButtonFont")
 		self:SetExpensiveShadow(2, Color(0, 0, 0, 200))
 		self:SetTextColor(color_white)
-		self:SetDrawBackground(false)
+		self:SetPaintBackground(false)
 		self.OldSetTextColor = self.SetTextColor
 		self.SetTextColor = function(this, color)
 			this:OldSetTextColor(color)

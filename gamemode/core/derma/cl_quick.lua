@@ -30,7 +30,7 @@ local PANEL = {}
 		self.expand:SetContentAlignment(5)
 		self.expand:SetText("`")
 		self.expand:SetFont("nutIconsMedium")
-		self.expand:SetDrawBackground(false)
+		self.expand:SetPaintBackground(false)
 		self.expand:SetTextColor(color_white)
 		self.expand:SetExpensiveShadow(1, Color(0, 0, 0, 150))
 		self.expand:SetSize(36, 36)

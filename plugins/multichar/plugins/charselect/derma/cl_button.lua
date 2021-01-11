@@ -4,7 +4,7 @@ function PANEL:Init()
 	self:SetFont("nutCharButtonFont")
 	self:SizeToContentsY()
 	self:SetTextColor(nut.gui.character.WHITE)
-	self:SetDrawBackground(false)
+	self:SetPaintBackground(false)
 end
 
 function PANEL:OnCursorEntered()

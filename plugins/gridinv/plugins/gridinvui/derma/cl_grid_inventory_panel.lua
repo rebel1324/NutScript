@@ -11,7 +11,7 @@ local BORDER_FIX_H = 14
 local SHADOW_COLOR = Color(0, 0, 0, 100)
 
 function PANEL:Init()
-	self:SetDrawBackground(false)
+	self:SetPaintBackground(false)
 
 	self.icons = {}
 	self:setGridSize(1, 1)

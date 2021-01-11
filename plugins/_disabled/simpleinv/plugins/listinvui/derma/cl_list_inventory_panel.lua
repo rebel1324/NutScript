@@ -11,7 +11,7 @@ local BORDER_FIX_H = 14
 local SHADOW_COLOR = Color(0, 0, 0, 100)
 
 function PANEL:Init()
-	self:SetDrawBackground(false)
+	self:SetPaintBackground(false)
 
 	self.weight = self:Add("DPanel")
 	self.weight:SetTall(WEIGHT_PANEL_HEIGHT + PADDING)
