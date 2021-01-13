@@ -8,7 +8,7 @@ local PANEL = {}
 		self:SetSize(400, 36)
 		self:SetPos(ScrW() - 36, -36)
 		self:MakePopup()
-		self:SetKeyBoardInputEnabled(false)
+		self:SetKeyboardInputEnabled(false)
 		self:SetZPos(999)
 		self:SetMouseInputEnabled(true)
 
@@ -30,7 +30,7 @@ local PANEL = {}
 		self.expand:SetContentAlignment(5)
 		self.expand:SetText("`")
 		self.expand:SetFont("nutIconsMedium")
-		self.expand:SetDrawBackground(false)
+		self.expand:SetPaintBackground(false)
 		self.expand:SetTextColor(color_white)
 		self.expand:SetExpensiveShadow(1, Color(0, 0, 0, 150))
 		self.expand:SetSize(36, 36)

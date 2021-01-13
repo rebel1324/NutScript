@@ -8,7 +8,7 @@ local function ignore() end
 function PANEL:Init()
 	self:Dock(TOP)
 	self:SetTall(64)
-	self:SetDrawBackground(false)
+	self:SetPaintBackground(false)
 
 	self.suffix = ""
 

@@ -1,6 +1,6 @@
 local PANEL = {}
 	function PANEL:Init()
-		self:SetDrawBackground(false)
+		self:SetPaintBackground(false)
 	end
 
 	function PANEL:setMarkup(text, onDrawText)

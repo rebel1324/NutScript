@@ -18,7 +18,7 @@ function PANEL:Init()
 	self.buttons = self:Add("DPanel")
 	self.buttons:DockMargin(0, 32, 0, 0)
 	self.buttons:Dock(TOP)
-	self.buttons:SetDrawBackground(false)
+	self.buttons:SetPaintBackground(false)
 	self.buttons:SetTall(36)
 
 	self.leave = self.buttons:Add("DButton")
@@ -31,7 +31,7 @@ function PANEL:Init()
 		self:Remove()
 	end
 	self.leave:SizeToContents()
-	self.leave:SetDrawBackground(false)
+	self.leave:SetPaintBackground(false)
 	self.leave.x = ScrW() * 0.5 - (self.leave:GetWide() * 0.5)
 
 	if (LocalPlayer():IsAdmin()) then
@@ -45,7 +45,7 @@ function PANEL:Init()
 			vgui.Create("nutVendorEditor"):SetZPos(99)
 		end
 		self.editor:SizeToContents()
-		self.editor:SetDrawBackground(false)
+		self.editor:SetPaintBackground(false)
 		self.leave.x = self.leave.x + 16 + self.leave:GetWide() * 0.5
 		self.editor.x = ScrW() * 0.5 - 16 - self.editor:GetWide()
 	end

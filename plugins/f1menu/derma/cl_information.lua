@@ -25,7 +25,7 @@ local PANEL = {}
 				self.info = self:Add("DPanel")
 				self.info:SetWide(ScrW() * 0.4)
 				self.info:Dock(RIGHT)
-				self.info:SetDrawBackground(false)
+				self.info:SetPaintBackground(false)
 				self.info:DockMargin(150, ScrH() * 0.2, 0, 0)
 			end
 

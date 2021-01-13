@@ -35,6 +35,20 @@ function PANEL:updateModel()
 	elseif (isstring(groups)) then
 		entity:SetBodyGroups(groups)
 	end
+
+	if(self.context.skin) then
+		entity:SetSkin(self.context.skin)
+	end
+
+	if(self.context.groups) then
+		for group, value in pairs(self.context.groups or {}) do
+			entity:SetBodygroup(group, value)
+		end
+	end
+
+	if(faction.material) then
+		entity:SetMaterial(faction.material)
+	end
 end
 
 -- Returns true if the local player can create a character, otherwise
@@ -192,7 +206,7 @@ function PANEL:nextStep()
 	end
 	if (not IsValid(nextStep)) then
 		self.curStep = lastStep
-		return self:onFinish() 
+		return self:onFinish()
 	end
 
 	-- Transition the view to the next step's view.
@@ -292,7 +306,6 @@ end
 
 function PANEL:Init()
 	self:Dock(FILL)
-	self:InvalidateParent(true);
 	local canCreate, reason = self:canCreateCharacter()
 	if (not canCreate) then
 		return self:showMessage(reason)
@@ -309,14 +322,12 @@ function PANEL:Init()
 
 	self.content = self:Add("DPanel")
 	self.content:Dock(FILL)
-	self.content:InvalidateParent(true);
 	self.content:DockMargin(sideMargin, 64, sideMargin, 0)
-	self.content:SetDrawBackground(false)
+	self.content:SetPaintBackground(false)
 
 	self.model = self.content:Add("nutModelPanel")
 	self.model:SetWide(ScrW() * 0.25)
 	self.model:Dock(LEFT)
-	self.model:InvalidateParent(true);
 	self.model:SetModel("models/error.mdl")
 	self.model.oldSetModel = self.model.SetModel
 	self.model.SetModel = function(model, ...)
@@ -327,7 +338,7 @@ function PANEL:Init()
 	self.buttons = self:Add("DPanel")
 	self.buttons:Dock(BOTTOM)
 	self.buttons:SetTall(48)
-	self.buttons:SetDrawBackground(false)
+	self.buttons:SetPaintBackground(false)
 
 	self.prev = self.buttons:Add("nutCharButton")
 	self.prev:SetText(L("back"):upper())

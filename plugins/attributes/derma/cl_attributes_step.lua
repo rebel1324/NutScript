@@ -81,12 +81,12 @@ function PANEL:Init()
 	self:Dock(TOP)
 	self:DockMargin(0, 0, 0, 4)
 	self:SetTall(36)
-	self:SetDrawBackground(false)
+	self:SetPaintBackground(false)
 
 	self.buttons = self:Add("DPanel")
 	self.buttons:Dock(RIGHT)
 	self.buttons:SetWide(128)
-	self.buttons:SetDrawBackground(false)
+	self.buttons:SetPaintBackground(false)
 
 	self.add = self:addButton("⯈", 1)
 	self.add:Dock(RIGHT)
@@ -140,7 +140,7 @@ function PANEL:addButton(symbol, delta)
 	button.OnMouseReleased = function(button)
 		self.autoDelta = nil
 	end
-	button:SetDrawBackground(false)
+	button:SetPaintBackground(false)
 	return button
 end
 

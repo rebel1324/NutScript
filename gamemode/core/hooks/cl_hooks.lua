@@ -285,7 +285,7 @@ function GM:InitializedConfig()
 end
 
 function GM:CharacterListLoaded()
-	local hasNotSeenIntro = not nut.localData.intro
+	local shouldPlayIntro = not nut.config.get("playIntroOnlyOnce", true) or not nut.localData.intro or nil
 	timer.Create("nutWaitUntilPlayerValid", 0.5, 0, function()
 		if (not IsValid(LocalPlayer())) then return end
 		timer.Remove("nutWaitUntilPlayerValid")
@@ -297,7 +297,7 @@ function GM:CharacterListLoaded()
 
 		-- Show the intro if needed, then show the character menu.
 		local intro =
-			hasNotSeenIntro and hook.Run("CreateIntroduction") or nil
+			shouldPlayIntro and hook.Run("CreateIntroduction") or nil
 		if (IsValid(intro)) then
 			intro.nutLoadOldRemove = intro.OnRemove
 			intro.OnRemove = function(panel)
@@ -321,7 +321,7 @@ function GM:CalcView(client, origin, angles, fov)
 	local ragdoll = client:GetRagdollEntity()
 
 	if (client:GetViewEntity() ~= client) then return view end
-	
+
 	if (
 		-- First person if the player has fallen over.
 		(

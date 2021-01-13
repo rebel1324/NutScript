@@ -20,7 +20,7 @@ function PANEL:Init()
 	local WIDTH = 240
 
 	self:SetWide(WIDTH)
-	self:SetDrawBackground(false)
+	self:SetPaintBackground(false)
 
 	self.faction = self:Add("DPanel")
 	self.faction:Dock(TOP)
@@ -61,7 +61,7 @@ function PANEL:Init()
 
 	self.button = self:Add("DButton")
 	self.button:SetSize(WIDTH, ScrH())
-	self.button:SetDrawBackground(false)
+	self.button:SetPaintBackground(false)
 	self.button:SetText("")
 	self.button.OnCursorEntered = function(button) self:OnCursorEntered() end
 	self.button.DoClick = function(button)

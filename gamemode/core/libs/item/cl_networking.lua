@@ -1,5 +1,4 @@
 netstream.Hook("item", function(uniqueID, id, data, invID)
-	local stockItem = nut.item.list[uniqueID]
 	local item = nut.item.new(uniqueID, id)
 
 	item.data = {}
@@ -28,7 +27,7 @@ netstream.Hook("invQuantity", function(id, quantity)
 	if (item) then
 		local oldValue = item:getQuantity()
 		item.quantity = quantity
-		
+
 		hook.Run("ItemQuantityChanged", item, oldValue, quantity)
 	end
 end)
