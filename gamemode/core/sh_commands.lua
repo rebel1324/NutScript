@@ -70,7 +70,7 @@ nut.command.add("flaggive", {
 				local available = ""
 
 				-- Aesthetics~~
-				for k, v in SortedPairs(nut.flag.list) do
+				for k in SortedPairs(nut.flag.list) do
 					if (!target:getChar():hasFlags(k)) then
 						available = available..k
 					end
@@ -221,10 +221,8 @@ nut.command.add("chargiveitem", {
 				end
 			end
 
-			if (arguments[3] and arguments[3] != "") then
-				if (!amount) then
-					return L("invalidArg", client, 3)
-				end
+			if (arguments[3] and arguments[3] ~= "") and (!amount) then
+				return L("invalidArg", client, 3)
 			end
 
 			target:getChar():getInv():add(uniqueID, amount or 1)
@@ -295,6 +293,7 @@ nut.command.add("charunban", {
 			if (nut.util.stringMatches(v:getName(), name)) then
 				if (v:getData("banned")) then
 					v:setData("banned")
+					v:setData("permakilled")
 				else
 					return "@charNotBanned"
 				end
@@ -308,7 +307,6 @@ nut.command.add("charunban", {
 		nut.db.query("SELECT _id, _name, _data FROM nut_characters WHERE _name LIKE \"%"..nut.db.escape(name).."%\" LIMIT 1", function(data)
 			if (data and data[1]) then
 				local charID = tonumber(data[1]._id)
-				local name = data[1]._name
 				local data = util.JSONToTable(data[1]._data or "[]")
 
 				client.nutNextSearch = 0
@@ -318,7 +316,7 @@ nut.command.add("charunban", {
 				end
 
 				data.banned = nil
-				
+
 				nut.db.updateTable({_data = data}, nil, nil, "_id = "..charID)
 				nut.util.notifyLocalized("charUnBan", nil, client:Name(), v:getName())
 			end
