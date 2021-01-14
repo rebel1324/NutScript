@@ -11,18 +11,14 @@ nut.config.add("playIntroOnlyOnce", true, "Whether the intro, if enabled, should
 	category = PLUGIN.name
 })
 
-nut.config.add("introFont", "Cambria", "Font of the intro screen", function(_, newFont)
-	if CLIENT then
-		PLUGIN:LoadFonts(newFont)
-	end
-end, {
+nut.config.add("introFont", "Cambria", "Font of the intro screen", nil, {
 	category = PLUGIN.name
 })
 
 if (CLIENT) then
-	function PLUGIN:LoadFonts(newFont)
+	function PLUGIN:LoadFonts()
 		-- Introduction fancy font.
-		local font = newFont or nut.config.get("introFont", "Cambria")
+		local font = nut.config.get("introFont", "Cambria")
 
 		surface.CreateFont("nutIntroTitleFont", {
 			font = font,

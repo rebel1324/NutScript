@@ -12,9 +12,8 @@ nut.config.add("pkWorld", false, "Whether or not world and self damage produce p
 
 function PLUGIN:PlayerDeath(client, inflictor, attacker)
 	local character = client:getChar()
-
 	if (nut.config.get("pkActive")) then
-		if !(nut.config.get("pkWorld") and (client == attacker or inflictor:IsWorld())) then
+		if (attacker == client or inflictor:IsWorld()) and not nut.config.get("pkWorld", false) then
 			return
 		end
 		character:setData("permakilled", true)
