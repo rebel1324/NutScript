@@ -28,7 +28,7 @@ NUT_ITEM_DEFAULT_FUNCTIONS = {
 				return false
 			end
 
-			client.itemTakeTransaction = true 
+			client.itemTakeTransaction = true
 			client.itemTakeTransactionTimeout = RealTime()
 
 			if (not inventory) then return false end
@@ -43,7 +43,7 @@ NUT_ITEM_DEFAULT_FUNCTIONS = {
 						entity.nutIsSafe = true
 						entity:Remove()
 					end
-					
+
 					if (not IsValid(client)) then return end
 					nut.log.add(client, "itemTake", item.name, 1)
 
@@ -57,7 +57,7 @@ NUT_ITEM_DEFAULT_FUNCTIONS = {
 					d:reject()
 				end)
 
-			return d 
+			return d
 		end,
 		onCanRun = function(item)
 			return IsValid(item.entity)

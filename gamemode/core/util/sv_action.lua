@@ -55,9 +55,8 @@ function playerMeta:doStaredAction(entity, callback, time, onCancel, distance)
 				IsValid(targetEntity:getNetVar("player"))
 			) then
 				targetEntity = targetEntity:getNetVar("player")
-				end
-			
-			if (targetEntity != entity["player"]) then
+			end
+			if (targetEntity != entity) then
 				timer.Remove(uniqueID)
 
 				if (onCancel) then
