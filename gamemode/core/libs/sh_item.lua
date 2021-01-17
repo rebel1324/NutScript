@@ -34,7 +34,6 @@ end
 function nut.item.register(uniqueID, baseID, isBaseItem, path, luaGenerated)
 	assert(isstring(uniqueID), "uniqueID must be a string")
 
-	local meta = nut.meta.item
 	local baseTable = nut.item.base[baseID] or nut.meta.item
 	if (baseID) then
 		assert(baseTable, "Item "..uniqueID.." has a non-existent base "..baseID)
