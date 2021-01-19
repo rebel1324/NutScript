@@ -164,6 +164,8 @@ if (SERVER) then
 		self:setData("banned", time or true)
 		self:save()
 		self:kick()
+
+		hook.Run("OnCharPermakilled",self,time or nil)
 	end
 
 	-- Deletes this character from existence along with its associated data.
