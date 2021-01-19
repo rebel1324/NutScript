@@ -111,7 +111,7 @@ function Inventory:removeItem(itemID, preserveItem)
 	if (instance) then
 		instance.invID = 0
 		self.items[itemID] = nil
-		
+
 		net.Start("nutInventoryRemove")
 			net.WriteUInt(itemID, 32)
 			net.WriteType(self:getID())

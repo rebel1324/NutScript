@@ -11,7 +11,6 @@ function PLUGIN:HandleItemTransferRequest(client, itemID, x, y, invID)
 	if (not oldInventory or not oldInventory.items[itemID]) then
 		return
 	end
-
 	-- Make sure the item is permitted to move between the two inventories.
 	if (
 		hook.Run("CanItemBeTransfered", item, oldInventory, inventory) == false
@@ -25,6 +24,7 @@ function PLUGIN:HandleItemTransferRequest(client, itemID, x, y, invID)
 		from = oldInventory,
 		to = inventory
 	}
+
 	local canTransfer, reason = oldInventory:canAccess(TRANSFER, context)
 	if (not canTransfer) then
 		return
@@ -35,6 +35,7 @@ function PLUGIN:HandleItemTransferRequest(client, itemID, x, y, invID)
 	end
 
 	canTransfer, reason = inventory:canAccess(TRANSFER, context)
+
 	if (not canTransfer) then
 		if (isstring(reason)) then
 			client:notifyLocalized(reason)
