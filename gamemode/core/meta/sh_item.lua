@@ -89,7 +89,7 @@ function ITEM:getOwner()
 	local id = self:getID()
 	for _, v in ipairs(player.GetAll()) do
 		local character = v:getChar()
-		if (character and character:getInv().items[id]) then
+		if (character and character:getInv() and character:getInv().items[id]) then
 			return v
 		end
 	end
