@@ -82,7 +82,7 @@ end
 function ITEM:getOwner()
 	local inventory = nut.inventory.instances[self.invID]
 
-	if (inventory) then
+	if (inventory and SERVER) then
 		return inventory:getRecipients()[1]
 	end
 
