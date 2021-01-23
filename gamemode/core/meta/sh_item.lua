@@ -82,14 +82,14 @@ end
 function ITEM:getOwner()
 	local inventory = nut.inventory.instances[self.invID]
 
-	if (inventory) then
+	if (inventory and SERVER) then
 		return inventory:getRecipients()[1]
 	end
 
 	local id = self:getID()
 	for _, v in ipairs(player.GetAll()) do
 		local character = v:getChar()
-		if (character and character:getInv().items[id]) then
+		if (character and character:getInv() and character:getInv().items[id]) then
 			return v
 		end
 	end

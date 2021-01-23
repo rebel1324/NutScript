@@ -85,7 +85,9 @@ end
 function ENT:Use(activator)
 	if (not activator:getChar()) then return end
 	if ((activator.nutNextOpen or 0) > CurTime()) then return end
-	if (IsValid(activator.nutStorageEntity)) then return end
+	if (IsValid(activator.nutStorageEntity) and (activator.nutNextOpen or 0) <= CurTime()) then
+		activator.nutStorageEntity = nil
+	end
 	local inventory = self:getInv()
 	if (not inventory) then return end
 
