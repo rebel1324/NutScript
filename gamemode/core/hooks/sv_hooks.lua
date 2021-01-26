@@ -43,7 +43,7 @@ function GM:PlayerInitialSpawn(client)
 
 	-- Load and send the NutScript data for the player.
 	client:loadNutData(function(data)
-		if (!IsValid(client)) then return end
+		if (not IsValid(client)) then return end
 
 		local address = client:IPAddress()
 		client:setNutData("lastIP", address)
@@ -107,12 +107,12 @@ function GM:CanPlayerDropItem(client, item)
 
 		if (inventory) then
 			local items = inventory:getItems()
-			
-			for id, item in pairs(items) do
+
+			for _, item in pairs(items) do
 				if (not item.ignoreEquipCheck and item:getData("equip") == true) then
 					client:notifyLocalized("cantDropBagHasEquipped")
 					return false
-				end	
+				end
 			end
 		end
 	end
@@ -157,8 +157,8 @@ function GM:CanPlayerTakeItem(client, item)
 	end
 end
 
-function GM:PlayerShouldTakeDamage(client, attacker)
-	return client:getChar() != nil
+function GM:PlayerShouldTakeDamage(client)
+	return client:getChar() ~= nil
 end
 
 function GM:EntityTakeDamage(entity, dmgInfo)
@@ -179,7 +179,7 @@ function GM:EntityTakeDamage(entity, dmgInfo)
 	end
 end
 
-function GM:PrePlayerLoadedChar(client, character, lastChar)
+function GM:PrePlayerLoadedChar(client)
 	-- Remove all skins
 	client:SetBodyGroups("000000000")
 	client:SetSkin(0)
@@ -192,23 +192,20 @@ function GM:PlayerLoadedChar(client, character, lastChar)
 	if (lastChar) then
 		local charEnts = lastChar:getVar("charEnts") or {}
 
-		for k, v in ipairs(charEnts) do
+		for _, v in ipairs(charEnts) do
 			if (v and IsValid(v)) then
 				v:Remove()
 			end
 		end
 
-		lastChar:setVar("charEnts", nil) 
+		lastChar:setVar("charEnts", nil)
 	end
 
 	if (character) then
-		for k, v in pairs(nut.class.list) do
-			if (v.faction == client:Team()) then
-				if (v.isDefault) then
-					character:setClass(v.index)
-
-					break
-				end
+		for _, v in pairs(nut.class.list) do
+			if (v.faction == client:Team()) and v.isDefault then
+				character:setClass(v.index)
+				break
 			end
 		end
 	end
@@ -246,10 +243,8 @@ end
 function GM:PlayerSay(client, message)
 	local chatType, message, anonymous = nut.chat.parse(client, message, true)
 
-	if (chatType == "ic") then
-		if (nut.command.parse(client, message)) then
-			return ""
-		end
+	if (chatType == "ic") and (nut.command.parse(client, message)) then
+		return ""
 	end
 
 	nut.chat.send(client, chatType, message, anonymous)
@@ -277,11 +272,11 @@ GM.PlayerGiveSWEP = IsAdmin
 GM.PlayerSpawnEffect = IsAdmin
 GM.PlayerSpawnSENT = IsAdmin
 
-function GM:PlayerSpawnNPC(client, npcType, weapon)
+function GM:PlayerSpawnNPC(client)
 	return client:IsAdmin() or client:getChar():hasFlags("n")
 end
 
-function GM:PlayerSpawnSWEP(client, weapon, info)
+function GM:PlayerSpawnSWEP(client)
 	return client:IsAdmin()
 end
 
@@ -309,7 +304,7 @@ function GM:PlayerSpawnVehicle(client, model, name, data)
 			return client:getChar():hasFlags("C")
 		end
 	end
-	
+
 	return false
 end
 
@@ -320,7 +315,7 @@ function GM:PlayerLoadout(client)
 
 		return
 	end
-	
+
 	client:SetWeaponColor(Vector(client:GetInfo("cl_weaponcolor")))
 	client:StripWeapons()
 	client:setLocalVar("blur", nil)
@@ -335,7 +330,7 @@ function GM:PlayerLoadout(client)
 		client:Give("nut_hands")
 		client:SetWalkSpeed(nut.config.get("walkSpeed", 130))
 		client:SetRunSpeed(nut.config.get("runSpeed", 235))
-		
+
 		local faction = nut.faction.indices[client:Team()]
 
 		if (faction) then
@@ -346,7 +341,7 @@ function GM:PlayerLoadout(client)
 
 			-- If the faction has default weapons, give them to the player.
 			if (faction.weapons) then
-				for k, v in ipairs(faction.weapons) do
+				for _, v in ipairs(faction.weapons) do
 					client:Give(v)
 				end
 			end
@@ -361,7 +356,7 @@ function GM:PlayerLoadout(client)
 			end
 
 			if (class.weapons) then
-				for k, v in ipairs(class.weapons) do
+				for _, v in ipairs(class.weapons) do
 					client:Give(v)
 				end
 			end
@@ -397,7 +392,7 @@ function GM:PostPlayerLoadout(client)
 	end
 end
 
-function GM:PlayerDeath(client, inflictor, attacker)
+function GM:PlayerDeath(client)
 	if (not client:getChar()) then return end
 	if (IsValid(client.nutRagdoll)) then
 		client.nutRagdoll.nutIgnoreDelete = true
@@ -439,7 +434,7 @@ function GM:PlayerDisconnected(client)
 	if (character) then
 		local charEnts = character:getVar("charEnts") or {}
 
-		for k, v in ipairs(charEnts) do
+		for _, v in ipairs(charEnts) do
 			if (v and IsValid(v)) then
 				v:Remove()
 			end
@@ -454,21 +449,21 @@ function GM:PlayerDisconnected(client)
 	nut.char.cleanUpForPlayer(client)
 end
 
-function GM:PlayerAuthed(client, steamID, uniqueID)
+function GM:PlayerAuthed(client, steamID)
 	nut.log.add(client, "playerConnected", client, steamID)
 end
-	
+
 function GM:InitPostEntity()
 	local doors = ents.FindByClass("prop_door_rotating")
 
-	for k, v in ipairs(doors) do
+	for _, v in ipairs(doors) do
 		local parent = v:GetOwner()
 
 		if (IsValid(parent)) then
 			v.nutPartner = parent
 			parent.nutPartner = v
 		else
-			for k2, v2 in ipairs(doors) do
+			for _, v2 in ipairs(doors) do
 				if (v2:GetOwner() == v) then
 					v2.nutPartner = v
 					v.nutPartner = v2
@@ -499,7 +494,7 @@ function GM:ShutDown()
 
 	hook.Run("SaveData")
 
-	for k, v in ipairs(player.GetAll()) do
+	for _, v in ipairs(player.GetAll()) do
 		v:saveNutData()
 
 		if (v:getChar()) then
@@ -513,11 +508,11 @@ function GM:PlayerDeathSound()
 end
 
 function GM:InitializedSchema()
-	if (!nut.data.get("date", nil, false, true)) then
+--[[ 	if (not nut.data.get("date", nil, false, true)) then
 		nut.data.set("date", os.time(), false, true)
 	end
 
-	nut.date.start = nut.data.get("date", os.time(), false, true)
+	nut.date.start = nut.data.get("date", os.time(), false, true) ]]
 
 	local persistString = GetConVar("sbox_persist"):GetString()
 	if (persistString == "" or string.StartWith(persistString, "ns_")) then
@@ -528,21 +523,21 @@ end
 
 function GM:PlayerCanHearPlayersVoice(listener, speaker)
 	local allowVoice = nut.config.get("allowVoice")
-	
-	if (!allowVoice) then
+
+	if (not allowVoice) then
 		return false, false
 	end
-	
+
 	if (listener:GetPos():DistToSqr(speaker:GetPos()) > nut.config.squaredVoiceDistance) then
 		return false, false
 	end
-	
+
 	return true, true
 end
 
 function GM:OnPhysgunFreeze(weapon, physObj, entity, client)
-	-- Object is already frozen (!?)
-	if (!physObj:IsMoveable()) then return false end
+	-- Object is already frozen (not ?)
+	if (not physObj:IsMoveable()) then return false end
 	if (entity:GetUnFreezable()) then return false end
 
 	physObj:EnableMotion(false)
@@ -565,11 +560,11 @@ function GM:OnPhysgunFreeze(weapon, physObj, entity, client)
 	return true
 end
 
-function GM:CanPlayerSuicide(client)
+function GM:CanPlayerSuicide()
 	return false
 end
 
-function GM:AllowPlayerPickup(client, entity)
+function GM:AllowPlayerPickup()
 	return false
 end
 
@@ -592,7 +587,7 @@ function GM:CharacterPreSave(character)
 	if (not character:getInv()) then
 		return
 	end
-	for k, v in pairs(character:getInv():getItems()) do
+	for _, v in pairs(character:getInv():getItems()) do
 		if (v.onSave) then
 			v:call("onSave", client)
 		end
@@ -600,14 +595,14 @@ function GM:CharacterPreSave(character)
 end
 
 function GM:OnServerLog(client, logType, ...)
-	for k, v in pairs(nut.util.getAdmins()) do
-		if (hook.Run("CanPlayerSeeLog", v, logType) != false) then
+	for _, v in pairs(nut.util.getAdmins()) do
+		if (hook.Run("CanPlayerSeeLog", v, logType) ~= false) then
 			nut.log.send(v, nut.log.getString(client, logType, ...))
 		end
 	end
 end
 
--- this table is based on mdl's prop keyvalue data. FIX IT WILLOX!
+-- this table is based on mdl's prop keyvalue data. FIX IT WILLOXnot 
 local defaultAngleData = {
 	["models/items/car_battery01.mdl"] = Angle(-15, 180, 0),
 	["models/props_junk/harpoon002a.mdl"] = Angle(0, 0, 0),
@@ -664,7 +659,7 @@ function GM:InitializedPlugins()
 	if (ulx or ULib) then
 		local psaTable = string.Explode("\n", psaString)
 
-		for k, v in ipairs(psaTable) do
+		for _, v in ipairs(psaTable) do
 			MsgC(Color(255, 0, 0), v .. "\n")
 		end
 	end

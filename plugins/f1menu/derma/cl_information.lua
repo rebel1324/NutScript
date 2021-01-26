@@ -126,12 +126,12 @@ local PANEL = {}
 		end
 
 		if (self.time) then
-			local format = "%A, %d %B %Y %X"
-			
-			self.time:SetText(L("curTime", os.date(format, nut.date.get())))
+			local format = ("%A, %d %B %Y ".. nut.config.get("yearAppendix", "") .." %T")
+
+			self.time:SetText(L("curTime", nut.date.getFormatted(format)))
 			self.time.Think = function(this)
 				if ((this.nextTime or 0) < CurTime()) then
-					this:SetText(L("curTime", os.date(format, nut.date.get())))
+					this:SetText(L("curTime", nut.date.getFormatted(format)))
 					this.nextTime = CurTime() + 0.5
 				end
 			end
