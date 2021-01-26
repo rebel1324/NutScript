@@ -11,7 +11,7 @@ end
 function nut.chat.register(chatType, data)
 	if (!data.onCanHear) then
 		-- Have a substitute if the canHear property is not found.
-		data.onCanHear = function(speaker, listener)
+		data.onCanHear = function()
 			-- The speaker will be heard by everyone.
 			return true
 		end
@@ -27,7 +27,7 @@ function nut.chat.register(chatType, data)
 
 	-- Allow players to use this chat type by default.
 	if (!data.onCanSay) then
-		data.onCanSay = function(speaker, text)
+		data.onCanSay = function(speaker)
 			if (!data.deadCanChat and !speaker:Alive()) then
 				speaker:notifyLocalized("noPerm")
 
@@ -60,7 +60,7 @@ function nut.chat.register(chatType, data)
 
 	if (CLIENT) then
 		if (type(data.prefix) == "table") then
-			for k, v in ipairs(data.prefix) do
+			for _, v in ipairs(data.prefix) do
 				if (v:sub(1, 1) == "/") then
 					nut.command.add(v:sub(2), DUMMY_COMMAND)
 				end
@@ -154,7 +154,7 @@ if (SERVER) then
 			if (class.onCanHear and !receivers) then
 				receivers = {}
 
-				for k, v in ipairs(player.GetAll()) do
+				for _, v in ipairs(player.GetAll()) do
 					if (v:getChar() and class.onCanHear(speaker, v) != false) then
 						receivers[#receivers + 1] = v
 					end
@@ -196,7 +196,7 @@ do
 		-- The default in-character chat.
 		nut.chat.register("ic", {
 			format = "%s says \"%s\"",
-			onGetColor = function(speaker, text)
+			onGetColor = function(speaker)
 				-- If you are looking at the speaker, make it greener to easier identify who is talking.
 				if (LocalPlayer():GetEyeTrace().Entity == speaker) then
 					return nut.config.get("chatListenColor")
@@ -259,10 +259,10 @@ do
 
 		-- Out of character.
 		nut.chat.register("ooc", {
-			onCanSay =  function(speaker, text)
+			onCanSay =  function(speaker)
 			if (!nut.config.get("allowGlobalOOC")) then
 				speaker:notifyLocalized("Global OOC is disabled on this server.")
-				return false		
+				return false
 			else
 				local delay = nut.config.get("oocDelay", 10)
 
@@ -314,7 +314,7 @@ do
 
 		-- Local out of character.
 		nut.chat.register("looc", {
-			onCanSay =  function(speaker, text)
+			onCanSay =  function(speaker)
 				local delay = nut.config.get("loocDelay", 0)
 
 				-- Only need to check the time if they have spoken in OOC chat before.
@@ -363,7 +363,7 @@ nut.chat.register("pm", {
 
 -- Global events.
 nut.chat.register("event", {
-	onCanSay =  function(speaker, text)
+	onCanSay =  function(speaker)
 		return speaker:IsAdmin()
 	end,
 	onCanHear = 1000000,
