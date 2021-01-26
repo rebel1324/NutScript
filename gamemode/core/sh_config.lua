@@ -218,12 +218,10 @@ if (CLIENT) then
 						local value = nut.config.stored[k].default
 
 						if (!form) then
-							local formType = type(value)
-
-							if isnumber(formType) then
+							if isnumber(value) then
 								form = "Int"
 								value = tonumber(nut.config.get(k)) or value
-							elseif isbool(formType) then
+							elseif isbool(value) then
 								form = "Boolean"
 								value = tobool(nut.config.get(k))
 							else
