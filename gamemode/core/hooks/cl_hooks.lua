@@ -344,7 +344,7 @@ function GM:CalcView(client, origin, angles, fov)
 				view.origin = data.Pos
 				view.angles = data.Ang
 			end
-
+			
 			return view
 		end
 	end
@@ -386,7 +386,7 @@ end
 
 function GM:PlayerBindPress(client, bind, pressed)
 	bind = bind:lower()
-
+	
 	if ((bind:find("use") or bind:find("attack")) and pressed) then
 		local menu, callback = nut.menu.getActiveMenu()
 
@@ -428,7 +428,7 @@ function GM:ItemShowEntityMenu(entity)
 
 	local options = {}
 	local itemTable = entity:getItemTable()
-	if (not itemTable) then return end -- MARK: This is the where error came from.
+	if (!itemTable) then return end -- MARK: This is the where error came from.
 
 	local function callback(index)
 		if (IsValid(entity)) then
@@ -440,14 +440,16 @@ function GM:ItemShowEntityMenu(entity)
 	itemTable.entity = entity
 
 	if (input.IsShiftDown()) then
-		callback("take")
+		callback("take") 
 	end
 
 	for k, v in SortedPairs(itemTable.functions) do
 		if (k == "combine") then continue end -- yeah, noob protection
 
-		if (isfunction(v.onCanRun)) and (not v.onCanRun(itemTable)) then
-			continue
+		if (isfunction(v.onCanRun)) then
+			if (not v.onCanRun(itemTable)) then
+				continue
+			end
 		end
 
 		options[L(v.name or k)] = function()
@@ -461,7 +463,7 @@ function GM:ItemShowEntityMenu(entity)
 				surface.PlaySound(v.sound)
 			end
 
-			if (send ~= false) then
+			if (send != false) then
 				callback(k)
 			end
 		end
@@ -490,7 +492,7 @@ function GM:SetupQuickMenu(menu)
 
 	local current
 
-	for k in SortedPairs(nut.lang.stored) do
+	for k, v in SortedPairs(nut.lang.stored) do
 		local name = nut.lang.names[k]
 		local name2 = k:sub(1, 1):upper()..k:sub(2)
 		local enabled = NUT_CVAR_LANG:GetString():match(k)
@@ -503,7 +505,7 @@ function GM:SetupQuickMenu(menu)
 
 		local button = menu:addCheck(name, function(panel)
 			panel.checked = true
-
+			
 			if (IsValid(current)) then
 				if (current == panel) then
 					return
@@ -516,7 +518,7 @@ function GM:SetupQuickMenu(menu)
 			RunConsoleCommand("nut_language", k)
 		end, enabled)
 
-		if (enabled and not IsValid(current)) then
+		if (enabled and !IsValid(current)) then
 			current = button
 		end
 	end
