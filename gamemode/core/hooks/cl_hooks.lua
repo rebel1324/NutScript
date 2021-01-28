@@ -399,7 +399,6 @@ function GM:PlayerBindPress(client, bind, pressed)
 				data.filter = client
 			local trace = util.TraceLine(data)
 			local entity = trace.Entity
-
 			if (
 				IsValid(entity) and
 				(entity:GetClass() == "nut_item" or entity.hasMenu == true)

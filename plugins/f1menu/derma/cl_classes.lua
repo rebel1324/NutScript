@@ -79,7 +79,7 @@ local PANEL = {}
     function PANEL:setClass(data)
         if (data.model) then
             local model = data.model
-            if (type(model):lower() == "table") then
+            if (istable(model):lower()) then
                 model = table.Random(model)
             end
 

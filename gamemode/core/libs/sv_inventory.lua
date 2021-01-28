@@ -33,7 +33,7 @@ function nut.inventory.loadByID(id, noCache)
 	-- If there were no custom loaders and the id is a normal one, load from
 	-- the default database table.
 	assert(
-		type(id) == "number" and id >= 0,
+		isnumber(id) and id >= 0,
 		"No inventories implement loadFromStorage for ID "..tostring(id)
 	)
 	return nut.inventory.loadFromDefaultStorage(id, noCache)
@@ -84,11 +84,11 @@ end
 function nut.inventory.instance(typeID, initialData)
 	local invType = nut.inventory.types[typeID]
 	assert(
-		type(invType) == "table",
+		istable(invType),
 		"invalid inventory type "..tostring(typeID)
 	)
 	assert(
-		initialData == nil or type(initialData) == "table",
+		initialData == nil or istable(initialData),
 		"initialData must be a table for nut.inventory.instance"
 	)
 	initialData = initialData or {}
@@ -105,7 +105,7 @@ function nut.inventory.instance(typeID, initialData)
 end
 
 function nut.inventory.loadAllFromCharID(charID)
-	assert(type(charID) == "number", "charID must be a number")
+	assert(isnumber(charID), "charID must be a number")
 	return nut.db.select({"_invID"}, INV_TABLE, "_charID = "..charID)
 		:next(function(res)
 			return deferred.map(res.results or {}, function(result)

@@ -39,7 +39,7 @@ function GM:PlayerInitialSpawn(client)
 
 	-- Send server related data.
 	nut.config.send(client)
-	nut.date.send(client)
+	--nut.date.sync(client)
 
 	-- Load and send the NutScript data for the player.
 	client:loadNutData(function(data)
