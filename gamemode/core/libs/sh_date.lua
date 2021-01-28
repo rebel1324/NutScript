@@ -91,10 +91,11 @@ if (SERVER) then
 				min = tonumber(os.date("%M")) or 0,
 				sec = tonumber(os.date("%S")) or 0
 			}
+			currentDate = nut.date.lib(currentDate)
 			nut.data.set("date", currentDate, false, true) -- save the new data
 		end
 		nut.date.timeScale = nut.config.get("secondsPerMinute", 60)
-		nut.date.dateObj = nut.date.lib(currentDate) -- update the date object with the initialized data
+		nut.date.dateObj = currentDate -- update the date object with the initialized data
 	end
 
 	-- Called when date values have been manually changed, updating the date object.
