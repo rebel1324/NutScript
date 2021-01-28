@@ -73,7 +73,7 @@ if (SERVER) then
 			netstream.Start(self.player, "charInfo", data, self:getID())
 
 			for k, v in pairs(nut.char.vars) do
-				if (isfunction(v.onSync)) then
+				if (type(v.onSync) == "function") then
 					v.onSync(self, self.player)
 				end
 			end
@@ -118,8 +118,8 @@ if (SERVER) then
 			-- Synchronize the character if we should.
 			if (!noNetworking) then
 				for k, v in ipairs(self:getInv(true)) do
-					if (istable(v)) then
-						v:sync(client)
+					if (type(v) == "table") then 
+						v:sync(client)	
 					end
 				end
 				self:sync()

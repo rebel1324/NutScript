@@ -21,14 +21,14 @@ local function checkType(typeID, struct, expected, prefix)
 	prefix = prefix or ""
 	for key, expectedType in pairs(expected) do
 		local actualValue = struct[key]
-		local expectedTypeString = isstring(expectedType)
+		local expectedTypeString = type(expectedType) == "string"
 			and expectedType or type(expectedType)
 		assert(
 			type(actualValue) == expectedTypeString,
 			"expected type of "..prefix..key.." to be "..expectedTypeString..
 			" for inventory type "..typeID..", got "..type(actualValue)
 		)
-		if (istable(expectedType)) then
+		if (type(expectedType) == "table") then
 			checkType(typeID, actualValue, expectedType, prefix..key..".")
 		end
 	end
@@ -40,7 +40,7 @@ function nut.inventory.newType(typeID, invTypeStruct)
 	assert(not nut.inventory.types[typeID], "duplicate inventory type "..typeID)
 
 	-- Type check the inventory type struct.
-	assert(istable(invTypeStruct), "expected table for argument #2")
+	assert(type(invTypeStruct) == "table", "expected table for argument #2")
 	checkType(typeID, invTypeStruct, InvTypeStructType)
 
 	debug.getregistry()[invTypeStruct.className] = invTypeStruct

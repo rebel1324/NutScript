@@ -16,7 +16,7 @@ function nut.menu.add(options, position, onRemove)
 	end
 
 	-- If you supply an entity, then the menu will follow the entity.
-	if (isentity(position)) then
+	if (type(position) == "Entity") then
 		-- Store the entity in the menu.
 		entity = position
 		-- The position will be the trace hit pos relative to the entity.

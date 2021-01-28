@@ -65,7 +65,7 @@ if (CLIENT) then
 			hook.Run("BuildHelpMenu", tabs)
 
 			for k, v in SortedPairs(tabs) do
-				if (not isfunction(v)) then
+				if (type(v) != "function") then
 					local source = v
 
 					v = function() return tostring(source) end
@@ -89,7 +89,7 @@ hook.Add("BuildHelpMenu", "nutBasicHelp", function(tabs)
 			end
 
 			if (v.group) then
-				if (istable(v.group)) then
+				if (type(v.group) == "table") then
 					for k, v in pairs(v.group) do
 						if (LocalPlayer():IsUserGroup(v)) then
 							allowed = true

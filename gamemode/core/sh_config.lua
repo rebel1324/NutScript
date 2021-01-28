@@ -54,7 +54,7 @@ function nut.config.get(key, default)
 
 	if (config) then
 		if (config.value != nil) then
-			if istable(config.value) and config.value.r and config.value.g and config.value.b then -- if the value is a table with rgb values
+			if type(config.value) == "table" and config.value.r and config.value.g and config.value.b then -- if the value is a table with rgb values
 				config.value = Color(config.value.r, config.value.g, config.value.b) -- convert it to a Color table
 			end
 			return config.value
@@ -170,7 +170,7 @@ else
 				local row = properties:GetCategory(L(config.data and config.data.category or "misc")):GetRow(key)
 
 				if (IsValid(row)) then
-					if (istable(value) and value.r and value.g and value.b) then
+					if (type(value) == "table" and value.r and value.g and value.b) then
 						value = Vector(value.r / 255, value.g / 255, value.b / 255)
 					end
 

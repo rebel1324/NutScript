@@ -41,7 +41,7 @@ local PANEL = {}
 		self.tabList = {}
 
 		for name, callback in SortedPairs(tabs) do
-			if (isstring(callback)) then
+			if (type(callback) == "string") then
 				local body = callback
 
 				if (body:sub(1, 4) == "http") then

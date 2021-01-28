@@ -39,7 +39,7 @@ function Inventory:add(item)
 end
 
 function Inventory:syncItemAdded(item)
-	assert(istable(item) and item.getID, "cannot sync non-item")
+	assert(type(item) == "table" and item.getID, "cannot sync non-item")
 	assert(
 		self.items[item:getID()],
 		"Item "..item:getID().." does not belong to "..self.id
@@ -103,7 +103,7 @@ end
 -- inventory. If the item belongs to this inventory, it is then deleted.
 -- A promise is returned which is resolved after removal from this.
 function Inventory:removeItem(itemID, preserveItem)
-	assert(isnumber(itemID), "itemID must be a number for remove")
+	assert(type(itemID) == "number", "itemID must be a number for remove")
 
 	local d = deferred.new()
 	local instance = self.items[itemID]

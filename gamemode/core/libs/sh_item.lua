@@ -28,7 +28,7 @@ function nut.item.load(path, baseID, isBaseItem)
 end
 
 function nut.item.isItem(object)
-	return istable(object) and object.isItem == true
+	return type(object) == "table" and object.isItem == true
 end
 
 function nut.item.register(uniqueID, baseID, isBaseItem, path, luaGenerated)
@@ -125,7 +125,7 @@ end
 
 function nut.item.new(uniqueID, id)
 	id = id and tonumber(id) or id
-	assert(isnumber(id), "non-number ID given to nut.item.new")
+	assert(type(id) == "number", "non-number ID given to nut.item.new")
 
 	if (
 		nut.item.instances[id] and
@@ -171,7 +171,7 @@ nut.char.registerVar("inv", {
 		net.Start("nutCharacterInvList")
 			net.WriteUInt(character:getID(), 32)
 			net.WriteUInt(#character.vars.inv, 32)
-
+			
 			for i = 1, #character.vars.inv do
 				net.WriteType(character.vars.inv[i].id)
 			end

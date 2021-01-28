@@ -22,7 +22,7 @@ nut.char.registerVar("attribs", {
 	index = 4,
 	onValidate = function(value, data, client)
 		if (value != nil) then
-			if (istable(value)) then
+			if (type(value) == "table") then
 				local count = 0
 
 				for k, v in pairs(value) do

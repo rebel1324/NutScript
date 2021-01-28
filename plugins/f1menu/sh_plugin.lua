@@ -54,9 +54,9 @@ function PLUGIN:OnCharInfoSetup(infoPanel)
 
 	if (tree[subClass] and tree[subClass][act]) then
 		local branch = tree[subClass][act]
-		local act2 = istable(branch) and branch[1] or branch
+		local act2 = type(branch) == "table" and branch[1] or branch
 
-		if (isstring(act2)) then
+		if (type(act2) == "string") then
 			act2 = ent:LookupSequence(act2)
 		else
 			act2 = ent:SelectWeightedSequence(act2)

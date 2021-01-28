@@ -2,10 +2,10 @@ local PLUGIN = PLUGIN
 PLUGIN.name = "Logging"
 PLUGIN.author = "Black Tea"
 PLUGIN.desc = "You can modfiy the logging text/lists on this plugin."
-
+ 
 if (SERVER) then
 	local L, type, IsValid = Format, type, IsValid
-
+	
 	nut.log.addType("playerHurt", function(client, attacker, damage, health)
 		attacker = tostring(attacker)
 		damage = damage or 0
@@ -132,14 +132,14 @@ if (SERVER) then
 	end
 
 	function PLUGIN:OnPlayerInteractItem(client, action, item)
-		if (isentity(item)) then
+		if (type(item) == "Entity") then
 			if (IsValid(item)) then
 				local itemID = item.nutItemID
 				item = nut.item.instances[itemID]
 			else
 				return
 			end
-		elseif (isnumber(item)) then
+		elseif (type(item) == "number") then
 			item = nut.item.instances[item]
 		end
 

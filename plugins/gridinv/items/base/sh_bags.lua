@@ -116,7 +116,7 @@ function ITEM:onCombine(other)
 	-- "success" sound.
 	res:next(function(res)
 		if (not IsValid(client)) then return end
-		if (istable(res) and isstring(res.error)) then
+		if (istable(res) and type(res.error) == "string") then
 			return client:notifyLocalized(res.error)
 		end
 		client:EmitSound(unpack(SOUND_BAG_RESPONSE))

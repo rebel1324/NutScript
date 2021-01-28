@@ -10,7 +10,7 @@ netstream.Hook("invAct", function(client, action, item, invID, data)
 
 	-- Refine item into an instance
 	local entity
-	if (isentity(item)) then
+	if (type(item) == "Entity") then
 		if (not IsValid(item)) then
 			return
 		end

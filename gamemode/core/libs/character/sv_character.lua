@@ -82,11 +82,11 @@ function nut.char.restore(client, callback, noCache, id)
 				if (v2.field and v[v2.field]) then
 					local value = tostring(v[v2.field])
 
-					if (isnumber(v2.default)) then
+					if (type(v2.default) == "number") then
 						value = tonumber(value) or v2.default
-					elseif (isbool(v2.default)) then
+					elseif (type(v2.default) == "boolean") then
 						value = tobool(value)
-					elseif (istable(v2.default)) then
+					elseif (type(v2.default) == "table") then
 						value = util.JSONToTable(value)
 					end
 
@@ -167,7 +167,7 @@ local function removePlayer(client)
 end
 
 function nut.char.delete(id, client)
-	assert(isnumber(id), "id must be a number")
+	assert(type(id) == "number", "id must be a number")
 
 	if (IsValid(client)) then
 		removePlayer(client)

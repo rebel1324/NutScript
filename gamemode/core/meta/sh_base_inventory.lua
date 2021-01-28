@@ -65,7 +65,7 @@ end
 -- @see nut.inventory.newType
 function Inventory:register(typeID)
 	assert(
-		isstring(typeID),
+		type(typeID) == "string",
 		"Expected argument #1 of "..self.className..".register to be a string"
 	)
 	self.typeID = typeID

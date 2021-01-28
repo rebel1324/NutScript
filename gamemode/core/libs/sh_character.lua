@@ -160,7 +160,7 @@ do
 						end
 					end
 
-					if (isstring(v)) then
+					if (type(v) == "string") then
 						icon:SetModel(v)
 					else
 						icon:SetModel(v[1], v[2] or 0, v[3])
@@ -187,9 +187,9 @@ do
 			if (faction) then
 				local model = faction.models[value]
 
-				if (isstring(model)) then
+				if (type(model) == "string") then
 					newData.model = model
-				elseif (istable(model)) then
+				elseif (type(model) == "table") then
 					newData.model = model[1]
 					newData.data = newData.data or {}
 					newData.data.skin = model[2] or 0
