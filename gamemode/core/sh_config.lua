@@ -128,7 +128,7 @@ if (SERVER) then
 		if (client:IsSuperAdmin() and type(nut.config.stored[key].default) == type(value) and hook.Run("CanPlayerModifyConfig", client, key) != false) then
 			nut.config.set(key, value)
 
-			if istable(value) then
+			if (type(value) == "table") then
 				local value2 = "["
 				local count = table.Count(value)
 				local i = 1
@@ -218,10 +218,12 @@ if (CLIENT) then
 						local value = nut.config.stored[k].default
 
 						if (!form) then
-							if isnumber(value) then
+							local formType = type(value)
+
+							if (formType == "number") then
 								form = "Int"
 								value = tonumber(nut.config.get(k)) or value
-							elseif isbool(value) then
+							elseif (formType == "boolean") then
 								form = "Boolean"
 								value = tobool(nut.config.get(k))
 							else
@@ -231,7 +233,7 @@ if (CLIENT) then
 						end
 
 						-- VectorColor currently only exists for DProperties.
-						if (form == "Generic" and istable(value) and value.r and value.g and value.b) then
+						if (form == "Generic" and type(value) == "table" and value.r and value.g and value.b) then
 							-- Convert the color to a vector.
 							value = Vector(value.r / 255, value.g / 255, value.b / 255)
 							form = "VectorColor"
