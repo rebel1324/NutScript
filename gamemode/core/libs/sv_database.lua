@@ -294,13 +294,13 @@ modules.mysqloo = {
 
 				for name, type in pairs(preparedStatement.values) do
 					if (type == MYSQLOO_INTEGER) then
-						prepObj:setNumber(index, arguments[index]) 
+						prepObj:setNumber(index, arguments[index])
 					elseif (type == MYSQLOO_STRING) then
-						prepObj:setString(index, nut.db.convertDataType(arguments[index], true)) 
+						prepObj:setString(index, nut.db.convertDataType(arguments[index], true))
 					elseif (type == MYSQLOO_BOOL) then
-						prepObj:setBoolean(index, arguments[index]) 
+						prepObj:setBoolean(index, arguments[index])
 					end
-					
+
 					index = index + 1
 				end
 			end
@@ -507,7 +507,7 @@ function nut.db.wipeTables(callback)
 end
 
 local resetCalled = 0
-concommand.Add("nut_recreatedb", function(client, cmd, arguments)
+concommand.Add("nut_recreatedb", function(client)
 	-- this command can be run in RCON or SERVER CONSOLE
 	if (!IsValid(client)) then
 		if (resetCalled < RealTime()) then
@@ -516,9 +516,9 @@ concommand.Add("nut_recreatedb", function(client, cmd, arguments)
 			MsgC(Color(255, 0, 0), "[Nutscript] TO CONFIRM DATABASE RESET, RUN 'nut_recreatedb' AGAIN in 3 SECONDS.\n")
 		else
 			resetCalled = 0
-			
+
 			MsgC(Color(255, 0, 0), "[Nutscript] DATABASE WIPE IN PROGRESS.\n")
-			
+
 			hook.Run("OnWipeTables")
 			nut.db.wipeTables(nut.db.loadTables)
 		end
@@ -576,13 +576,13 @@ function nut.db.waitForTablesToLoad()
 end
 
 function nut.db.convertDataType(value, noEscape)
-	if (type(value) == "string") then
+	if (isstring(value)) then
 		if (noEscape) then
 			return value
 		else
 			return "'"..nut.db.escape(value).."'"
 		end
-	elseif (type(value) == "table") then
+	elseif (istable(value)) then
 		if (noEscape) then
 			return util.TableToJSON(value)
 		else
@@ -633,7 +633,7 @@ end
 function nut.db.select(fields, dbTable, condition, limit)
 	local d = deferred.new()
 	local from =
-		type(fields) == "table" and table.concat(fields, ", ") or tostring(fields)
+		istable(fields) and table.concat(fields, ", ") or tostring(fields)
 	local tableName = "nut_"..(dbTable or "characters")
 	local query = "SELECT "..from.." FROM "..tableName
 

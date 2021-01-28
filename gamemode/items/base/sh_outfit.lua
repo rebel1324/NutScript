@@ -154,10 +154,10 @@ ITEM.functions.Equip = {
 			)
 
 			-- Do model substitutions.
-			if (type(item.onGetReplacement) == "function") then
+			if (isfunction(item.onGetReplacement)) then
 				char:setModel(item:onGetReplacement())
 			elseif (item.replacement or item.replacements) then
-				if (type(item.replacements) == "table") then
+				if (istable(item.replacements)) then
 					if (
 						#item.replacements == 2 and isstring(item.replacements[1])
 					) then

@@ -6,13 +6,12 @@ nut.net.globals = nut.net.globals or {}
 
 -- Check if there is an attempt to send a function. Can't send those.
 local function checkBadType(name, object)
-	local objectType = type(object)
 
-	if (objectType == "function") then
+	if isfunction(object) then
 		ErrorNoHalt("Net var '"..name.."' contains a bad object type!")
 
 		return true
-	elseif (objectType == "table") then
+	elseif istable(object) then
 		for k, v in pairs(object) do
 			-- Check both the key and the value for tables, and has recursion.
 			if (checkBadType(name, k) or checkBadType(name, v)) then

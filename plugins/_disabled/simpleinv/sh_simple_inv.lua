@@ -39,7 +39,7 @@ if (SERVER) then
 	function SimpleInv:add(itemTypeOrItem, quantity, forced)
 		-- Validate that quantity is positive and itemType is valid.
 		quantity = quantity or 1
-		assert(type(quantity) == "number", "quantity must be a number")
+		assert(isnumber(quantity), "quantity must be a number")
 		local d = deferred.new()
 		if (quantity <= 0) then
 			return d:reject("quantity must be positive")
@@ -90,13 +90,13 @@ if (SERVER) then
 	function SimpleInv:remove(itemTypeOrID, quantity)
 		-- Validate that the itemType is valid and quantity is positive.
 		quantity = quantity or 1
-		assert(type(quantity) == "number", "quantity must be a number")
+		assert(isnumber(quantity), "quantity must be a number")
 		local d = deferred.new()
 		if (quantity <= 0) then
 			return d:reject("quantity must be positive")
 		end
 
-		if (type(itemTypeOrID) == "number") then
+		if (isnumber(itemTypeOrID)) then
 			self:removeItem(itemTypeOrID)
 		else
 			local items = self:getItemsOfType(itemTypeOrID)

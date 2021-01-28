@@ -1,13 +1,13 @@
 ---------------------------------------------------------------------------------------
 -- Module for date and time calculations
 --
--- Version 2.1.1
+-- Version 2.1.2
 -- Copyright (C) 2006, by Jas Latrix (jastejada@yahoo.com)
 -- Copyright (C) 2013-2014, by Thijs Schreijer
 -- Licensed under MIT, http://opensource.org/licenses/MIT
--- https://github.com/Tieske/date
 
 --[[
+  
 The MIT License (MIT) http://opensource.org/licenses/MIT
 
 Copyright (c) 2013-2017 Thijs Schreijer
@@ -29,6 +29,7 @@ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
+
 ]]
 
 --[[ CONSTANTS ]]--
@@ -57,18 +58,16 @@ THE SOFTWARE.
   local math     = math
   local os       = os
   local unpack   = unpack or table.unpack
-  local pack     = table.pack or function(...) return { n = select('#', ...), ... } end
   local setmetatable = setmetatable
   local getmetatable = getmetatable
 --[[ EXTRA FUNCTIONS ]]--
   local fmt  = string.format
   local lwr  = string.lower
-  local upr  = string.upper
   local rep  = string.rep
-  local len  = string.len
+  local len  = string.len  -- luacheck: ignore
   local sub  = string.sub
   local gsub = string.gsub
-  local gmatch = string.gmatch
+  local gmatch = string.gmatch or string.gfind
   local find = string.find
   local ostime = os.time
   local osdate = os.date
@@ -79,10 +78,6 @@ THE SOFTWARE.
   local function fix(n) n = tonumber(n) return n and ((n > 0 and floor or ceil)(n)) end
   -- returns the modulo n % d;
   local function mod(n,d) return n - d*floor(n/d) end
-  -- rounds a number;
-  local function round(n, d) d=d^10 return floor((n*d)+.5)/d end
-  -- rounds a number to whole;
-  local function whole(n)return floor(n+.5)end
   -- is `str` in string list `tbl`, `ml` is the minimun len
   local function inlist(str, tbl, ml, tn)
     local sl = len(str)
@@ -96,7 +91,6 @@ THE SOFTWARE.
     end
   end
   local function fnil() end
-  local function fret(x)return x;end
 --[[ DATE FUNCTIONS ]]--
   local DATE_EPOCH -- to be set later
   local sl_weekdays = {
@@ -131,7 +125,7 @@ THE SOFTWARE.
   end
   -- is year y leap year?
   local function isleapyear(y) -- y must be int!
-    return mod(y, 4) == 0 and (mod(y, 100) ~= 0 or mod(y, 400) == 0)
+    return (mod(y, 4) == 0 and (mod(y, 100) ~= 0 or mod(y, 400) == 0))
   end
   -- day since year 0
   local function dayfromyear(y) -- y must be int!
@@ -146,12 +140,12 @@ THE SOFTWARE.
   end
   -- date from day number, month is zero base
   local function breakdaynum(g)
-    g = g + 306
+    local g = g + 306
     local y = floor((10000*g + 14780)/3652425)
     local d = g - dayfromyear(y)
     if d < 0 then y = y - 1; d = g - dayfromyear(y) end
     local mi = floor((100*d + 52)/3060)
-    return floor((mi + 2)/12) + y, mod(mi + 2,12), d - floor((mi*306 + 5)/10) + 1
+    return (floor((mi + 2)/12) + y), mod(mi + 2,12), (d - floor((mi*306 + 5)/10) + 1)
   end
   --[[ for floats or int32 Lua Number data type
   local function breakdaynum2(g)
@@ -228,7 +222,7 @@ THE SOFTWARE.
   local date = {}
   setmetatable(date, date)
 -- Version:  VMMMRRRR; V-Major, M-Minor, R-Revision;  e.g. 5.45.321 == 50450321
-  date.version = 20010001 -- 2.1.1
+  date.version = 20010003 -- 2.1.3
 --#end -- not DATE_OBJECT_AFX
 --[[ THE DATE OBJECT ]]--
   local dobj = {}
@@ -240,10 +234,6 @@ THE SOFTWARE.
   local function date_new(dn, df)
     return setmetatable({daynum=dn, dayfrc=df}, dobj)
   end
-  -- is `v` a date object?
-  local function date_isdobj(v)
-    return (istable(v) and getmetatable(v) == dobj) and v
-  end
 
 --#if not NO_LOCAL_TIME_SUPPORT then
   -- magic year table
@@ -251,8 +241,9 @@ THE SOFTWARE.
   local function getequivyear(y)
     assert(not yt)
     yt = {}
-    local de, dw, dy = date_epoch:copy()
-    for i = 0, 3000 do
+    local de = date_epoch:copy()
+    local dw, dy
+    for _ = 0, 3000 do
       de:setyear(de:getyear() + 1, 1, 1)
       dy = de:getyear()
       dw = de:getweekday() * (isleapyear(dy) and  -1 or 1)
@@ -262,10 +253,6 @@ THE SOFTWARE.
         return getequivyear(y)
       end
     end
-  end
-  -- TimeValue from daynum and dayfrc
-  local function dvtotv(dn, df)
-    return fix(dn - DATE_EPOCH) * SECPERDAY  + (df/1000)
   end
   -- TimeValue from date and time
   local function totv(y,m,d,h,r,s)
@@ -328,13 +315,13 @@ THE SOFTWARE.
   function strwalker:finish() return self.i > self.c  end
   function strwalker:back()  self.i = self.e return self  end
   function strwalker:restart() self.i, self.e = 1, 1 return self end
-  function strwalker:match(s)  return find(self.s, s, self.i) end
+  function strwalker:match(s)  return (find(self.s, s, self.i)) end
   function strwalker:__call(s, f)-- print("strwalker:__call "..s..self:aimchr())
     local is, ie; is, ie, self[1], self[2], self[3], self[4], self[5] = find(self.s, s, self.i)
     if is then self.e, self.i = self.i, 1+ie; if f then f(unpack(self)) end return self end
   end
    local function date_parse(str)
-    local y,m,d, h,r,s,  z,  w,u, j,  e,  k,  x,v,c,  chkfin,  dn,df;
+    local y,m,d, h,r,s,  z,  w,u, j,  e,  x,c,  dn,df
     local sw = newstrwalker(gsub(gsub(str, "(%b())", ""),"^(%s*)","")) -- remove comment, trim leading space
     --local function error_out() print(y,m,d,h,r,s) end
     local function error_dup(q) --[[error_out()]] error("duplicate value: " .. (q or "") .. sw:aimchr()) end
@@ -357,7 +344,7 @@ THE SOFTWARE.
       or sw:finish() or (sw"^%s*$" or sw"^%s*[Zz]%s*$" or sw("^%s-([%+%-])(%d%d):?(%d%d)%s*$",setzc) or sw("^%s*([%+%-])(%d%d)%s*$",setzn))
       )  )
     then --print(y,m,d,h,r,s,z,w,u,j)
-    sw:restart(); y,m,d,h,r,s,z,w,u,j = nil;
+    sw:restart(); y,m,d,h,r,s,z,w,u,j = nil,nil,nil,nil,nil,nil,nil,nil,nil,nil
       repeat -- print(sw:aimchr())
         if sw("^[tT:]?%s*(%d%d?):",seth) then --print("$Time")
           _ = sw("^%s*(%d%d?)",setr) and sw("^%s*:%s*(%d%d?)",sets) and sw("^(%.%d+)",adds)
@@ -376,9 +363,7 @@ THE SOFTWARE.
           elseif inlist(x, sl_timezone, 2, sw) then
             c = fix(sw[0]) -- ignore gmt and utc
             if c ~= 0 then setz(c, x) end
-          elseif inlist(x, sl_weekdays, 2, sw) then
-            k = sw[0]
-          else
+          elseif not inlist(x, sl_weekdays, 2, sw) then
             sw:back()
             -- am pm bce ad ce bc
             if sw("^([bB])%s*(%.?)%s*[Cc]%s*(%2)%s*[Ee]%s*(%2)%s*") or sw("^([bB])%s*(%.?)%s*[Cc]%s*(%2)%s*") then
@@ -425,13 +410,12 @@ THE SOFTWARE.
   }
   local function date_getdobj(v)
     local o, r = (tmap[type(v)] or fnil)(v);
-    return o and o:normalize() or error"invalid date time value", r -- if r is true then o is a reference to a date obj
+    return (o and o:normalize() or error"invalid date time value"), r -- if r is true then o is a reference to a date obj
   end
 --#end -- not DATE_OBJECT_AFX
-  local function date_from(...)
-    local arg = pack(...)
-    local y, m, d = fix(arg[1]), getmontharg(arg[2]), fix(arg[3])
-    local h, r, s, t = tonumber(arg[4] or 0), tonumber(arg[5] or 0), tonumber(arg[6] or 0), tonumber(arg[7] or 0)
+  local function date_from(arg1, arg2, arg3, arg4, arg5, arg6, arg7)
+    local y, m, d = fix(arg1), getmontharg(arg2), fix(arg3)
+    local h, r, s, t = tonumber(arg4 or 0), tonumber(arg5 or 0), tonumber(arg6 or 0), tonumber(arg7 or 0)
     if y and m and d and h and r and s and t then
       return date_new(makedaynum(y, m, d), makedayfrc(h, r, s, t)):normalize()
     else
@@ -477,7 +461,7 @@ THE SOFTWARE.
   end
 
   function dobj:getisoweekday() return mod(weekday(self.daynum)-1,7)+1 end   -- sunday = 7, monday = 1 ...
-  function dobj:getisoweeknumber() return isowy(self.daynum) end
+  function dobj:getisoweeknumber() return (isowy(self.daynum)) end
   function dobj:getisoyear() return isoy(self.daynum)  end
   function dobj:getisodate()
     local w, y = isowy(self.daynum)
@@ -530,7 +514,7 @@ THE SOFTWARE.
   function dobj:setseconds(s, t)  return self:sethours(nil, nil,   s, t) end
   function dobj:setticks(t)    return self:sethours(nil, nil, nil, t) end
 
-  function dobj:spanticks()  return self.daynum*TICKSPERDAY + self.dayfrc end
+  function dobj:spanticks()  return (self.daynum*TICKSPERDAY + self.dayfrc) end
   function dobj:spanseconds()  return (self.daynum*TICKSPERDAY + self.dayfrc)/TICKSPERSEC  end
   function dobj:spanminutes()  return (self.daynum*TICKSPERDAY + self.dayfrc)/TICKSPERMIN  end
   function dobj:spanhours()  return (self.daynum*TICKSPERDAY + self.dayfrc)/TICKSPERHOUR end
@@ -658,16 +642,14 @@ THE SOFTWARE.
     -- asctime format, same as "%a %b %d %T %Y"
     ['${asctime}'] = function(self) return self:fmt0("%a %b %d %T %Y") end,
   }
-  function dobj:fmt0(str) return gsub(str, "%%[%a%%\b\f]", function(x) local f = tvspec[x];return (f and f(self)) or x end) end
+  function dobj:fmt0(str) return (gsub(str, "%%[%a%%\b\f]", function(x) local f = tvspec[x];return (f and f(self)) or x end)) end
   function dobj:fmt(str)
     str = str or self.fmtstr or fmtstr
     return self:fmt0((gmatch(str, "${%w+}")) and (gsub(str, "${%w+}", function(x)local f=tvspec[x];return (f and f(self)) or x end)) or str)
   end
 
-  dobj.format = dobj.fmt
-
-  function dobj.__lt(a, b) if (a.daynum == b.daynum) then return a.dayfrc < b.dayfrc else return a.daynum < b.daynum end end
-  function dobj.__le(a, b) if (a.daynum == b.daynum) then return a.dayfrc <= b.dayfrc else return a.daynum <= b.daynum end end
+  function dobj.__lt(a, b) if (a.daynum == b.daynum) then return (a.dayfrc < b.dayfrc) else return (a.daynum < b.daynum) end end
+  function dobj.__le(a, b) if (a.daynum == b.daynum) then return (a.dayfrc <= b.dayfrc) else return (a.daynum <= b.daynum) end end
   function dobj.__eq(a, b)return (a.daynum == b.daynum) and (a.dayfrc == b.dayfrc) end
   function dobj.__sub(a,b)
     local d1, d2 = date_getdobj(a), date_getdobj(b)
@@ -728,11 +710,11 @@ THE SOFTWARE.
     end
   end
 
-  function date:__call(...)
-    local arg = pack(...)
-    if arg.n  > 1 then return date_from(...)
-    elseif arg.n == 0 then return date_getdobj(false)
-    else local o, r = date_getdobj(arg[1]);  return r and o:copy() or o end
+  function date:__call(arg1, ...)
+    local arg_count = select("#", ...) + (arg1 == nil and 0 or 1)
+    if arg_count  > 1 then return (date_from(arg1, ...))
+    elseif arg_count == 0 then return (date_getdobj(false))
+    else local o, r = date_getdobj(arg1);  return r and o:copy() or o end
   end
 
   date.diff = dobj.__sub
@@ -764,14 +746,6 @@ THE SOFTWARE.
     DATE_EPOCH = date_epoch and date_epoch:spandays()
   else -- error will be raise only if called!
     date_epoch = setmetatable({},{__index = function() error("failed to get the epoch date") end})
-  end
-
-  function date.serialize(object)
-    return {tostring(object.daynum), tostring(object.dayfrc)}
-  end
-
-  function date.construct(object)
-    return date_isdobj(object) or (object.daynum and date_new(object.daynum, object.dayfrc) or date_new(object[1], object[2]))
   end
 
 --#if not DATE_OBJECT_AFX then

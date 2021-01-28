@@ -84,9 +84,9 @@ end
 
 function nut.item.loadItemByID(itemIndex, recipientFilter)
 	local range
-	if (type(itemIndex) == "table") then
+	if (istable(itemIndex)) then
 		range = "("..table.concat(itemIndex, ", ")..")"
-	elseif (type(itemIndex) == "number") then
+	elseif (isnumber(itemIndex)) then
 		range = "(".. itemIndex ..")"
 	else
 		return

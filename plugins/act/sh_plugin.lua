@@ -10,7 +10,7 @@ for k, v in pairs(PLUGIN.acts) do
 		local multiple = false
 
 		for k2, v2 in pairs(v) do
-			if (type(v2.sequence) == "table" and #v2.sequence > 1) then
+			if (istable(v2.sequence) and #v2.sequence > 1) then
 				multiple = true
 
 				break
@@ -50,7 +50,7 @@ for k, v in pairs(PLUGIN.acts) do
 
 					local sequence
 
-					if (type(info.sequence) == "table") then
+					if (istable(info.sequence)) then
 						local index = math.Clamp(math.floor(tonumber(arguments[1]) or 1), 1, #info.sequence)
 
 						sequence = info.sequence[index]
