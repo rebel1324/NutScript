@@ -81,7 +81,6 @@ if (SERVER) then
 	-- called upon server startup. Grabs the saved date data, or creates a new date instance, and sets it as the date object
 	function nut.date.initialize()
 		local currentDate = nut.data.get("date", nil, false, true)
-
 		-- If we don't have date data already, use current defaults to create a new date data table
 		if (not currentDate) then
 			currentDate = {
@@ -94,7 +93,6 @@ if (SERVER) then
 			}
 			nut.data.set("date", currentDate, false, true) -- save the new data
 		end
-
 		nut.date.timeScale = nut.config.get("secondsPerMinute", 60)
 		nut.date.dateObj = nut.date.lib(currentDate) -- update the date object with the initialized data
 	end
@@ -162,7 +160,7 @@ function nut.date.getFormatted(format, currentDate)
 end
 
 if SERVER then
-	hook.Add("InitializedConfigs", "nutInitializeTime", function()
+	hook.Add("InitializedSchema", "nutInitializeTime", function()
 		nut.date.initialize()
 	end)
 

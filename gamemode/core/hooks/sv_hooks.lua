@@ -517,7 +517,7 @@ function GM:InitializedSchema()
 		nut.data.set("date", os.time(), false, true)
 	end
 
-	nut.date.start = nut.data.get("date", os.time(), false, true)
+	--nut.date.start = nut.data.get("date", os.time(), false, true)
 
 	local persistString = GetConVar("sbox_persist"):GetString()
 	if (persistString == "" or string.StartWith(persistString, "ns_")) then
