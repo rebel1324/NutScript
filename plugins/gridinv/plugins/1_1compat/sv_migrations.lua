@@ -107,8 +107,22 @@ function PLUGIN:migrateBagSize(res)
 		end)
 end
 
+function PLUGIN:migrateInventorySize(res)
+	local w, h = nut.config.get("invW"), nut.config.get("invH")
+	if (isnumber(w) and isnumber(h)) then
+		local addW = self:addInventoryData(res, "w", w)
+		local addH = self:addInventoryData(res, "h", h)
+		return deferred.all({addW, addH}):next(function()
+			self:print(
+				"\tMigrated player inventory "..res._invID.." with"..
+				" (w,h) = ("..tostring(w)..","..tostring(h)..")"
+			)
+		end)
+	end
+end
+
 function PLUGIN:migrateSize(res)
-	return self:migrateStorageSize(res) or self:migrateBagSize(res)
+	return (res._charID ~= 0 and self:migrateInventorySize(res)) or self:migrateStorageSize(res) or self:migrateBagSize(res)
 end
 
 function PLUGIN:migrateInvType(res)
