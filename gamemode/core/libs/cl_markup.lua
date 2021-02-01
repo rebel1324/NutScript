@@ -26,7 +26,6 @@ TEXT_ALIGN_BOTTOM	= 4
 -----------------------------------------------------------]]
 local colour_stack = { {r=255,g=255,b=255,a=255} }
 local font_stack = { "DermaDefault" }
-local curtag = nil
 local blocks = {}
 
 local colourmap = {
