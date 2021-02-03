@@ -160,7 +160,7 @@ local function CheckTextOrTag(p)
 		local text_block = {}
 		text_block.text = p 
 		text_block.colour = colour_stack[ table.Count(colour_stack) ]
-		text_block.font = font_stack[ table.getn(font_stack) ]
+		text_block.font = font_stack[ table.Count(font_stack) ]
 		table.insert(blocks, text_block)
 		
 	end
