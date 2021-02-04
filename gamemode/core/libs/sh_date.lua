@@ -87,16 +87,18 @@ if (SERVER) then
 				year = nut.config.get("year"),
 				month = nut.config.get("month"),
 				day = nut.config.get("day"),
+				hour = tonumber(os.date("%H")) or 0,
+				min = tonumber(os.date("%M")) or 0,
+				sec = tonumber(os.date("%S")) or 0,
 			}
+
+			currentDate = nut.date.lib.serialize(nut.date.lib(currentDate))
+
 			nut.data.set("date", currentDate, false, true) -- save the new data
 		end
-		currentDate.hour = tonumber(os.date("%H")) or 0
-		currentDate.min = tonumber(os.date("%M")) or 0
-		currentDate.sec = tonumber(os.date("%S")) or 0
 
-		currentDate = nut.date.lib(currentDate)
 		nut.date.timeScale = nut.config.get("secondsPerMinute", 60)
-		nut.date.dateObj = currentDate -- update the date object with the initialized data
+		nut.date.dateObj = nut.date.lib.construct(currentDate) -- update the date object with the initialized data
 	end
 
 	-- Called when date values have been manually changed, updating the date object.
@@ -131,8 +133,8 @@ if (SERVER) then
 		nut.date.saving = true -- prevents from the function from being called before it finishes.
 
 		nut.date.update()
-		local savedDate = {year = nut.date.dateObj:getyear(), month = nut.date.dateObj:getmonth(), day = nut.date.dateObj:getday()}
-		nut.data.set("date", savedDate, false, true) -- saves the current data object
+
+		nut.data.set("date", nut.date.lib.serialize(nut.date.dateObj), false, true) -- saves the current data object
 
 		-- update config to reflect current saved date
 		nut.config.set("year", nut.date.dateObj:getyear())
@@ -144,8 +146,10 @@ if (SERVER) then
 else
 	net.Receive("nutDateSync", function() -- set the clientside values to the updated serverside date values 
 		nut.date.timeScale = net.ReadFloat()
-		nut.date.dateObj = net.ReadTable()
+		nut.date.dateObj = nut.date.lib.construct(net.ReadTable())
 		nut.date.start = net.ReadFloat()
+		print("synced")
+		PrintTable(nut.date.dateObj)
 	end)
 end
 

@@ -209,6 +209,9 @@
     return setmetatable({daynum=dn, dayfrc=df}, dobj)
   end
 
+  local function date_isdobj(v)
+    return (istable(v) and getmetatable(v) == dobj) and v
+  end
 --#if not NO_LOCAL_TIME_SUPPORT then
   -- magic year table
   local date_epoch, yt;
@@ -720,6 +723,14 @@
     DATE_EPOCH = date_epoch and date_epoch:spandays()
   else -- error will be raise only if called!
     date_epoch = setmetatable({},{__index = function() error("failed to get the epoch date") end})
+  end
+
+  function date.serialize(object)
+    return {tostring(object.daynum), tostring(object.dayfrc)}
+  end
+
+  function date.construct(object)
+    return date_isdobj(object) or (object.daynum and date_new(object.daynum, object.dayfrc) or date_new(object[1], object[2]))
   end
 
 --#if not DATE_OBJECT_AFX then
