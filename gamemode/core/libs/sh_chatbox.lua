@@ -268,13 +268,16 @@ do
 
 				-- Only need to check the time if they have spoken in OOC chat before.
 				if (delay > 0 and speaker.nutLastOOC) then
-					local lastOOC = CurTime() - speaker.nutLastOOC
+					-- Admin delay bypass
+					if (speaker:IsAdmin() and !nut.config.get("oocDelayAdmin", true)) then
+						local lastOOC = CurTime() - speaker.nutLastOOC
 
-					-- Use this method of checking time in case the oocDelay config changes.
-					if (lastOOC <= delay) then
-						speaker:notifyLocalized("oocDelay", delay - math.ceil(lastOOC))
+						-- Use this method of checking time in case the oocDelay config changes.
+						if (lastOOC <= delay) then
+							speaker:notifyLocalized("oocDelay", delay - math.ceil(lastOOC))
 
-						return false
+							return false
+						end
 					end
 				end
 
