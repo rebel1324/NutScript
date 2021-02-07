@@ -45,7 +45,7 @@ nut.config.add("oocDelay", 10, "The delay before a player can use OOC chat again
 	category = "chat"
 })
 
-nut.config.add("oocDelayAdmin", true, "Whether or not admins can bypass the OOC delay.", nil, {
+nut.config.add("oocDelayAdmin", false, "Whether or not OOC chat delay is enabled for admins.", nil, {
 	category = "chat"
 })
 
@@ -55,6 +55,10 @@ nut.config.add("allowGlobalOOC", true, "Whether or not Global OOC is enabled.", 
 
 nut.config.add("loocDelay", 0, "The delay before a player can use LOOC chat again in seconds.", nil, {
 	data = {min = 0, max = 10000},
+	category = "chat"
+})
+
+nut.config.add("loocDelayAdmin", false, "Whether or not LOOC chat delay is enabled for admins.", nil, {
 	category = "chat"
 })
 
