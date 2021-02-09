@@ -113,7 +113,7 @@ net.Receive("nutCharDelete", function(_, client)
 	local steamID = client:SteamID64()
 
 	if (character and character.steamID == steamID) then
-		hook.Run("nutCharDelete", id)
+		hook.Run("nutCharDeleted", client, character)
 			
 		character:delete()
 
