@@ -81,7 +81,7 @@ do
 			local allowExistNames = nut.config.get("allowExistNames", true)
 			
 			-- Fetch existing character names
-			if (CLIENT and !nut.char.names and !allowExistNames) then
+			if (CLIENT and #nut.char.names < 1 and !allowExistNames) then
 				netstream.Start("nutCharFetchNames")
 
 				netstream.Hook("nutCharFetchNames", function(data)
@@ -90,7 +90,7 @@ do
 			end
 				
 			-- Check whether the chosen character name already exists
-			if (nut.char.names and !allowExistNames) then
+			if (!allowExistNames) then
 				for k, v in pairs(nut.char.names) do
 					if (v == value) then
 						return false, "A character with this name already exists."
