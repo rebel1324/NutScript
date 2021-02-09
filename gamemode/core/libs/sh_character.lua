@@ -1,10 +1,28 @@
 nut.char = nut.char or {}
 nut.char.loaded = nut.char.loaded or {}
 nut.char.vars = nut.char.vars or {}
+nut.char.names = nut.char.names or {}
 
 nut.util.include("nutscript/gamemode/core/meta/sh_character.lua")
 nut.util.include("character/cl_networking.lua")
 nut.util.include("character/sv_character.lua")
+
+if (SERVER) then
+	-- Fetches all the character names and stores them
+	-- into a table so they only have to be fetched once
+	if (#nut.char.names < 1) then
+		nut.db.query("SELECT _name FROM nut_characters", function(data)
+			if (#data > 0) then
+				nut.char.names = data
+			end
+		end)
+	end
+
+	-- Returns the character names
+	netstream.Hook("nutCharFetchNames", function(client)
+		netstream.Start(client, "nutCharFetchNames", nut.char.names)
+	end)
+end
 
 function nut.char.new(data, id, client, steamID)
 	local character = setmetatable({vars = {}}, nut.meta.character)
@@ -52,6 +70,25 @@ do
 			if (not isstring(value) or not value:find("%S")) then
 				return false, "invalid", "name"
 			end
+			
+			-- Fetch existing character names
+			if (CLIENT and !nut.char.names) then
+				netstream.Start("nutCharFetchNames")
+
+				netstream.Hook("nutCharFetchNames", function(data)
+					nut.char.names = data
+				end)
+			end
+				
+			-- Check whether the chosen character name already exists
+			if (nut.char.names) then
+				for k, v in pairs(nut.char.names) do
+					if (v._name == value) then
+						return false, "A character with this name already exists."
+					end
+				end
+			end
+			
 			return true
 		end,
 		onAdjust = function(client, data, value, newData)
