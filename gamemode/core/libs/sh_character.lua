@@ -11,9 +11,11 @@ if (SERVER) then
 	-- Fetches all the character names and stores them
 	-- into a table so they only have to be fetched once
 	if (#nut.char.names < 1) then
-		nut.db.query("SELECT _name FROM nut_characters", function(data)
+		nut.db.query("SELECT _id, _name FROM nut_characters", function(data)
 			if (#data > 0) then
-				nut.char.names = data
+				for k, v in pairs(data) do
+					nut.char.names[v._id] = v._name
+				end
 			end
 		end)
 	end
@@ -21,6 +23,11 @@ if (SERVER) then
 	-- Returns the character names
 	netstream.Hook("nutCharFetchNames", function(client)
 		netstream.Start(client, "nutCharFetchNames", nut.char.names)
+	end)
+	
+	-- Removes name from table upon character deletion
+	hook.Add("nutCharDelete", function(id)
+			nut.char.names[id] = nil
 	end)
 end
 
