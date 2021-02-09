@@ -26,7 +26,7 @@ if (SERVER) then
 	end)
 	
 	-- Removes name from table upon character deletion
-	hook.Add("nutCharDelete", "nutCharRemoveName", function(client, character)
+	hook.Add("nutCharDeleted", "nutCharRemoveName", function(client, character)
 		nut.char.names[character:getID()] = nil
 
 		netstream.Start(client, "nutCharFetchNames", nut.char.names)
