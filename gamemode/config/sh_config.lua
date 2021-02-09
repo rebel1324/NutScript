@@ -113,6 +113,10 @@ nut.config.add("defMoney", 0, "The amount of money that players start with.", ni
 	data = {min = 0, max = 10000}
 })
 
+nut.config.add("allowExistNames", true, "Whether or not players can use an already existing name upon character creation.", nil, {
+	category = "characters"
+})
+
 nut.config.add("allowVoice", false, "Whether or not voice chat is allowed.", nil, {
 	category = "server"
 })
