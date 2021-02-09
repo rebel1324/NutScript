@@ -26,19 +26,28 @@ if (SERVER) then
 	end)
 	
 	-- Removes name from table upon character deletion
-	hook.Add("nutCharDelete", function(id)
-			nut.char.names[id] = nil
+	hook.Add("nutCharDelete", "nutCharRemoveName", function(client, character)
+		nut.char.names[character:getID()] = nil
+
+		netstream.Start(client, "nutCharFetchNames", nut.char.names)
+	end)
+
+	-- Removes name from table upon character deletion
+	hook.Add("OnCharCreated", "nutCharAddName", function(client, character, data)
+		nut.char.names[character:getID()] = data.name
+
+		netstream.Start(client, "nutCharFetchNames", nut.char.names)
 	end)
 end
 
 if (CLIENT) then
 	-- Fetch existing character names
+	netstream.Hook("nutCharFetchNames", function(data)
+		nut.char.names = data
+	end)
+
 	if (#nut.char.names < 1) then
 		netstream.Start("nutCharFetchNames")
-
-		netstream.Hook("nutCharFetchNames", function(data)
-			nut.char.names = data
-		end)
 	end
 end
 
