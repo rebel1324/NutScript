@@ -31,6 +31,17 @@ if (SERVER) then
 	end)
 end
 
+if (CLIENT) then
+	-- Fetch existing character names
+	if (#nut.char.names < 1) then
+		netstream.Start("nutCharFetchNames")
+
+		netstream.Hook("nutCharFetchNames", function(data)
+			nut.char.names = data
+		end)
+	end
+end
+
 function nut.char.new(data, id, client, steamID)
 	local character = setmetatable({vars = {}}, nut.meta.character)
 		for k, v in pairs(nut.char.vars) do
@@ -90,7 +101,7 @@ do
 			end
 				
 			-- Check whether the chosen character name already exists
-			if (!allowExistNames) then
+			if (!nut.config.get("allowExistNames", true)) then
 				for k, v in pairs(nut.char.names) do
 					if (v == value) then
 						return false, "A character with this name already exists."
