@@ -8,8 +8,8 @@ nut.util.include("character/cl_networking.lua")
 nut.util.include("character/sv_character.lua")
 
 if (SERVER) then
-	-- Fetches all the character names and stores them
-	-- into a table so they only have to be fetched once
+	-- Fetches all the character names and stores
+	-- them into a table so they only have to be fetched once
 	if (#nut.char.names < 1) then
 		nut.db.query("SELECT _id, _name FROM nut_characters", function(data)
 			if (#data > 0) then
@@ -92,7 +92,7 @@ do
 			-- Check whether the chosen character name already exists
 			if (nut.char.names and !allowExistNames) then
 				for k, v in pairs(nut.char.names) do
-					if (v._name == value) then
+					if (v == value) then
 						return false, "A character with this name already exists."
 					end
 				end
