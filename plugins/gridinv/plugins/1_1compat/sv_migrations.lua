@@ -8,7 +8,7 @@ function PLUGIN:print(message)
 end
 
 function PLUGIN:whereSameID(res)
-	return "_invID = "..nut.db.escape(res._invID)
+	return "_invID = "..nut.db.escape(tostring(res._invID))
 end
 
 function PLUGIN:getMigrationFilter()
@@ -112,7 +112,7 @@ function PLUGIN:migrateSize(res)
 end
 
 function PLUGIN:migrateInvType(res)
-	local invID = nut.db.escape(res._invID)
+	local invID = nut.db.escape(tostring(res._invID))
 	local d = deferred.new()
 
 	nut.db.updateTable({
