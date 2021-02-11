@@ -146,7 +146,7 @@ function PLUGIN:VendorTradeAttempt(
 		vendor:takeStock(itemType)
 
 		local position = client:getItemDropPos()
-		character:getInv():add(itemType)
+		local result = character:getInv():add(itemType)
 			:next(function()
 				client.vendorTransaction = nil
 			end)
@@ -161,11 +161,11 @@ function PLUGIN:VendorTradeAttempt(
 				client:notifyLocalized(err)
 				client.vendorTransaction = nil
 			end)
+			
+		hook.Run("OnCharTradeVendor", client, vendor, result.value, isSellingToVendor)
 
 		nut.log.add(client, "vendorBuy", itemType, vendor:getNetVar("name"))
 	end
-
-	hook.Run("OnCharTradeVendor", client, vendor, itemType, isSellingToVendor)
 end
 
 -- Called when the vendor menu should open for the vendor.

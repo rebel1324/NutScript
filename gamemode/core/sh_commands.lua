@@ -233,6 +233,7 @@ nut.command.add("chargiveitem", {
 					if (IsValid(client) and client ~= target) then
 						client:notifyLocalized("itemCreated")
 					end
+					hook.Run("CharGivenItem",target,res)
 				end)
 				:catch(function(err)
 					if (IsValid(client)) then
