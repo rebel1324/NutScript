@@ -59,9 +59,9 @@ function nut.faction.loadFromDir(directory)
 			FACTION.uniqueID = FACTION.uniqueID or niceName
 
 			for k, v in pairs(FACTION.models) do
-				if (type(v) == "string") then
+				if (isstring(v)) then
 					util.PrecacheModel(v)
-				elseif (type(v) == "table") then
+				elseif (istable(v)) then
 					util.PrecacheModel(v[1])
 				end
 			end

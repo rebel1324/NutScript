@@ -39,7 +39,7 @@ function GM:PlayerInitialSpawn(client)
 
 	-- Send server related data.
 	nut.config.send(client)
-	nut.date.send(client)
+	--nut.date.sync(client)
 
 	-- Load and send the NutScript data for the player.
 	client:loadNutData(function(data)
@@ -523,7 +523,7 @@ function GM:InitializedSchema()
 		nut.data.set("date", os.time(), false, true)
 	end
 
-	nut.date.start = nut.data.get("date", os.time(), false, true)
+	--nut.date.start = nut.data.get("date", os.time(), false, true)
 
 	local persistString = GetConVar("sbox_persist"):GetString()
 	if (persistString == "" or string.StartWith(persistString, "ns_")) then

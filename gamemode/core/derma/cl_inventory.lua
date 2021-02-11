@@ -31,7 +31,7 @@ local PANEL = {}
 
 function PANEL:setItemType(itemTypeOrID)
 	local item = nut.item.list[itemTypeOrID]
-	if (type(itemTypeOrID) == "number") then
+	if (isnumber(itemTypeOrID)) then
 		item = nut.item.instances[itemTypeOrID]
 		self.itemID = itemTypeOrID
 	end
@@ -153,9 +153,9 @@ function PANEL:openActionMenu()
 
 					local snd = v.sound or SOUND_INVENTORY_INTERACT
 					if (snd) then
-						if (type(snd) == 'table') then
+						if (istable(snd)) then
 							LocalPlayer():EmitSound(unpack(snd))
-						elseif (type(snd) == 'string') then
+						elseif (isstring(snd)) then
 							surface.PlaySound(snd)
 						end
 					end
@@ -214,9 +214,9 @@ function PANEL:openActionMenu()
 
 					local snd = v.sound or SOUND_INVENTORY_INTERACT
 					if (snd) then
-						if (type(snd) == 'table') then
+						if (istable(snd)) then
 							LocalPlayer():EmitSound(unpack(snd))
-						elseif (type(snd) == 'string') then
+						elseif (isstring(snd)) then
 							surface.PlaySound(snd)
 						end
 					end

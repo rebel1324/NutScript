@@ -163,10 +163,10 @@ if (SERVER) then
 
 	function GridInv:add(itemTypeOrItem, xOrQuantity, yOrData)
 		local x, y, quantity, data
-		local isStackCommand = type(itemTypeOrItem) == "string" && type(xOrQuantity) == "number"
+		local isStackCommand = isstring(itemTypeOrItem) and isnumber(xOrQuantity)
 
 		-- Overload of GridInv:add(itemTypeOrItem, quantity, data)
-		if (type(yOrData) == "table") then
+		if (istable(yOrData)) then
 			quantity = tonumber(quantity) or 1
 			data = yOrData
 
@@ -270,7 +270,7 @@ if (SERVER) then
 		end
 
 		-- If given an item instance, there's no need for a new instance.
-		if (not isStackCommand && justAddDirectly) then
+		if (not isStackCommand and justAddDirectly) then
 			item:setData("x", x)
 			item:setData("y", y)
 			targetInventory:addItem(item)
@@ -332,13 +332,13 @@ if (SERVER) then
 	function GridInv:remove(itemTypeOrID, quantity)
 		-- Validate that the itemType is valid and quantity is positive.
 		quantity = quantity or 1
-		assert(type(quantity) == "number", "quantity must be a number")
+		assert(isnumber(quantity), "quantity must be a number")
 		local d = deferred.new()
 		if (quantity <= 0) then
 			return d:reject("quantity must be positive")
 		end
 
-		if (type(itemTypeOrID) == "number") then
+		if (isnumber(itemTypeOrID)) then
 			self:removeItem(itemTypeOrID)
 		else
 			local items = self:getItemsOfType(itemTypeOrID)

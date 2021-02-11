@@ -33,7 +33,7 @@ function PANEL:onDisplay()
 		end
 		icon.PaintOver = paintIcon
 
-		if (type(v) == "string") then
+		if (isstring(v)) then
 			icon:SetModel(v)
 			icon.model = v
 			icon.skin = 0

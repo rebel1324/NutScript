@@ -20,7 +20,7 @@ function nut.util.emitQueuedSounds(
 		local postSet, preSet = 0, 0
 
 		-- Determine if this sound has special time offsets.
-		if (type(v) == "table") then
+		if (istable(v)) then
 			postSet, preSet = v[2] or 0, v[3] or 0
 			v = v[1]
 		end

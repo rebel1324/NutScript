@@ -278,7 +278,7 @@ function GM:CanPlayerUseChar(client, char)
 	local banned = char:getData("banned")
 
 	if (banned) then
-		if (type(banned) == "number" and banned < os.time()) then
+		if (isnumber(banned) and banned < os.time()) then
 			return
 		end
 

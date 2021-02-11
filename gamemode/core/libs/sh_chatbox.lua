@@ -15,7 +15,7 @@ function nut.chat.register(chatType, data)
 			-- The speaker will be heard by everyone.
 			return true
 		end
-	elseif (type(data.onCanHear) == "number") then
+	elseif (isnumber(data.onCanHear)) then
 		-- Use the value as a range and create a function to compare distances.
 		local range = data.onCanHear ^ 2
 
