@@ -1,3 +1,7 @@
+## NutScript 1.2
+The newest version of NutScript is being developed here: https://github.com/Nutscript/NutScript  
+If you wish to get the latest version of the framework, or contribute to it, it is highly recommended to do so there.
+
 ## Introduction
 NutScript 1.1 is the re-working of the original NutScript framework to provide a better back-end. This should include more efficient code and overall benefits to the way the framework functioned and/or performed.
 
