@@ -726,9 +726,5 @@ running a outdated version.
 
 */------------------------------------------------------------]]
 function GM:InitializedPlugins()
-	local psaTable = string.Explode("\n", psaString)
-
-	for k, v in ipairs(psaTable) do
-		MsgC(Color(255, 0, 0), v .. "\n")
-	end
+	MsgC(Color(255, 0, 0), psaString .. "\n")
 end
