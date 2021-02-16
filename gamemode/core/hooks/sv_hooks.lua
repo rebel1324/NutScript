@@ -716,7 +716,7 @@ the latest version can be found at www.github.com/Nutscript
 
 If you're planning to open big server with this version, NutScript's
 Development Team does not recommend your plan. Server Performance
-Issues on your server will be ignored and we're  going to consider that
+Issues on your server will be ignored and we're going to consider that
 you're taking the risk of critical performance issues.
 
 NutScript only displays this message because you are
