@@ -726,11 +726,9 @@ running a outdated version.
 
 */------------------------------------------------------------]]
 function GM:InitializedPlugins()
-	if (ulx or ULib) then
-		local psaTable = string.Explode("\n", psaString)
+	local psaTable = string.Explode("\n", psaString)
 
-		for k, v in ipairs(psaTable) do
-			MsgC(Color(255, 0, 0), v .. "\n")
-		end
+	for k, v in ipairs(psaTable) do
+		MsgC(Color(255, 0, 0), v .. "\n")
 	end
 end
