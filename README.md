@@ -5,7 +5,7 @@
 ## NutScript development have been transferred to another repository. Use https://github.com/NutScript/NutScript/
 
 ## NutScript 1.1
-Nutscript 1.1 is a complete re-write of old version [1.0](https://github.com/rebel1324/NutScript/tree/master)
+Nutscript 1.1 is a complete re-write of the old version [1.0](https://github.com/rebel1324/NutScript/tree/master)
 
 Schemas:
   - [Sample Schema](https://github.com/rebel1324/Sample-Schema-1.1)
