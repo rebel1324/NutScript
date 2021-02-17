@@ -2,10 +2,10 @@
 >NutScript is a DRM-free, and open source framework created by Chessnut and Black Tea for Garry's Mod.
 
 # READ:
-## NutScript development have been transferred to another repository. Use https://github.com/NutScript/NutScript/
+## NutScript development has been transferred to another repository. Use https://github.com/NutScript/NutScript/
 
 ## NutScript 1.1
-Nutscript 1.1 is a complete re-write of the old version [1.0](https://github.com/rebel1324/NutScript/tree/master)
+NutScript 1.1 is a complete re-write of the old version [1.0](https://github.com/rebel1324/NutScript/tree/master)
 
 Schemas:
   - [Sample Schema](https://github.com/rebel1324/Sample-Schema-1.1)
@@ -25,7 +25,7 @@ Schemas:
   - [Respite](https://github.com/Chancerawr/respite/tree/Beta)
 
 ###### Documentation
-Check out the Nutscript wiki at https://nutscript.miraheze.org/wiki/Main_Page
+Check out the NutScript wiki at https://nutscript.miraheze.org/wiki/Main_Page
 
 ###### Community Discord
-Nutscript's official Discord server: https://discord.gg/QUbmYuD
+NutScript's official Discord server: https://discord.gg/QUbmYuD
