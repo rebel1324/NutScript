@@ -643,39 +643,6 @@ function GM:GetPreferredCarryAngles(entity)
 	end
 end
 
-local psaString = [[
-/*------------------------------------------------------------
-
-PUBLIC SERVICE ANNOUNCEMENT FOR NUTSCRIPT SERVER OWNERS
-
-There is a ENOURMOUS performance issue with ULX Admin mod.
-Nutscript Development Team found ULX is the main issue
-that make the server freeze when player count is higher 
-than 20-30. The duration of freeze will be increased as you get
-more players on your server.
-
-If you're planning to open big server with ULX/ULib, Nutscript
-Development Team does not recommend your plan. Server Performance
-Issues with ULX/Ulib on your server will be ignored and we're 
-going to consider that you're taking the risk of ULX/Ulib's 
-critical performance issue.
-
-Nutscript 1.1 only displays this message when you have ULX or
-ULib on your server.
-
-                               -Nutscript Development Team
-
-*/------------------------------------------------------------]]
-function GM:InitializedPlugins()
-	if (ulx or ULib) then
-		local psaTable = string.Explode("\n", psaString)
-
-		for k, v in ipairs(psaTable) do
-			MsgC(Color(255, 0, 0), v .. "\n")
-		end
-	end
-end
-
 --- Called when a character loads with no inventory and one should be created.
 -- Here is where a new inventory instance can be created and set for a character
 -- that loads with no inventory. The default implementation is to create an
@@ -753,4 +720,55 @@ function GM:GetGameDescription()
 		return tostring(SCHEMA.name)
 	end
 	return self.Name
+end
+
+local psaString = [[
+/*------------------------------------------------------------
+
+PUBLIC SERVICE ANNOUNCEMENT FOR NUTSCRIPT SERVER OWNERS
+
+You are running NutScript 1.1-beta which is no longer being supported,
+the latest version can be found at www.github.com/Nutscript
+
+If you're planning to open big server with this version, NutScript's
+Development Team does not recommend your plan. Server Performance
+Issues on your server will be ignored and we're going to consider that
+you're taking the risk of critical performance issues.
+
+NutScript only displays this message because you are
+running a outdated version.
+
+                               -NutScript Development Team
+
+*/------------------------------------------------------------]]
+
+local psaStringULX = [[
+/*------------------------------------------------------------
+
+PUBLIC SERVICE ANNOUNCEMENT FOR NUTSCRIPT SERVER OWNERS
+
+There is a ENOURMOUS performance issue with ULX Admin mod.
+NutsSript Development Team found ULX is the main issue
+that make the server freeze when player count is higher 
+than 20-30. The duration of freeze will be increased as you get
+more players on your server.
+
+If you're planning to open big server with ULX/ULib, NutScript's
+Development Team does not recommend your plan. Server Performance
+Issues with ULX/Ulib on your server will be ignored and we're 
+going to consider that you're taking the risk of ULX/Ulib's 
+critical performance issue.
+
+NutScript 1.1 only displays this message when you have ULX or
+ULib on your server.
+
+                               -Nutscript Development Team
+
+*/------------------------------------------------------------]]
+function GM:InitializedPlugins()
+	MsgC(Color(255, 0, 0), psaString .. "\n")
+
+	if (ulx or ULib) then
+		MsgC(Color(255, 0, 0), psaStringULX .. "\n")
+	end
 end
